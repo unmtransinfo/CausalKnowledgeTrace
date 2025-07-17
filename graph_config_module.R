@@ -124,19 +124,21 @@ graphConfigUI <- function(id) {
                         ),
                         helpText("Minimum number of distinct citations supporting a causal edge for inclusion."),
                         
-                        # K-hops
-                        selectInput(
-                            ns("k_hops"),
-                            "K-hops *",
-                            choices = list(
-                                "1" = 1,
-                                "2" = 2,
-                                "3" = 3
+                        # K-hops (temporarily restricted)
+                        div(
+                            selectInput(
+                                ns("k_hops"),
+                                "K-hops *",
+                                choices = list("1" = 1),
+                                selected = 1,
+                                width = "100%"
                             ),
-                            selected = 2,
-                            width = "100%"
+                            # Add disabled styling
+                            tags$script(HTML(paste0(
+                                "document.getElementById('", ns("k_hops"), "').disabled = true;"
+                            )))
                         ),
-                        helpText("Number of hops from the exposure and outcome nodes."),
+                        helpText("K-hops is temporarily locked to 1. Additional options will be available in future updates."),
                         
                         # Predication Type
                         textInput(

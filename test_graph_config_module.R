@@ -76,7 +76,7 @@ test_yaml_output <- function() {
         min_pmids = 100L,
         pub_year_cutoff = 2010L,
         squelch_threshold = 50L,
-        k_hops = 2L,
+        k_hops = 1L,  # Updated to reflect temporary restriction
         PREDICATION_TYPE = "TREATS, CAUSES",
         SemMedDBD_version = "heuristic"
     )
@@ -147,9 +147,9 @@ test_dropdown_options <- function() {
     expected_squelch <- c(10, 25, 50, 100, 500)
     cat("✅ squelch_threshold options:", paste(expected_squelch, collapse = ", "), "\n")
     
-    # Test k_hops options
-    expected_k_hops <- c(1, 2, 3)
-    cat("✅ k_hops options:", paste(expected_k_hops, collapse = ", "), "\n")
+    # Test k_hops options (temporarily restricted)
+    expected_k_hops <- c(1)
+    cat("✅ k_hops options (temporarily restricted):", paste(expected_k_hops, collapse = ", "), "\n")
     
     # Test SemMedDB version options
     expected_versions <- c("heuristic", "LLM-based", "heuristic+LLM-based")
