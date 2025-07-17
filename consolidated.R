@@ -1,0 +1,6647 @@
+g <- dagitty('dag {
+Hypertension [exposure]
+Alzheimers_Disease [outcome]
+Surgical_margins
+PeptidylDipeptidase_A
+TP73ARHGAP24
+Diarrhea
+Superoxides
+Neurohormones
+Cocaine
+Induction
+Excessive_daytime_somnolence
+resistance_education
+Fibromuscular_Dysplasia
+genotoxicity
+Pancreatic_Ductal_Adenocarcinoma
+Gadolinium
+Inspiration_function
+Ataxia_Telangiectasia
+Myocardial_Infarction
+Alteplase
+3MC
+donepezil
+Ovarian_Carcinoma
+semaglutide
+Heart_failure
+Mandibular_Advancement_Devices
+Cerebrovascular_accident
+Allelic_Imbalance
+Sickle_Cell_Anemia
+Cerebral_Infarction
+Mitral_Valve_Insufficiency
+Stents
+Behavioral_and_psychological_symptoms_of_dementia
+Sedation
+Adrenergic_Antagonists
+Hereditary_Diseases
+tau_Proteins
+Norepinephrine
+Substance_P
+Senile_Plaques
+Myopathy
+Kidney_Failure_Acute
+Acetylcholinesterase
+Dietary_Supplementation
+Amyloid_Fibrils
+WiskottAldrich_Syndrome
+Cardiomyopathy_Dilated
+Cytotoxic_agent
+Pancreatitis
+Malignant_neoplasm_of_endometrium
+Escherichia_coli
+Arrhythmogenic_Right_Ventricular_Dysplasia
+Arsenic
+CD8B1_geneCD8B
+Paraquat
+Fibronectins
+Metoprolol
+Diabetic_Nephropathy
+Risk_Reduction
+Mice_Knockout
+Diastolic_dysfunction
+Amnesia
+CorticotropinPOMC
+Hyperglycemia
+GlucagonLike_Peptide_1
+CD69_protein_humanCD69
+ProtoOncogene_Proteins_caktAKT1
+beta_Thalassemia
+Cachexia
+1Methyl4phenyl1236tetrahydropyridine
+Proteintyrosine_kinase_inhibitor
+Thymidine_PhosphorylaseTYMP
+Nodule
+Antigens
+Ability
+Nicardipine
+Transient_ischemia
+arginine_methyl_ester
+Liver_Failure_Acute
+Guanylate_Cyclase
+Respiratory_Insufficiency
+Cell_division
+ORALIT
+Keratoplasty
+Huntington_Disease
+CRYGCCRYGEP
+Pharyngoplasty
+Tumor_Necrosis_Factors
+Hemorrhage
+Middle_Cerebral_Artery_Occlusion
+Lower_respiratory_tract_infection
+Lymph_node_excision
+orlistat
+Felis_catus
+vericiguat
+Increased_risk
+Peroxides
+Mouse_Model
+Diabetes
+cell_injury
+Neoadjuvant_Therapy
+Action_Potentials
+Chronic_Disease
+Granulomatous_Disease_Chronic
+Thrombosis_of_cerebral_veins
+Malignant_tumor_of_colon
+Hormone_Receptor
+CADASIL
+telmisartan
+Caregiver
+Mice_Inbred_C57BL
+Estrogen_Receptor_alpha
+Menkes_Kinky_Hair_Syndrome
+Progeria
+ERBB2_geneERBB2
+Endothelin
+External_Beam_Radiation_Therapy
+Predisposition
+LDL_Cholesterol_Lipoproteins
+Amyloid_betaProtein
+Pulmonary_Embolism
+TERT_geneTERT
+Social_drinker
+Peroxisomal_Disorders
+Traumatic_Brain_Injury
+Weight_decreased
+Solvents
+Lipid_Metabolism
+Allergic_rhinitis_NOS
+Coitus
+Staphylococcus_aureus
+Cell_Proliferation
+Pagets_Disease
+diabetic
+Gelatinase_A
+Inflammatory_disorder
+Acute_respiratory_infection_NOS
+Galantamine
+Bone_necrosis
+Feeding_behaviors
+Dissection
+Transcranial_magnetic_stimulation
+Diethylnitrosamine
+AntigenAntibody_Complex
+Laparoscopic_sleeve_gastrectomy
+ROS1
+Thrombocytopenia
+Glomerulonephritis
+Water
+NOS2A_protein_humanNOS2
+Retinoblastoma_ProteinRB1
+Ectopic_ACTHPOMC
+Respiratory_Distress_Syndrome_Adult
+Homologous_Gene
+Depressed_mood
+Thioacetamide
+Chemoembolisation
+Spastic_syndrome
+Well_adult
+Lupus_Erythematosus_Systemic
+Cognitive_Therapy
+Fabry_Disease
+Malignant_neoplasm_of_stomach
+Physiologic_Function
+Agitation
+leptin
+neuronal
+CpG_Islands
+Membrane_Transport_Proteins
+Acclimatization
+Vitamin_K_antagonist
+Familial_Mediterranean_Fever
+Lipid_Peroxidation
+NOS3_protein_humanNOS3
+Disease_Progression
+Hydrogen_Peroxide
+chemokine
+Chromosomal_translocation
+Heart_Transplantation
+Hypokinesia
+Exercise
+Low_Birth_Weights
+Xenograft_Model
+myocardium_injury
+NFkappa_B
+Cyclosporine
+Infection
+Amiloride
+Collagen
+Locomotion
+Venous_Thromboembolism
+cardiac_muscle_cell_hypertrophy
+Eicosanoids
+Neoplasm_Metastasis
+Saralasin
+Alzheimer_Disease_Late_Onset
+ProstateSpecific_Antigen
+Covered_Stents
+Depressive_disorder
+Induced_Hyperthermia
+Sleep_disturbances
+Sodium_Bicarbonate
+phosphatidylethanol
+Ovalbumin
+Polysaccharides
+DNA_biosynthesis
+Chagas_Disease
+Smoker
+Cockayne_Syndrome
+Freunds_Adjuvant
+reactive_hyperemia
+Staurosporine
+Protein_Biosynthesis
+Homeostasis
+Antihypertensive_therapy
+Multiple_Myeloma
+Neuroinflammation
+Sudden_Cardiac_Death
+Uric_Acid
+Polymorphism_Genetic
+Chromosomal_Instability
+Fibrinogen
+Translation_Genetic
+RadiationSensitizing_Agents
+Guide_device
+Sulfonic_Acids
+Dialysis_procedure
+imatinib
+Aldosterone_Antagonists
+Medicine_Folk
+Height
+Normal_blood_pressure
+Deafness
+Ureteral_obstruction
+bleomycin
+Toxic_Epidermal_Necrolysis
+Nitroarginine
+sarcoma
+EXERCISE_INTOLERANCE
+Corticosterone
+Chronic_lung_disease
+Secondary_malignant_neoplasm_of_lymph_node
+pimonidazole
+insulin_sensitivity
+HRAS_geneHRAS
+Xenograft_procedure
+Injury_wounds
+AntiObesity_Agents
+Estradiol
+Cancer_Treatment
+Endoscopic_Submucosal_Dissection
+Metformin
+Respiration_Disorders
+directive_therapy
+Indapamide
+Polycystic_Kidney_Diseases
+NiemannPick_Diseases
+Adrenal_Glands
+AFP_geneAFP
+Angioplasty_Balloon
+Sudden_infant_death_syndrome
+Bleomycin
+Problem_drinker
+Hypertension_Renovascular
+Cardiovascular_Diseases
+Vitamin_D
+Pressors
+Renal_function
+Left_ventricular_mass
+Transgenes
+Acute_coronary_syndrome
+Adrenalectomy
+epinephrine
+Photosensitizing_Agents
+Cognitive_deterioration
+Clonidine
+8isoprostaglandin_F2alpha
+Lipoproteins
+empagliflozin
+Knowledge_acquisition
+Peroxynitrite
+Ascorbic_Acid
+Memory_Loss
+Gamma_Knife_Radiosurgery
+Ubiquitination
+Seizures
+Fructose
+dapagliflozin
+Pulmonary_Thromboembolisms
+Potassium
+Malignant_neoplasm_of_breast
+Neurofibromatosis_1
+Curcumin
+Inositol_Phosphates
+MitogenActivated_Protein_Kinases
+bisphenol_A
+Cessation_of_life
+Bone_Diseases
+Oncogene_Proteins
+Colorectal_Cancer
+Vitamin_D_Deficiency
+Drug_abuse
+Congestion
+Mutagens
+Phosphatidylinositols
+Portal_vein_thrombosis
+Secondary_Neoplasm
+Aortic_coarctation
+Tissue_damage
+Spironolactone
+RNAdirected_DNA_polymerase_activity
+Respiration
+NODE
+Diabetes_Mellitus
+pulmonary_complications
+glucose_metabolism
+Pesticides
+Polycystic_Ovary_Syndrome
+CDKN1ATCEAL1NSG1H3F3AP6
+Acute_myocardial_infarction
+PPAR_gamma
+Interleukin10
+Thiobarbituric_Acid_Reactive_Substances
+Malondialdehyde
+Fluorouracil
+nitric_oxide_receptor
+Chlorides
+Thrombosis
+Carcinogens
+Inflammasomes
+Ventricular_Fibrillation
+Pain_management
+VEGF_geneVEGFA
+pleiotropism
+Elderly
+11betaHydroxysteroid_Dehydrogenases
+DNA_Binding
+Platinum
+Amyloidosis
+mineral_metabolism
+Oxidoreductase
+Intestinal_Microbiome
+Systemic_disease
+Hemiparesis
+interleukin1_beta
+Microcirculation
+Focal_segmental_glomerulosclerosis
+Galectin_3
+Catecholamines
+CYTOCHROME_C_OXIDASE
+rosiglitazone
+Moyamoya_Disease
+PECAM1_genePECAM1
+Apolipoprotein_EAPOE
+Cell_Survival
+Autosomal_Recessive_Disorder
+Octreotide
+Complication_infection
+Agent
+Retinal_Degeneration
+Degenerative_abnormality
+DownRegulation
+Asthma
+Proteinuria
+Acupuncture_procedure
+sex
+Glutathione
+DNA_Repair
+Unilateral_adrenalectomy
+olmesartan
+mitochondrial_permeability_transition_pore
+Nitrate
+Leukotrienes
+Isoprostanes
+Epilepsy
+Smoking
+Multiple_Sclerosis
+Systemic_Scleroderma
+survivin
+GLP1_Receptor_Agonist_EPC
+Interleukin1_beta
+Sodium_Urate_Monohydrate
+Migraine_Disorders
+Postoperative_Nausea
+Family
+Uterine_Fibroids
+Metals
+DNA_Mitochondrial
+nitric_oxide
+Homeostasis_model_assessment
+Lung_diseases
+Muscular_Dystrophies_LimbGirdle
+betasite_APP_cleaving_enzyme_1BACE1
+Refractory_Plasma_Cell_Neoplasm
+oral_anticoagulants
+Acquired_Immunodeficiency_Syndrome
+Ischemia
+Hematoma
+Aging
+HammanRich_syndrome
+Psoriasis
+Long_QT_Syndrome
+Hypertension_Portal
+Formalin
+caspase3
+BAX_geneBAX
+Complement_System_Proteins
+Long_Intergenic_NonProtein_Coding_RNA
+Radiopharmaceuticals
+AngiotensinConverting_Enzyme_Inhibitors
+Skin_Diseases_Genetic
+Triglycerides
+Local_excision
+Rifampin
+Dietary_intake
+renin_activity
+Meningitis
+Polyomavirus
+Vasculitis
+Blind_Vision
+Adenine
+Communicable_Diseases
+Tonsillectomy_and_adenoidectomy
+FTO
+Walking
+Wound_Healing
+Risperidone
+Hyperphagia
+Autosomal_recessive_hereditary_disorder
+biological_adaptation_to_stress
+apolipoprotein_E4APOE
+TaySachs_Disease
+PreEclampsia
+DNA
+Blood
+Nephrotic_Syndrome
+Canis_familiaris
+alphaSynuclein
+Acidosis
+Adolescent
+Mycobacterium_tuberculosis
+Diabetic
+Disorder_of_artery
+Tauopathies
+FAS
+Glycoproteins
+Adenoidectomy
+Essential_Hypertension
+Cyclic_GMP
+Metallothionein
+Primary_Prevention
+Hypercholesterolemia_Familial
+Lead_compound
+Diarrheal_disorder
+Carcinoembryonic_AntigenCEACAM5CEACAM3PSG2
+lymph_nodes
+Motility
+Contrast_Media
+Murine_sarcoma_viruses
+House_mice
+Cesarean_section
+Primary_Neoplasm
+Infiltration
+Eating
+BRCA1_geneBRCA1
+Depressive_Symptoms
+Spondylarthritis
+Fasting
+caspase
+Substance
+Adrenergic_betaAntagonists
+Cerebellar_Ataxia
+Cerebral_Amyloid_Angiopathy
+Anesthesia_procedures
+Composition
+Dopamine
+Gastric_Bypass
+Aneuploidy
+Study_models
+Music_Therapy
+Complete_excision
+Neurotransmitters
+Neck_Dissection
+Hemoglobin
+Cerebrovascular_Circulation
+Kidney_Failure_Chronic
+Phosphorylation
+Leukoencephalopathy
+Osteoarthritis_Knee
+paired_helical_filament
+Increase_in_blood_pressure
+Endotoxemia
+RPE65UVRAGTP63CKAP4
+Radiofrequency_ablation
+KL_geneKL
+Cyclin_D1LMOD1BBS9
+Liver_carcinoma
+Histopathology
+Methylcholanthrene
+Gammaglutamyl_transferase
+trastuzumab
+Doxazosin
+Operation_on_nose
+Pindolol
+Respiratory_syncytial_virus
+Pancreas
+racial_differences
+Physostigmine
+Vasodilation
+Interleukin8
+Quercetin
+Armed_macrophage
+Noncommunicable_Diseases
+Loss_of_Heterozygosity
+carrageenan
+Endarterectomy_Carotid
+Physical_activity
+Sodium_Glutamate
+tolllike_receptor_4
+Hemiplegia
+candesartan
+Vascular_resistance
+Membrane
+Matrix_Metalloproteinases
+Fanconis_Anemia
+Radical_nephrectomy
+VerticalBanded_Gastroplasty
+Carbon_tetrachloride_homeopathic_preparation
+Sleep
+LowDensity_Lipoproteins
+Toxin
+VEGFA
+AgingRelated_Process
+Interleukin1
+Recipient_Transplant
+hydrogen_peroxide
+Abdominal_obesity
+Excision
+Optic_Atrophy_Hereditary_Leber
+SodiumGlucose_Transporter_2_Inhibitors
+Primary_immune_deficiency_disorder
+Blood_alcohol_concentration
+InsulinLike_Growth_Factor_I
+Prazosin
+Biological_Response_Modifiers
+melanoma
+Gastroesophageal_reflux_disease
+Counseling
+NMethylaspartate
+cholinergic_system
+Local_anesthesia
+Female
+Hyperlipidemia
+Lidocaine
+Cardiac_Arrest
+Psychotic_symptom
+Chemotherapy_Adjuvant
+34Methylenedioxyamphetamine
+Peritoneal_Dialysis_Continuous_Ambulatory
+Degenerative_polyarthritis
+Aortic_Aneurysm_Abdominal
+Corticotropin
+temozolomide
+AntiAnxiety_Agents
+Malnutrition
+Mitochondrial_Diseases
+Erectile_dysfunction
+danshen_root_extract
+Hepatectomy
+HydroxymethylglutarylCoA_Reductase_Inhibitors
+Weight_maintenance_regimen
+Antibodies_AntiIdiotypic
+dihydropyridine
+Caloric_Restriction
+Minoxidil
+sibutramine
+Hepatitis_B_Virus
+Influenza
+Fitness
+Felodipine
+Cardiotoxicity
+Neonatal_diabetes_mellitus
+Pathologic_Neovascularization
+Hyperphosphatemia
+Cardiomyopathies_Primary
+Entire_sympathetic_nerve
+Operative_Surgical_Procedures
+ABCB1_geneABCB1
+Sex_Characteristics
+Cystectomy
+Spastic_Paraplegia_Hereditary
+Bacteremia
+Frailty
+SMUG1
+Treatment_Protocols
+Extracorporeal_Membrane_Oxygenation
+HallopeauSiemens_Disease
+KIT
+Pyoderma_Gangrenosum
+irbesartan
+Helicobacter_pylori
+Cardiac_ablation
+Neurofibrillary_degeneration_morphologic_abnormality
+Sheep
+Diabetic_Retinopathy
+American_College_of_CardiologyAmerican_Heart_Association_Lesion_Complexity_Score_C
+Boron
+Defibrillators_Implantable
+Compression_procedure
+Recovery
+Pseudoxanthoma_Elasticum
+Cardiac_Output
+Mineralocorticoid_Receptor
+Dextran_Sulfate_Sodium
+Crohn_Disease
+Leukocyte_L1_Antigen_Complex
+Energy_Metabolism
+Dialysis_Solutions
+Perindopril
+Cerebral_Ischemia
+Argipressin
+22azobis2amidinopropane
+Palmitates
+Continuous_Positive_Airway_Pressure
+Hepatitis_C_Chronic
+Systolic_dysfunction
+Natriuretic_Peptides
+ProtoOncogenes
+Male_population_group
+Rats_SpragueDawley
+Neoplasm
+Opportunistic_Infections
+Biological_Markers
+Lymphocytic_infiltration
+Testosterone
+Teleradiotherapy_procedure
+Neuropathy
+PTGS2_genePTGS2
+Virus_Diseases
+Tumor_Necrosis_Factor_Receptor
+Apolipoprotein_E
+Stereotactic_radiotherapy
+TP53_geneTP53
+Scleroderma
+Cholinesterase_Inhibitors
+Left_ventricular_assist_device
+Mismatch_Repair
+Pulmonary_Edema
+NEPHROTOXICITY
+Inherited_neuropathies
+Radiosurgery
+Death_finding
+Respiratory_complication
+Allergens
+Autoimmune_Diseases
+Cataract
+Immunologic_Adjuvants
+Fibrinolytic_Agents
+Tumor_Suppressor_Genes
+connective_tissue_growth_factor
+Radiotherapy_IntensityModulated
+lipid_mediator
+Sleep_Apnea_Syndromes
+Dyspnea
+PTH_protein_humanPTH
+APC
+Rous_sarcoma_virus
+Neurobehavioral_Manifestations
+Mercury
+Kainic_Acid
+Pharmacological_Treatment
+resveratrol
+Sugars
+Endotoxins
+Neuroglia
+STAT3_geneSTAT3
+Premature_aging_syndrome
+Chronic_liver_disease_NOS
+Spinal_Muscular_Atrophy
+Parasites
+Arthroplasty_Replacement_Knee
+Infectious_disease_of_lung
+Muscular_Dystrophy_Duchenne
+tumor_growth
+Adenocarcinoma
+Immunity
+NMethylDAspartate_Receptors
+Transient_Ischemic_Attack
+Fatty_degeneration
+liraglutide
+Hypnotics
+Glycosylation_End_Products_Advanced
+Receptor_ProteinTyrosine_Kinases
+Dryness_of_eye
+Cardiopulmonary_Bypass
+Gastric_mucosal_lesion
+IFI27PSMD9SSSCA1DCTN6TMED7
+Von_HippelLindau_Syndrome
+Hepatitis_B
+19q
+Selfexpanding_stent
+R38486
+BrainDerived_Neurotrophic_Factor
+NaKExchanging_ATPase
+Equus_caballus
+Intussusception
+Overweight
+Pancreaticoduodenectomy
+ivabradine
+Liquid_ammonia
+Cholesterol
+Isradipine
+Nootropic_Agents
+Psychotropic_Drugs
+Integrins
+Creatinine
+Rats_Wistar
+Activities_of_Daily_Living
+Mitochondrial_Encephalomyopathies
+Hypercalcemia
+Verapamil
+Melatonin
+Epinephrine
+Isoproterenol
+Rett_Syndrome
+aliskiren
+Glutamates
+Lactate
+Ions
+Amyloid_betaProtein_Precursor
+Hepatitis_C
+Carcinoembryonic_Antigen
+Ceramides
+Therapeutic_agent_substance
+Infant
+Limb_Salvage
+Death_Sudden
+Tacrine
+Vas_Occlusion
+RNA_Messenger_Splicing
+Placebos
+Adhesions
+calcification
+Smoke
+Acetate
+Obstruction
+Ulcer
+AngiotensinogenAGT
+Glomerular_Filtration_Rate
+Pulmonary_Vascular_Resistance
+Malignant_neoplasm_of_lung
+Kidney_Transplantation
+Lipopolysaccharides
+anemia_profound
+Loop_Diuretics
+EhlersDanlos_Syndrome
+Carrier_of_disorder
+triplet_codonamino_acid_adaptor_activity
+iron
+Epidermolysis_Bullosa_Dystrophica
+Conn_Syndrome
+Behavioral_Symptoms
+Drainage_procedure
+Thromboembolism
+ATP_phosphohydrolase
+RNA_Messenger
+Diet_CarbohydrateRestricted
+Ulcerative_Colitis
+Tumor_Markers
+Chromium
+Aminoterminal_probrain_natriuretic_peptide
+Free_Radicals
+Epithelial_Cells
+Obesity
+Sirolimus_substance
+Immune_System_Diseases
+interleukin6
+Heart_Diseases
+Negative
+Flavonoids
+reuptake
+Solid_Neoplasm
+Infant_Newborn
+Desire_for_food
+Ventricular_Dysfunction_Left
+Virulence
+Cisplatin
+Immunotherapy
+Embolism
+Adenylate_Cyclase
+Phenylephrine
+Monoclonal_Antibodies
+Genomic_Instability
+Neurodegenerative_Disorders
+Infant_Premature
+Enucleation_procedure
+DSP_4
+NonSmall_Cell_Lung_Carcinoma
+Tumor_Necrosis_FactoralphaTNF
+Birth_Weight
+Myocardial_Contraction
+Cryosurgery
+Enalapril
+Hydrochlorothiazide
+Adipokines
+High_fat_diet_NOS
+Surgical_Replantation
+Multisystem_disorder
+Thrombectomy
+Glycogenolysis
+Brain_Injuries
+Hypernatremia
+Lipids
+Solid_tumor
+2019_novel_coronavirus
+Cardiomyopathy_Hypertrophic_Familial
+nervous_system_disorder
+Precision_Medicine
+Fetal_Alcohol_Syndrome
+CAMP
+Excessive_tearing
+Zinc
+darbepoetin_alfa
+Atrophic
+Cold_Therapy
+Implantation_procedure
+11betaHydroxysteroid_Dehydrogenase_Type_1
+Status_Epilepticus
+macrophage
+Childbirth
+Ventricular_arrhythmia
+Selfcare_interventions
+Asphyxia
+Growth
+Lysosomal_Storage_Diseases
+Primary_carcinoma_of_the_liver_cells
+PGlycoprotein
+Inotropic_agent
+Retinal_Neovascularization
+Myocytes_Cardiac
+Fibrosis
+ChymosinREN
+gammaAminobutyric_Acid
+Endothelial_Cells
+Colorectal_Carcinoma
+Reducing_diet
+Granulocyte_ColonyStimulating_Factor
+Werner_Syndrome
+Antibodies
+Interleukin17
+Autosomal_Recessive_Juvenile_Parkinson_Disease
+CATHEPSIN_DCTSD
+neuron_loss
+ATM_geneATM
+multicatalytic_endopeptidase_complex
+Vascular_constriction_function
+Cardiac_Arrhythmia
+Marfan_Syndrome
+Nerve_Growth_FactorsNGF
+Antiplatelet_therapy
+Rheumatism
+Debris
+Author
+Edema
+Cancer_Promoting_Genes
+Congestive_heart_failure
+Cell_physiology
+Carbon_Tetrachloride
+Recanalization
+Immune_response
+water
+Diquat
+Paraffin
+Anemia
+Shock_Hemorrhagic
+MAPT_protein_humanMAPT
+DNA_Damage
+Nonalcoholic_fatty_liver
+CXCR4_geneCXCR4
+IDO1
+Osteogenesis_Imperfecta
+Blood_Coagulation_Disorders
+cardiac_arrhythmia
+Gender
+Mitosis
+Nerve_Degeneration
+Parkinson_Disease
+Open_approach
+AIRWAY_DISEASE
+Tumor_Antigens
+Adult
+Reactive_Oxygen_Species
+Cancer_Therapeutic_Procedure
+Chronic_Kidney_Diseases
+Stenosis
+Liposomes
+Endoscopic_dilatation
+Aorta
+Mandibular_Advancement
+melatonin
+Oxidopamine
+Prion_Diseases
+leptin_receptorLEPR
+Voluntary_Workers
+Anesthetics
+Implants
+Platelet_aggregation
+IGA_Glomerulonephritis
+Metabolism
+IGHE
+Stimulant
+Desoxycorticosterone_acetate
+Progesterone
+Skeletal_dysplasia
+Dystonia
+Drug_resistance
+Malignant_neoplasm_of_prostate
+Neurofibrillary_Tangles
+Severe_asthma
+SODIUM_INTAKE
+Nonalcoholic_Steatohepatitis
+Cerebrovascular_Disorders
+Mycoses
+END_ORGAN_DAMAGE
+ChemotherapyOncologic_Procedure
+Tuberculosis
+clopidogrel
+Copper
+Aldosterone
+Stress
+Generalized_ischemic_myocardial_dysfunction
+Brain_Stem
+Androgens
+Irritants
+Antihypertensive_Agents
+NGNitroarginine_Methyl_Ester
+Functional_RNA
+Recombination_Genetic
+Pyeloplasty
+Bronchopneumonia
+Self_Care
+angiotensin_II
+Biliopancreatic_Diversion
+Cigarette_smoke
+deoxynivalenol
+Antidepressive_Agents
+Pancreatic_carcinoma
+sodium_ion_transport
+Pheochromocytoma
+Adoptive_Transfer
+doxorubicin
+TREM2
+Gastric_banding
+Growth_Factor
+Photothermal_Therapy
+Fetus
+Mucous_Membrane
+Movement_therapy
+dexamethasone
+CD4_geneCD4
+inhibitors
+Hydronephrosis
+bevacizumab
+Inflammation_Mediators
+Excretory_function
+Rehabilitation_therapy
+Movement
+ERBB2NEU1NEURL1
+Epidermal_growth_factor_receptor_inhibitor
+VASCULAR_ACCESS
+BRAF_geneBRAF
+Liver_damage
+Ventricular_assist_device
+Secondary_hypertension_NOS
+Tumorinduced_osteomalacia
+cetuximab
+loss_bone
+Renal_tubular_acidosis
+Radical_prostatectomy
+Fatty_Acids_Omega3
+Exercise_Aerobic
+Platelet_Activation
+Cyclin_D1CCND1
+ADRBK1_geneGRK2
+Injury
+Sarcopenia
+Cardiovascular_event
+Hemostatic_function
+Endothelium
+Lipolysis
+Graft_Survival
+Accumulation
+Cystic_Fibrosis
+Ribavirin
+Hyperparathyroidism_Secondary
+Hemodialysis
+Male_gender
+Nephrectomy
+Vaccination
+Vimentin
+Infantile_spasms
+HypoxiaInducible_Factor_1
+Laparoscopic_adrenalectomy
+Abnormal_coordination
+RouxenY_Gastric_Bypass
+Adrenoleukodystrophy
+Fatty_Streak_Arterial
+hearing_impairment
+isoproterenol
+Tachycardia
+HIV_Infections
+fibroblast_growth_factor_21FGF21
+Silence
+Anosognosia
+GraftvsHost_Disease
+Oxygen
+Vitamin_K_3
+Telemedicine
+resistinRETN
+Calcium
+Propranolol
+osteopontin
+Reperfusion_Therapy
+imiquimod
+Adipogenesis
+High_Density_Lipoproteins
+Sodium
+Rats_Inbred_WKY
+Thioctic_Acid
+Rotenone
+omegaNMethylarginine
+AntiArrhythmia_Agents
+Adipose_tissue
+Psychotherapy_Multiple
+Pneumonia
+Metabolic_Diseases
+Docosahexaenoic_Acids
+Gelatinase_B
+Tetrodotoxin
+sacubitril_valsartan
+Protein_Structure
+AVP
+Antipsychotic_Agents
+Encephalitis
+Multiple_Organ_Failure
+rivastigmine
+Endothelium_Vascular
+Postoperative_Nausea_and_Vomiting
+docetaxel
+Craniotomy
+Virulence_Factors
+Dementia_Vascular
+Respiratory_physiology
+Fluoroquinolones
+Psychotic_Disorders
+adenoma
+anticoagulation
+Stillbirth
+Basis
+nuclear_mRNA_cis_splicing_via_spliceosome
+Particulate_Matter
+Microsurgery
+Embolism_Paradoxical
+AR_geneAR
+Medical_therapy
+AntiInflammatory_Agents
+Intoxication
+Sinus_rhythm
+Peripheral_Vascular_Diseases
+Macrophages_Alveolar
+Signal_Transduction
+Vascular_Endothelial_Growth_Factor_C
+Receptor_Angiotensin_Type_1
+Spatial_Neglect
+Hypoxia
+Cerebral_hemisphere_hemorrhage
+Dehydration
+Pathogenesis
+Injury_of_stomach
+Thymidylate_Synthase
+Neoplasms
+Familial_Alzheimers_disease
+Ramipril
+beta_catenin
+Metabolic_acidosis
+Alveolar_ventilation_function
+Stent_device
+Hydralazine
+imbalance
+removal_technique
+Nitric_Oxide_Synthase
+Body_Composition
+Bronchopulmonary_Dysplasia
+salt_intake
+Urokinase
+EGFR_geneEGFR
+Neurogenesis
+Fatty_Acids
+Autosomal_Recessive_Polycystic_Kidney_Disease
+intervention_program
+Premature_Birth
+Milrinone
+Tolllike_receptors
+Proton_therapy
+Excessive_weight_gain
+Aortic_Valve_Insufficiency
+Amlodipine
+Calcium_Channel_Blockers
+Cyst
+Tyrosine_Phosphorylation
+Prognosis_bad
+Vascular_Endothelial_Cells
+Warfarin
+Degenerative_disorder
+Thermogenesis
+Coronary_Occlusion
+Injection_procedure
+Offspring
+Croton_Oil
+Headache
+Shock
+Phagocytosis
+Survivors
+Chlorthalidone
+Hypercholesterolemia
+Hyponatremia
+Lobectomy
+Losartan
+Guanethidine
+Pancreatitis_Chronic
+Neurotoxins
+Peritoneal_Dialysis
+Vascular_Diseases
+Parkinsonian_Disorders
+Tourniquets
+Metals_Heavy
+Zymosan
+Familial_hypophosphatemic_bone_disease
+Somatostatin_analogSST
+infliximab
+ARGINASE
+Ankylosing_spondylitis
+Hydrocephalus
+Impaired_cognition
+Hospitalization
+Nucleotide_Excision_Repair
+Beverages
+Gastric_mucosa
+Left_ventricular_systolic_dysfunction
+Thiazides
+Paclitaxel
+Encephalopathies
+Angiotensins
+Iodine
+neutrophil
+Ascites
+Mastectomy
+Photochemotherapy
+Liver_Cirrhosis
+Steatohepatitis
+Acebutolol
+Aneurysm_Dissecting
+Cardiac_function
+Autophagy
+Coronary_Artery_Bypass_Surgery
+Angiogenesis_Factor
+Fenfluramine
+Anabolism
+Mammary_Neoplasms
+homocysteine
+Radiofrequency_Ablation
+Bradykinin
+Nitrite
+Hereditary_hemorrhagic_telangiectasia
+Polymyalgia_Rheumatica
+Fragile_X_Syndrome
+Transcription_Genetic
+Males
+Reproduction
+metformin
+Hypophosphatasia
+cobaltous_chloride
+polyphenols
+View
+Neuroprotection
+Metal_stent
+Hormone_replacement_therapy
+Levosimendan
+Detection
+Septic_Shock
+Pathologic_Processes
+Antineoplastic_Agents
+Dextran_Sulfate
+Bacteria
+Hemodynamics
+cytotoxicity
+Unilateral_agenesis_of_kidney
+Adiponectin
+Hypertensive
+ovalbumin
+APP_gene
+BARRIER
+Adrenal_Cortex_Hormones
+Embolization_Therapeutic
+Oryctolagus_cuniculus
+TLymphocyte
+Constriction_procedure
+Recovery_of_Function
+Hyperinsulinism
+Periodontitis
+cytokine
+Turpentine
+Vertebral_Artery_Dissection
+Tumorigenesis
+Gingival_Overgrowth
+Immunologic_Deficiency_Syndromes
+Amyloid_deposition
+hypothermia_natural
+Pharmacotherapy
+Glucose
+Vasodilator_Agents
+TNF_protein_humanTNF
+Anaphylaxis
+Congenital_adrenal_hyperplasia
+COGNITIVE_DEFICIT
+Organ
+Gastroplasty
+Leptin
+Closure_by_clamp
+VEGF_protein_humanVEGFA
+Xlinked_agammaglobulinemia
+Rats_Inbred_SHR
+Lymphoma
+enzyme_activity
+2cyclopentyl55isoquinolylsulfonyl6nitro1HbenzoDimidazole
+kinase_activity
+Airway_Obstruction
+Glaucoma
+Cattle
+Arginine
+Hepatitis_C_virus
+Liver
+hypoglycemia
+CA2
+Rare_Diseases
+Radiotherapy_Adjuvant
+GJA1_geneGJA1
+Restenosis
+Thiazolidinediones
+Sedatives
+Buffers
+MicroRNAs
+Disability_NOS
+Young_adult
+Citrulline
+Hypersensitivity
+Carrageenan
+Aldehydes
+Jejunoileal_Bypass
+stem_cell_therapy
+NNdimethylarginine
+Snoring
+Interleukin2
+Periodontal_Diseases
+Injections_Intraperitoneal
+Curettage_procedure
+Bacterial_Infections
+Ligation
+Telomerase
+3Iodobenzylguanidine
+Meningitis_Bacterial
+Endothelial_dysfunction
+Cognition_Disorders
+Cytokinesis_of_the_fertilized_ovum
+Thiazide_Diuretics
+cisplatin
+Adrenal_adenoma
+Transplantation
+Entire_nerve
+Chemicals
+HIF1alpha_protein
+Right_ventricular_failure
+hyperphosphorylation
+Peptidylprolyl_Isomerase
+TP53
+Sodium_Chloride
+UpRegulation_Physiology
+Acids
+Aluminum
+Recombinant_Erythropoietin
+Laparotomy
+Kidney_Failure
+Septicemia
+Periodic_syndrome
+Ketanserin
+Risk_factor_cardiovascular
+Antiplatelet_Agents
+ghrelin
+Diabetes_Mellitus_InsulinDependent
+Secondary_hypertension
+TLR4_geneTLR4
+Aspiration_Pneumonia
+Indifferent_mood
+anthracene
+Acetylcholine
+Cardiomyopathies
+Somatostatin_Receptor
+Combined_Modality_Therapy
+Nitric_Oxide_Donors
+Hyperuricemia
+Amputation
+Hemodiafiltration
+Alcoholic_Intoxication_Chronic
+Superoxide_Dismutase
+Severe_Combined_Immunodeficiency
+InsulinINS
+Hypertrophy
+Ultrasonography
+Angiotensin_II
+Rhabdomyolysis
+Accelerated_atrioventricular_conduction
+Insulin_Resistance
+DIANPH_geneDIANPH
+Steroids
+Aspirationaction
+Juvenile_Neuronal_Ceroid_Lipfuscinosis
+Thrombus
+Carbohydrates
+Leucodystrophy_NOS
+Transcranial_Magnetic_Stimulation_Repetitive
+Carcinoma
+Renal_vascular_disorders_NOS
+Diabetes_Mellitus_NonInsulinDependent
+Muscular_Dystrophies
+Liver_Failure
+Biliary_calculi
+Renal_Replacement_Therapy
+Renal_Artery_Stenosis
+Acetylcholinesterase_Inhibitors
+Anticoagulants
+RNA_Small_Interfering
+Angiotensin_II_receptor_antagonist
+Bariatric_Surgery
+sorafenib
+Gastrectomy
+Palliative_Care
+Retinal_dystrophy
+Rattus_norvegicus
+Aplastic_Anemia
+Hypertrophic_Cardiomyopathy
+Magnetic_Resonance_Imaging
+Malaria
+Arthritis
+Stiffness
+DELETION
+Parathyroidectomy
+Salts
+Polycystic_Kidney_Autosomal_Dominant
+3nitrotyrosine
+Kras_OncogeneKRAS
+MDM2_geneMDM2
+Pain
+NADPH_Oxidase
+Angiotensin_II_Type_1_Receptor_Blockers
+malondialdehyde
+Digoxin
+receptor_for_advanced_glycation_endproducts
+Hepatolenticular_Degeneration
+Brachytherapy
+Nterminal_proBtype_natriuretic_peptide
+Malignant_neoplasm_of_urinary_bladder
+Therapeutic_Intervention
+Chronic_infectious_disease
+HIV
+Chemotherapeutic_agent
+Dependence
+Mutation
+Prions
+Malignant_Neoplasms
+End_stage_renal_failure
+Microglia
+arsenite
+Autosomal_Dominant_Disorder
+Radicals_chemistry
+Stomach
+Nonalcoholic_Fatty_Liver_Disease
+Microalbuminuria
+Cadherins
+Leigh_Disease
+Atrial_Natriuretic_Factor
+Glioma
+Cyclooxygenase_2_Inhibitors
+dietary_intervention
+Body_tissue
+MGMT_geneMGMT
+Phentolamine
+Fatty_deposition
+Nephroureterectomy
+Cadmium
+Hepatitis_Chronic
+Measles
+Malignant_transformation
+Very_low_energy_diet
+ropivacaine
+Boron_Neutron_Capture_Therapy
+CATALASE
+IMPACT_gene
+glucose_high
+Tetradecanoylphorbol_Acetate
+Static_reflex_of_Magnus_and_de_Kleijn
+Injury_to_liver_NOS
+Fatty_Liver
+Glioblastoma
+ROS1_wt_AlleleROS1
+Smooth_muscle_tissue
+Rheumatoid_Arthritis
+Extravasation
+Insulin_ReceptorINSR
+Memory_impairment
+Heme
+Brain_Edema
+GABPANFE2L2
+Aggressive_behavior
+Immunoregulation
+8Hydroxy2Deoxyguanosine
+Memantine
+Atherosclerosis
+Asbestos
+Cardiac_Tamponade
+Homologous_Recombination
+Simian_virus_40
+Diet_HighFat
+Dietary_Modification
+Hypothalamic_structure
+Neurons
+Prophylactic_treatment
+MOTOR_DEFICIT
+Supplementation
+Cardiac_Glycosides
+topiramate
+Reperfusion_Injury
+Hydrocortisone
+Adrenergic_alphaAntagonists
+Decompressive_incision
+Ovary
+Insulin
+Heart
+streptozocin
+Blood_Glucose
+Sodium_Nitroprusside
+Cytostatic_Agents
+Nitrites
+Waist_circumference
+Microplastics
+K_ATPase
+Systemic_arterial_pressure
+Aortic_Valve_Stenosis
+Intracranial_Hemorrhages
+Infections_Hospital
+followup
+Blood_flow
+monocyte
+Age_related_macular_degeneration
+Endothelin1
+Angiogenesis
+Behcet_Syndrome
+Present
+Transurethral_Resection
+Diabetic_cardiomyopathy
+Desipramine
+Hepatocyte
+Schizophrenia
+Lung
+Dyslipidemias
+Reconstructive_Surgical_Procedures
+CSF2LAMC2
+Mean_blood_pressure
+Nasal_Polyps
+DHypometabolism
+Proliferating_Cell_Nuclear_Antigen
+Bypass
+aducanumab
+Oral_anticoagulants
+DNA_Sequence
+Atrial_Fibrillation
+Amyloid
+PraderWilli_Syndrome
+Acetylcysteine
+Fertility
+Deep_Vein_Thrombosis
+Carotid_Stenosis
+ECadherin
+Inflammatory_Bowel_Diseases
+Neuromuscular_Diseases
+nebivolol
+Foramen_Ovale_Patent
+Esophagectomy
+RASSF1ARASSF1
+Crohns_disease
+Alcohol_consumption
+Child
+Energy_Balance
+Creactive_protein
+Arteriovenous_fistula
+Magnesium
+Sodium_Chloride_Dietary
+gene_polymorphism
+Coronary_heart_disease
+Carcinoma_of_the_Large_Intestine
+Vascular_occlusion
+Chondrocytes
+NME1_geneNME1
+Apoptosis
+Methylene_blue
+SUCLA2_geneSUCLA2
+InsulinLike_Growth_Factor_II
+Evolution
+Sucrose
+Necrosis
+Diltiazem
+alanosine
+Methylnitrosourea
+Alcoholic_Liver_Diseases
+Epidermal_Growth_Factor_Receptor
+Body_Weight_decreased
+Particle
+Glutamate
+Immune_Checkpoint_Inhibitors
+Macrophages_Peritoneal
+Deglutition_Disorders
+MYC_geneMYC
+TYROSINE_AMINOTRANSFERASETAT
+Cyclophosphamide
+Atherogenesis
+Probes
+Evaluation_procedure
+receptor
+Hypoxemia
+Angiogenesis_Inhibitors
+Neural_Development
+Drug_Delivery_Systems
+Interferons
+Balloon_Dilatation
+Cardiac_Resynchronization_Therapy
+Mental_disorders
+eplerenone
+Steatohepatitis_nonalcoholic
+Dobutamine
+Herpesvirus_4_Human
+Amino_Acids
+Lisinopril
+Calcineurin
+Exocytosis
+Banding_procedure
+Surgical_Procedures_Endoscopic
+Tachycardia_Ventricular
+Down_Syndrome
+Nifedipine
+Coronary_Arteriosclerosis
+Steroid_biosynthesis
+Hypotension
+Peritonitis
+Protein_p53TP53
+Denervation
+Plasminogen_Activator_Inhibitor_1
+Radiosurgery_Stereotactic
+Liquid_diet
+Multiple_Endocrine_Neoplasia_Type_2a
+Osteoporosis
+Codon_Terminator
+Respiratory_Failure
+Meiosis
+Hepatitis_B_Chronic
+Phenylketonurias
+SNW1_Gene
+Extrinsic_asthma_NOS
+HMGB1_Protein
+Amino_Acids_BranchedChain
+Primary_Health_Care
+Equilibrium
+Connective_Tissue_Diseases
+Fusion_procedure
+CD274_protein_humanCD274
+GABinding_Protein_Transcription_FactorGABPANFE2L2
+Labetalol
+Binge_Eating
+aluminum_chloride
+Kidney
+Gastric_ulcer
+Delusions
+Tonsillectomy
+Glycolysis
+Renal_fibrosis
+Angiotensin_II_Receptor_Type_2AGTR2PGRAS1
+tau_ProteinsMAPT
+Therapeutic_radiology_procedure
+Peptide_Hydrolases
+valsartan
+Glucose_Intolerance
+trimethyltin
+Toxic_effect
+Intestinal_Bypass
+Device_therapy
+Hospital_Readmissions
+Dermatitis_Atopic
+Iron_deficiency
+Polyunsaturated_Fatty_Acids
+Iron
+Cardiac_rehabilitation
+TRANSCRIPTION_FACTOR
+Astrocytes
+Lobe
+FOXP3
+Venoms
+Malignant_disease
+Kidney_Diseases
+Interleukin6
+DominantNegative_Mutation
+Chronic_inflammatory_disorder
+Arachidonic_Acid
+trimethyloxamine
+Glucocorticoid_Receptor
+Atenolol
+Immunoreactivity
+Shock_Cardiogenic
+Recombinant_Interferongamma
+Arteries
+Fibroblast_Growth_Factor_2
+Mus
+Human_Papillomavirus
+glucose_homeostasis
+Tumor_Progression
+TGFB1_protein_humanTGFB1
+Increased_calorie_diet
+Dietary_restriction_NOS
+Systemic_Therapy
+Cushing_Syndrome
+skin_disorder
+Uveitis
+Rhizobium_radiobacter
+Breast_Feeding
+Angioplasty
+Chromosome_abnormality
+Signal_Transduction_Pathways
+Inflammation
+Pyroglyphidae
+Tamoxifen
+epigallocatechin_gallate
+Electrolytes
+Cell_Cycle
+Azoospermia
+Baroreflex
+Vitamin_E
+Hepatotoxicity
+Fibroblasts
+Weight_Gain
+Methotrexate
+Amiodarone
+Chronic_glomerulonephritis_NOS
+Alports_syndrome
+Carboplatin
+Neuroprotective_Agents
+Bupivacaine
+Brain
+Behavior_Therapy
+Ozone
+Diabetic_Neuropathies
+Laminectomy
+Cell_Adhesion_Molecules
+Heart_Arrest
+Hemophilia_A
+Polymers
+Hereditary_hemochromatosis
+Retroviridae
+Semantic_impairment
+Yohimbe_Preparation
+Body_mass_index
+Renal_Blood_Flow
+910Dimethyl12benzanthracene
+Microsatellite_Instability
+Nicotine
+Minerals
+Diabetes_Gestational
+Ataxia
+Mucins
+Assessment_procedure
+Angioplasty_Transluminal_Percutaneous_Coronary
+Focal_Adhesion_ProteinTyrosine_Kinases
+Somatotropin
+tertButylhydroperoxide
+Sedentary
+Transjugular_intrahepatic_portosystemic_shunt_procedure
+Gingival_Hyperplasia
+Maintenance_hemodialysis
+Rest
+Fibrosis_Liver
+Furosemide
+Hyperhomocysteinemia
+oxidized_low_density_lipoprotein
+Ethylnitrosourea
+Massive_hemorrhage
+Chlorpyrifos
+Repeat_Surgery
+Cell_Therapy
+CD44_geneCD44
+FGF23
+Sympathectomy
+Lesion
+Prostaglandins
+Adrenal_Cortex
+Retinitis_Pigmentosa
+Myocardial_Ischemia
+Aphasia
+Amino_Acid_Substitution
+Exsanguination
+Thrombolytic_Therapy
+Primary_bacterial_peritonitis
+Acetaldehyde
+Gene_Expression
+Deep_Brain_Stimulation
+Neuronal_Transmission
+Sleep_Apnea_Central
+Palatopharyngoplasty
+Neuroblastoma
+AcutePhase_Proteins
+Craniosynostosis
+Infarction
+Leukosis_Virus_Avian
+Nitrendipine
+MLH1_geneMLH1
+Liver_diseases
+Mental_deterioration
+Woman
+PelizaeusMerzbacher_Disease
+MAPT
+Pathological_Dilatation
+Ethanol
+Chronic_disease
+Hepatic_Encephalopathy
+Stabilization
+Apolipoprotein_E_geneAPOE
+Receptors_Progesterone
+Reserpine
+Osteopenia
+Albuminuria
+Myocytes_Smooth_Muscle
+Dementia
+Squamous_cell_carcinoma
+Urinary_Incontinence
+Pulmonary_arterial_hypertension
+pioglitazone
+RB1_geneRB1RBM45
+BK_Virus
+Respiratory_Tract_Infections
+Antibiotics
+Methyldopa
+Radioisotopes
+erlotinib
+Neoplasm_progression
+Postoperative_Complications
+Aspirin
+adiposity
+Leukemia_Lymphocytic_Acute
+Metabolic_syndrome
+BIRC5_geneBIRC5
+Bladder
+Antiinflammatory_Effect
+Congenital_heart_disease
+Physical_therapy
+Arteriosclerosis
+Mucosal_resection
+Death_Sudden_Cardiac
+Frontotemporal_dementia
+Pathogenicity
+Moloney_Leukemia_Virus
+rimonabant
+Cell_Growth
+Diet
+Streptozocin
+Diazoxide
+Sensorineural_Hearing_Loss
+CYP2E1_geneCYP2E1
+Body_Weight
+Autopsy
+Adriamycin
+NOS1_protein_humanNOS1NANOS1
+pimagedine
+adjuvant_therapy
+Alzheimer_Disease_Early_Onset
+Vasospasm
+Subarachnoid_Hemorrhage
+Receptor_Angiotensin_II
+Food
+Familial_disease
+Wounds_and_Injuries
+Surgical_Procedures_Laparoscopic
+Fatty_Acids_Nonesterified
+Fluorides
+cyclooxygenase_2
+LeptinLEP
+Brain_natriuretic_peptide
+CorticotropinReleasing_Hormone
+Diet_ProteinRestricted
+First_line_treatment
+Gastrojejunostomy
+Chronic_Obstructive_Airway_Disease
+Creactive_proteinCRP
+Oxidative_Stress
+Amyloid_betaPeptides
+Silicon_Dioxide
+Serum_Albumin_Bovine
+gemcitabine
+Molecular_Target
+Esophageal_Varices
+Antioxidants
+Epidermal_Growth_Factor_ReceptorEGFR
+FRAP1_protein_humanMTOR
+Acute_Lung_Injury
+heart_rate
+Pulmonary_Fibrosis
+Myasthenic_Syndromes_Congenital
+Mothers
+Hospital_admission
+Hypertension_Pulmonary
+Nicotinic_Receptors
+Lewy_Body_Disease
+Psychological_symptom
+Cardiac_Hypertrophy
+Diuretics
+ethanol
+Captopril
+Hepatic_Vein_Thrombosis
+Renal_Cell_Carcinoma
+Appetite_Depressants
+Cerebral_atrophy
+Platelet_adhesion
+Cholecystectomy_Laparoscopic
+PIK3CA_genePIK3CA
+CA9_geneCA9
+dimazine
+Diuretic_therapy
+Evaluation
+Vasodilation_disorder
+lipoprotein_metabolism
+Females
+Screening_procedure
+Abnormality_of_mitochondrial_metabolism
+Tension
+Vaccines
+Nitric_Oxide
+Vomiting
+Serotonin
+Comorbidity
+Histamine
+CDKN2A_geneCDKN2A
+Amyloid_beta
+Gait_training_procedure
+Pregnancy
+Cardiovascular_arteriosclerosis_unspecified
+uptake
+Ischemic_stroke
+Screening_Tests
+Control_Groups
+Targeted_Therapy
+Axotomy
+Virus
+Partial_nephrectomy_NOS
+Cardiovascular_morbidity
+Cell_Death
+Relaxation
+Thyroid_associated_opthalmopathies
+Signaling_Molecule
+Radioimmunotherapy
+Androgen_ReceptorAR
+Hypertriglyceridemia
+Acetaminophen
+Inflammatory_Response
+Transforming_Growth_Factor_beta
+Binder
+Atypical_antipsychotic
+ReninREN
+Family_suidae
+voltage_gated_channel
+CD34_geneCD34
+Bleeding_tendency
+Fracture
+gene_therapy
+COVID19
+Water_consumption
+risk_factors
+Coagulation_procedure
+Estrogens
+Amyotrophic_Lateral_Sclerosis
+Codon_Nonsense
+depolarization
+Mucous_body_substance
+phosphate_transport
+Stenosis_unspecified
+Becker_Muscular_Dystrophy
+Imbalance
+Positive_pressure_therapy
+Sleep_Apnea_Obstructive
+Radiation_therapy
+Starvation
+Diet_Mediterranean
+PGR_genePGR
+antagonists
+Myocarditis
+RNA_Circular
+Nausea
+malate_transporter
+Leucine_Zippers
+Embryonic_Development
+alteplase
+Mechanical_thrombectomy
+Congenital_Disorders
+Protein_Kinase_C
+Delirium
+Aneurysm
+presenilin
+Alcohol_dehydrogenase
+Dinoprostone
+Doxorubicin
+Peripheral_Neuropathy
+Angiotensin_I
+DNA_Methylation
+particle
+Cardiac_resynchronisation_therapy
+COLLAGENASE
+Operation_on_stomach
+TLR4_protein_humanTLR4
+Hypertensive_disease
+Retinal_Diseases
+PROM1
+Arterial_Stiffness
+Cyclic_AMP
+Glucocorticoids
+Diabetes_Insipidus_Nephrogenic
+Secondary_prevention
+Erythropoietin
+Contracture
+Adaptation
+ErythropoietinEPO
+Cerebral_Edema
+carvedilol
+Estrogen_Receptors
+Cytochrome_P450
+Carcinoma_NonSmallCell_Lung
+High_Density_Lipoprotein_Cholesterol
+Microtubules
+Carcinogenesis
+Infertility_Male
+Blood_Pressure
+Azoxymethane
+Exercise_Training
+Polyglandular_Type_I_Autoimmune_Syndrome
+Dexamethasone
+Chronic_sinusitis_NOS
+Chemokine_CC_Motif_Ligand_4CCL4
+cadmium
+APP_protein_human
+Cardiomyoplasty
+Systolic_blood_pressure
+Barrett_Esophagus
+Colitis
+Ablation
+Dissection_of_aorta
+Endarterectomy
+Adrenergic_Receptor
+Lung_Diseases_Interstitial
+hypercholesterolemia
+Nasal_Continuous_Positive_Airway_Pressure
+Blood_Vessels
+Birth
+Ouabain
+Prostate_cancer_metastatic
+Vascular_calcification
+Laparoscopic_adjustable_gastric_banding
+Percutaneous_coronary_intervention
+Cardiac_complication
+Anticoagulant_therapy
+Congenital_Abnormality
+PTEN_genePTEN
+cmyc_GenesMYC
+Cyclin_E
+Nitric_Oxide_Synthase_Type_I
+Cytokeratin
+Stroke_Acute
+Lesion_of_stomach
+Ejection_fraction
+Prodrugs
+Tenascin
+Single_Nucleotide_Polymorphism
+Cell_Line
+Endocrine_therapy
+Gaucher_Disease
+AntiInflammatory_Agents_NonSteroidal
+gefitinib
+Hypertrophy_Left_Ventricular
+Motor_Neuron_Disease
+Myopathies_Nemaline
+Spinal_Cord_Injuries
+Enzyme_Inhibitors
+Prolactin
+Endocannabinoids
+CharcotMarieTooth_Disease
+Somatic_mutation
+Laparoscopic_partial_nephrectomy
+anaphylaxis
+Muscular_Atrophy
+Rodent
+Phosphotransferases
+Chronic_inflammation
+alcohol_use_disorder
+Mitochondria
+gammasecretase
+apolipoprotein_E4
+Mitomycin
+Lebers_amaurosis
+Triglycerides -> Hypertensive_disease
+Mutation -> Neurodegenerative_Disorders
+Fatty_Liver -> Obesity
+Hypertensive_disease -> Kidney_Diseases
+APP_gene -> cytotoxicity
+Ischemia -> Cerebrovascular_accident
+Aging -> Oxidative_Stress
+Diet_HighFat -> Obesity
+BRCA1_geneBRCA1 -> Neoplasm
+Hyperglycemia -> Obesity
+receptor -> Cardiovascular_Diseases
+Nephroureterectomy -> Neoplasm
+streptozocin -> Mus
+MicroRNAs -> Neoplasms
+Glucocorticoids -> Lupus_Erythematosus_Systemic
+Coronary_heart_disease -> Cerebrovascular_accident
+Cholinesterase_Inhibitors -> Dementia
+cytokine -> Heart_failure
+Heart_failure -> Cardiovascular_event
+CA9_geneCA9 -> Neoplasm
+Methylcholanthrene -> Neoplasm
+Fibrosis -> Diabetes
+iron -> Oxidative_Stress
+Angiotensin_II -> Water_consumption
+Adoptive_Transfer -> Neoplasm
+Hypertensive_disease -> Kidney_Failure_Chronic
+Epinephrine -> Platelet_aggregation
+MAPT -> Parkinson_Disease
+Impaired_cognition -> Hypertensive_disease
+Lewy_Body_Disease -> Alzheimers_Disease
+Sex_Characteristics -> Hypertensive_disease
+Hypertensive_disease -> Diabetic
+Anemia -> Cessation_of_life
+Ethanol -> Fetal_Alcohol_Syndrome
+Oxidative_Stress -> Septicemia
+Cerebral_hemisphere_hemorrhage -> Cessation_of_life
+Nitric_Oxide -> Physiologic_Function
+Diabetes_Mellitus -> Hypertensive_disease
+Hyperuricemia -> Hypertensive_disease
+Treatment_Protocols -> Neoplasm
+Dementia -> Dementia_Vascular
+Neoplasm -> Cyst
+Ethanol -> Congenital_Abnormality
+Asphyxia -> Cessation_of_life
+Diarrhea -> Cessation_of_life
+Norepinephrine -> Family_suidae
+streptozocin -> Mouse_Model
+Antigens -> Neoplasm
+Lipopolysaccharides -> nitric_oxide
+TP53 -> Neoplasms
+Norepinephrine -> Heart
+AngiotensinConverting_Enzyme_Inhibitors -> Kidney_Diseases
+CD69_protein_humanCD69 -> Hypertensive_disease
+Hypertensive_disease -> Woman
+High_fat_diet_NOS -> Inflammation
+Hydrochlorothiazide -> Hypertensive_disease
+Autophagy -> Neoplasm
+nitric_oxide_receptor -> Nitric_Oxide
+Sugars -> Obesity
+Ethanol -> Child
+Counseling -> Obesity
+Ablation -> Hypertensive_disease
+Inflammation -> Bacterial_Infections
+Pressors -> Angiotensin_II
+Obesity -> Asthma
+Insulin_Resistance -> Essential_Hypertension
+CDKN2A_geneCDKN2A -> Neoplasm
+Laparoscopic_partial_nephrectomy -> Neoplasm
+Glucocorticoids -> Homeostasis
+Neurotoxins -> Nerve_Degeneration
+Delirium -> Dementia
+Metabolic_Diseases -> Obesity
+Brain_Injuries -> Ischemia
+Nifedipine -> Hypertensive_disease
+monocyte -> Nitric_Oxide
+Enzyme_Inhibitors -> Hypertensive_disease
+arginine_methyl_ester -> Nitric_Oxide_Synthase
+Single_Nucleotide_Polymorphism -> Cardiovascular_Diseases
+Neurodegenerative_Disorders -> Cessation_of_life
+Fibrosis -> Atrial_Fibrillation
+Infiltration -> Neoplasm
+RNA_Circular -> Neoplasms
+Streptozocin -> Diabetic_Nephropathy
+Dementia -> Alzheimers_Disease
+Obstruction -> Acute_myocardial_infarction
+Insulin_Resistance -> Pathogenesis
+Acetylcholinesterase_Inhibitors -> Dementia
+Fluoroquinolones -> Mutation
+Hospitalization -> Cerebrovascular_accident
+Ethanol -> Nerve_Degeneration
+Hypoxia -> ErythropoietinEPO
+Inflammation -> Diabetes
+Obstruction -> Rare_Diseases
+Insulin_Resistance -> Oxidative_Stress
+Nitric_Oxide -> Prostaglandins
+PeptidylDipeptidase_A -> Hypertensive_disease
+Metabolism -> Obesity
+Superoxides -> Oxidative_Stress
+Virus -> Neoplasm
+Antibiotics -> Inflammation
+Norepinephrine -> CAMP
+Rheumatoid_Arthritis -> Inflammation
+Norepinephrine -> Calcium
+Signal_Transduction -> Neoplasm
+Mucosal_resection -> Neoplasm
+ORALIT -> Hypertensive_disease
+ReninREN -> Hypertensive_disease
+AntiInflammatory_Agents -> nitric_oxide
+Thiobarbituric_Acid_Reactive_Substances -> Oxidative_Stress
+PeptidylDipeptidase_A -> Angiotensin_II
+COLLAGENASE -> Cerebral_hemisphere_hemorrhage
+Antioxidants -> Obesity
+Neoplasm -> Somatostatin_Receptor
+Injury -> Ischemia
+Death_Sudden -> Cessation_of_life
+AntiInflammatory_Agents_NonSteroidal -> Alzheimers_Disease
+Depressive_disorder -> Cerebrovascular_accident
+Angiotensin_II -> Plasminogen_Activator_Inhibitor_1
+Angiotensin_II -> CA2
+Calcium_Channel_Blockers -> Cardiovascular_Diseases
+Obesity -> Gastroesophageal_reflux_disease
+Surgical_Procedures_Laparoscopic -> Obesity
+Sugars -> Ethanol
+Vitamin_K_antagonist -> Cerebrovascular_accident
+Lesion -> Kidney_Diseases
+Neoplasm -> Unilateral_agenesis_of_kidney
+TP53_geneTP53 -> Cessation_of_life
+Infectious_disease_of_lung -> Cessation_of_life
+Blood_Vessels -> Nitric_Oxide
+Calcium_Channel_Blockers -> Hypertensive_disease
+Neoplasm -> Hypoxia
+Corticotropin -> Hypertensive_disease
+TNF_protein_humanTNF -> Nitric_Oxide
+Neurofibrillary_degeneration_morphologic_abnormality -> Alzheimers_Disease
+Immunotherapy -> Neoplasm
+Streptozocin -> Diabetic
+Propranolol -> Hypertensive_disease
+Hydralazine -> Heart_failure
+Glucose -> Insulin_Resistance
+Exercise -> Hypoxia
+Metabolic_acidosis -> Kidney_Failure_Chronic
+Inflammation -> Spondylarthritis
+Inflammation -> Atrial_Fibrillation
+Pathogenesis -> Obesity
+Nitric_Oxide -> Growth
+Inflammation -> Chronic_disease
+Apolipoprotein_E -> Alzheimers_Disease
+Cerebrovascular_accident -> Infarction
+Coronary_Artery_Bypass_Surgery -> Kidney_Failure_Chronic
+Norepinephrine -> Arteries
+Neoplasm -> Aggressive_behavior
+Obesity -> Adolescent
+Diet -> Hyperlipidemia
+APP_gene -> Cell_Death
+Norepinephrine -> Diabetic
+Hypertrophy -> Growth
+Primary_Prevention -> Hypertensive_disease
+Chronic_Kidney_Diseases -> Cessation_of_life
+Epilepsy -> Cessation_of_life
+Fatty_deposition -> Obesity
+Cerebrovascular_accident -> Atherosclerosis
+Albuminuria -> Hypertensive_disease
+Prions -> Nerve_Degeneration
+Angiotensin_II -> ATM_geneATM
+Inflammation -> Nasal_Polyps
+Atherosclerosis -> Inflammation
+Blood_Pressure -> Cerebrovascular_accident
+Cyst -> Neoplasm
+hyperphosphorylation -> Alzheimers_Disease
+Diet -> Fatty_Liver
+Ethanol -> Cocaine
+AFP_geneAFP -> Neoplasm
+Operative_Surgical_Procedures -> Neoplasm
+Sleep -> Sleep_Apnea_Obstructive
+Mutation -> Predisposition
+Streptozocin -> Diabetic_Neuropathies
+Peptidylprolyl_Isomerase -> Cyclosporine
+Ethanol -> Death_finding
+Mutation -> Epilepsy
+ethanol -> Mus
+Dexamethasone -> Infant_Premature
+gene_therapy -> Alzheimers_Disease
+Neoplasm -> Barrett_Esophagus
+Obesity -> Body_Weight_decreased
+Bacteria -> Inflammation
+Epinephrine -> Child
+Immunologic_Adjuvants -> Inflammation
+Cerebrovascular_accident -> Hemorrhage
+AcutePhase_Proteins -> Inflammation
+Antihypertensive_therapy -> Hypertensive_disease
+Methylnitrosourea -> Neoplasm
+Sodium -> Blood_Pressure
+tumor_growth -> Neoplasm
+Immunologic_Adjuvants -> Neoplasms
+Inflammation -> Respiratory_physiology
+paired_helical_filament -> Alzheimers_Disease
+Middle_Cerebral_Artery_Occlusion -> Ischemia
+darbepoetin_alfa -> Kidney_Failure_Chronic
+BRAF_geneBRAF -> Neoplasm
+Dementia -> Cerebrovascular_accident
+Nitric_Oxide -> Cyclic_GMP
+Periodontitis -> Cardiovascular_Diseases
+Neoplasm -> Apoptosis
+Neoplasm -> Corticotropin
+Mutation -> Juvenile_Neuronal_Ceroid_Lipfuscinosis
+doxorubicin -> Oxidative_Stress
+Mutation -> Neuropathy
+Hypertensive_disease -> Cardiac_Hypertrophy
+Nitric_Oxide -> Endothelial_dysfunction
+Oxidopamine -> Norepinephrine
+Airway_Obstruction -> Cessation_of_life
+Fibrosis -> Nonalcoholic_Steatohepatitis
+34Methylenedioxyamphetamine -> Oxidative_Stress
+Secondary_prevention -> Cerebrovascular_accident
+Growth -> Obesity
+Mutation -> Alzheimers_Disease
+Cardiovascular_Diseases -> Atherosclerosis
+Hypoxia -> Cell_Death
+Obesity -> Atherosclerosis
+Antioxidants -> Hypertensive_disease
+Pharmacotherapy -> Neoplasm
+Obesity -> PreEclampsia
+Creactive_protein -> Cerebrovascular_accident
+Angiotensin_II -> Exocytosis
+Hypoxia -> Acclimatization
+CD69_protein_humanCD69 -> Inflammation
+Norepinephrine -> Depressive_disorder
+Furosemide -> Heart_failure
+Glutamates -> Cessation_of_life
+Obesity -> Fibrosis
+Mutation -> Malignant_Neoplasms
+Cardiovascular_Diseases -> Chronic_Disease
+Tachycardia_Ventricular -> Cessation_of_life
+CD69_protein_humanCD69 -> Neoplasms
+Endothelial_dysfunction -> Obesity
+Infections_Hospital -> Cessation_of_life
+Kidney_Failure_Chronic -> Hypertensive_disease
+Angiotensin_II -> Cardiovascular_Diseases
+GABPANFE2L2 -> Oxidative_Stress
+Acetate -> Hypertensive_disease
+Metabolic_syndrome -> Hypertensive_disease
+Reperfusion_Injury -> Ischemia
+Nitric_Oxide -> Antioxidants
+Alcohol_consumption -> Hypertensive_disease
+Hypnotics -> Ethanol
+Neoplasm -> Carcinoma_of_the_Large_Intestine
+Ablation -> Neoplasms
+Diet -> Malignant_neoplasm_of_breast
+Obesity -> insulin_sensitivity
+APP_gene -> Nerve_Degeneration
+Therapeutic_Intervention -> Alzheimers_Disease
+Neoplasm -> adenoma
+Chlorpyrifos -> Oxidative_Stress
+Diet -> Blood_Pressure
+Cryosurgery -> Neoplasm
+Ethanol -> Fatty_degeneration
+Pathogenesis -> Hypertensive_disease
+Glucocorticoids -> Nephrotic_Syndrome
+Inflammation -> COVID19
+Neoplasm -> Androgens
+Mutation -> Progeria
+Angiotensin_II -> Hypertrophy
+Glucocorticoids -> Insulin_Resistance
+Angioplasty_Balloon -> Hypertensive_disease
+Antidepressive_Agents -> Dementia
+Laparoscopic_adrenalectomy -> Conn_Syndrome
+adiposity -> Cardiovascular_Diseases
+Thrombus -> Cerebrovascular_accident
+followup -> Heart_failure
+Pathogenesis -> Angiotensin_II
+dexamethasone -> Apoptosis
+Inflammation -> Thyroid_associated_opthalmopathies
+Agent -> Neoplasm
+Wound_Healing -> Cessation_of_life
+Dexamethasone -> Edema
+bevacizumab -> Neoplasm
+Inflammation -> Nonalcoholic_Steatohepatitis
+Glucocorticoids -> Rheumatism
+Inflammation -> Lung_diseases
+Atrial_Fibrillation -> Hypertensive_disease
+Stress -> Insulin_Resistance
+Mutation -> Phosphotransferases
+Glycolysis -> Ischemia
+Peptide_Hydrolases -> Inflammation
+Ischemia -> Degenerative_abnormality
+Kidney_Failure_Chronic -> Glomerular_Filtration_Rate
+Growth_Factor -> Neoplasm
+Exercise -> Obesity
+Oxidative_Stress -> Infertility_Male
+streptozocin -> Hyperglycemia
+Norepinephrine -> Felis_catus
+Mutation -> Alzheimer_Disease_Early_Onset
+Thymidine_PhosphorylaseTYMP -> Neoplasm
+Hypertensive_disease -> Polymorphism_Genetic
+Combined_Modality_Therapy -> Hypertensive_disease
+Mutation -> Seizures
+Insulin_Resistance -> Diabetic
+Uric_Acid -> Hypertensive_disease
+Hereditary_Diseases -> Cessation_of_life
+fibroblast_growth_factor_21FGF21 -> Obesity
+resistinRETN -> Inflammation
+Glucocorticoids -> Cell_Death
+tau_Proteins -> Alzheimers_Disease
+Kidney_Failure_Chronic -> Metabolic_syndrome
+Obesity -> Eating
+Ethanol -> alcohol_use_disorder
+Amlodipine -> Hypertensive_disease
+pioglitazone -> Insulin_Resistance
+Mutation -> Mitochondrial_Diseases
+Ethanol -> Apoptosis
+Evaluation -> Obesity
+Insulin_Resistance -> Hyperglycemia
+Cyclosporine -> Kidney
+Mutation -> Deafness
+Mutation -> HallopeauSiemens_Disease
+Malignant_neoplasm_of_breast -> Neoplasm
+Hyperglycemia -> Inflammation
+Nitric_Oxide -> Heart
+Diet_HighFat -> Inflammation
+Cessation_of_life -> Huntington_Disease
+Neoplasm -> Histopathology
+Insulin_Resistance -> InsulinINS
+Fibrosis -> Connective_Tissue_Diseases
+Streptozocin -> Injury
+Birth -> Obesity
+PTGS2_genePTGS2 -> Neoplasm
+Streptozocin -> Rattus_norvegicus
+Kidney_Failure_Chronic -> Hyperparathyroidism_Secondary
+Hypertensive_disease -> Stroke_Acute
+Snoring -> Sleep_Apnea_Obstructive
+pimagedine -> Nitric_Oxide
+NOS1_protein_humanNOS1NANOS1 -> Nitric_Oxide
+Reperfusion_Therapy -> Cerebrovascular_accident
+Antioxidants -> Nitric_Oxide
+Detection -> Alzheimers_Disease
+Doxorubicin -> Heart_failure
+PTH_protein_humanPTH -> Kidney_Failure_Chronic
+Lipids -> Oxidative_Stress
+Mutation -> Inherited_neuropathies
+Dementia -> Down_Syndrome
+Inflammation -> Allergic_rhinitis_NOS
+Dexamethasone -> Interleukin1_beta
+Silicon_Dioxide -> Fibrosis
+inhibitors -> Hypoxia
+Obesity -> Primary_carcinoma_of_the_liver_cells
+Neoplasm -> Malignant_neoplasm_of_stomach
+Sedentary -> Obesity
+Cardiomyopathies -> Mutation
+Oxidative_Stress -> Reperfusion_Injury
+Chlorthalidone -> Hypertensive_disease
+Prognosis_bad -> Heart_failure
+Cyclosporine -> Oryctolagus_cuniculus
+Amyloidosis -> Heart_failure
+Cessation_of_life -> Coitus
+Gastroplasty -> Obesity
+Hypertension_Pulmonary -> Hypoxia
+Hypoxia -> Transcription_Genetic
+Hydrogen_Peroxide -> Cessation_of_life
+Oxidative_Stress -> Hypoxia
+Hypertrophy -> Sleep_Apnea_Obstructive
+Cerebral_Ischemia -> Inflammation
+Constriction_procedure -> Hypertrophy_Left_Ventricular
+Mutation -> Gene_Expression
+beta_catenin -> Neoplasm
+Primary_Neoplasm -> Neoplasm
+Nitric_Oxide -> Cerebrovascular_Circulation
+Endothelial_dysfunction -> Hypertensive_disease
+Neoplasm_Metastasis -> Neoplasm
+antagonists -> Heart_failure
+Mutation -> Hypokinesia
+Angioplasty -> Ischemia
+Alzheimers_Disease -> Lewy_Body_Disease
+Inflammation -> Senile_Plaques
+Cessation_of_life -> Pregnancy
+Mutation -> Muscular_Dystrophies
+VEGF_geneVEGFA -> Neoplasm
+Impaired_cognition -> Kidney_Failure_Chronic
+Cyclosporine -> Interleukin2
+Glucocorticoids -> Child
+Inflammation -> Immunity
+Fructose -> Hypertriglyceridemia
+Myocardial_Infarction -> Ischemia
+sex -> Cerebrovascular_accident
+Angiotensin_II -> Inositol_Phosphates
+Neoplasm -> Herpesvirus_4_Human
+Cyclosporine -> PGlycoprotein
+Adiponectin -> Insulin_Resistance
+TGFB1_protein_humanTGFB1 -> Fibrosis
+Seizures -> Cessation_of_life
+Diabetes_Mellitus -> Kidney_Failure_Chronic
+Angiotensin_II -> Vascular_constriction_function
+EXERCISE_INTOLERANCE -> Heart_failure
+Hypoxia -> Hypertension_Pulmonary
+Dexamethasone -> TNF_protein_humanTNF
+epinephrine -> anaphylaxis
+DNA_Sequence -> Neoplasm
+Particulate_Matter -> Inflammation
+Cardiovascular_Diseases -> Lupus_Erythematosus_Systemic
+Nitric_Oxide -> Nitric_Oxide_Synthase
+Kidney_Failure_Chronic -> Diabetes
+Hyperinsulinism -> hypoglycemia
+Aldosterone -> Mineralocorticoid_Receptor
+Nootropic_Agents -> Alzheimers_Disease
+Conn_Syndrome -> Hypertensive_disease
+Obstruction -> Cerebral_Infarction
+Mutation -> Neuromuscular_Diseases
+Glucocorticoids -> Inflammatory_Bowel_Diseases
+Nitric_Oxide -> Platelet_adhesion
+Neoplasm -> Hypertensive_disease
+Antioxidants -> Inflammation
+Oxidative_Stress -> Chronic_Obstructive_Airway_Disease
+Infection -> Cessation_of_life
+dimazine -> Neoplasm
+MicroRNAs -> Fibrosis
+Norepinephrine -> Lipolysis
+Diet -> Hypercholesterolemia
+APP_gene -> Microglia
+Compression_procedure -> Ischemia
+Ethanol -> Voluntary_Workers
+Exercise -> Hypertensive_disease
+omegaNMethylarginine -> Nitric_Oxide
+Myocardial_Infarction -> Fibrosis
+Photochemotherapy -> Neoplasms
+Left_ventricular_mass -> Hypertensive_disease
+IGA_Glomerulonephritis -> End_stage_renal_failure
+Kainic_Acid -> Cessation_of_life
+trastuzumab -> Neoplasm
+Hypertensive_disease -> Dementia_Vascular
+BIRC5_geneBIRC5 -> Neoplasm
+Nitric_Oxide -> Cessation_of_life
+Nitric_Oxide -> Myocardial_Contraction
+Diazoxide -> Hypertensive_disease
+Epinephrine -> Blood_flow
+Inflammation -> Uveitis
+Obesity -> Psoriasis
+Inflammation -> Brain_Injuries
+Norepinephrine -> Shock
+Fatty_Acids -> Obesity
+Metabolic_syndrome -> Inflammation
+Subarachnoid_Hemorrhage -> Ischemia
+Glucocorticoids -> Transcription_Genetic
+Hypertensive_disease -> Cardiovascular_event
+Epidermal_Growth_Factor_Receptor -> Neoplasm
+Evaluation -> Hypertensive_disease
+Matrix_Metalloproteinases -> Inflammation
+Mutation -> Cytokinesis_of_the_fertilized_ovum
+Nitric_Oxide -> Toxic_effect
+BARRIER -> Inflammation
+Obesity -> Homeostasis
+Pathogenesis -> Inflammation
+Neurons -> Cessation_of_life
+Mineralocorticoid_Receptor -> Aldosterone
+Alzheimers_Disease -> Parkinson_Disease
+Autophagy -> Oxidative_Stress
+BARRIER -> Neoplasms
+Interleukin10 -> Inflammation
+Inflammation -> Ankylosing_spondylitis
+Parkinson_Disease -> Alzheimers_Disease
+Anticoagulant_therapy -> Cerebrovascular_accident
+Degenerative_polyarthritis -> Obesity
+Fibrosis -> Chronic_Disease
+Hyperhomocysteinemia -> Cardiovascular_Diseases
+Peripheral_Vascular_Diseases -> Cardiovascular_Diseases
+Myopathy -> Mutation
+Hypertensive_disease -> Alzheimers_Disease
+Cessation_of_life -> Asthma
+Interferons -> Neoplasm
+Kidney_Diseases -> Lupus_Erythematosus_Systemic
+Inflammation -> AIRWAY_DISEASE
+Injury -> Cerebrovascular_accident
+Acupuncture_procedure -> Obesity
+Obesity -> Heart_failure
+Cyclosporine -> GraftvsHost_Disease
+Norepinephrine -> Entire_sympathetic_nerve
+Multiple_Organ_Failure -> Cessation_of_life
+Mutation -> Fabry_Disease
+Inflammation -> Aging
+Combined_Modality_Therapy -> Neoplasms
+Heart_failure -> Diabetes_Mellitus_NonInsulinDependent
+APP_gene -> Apoptosis
+Angiotensin_II -> Aortic_Aneurysm_Abdominal
+Myocardial_Ischemia -> Cessation_of_life
+Oral_anticoagulants -> Cerebrovascular_accident
+Neoplasm -> Surgical_margins
+Neoplasm -> receptor
+Corticotropin -> Woman
+Hypoxia -> Neoplasm
+cyclooxygenase_2 -> Nitric_Oxide
+Endothelial_dysfunction -> Pathogenesis
+Cerebrovascular_accident -> Inflammatory_Response
+Apoptosis -> Neoplasm
+Focal_Adhesion_ProteinTyrosine_Kinases -> Neoplasm
+Hypersensitivity -> Inflammation
+Excision -> Fibrosis
+Endothelial_dysfunction -> Oxidative_Stress
+Inflammation -> Atherosclerosis
+heart_rate -> Hypertensive_disease
+Hormone_Receptor -> Neoplasm
+resveratrol -> Insulin_Resistance
+Nerve_Degeneration -> Prion_Diseases
+Increased_risk -> Cerebrovascular_accident
+Diabetes_Mellitus_NonInsulinDependent -> Cessation_of_life
+Reconstructive_Surgical_Procedures -> Ischemia
+Desipramine -> Norepinephrine
+Hyperinsulinism -> Cardiovascular_Diseases
+Oxidative_Stress -> Obesity
+Mutation -> Granulomatous_Disease_Chronic
+Dementia -> Diabetes_Mellitus_NonInsulinDependent
+Neoplasm -> Malignant_neoplasm_of_lung
+Amiloride -> Sodium
+Inflammation -> Chronic_Disease
+Coronary_Arteriosclerosis -> Cardiovascular_Diseases
+Neoplasm_progression -> Neoplasm
+Diabetes -> Oxidative_Stress
+cisplatin -> Neoplasms
+Dietary_intake -> Obesity
+Risk_factor_cardiovascular -> Cardiovascular_Diseases
+NOS3_protein_humanNOS3 -> Hypertensive_disease
+Fibrosis -> Rare_Diseases
+Epinephrine -> Canis_familiaris
+Device_therapy -> Heart_failure
+Nasal_Continuous_Positive_Airway_Pressure -> Sleep_Apnea_Obstructive
+Reactive_Oxygen_Species -> Hypoxia
+Hepatitis_C_virus -> Fibrosis
+PGlycoprotein -> Neoplasm
+Obesity -> Mothers
+Mental_deterioration -> Alzheimers_Disease
+NOS2A_protein_humanNOS2 -> Nitric_Oxide
+Cardiovascular_event -> Hypertensive_disease
+Human_Papillomavirus -> Neoplasm
+Partial_nephrectomy_NOS -> Neoplasm
+Angiotensin_II -> Hemodynamics
+Chemotherapeutic_agent -> Neoplasm
+Endothelial_dysfunction -> Inflammation
+Nitric_Oxide -> Asthma
+Norepinephrine -> Epinephrine
+calcification -> Kidney_Failure_Chronic
+Hyperhomocysteinemia -> Endothelial_dysfunction
+Liver_Cirrhosis -> Cessation_of_life
+cadmium -> Oxidative_Stress
+Hypoxia -> Apoptosis
+Cardiomyopathies_Primary -> Heart_failure
+Weight_maintenance_regimen -> Obesity
+Mutation -> Diabetes_Insipidus_Nephrogenic
+Prophylactic_treatment -> Cardiovascular_Diseases
+NNdimethylarginine -> Endothelial_dysfunction
+Obesity -> Inflammatory_Response
+Streptozocin -> Alzheimers_Disease
+Chemicals -> Oxidative_Stress
+Anemia -> Heart_failure
+Rehabilitation_therapy -> Cerebrovascular_accident
+cyclooxygenase_2 -> Inflammation
+Pathogenesis -> Amyloid
+Chondrocytes -> Nitric_Oxide
+Obstruction -> Lesion
+Lesion -> Alzheimers_Disease
+Antiinflammatory_Effect -> Nitric_Oxide
+nervous_system_disorder -> Mutation
+epigallocatechin_gallate -> Oxidative_Stress
+Decompressive_incision -> Stenosis
+Assessment_procedure -> Alzheimers_Disease
+CATHEPSIN_DCTSD -> Neoplasm
+Metals -> Oxidative_Stress
+Carrageenan -> Inflammation
+Inflammation -> Pneumonia
+gammaAminobutyric_Acid -> Ethanol
+Substance -> Inflammation
+Neoplasm -> Inflammation
+Inflammation -> Rare_Diseases
+Diet -> Obesity
+Drug_resistance -> Mutation
+Vertebral_Artery_Dissection -> Cerebrovascular_accident
+aluminum_chloride -> Rattus_norvegicus
+homocysteine -> Endothelial_dysfunction
+Nerve_Degeneration -> Huntington_Disease
+Acupuncture_procedure -> Hypertensive_disease
+Diuretic_therapy -> Heart_failure
+Metabolic_syndrome -> Kidney_Failure_Chronic
+Ethanol -> Hepatotoxicity
+Sleep_Apnea_Obstructive -> Cardiovascular_Diseases
+Alzheimers_Disease -> COGNITIVE_DEFICIT
+Exercise -> Inflammation
+Mutation -> Sensorineural_Hearing_Loss
+Glucocorticoids -> Chronic_Obstructive_Airway_Disease
+Glucocorticoids -> RNA_Messenger
+FTO -> Obesity
+Zymosan -> Inflammation
+AngiotensinConverting_Enzyme_Inhibitors -> Heart_failure
+Chronic_Obstructive_Airway_Disease -> Cardiovascular_Diseases
+Pharmacological_Treatment -> Alzheimers_Disease
+Angiotensin_II -> Tyrosine_Phosphorylation
+Adriamycin -> Neoplasm
+RNA_Messenger -> Neoplasm
+Injection_procedure -> Obstruction
+inhibitors -> Cardiovascular_Diseases
+Neoplasm -> VEGF_protein_humanVEGFA
+Nephrectomy -> Hypertensive_disease
+Diet -> hypercholesterolemia
+Influenza -> Cessation_of_life
+Acetate -> Woman
+Galectin_3 -> Heart_failure
+Physical_activity -> Cardiovascular_Diseases
+Nitric_Oxide -> Injury
+Cerebral_Amyloid_Angiopathy -> Alzheimers_Disease
+Octreotide -> Neoplasm
+Aldosterone -> Adrenal_adenoma
+Depressive_disorder -> Obesity
+Neoplasm -> Lung
+Stents -> Stenosis
+Oxidative_Stress -> Cardiovascular_Diseases
+Mutation -> Degenerative_abnormality
+Relaxation -> Hypertensive_disease
+Mycobacterium_tuberculosis -> Cessation_of_life
+Obesity -> High_fat_diet_NOS
+Radioisotopes -> Neoplasm
+Glucocorticoids -> Apoptosis
+Diastolic_dysfunction -> Heart_failure
+Apolipoprotein_EAPOE -> Cholesterol
+Induction -> Neoplasm
+Glucose -> Ethanol
+Cardiovascular_Diseases -> Insulin_Resistance
+Oxidative_Stress -> Hypertensive_disease
+Epinephrine -> Hypertensive_disease
+Ethanol -> Pathogenesis
+Postoperative_Complications -> Cessation_of_life
+Sodium -> Hypertensive_disease
+Transplantation -> Ischemia
+Uric_Acid -> Kidney_Failure_Chronic
+Ethanol -> Oxidative_Stress
+Ethanol -> Lipids
+Epinephrine -> Anaphylaxis
+Interleukin8 -> Inflammation
+Mercury -> Oxidative_Stress
+Hyperinsulinism -> Glucose
+Bypass -> Ischemia
+Mutation -> Diabetes_Mellitus_NonInsulinDependent
+NOS3_protein_humanNOS3 -> Oxidative_Stress
+Autophagy -> Cessation_of_life
+Fibrosis -> Crohns_disease
+Obesity -> Fatty_Liver
+NGNitroarginine_Methyl_Ester -> Nitric_Oxide_Synthase
+Radiosurgery -> Neoplasm
+Norepinephrine -> uptake
+Inflammation -> Virus_Diseases
+imatinib -> Neoplasm
+Corticotropin -> Rattus_norvegicus
+Inflammation -> Lupus_Erythematosus_Systemic
+Hypertensive_disease -> Male_population_group
+Phentolamine -> Norepinephrine
+Androgen_ReceptorAR -> Neoplasm
+Cerebral_hemisphere_hemorrhage -> Hematoma
+Exercise_Aerobic -> Obesity
+Bradykinin -> Nitric_Oxide
+Glutamate -> Nerve_Degeneration
+Ethanol -> Phosphorylation
+Hemodiafiltration -> End_stage_renal_failure
+deoxynivalenol -> Oxidative_Stress
+Hereditary_Diseases -> Mutation
+Transplantation -> Fibrosis
+Neoplasms -> Colorectal_Carcinoma
+Coagulation_procedure -> Inflammation
+Nitric_Oxide -> Endothelium
+Mutation -> Disease_Progression
+Fibrosis -> Cardiac_function
+Focal_segmental_glomerulosclerosis -> End_stage_renal_failure
+Cyclosporine -> Mus
+Pressors -> Norepinephrine
+Oxidative_Stress -> Parkinson_Disease
+Cerebrovascular_accident -> Blood_Pressure
+Ethanol -> Inflammation
+Endocannabinoids -> Obesity
+Inflammatory_Bowel_Diseases -> Inflammation
+carvedilol -> Hypertensive_disease
+gene_therapy -> Neoplasm
+Operative_Surgical_Procedures -> Sleep_Apnea_Obstructive
+Lesion -> Cerebrovascular_accident
+Diet -> Cardiovascular_Diseases
+Glucose -> Hypertensive_disease
+chemokine -> Neoplasm
+Infection -> Fibrosis
+Recombinant_Erythropoietin -> Kidney_Failure_Chronic
+Body_mass_index -> Sleep_Apnea_Obstructive
+Inflammation -> Neoplasm_progression
+Oxidative_Stress -> Metabolic_syndrome
+Acetylcholine -> Nitric_Oxide
+Neoplasm -> Cell_Proliferation
+Genomic_Instability -> Neoplasm
+Glucocorticoids -> Obesity
+Sodium -> Dialysis_Solutions
+AngiotensinogenAGT -> Hypertensive_disease
+NOS3_protein_humanNOS3 -> Inflammation
+Metal_stent -> Obstruction
+Nicotinic_Receptors -> Alzheimers_Disease
+Nitric_Oxide -> PreEclampsia
+Diet -> Hypertensive_disease
+Endothelial_dysfunction -> Kidney_Failure_Chronic
+Mutation -> triplet_codonamino_acid_adaptor_activity
+Nerve_Degeneration -> Ataxia_Telangiectasia
+Mutation -> Hereditary_hemorrhagic_telangiectasia
+Coronary_Artery_Bypass_Surgery -> Cerebrovascular_accident
+Ethanol -> Neurons
+Neoplasm -> Ectopic_ACTHPOMC
+Chronic_inflammation -> Cardiovascular_Diseases
+Neoplasm -> Immune_response
+Cerebrovascular_accident -> Dementia
+3nitrotyrosine -> Oxidative_Stress
+Inflammation -> Homeostasis
+Oxidative_Stress -> Hepatotoxicity
+Neurogenesis -> Alzheimers_Disease
+Glucocorticoid_Receptor -> Glucocorticoids
+Inflammation -> Crohns_disease
+Heart_failure -> Hospitalization
+Mutation -> Peripheral_Neuropathy
+Amyloid_betaProtein_Precursor -> Amyloid
+Stress -> Obesity
+Arachidonic_Acid -> Inflammation
+Waist_circumference -> Cardiovascular_Diseases
+Inflammation -> Chronic_inflammatory_disorder
+Cessation_of_life -> Epilepsy
+Cerebrovascular_accident -> Lesion
+Hepatectomy -> Neoplasm
+Cardiovascular_Diseases -> Vitamin_D_Deficiency
+Primary_Health_Care -> Obesity
+Diabetes -> Cessation_of_life
+Angiotensin_II -> Rats_Inbred_SHR
+Mutation -> Neoplasm
+Sodium -> ATP_phosphohydrolase
+Systemic_arterial_pressure -> Cardiovascular_Diseases
+Adrenergic_alphaAntagonists -> Hypertensive_disease
+Secondary_Neoplasm -> Neoplasms
+Cachexia -> Cessation_of_life
+Cisplatin -> Neoplasm
+Dissection_of_aorta -> Cessation_of_life
+Study_models -> Parkinson_Disease
+Cessation_of_life -> Reactive_Oxygen_Species
+Norepinephrine -> Phosphatidylinositols
+Myocardial_Ischemia -> Ischemia
+Oxidative_Stress -> Nitric_Oxide
+Obesity -> Malignant_neoplasm_of_breast
+Reserpine -> Norepinephrine
+candesartan -> Heart_failure
+Inflammation -> nervous_system_disorder
+Angiotensin_II -> Hypertensive
+Obstruction -> Chronic_Obstructive_Airway_Disease
+Hypoxia -> Hypertensive_disease
+Obesity -> Blood_Pressure
+Ethanol -> Heart
+Inflammation -> Metabolic_Diseases
+8Hydroxy2Deoxyguanosine -> Oxidative_Stress
+Exercise -> Kidney_Failure_Chronic
+Degenerative_polyarthritis -> Inflammation
+Obesity -> Offspring
+Lung_diseases -> Cessation_of_life
+Turpentine -> Inflammation
+Repeat_Surgery -> Obstruction
+Cardiac_Hypertrophy -> Hypertensive_disease
+Escherichia_coli -> Inflammation
+intervention_program -> Obesity
+Tacrine -> Alzheimers_Disease
+Obstruction -> Blood_flow
+Neoplasm -> Malignant_neoplasm_of_prostate
+HIV_Infections -> Cessation_of_life
+adenoma -> Neoplasm
+Neoplasm -> Woman
+Mutation -> Cerebellar_Ataxia
+Diet -> Metabolic_syndrome
+Cyclosporine -> Proteinuria
+Obesity -> Dementia
+imiquimod -> Inflammation
+Ouabain -> Rattus_norvegicus
+Nitric_Oxide -> Arginine
+Injury -> Obstruction
+Operative_Surgical_Procedures -> Cessation_of_life
+Ischemia -> Pathogenesis
+Cessation_of_life -> Malignant_Neoplasms
+Carbon_Tetrachloride -> Oxidative_Stress
+Ischemia -> Oxidative_Stress
+Oxidative_Stress -> Diabetes
+Chronic_Disease -> Cessation_of_life
+CD34_geneCD34 -> Neoplasm
+Implantation_procedure -> Heart_failure
+Prognosis_bad -> Hypoxia
+High_Density_Lipoproteins -> Cardiovascular_Diseases
+Angiotensin_II -> Fibroblasts
+Acetate -> Rattus_norvegicus
+Mutation -> Retinal_Degeneration
+AR_geneAR -> Neoplasm
+Photothermal_Therapy -> Neoplasms
+Reactive_Oxygen_Species -> Cardiovascular_Diseases
+Mutation -> Peroxisomal_Disorders
+Screening_Tests -> Conn_Syndrome
+Diabetes_Gestational -> Cardiovascular_Diseases
+Flavonoids -> Oxidative_Stress
+cardiac_arrhythmia -> Cessation_of_life
+Noncommunicable_Diseases -> Cessation_of_life
+Neoplasm -> Pagets_Disease
+telmisartan -> Hypertensive_disease
+Mutation -> Familial_hypophosphatemic_bone_disease
+arsenite -> Oxidative_Stress
+gammasecretase -> APP_gene
+Sex_Characteristics -> Alzheimers_Disease
+Impaired_cognition -> Alzheimers_Disease
+MicroRNAs -> Insulin_Resistance
+inhibitors -> Neoplasms
+Embolization_Therapeutic -> Cerebrovascular_accident
+olmesartan -> Hypertensive_disease
+caspase -> Cessation_of_life
+Fertility -> Obesity
+Inflammation -> Creactive_protein
+Coronary_Arteriosclerosis -> Cessation_of_life
+APP_gene -> Oxidative_Stress
+Adrenergic_Receptor -> Epinephrine
+Epinephrine -> cardiac_arrhythmia
+Oxidative_Stress -> Inflammation
+aluminum_chloride -> Alzheimers_Disease
+Chagas_Disease -> Heart_failure
+Angiotensin_II -> Atherosclerosis
+Inflammation -> Fatty_Streak_Arterial
+Oxygen -> Neoplasm
+Corticotropin -> Steroid_biosynthesis
+Malignant_neoplasm_of_prostate -> Neoplasm
+Nitric_Oxide -> Reactive_Oxygen_Species
+Biological_Markers -> Alzheimers_Disease
+Glucocorticoids -> Hypertensive_disease
+Alzheimers_Disease -> Senile_Plaques
+CD69_protein_humanCD69 -> Alzheimers_Disease
+Fibrosis -> Scleroderma
+Mutation -> Gaucher_Disease
+Glucose -> Oxidative_Stress
+Pharmacotherapy -> Cessation_of_life
+Angiotensin_II -> Fibrosis
+Thymidylate_Synthase -> Neoplasm
+Glucocorticoids -> Dexamethasone
+Aldosterone -> Hypertensive
+Somatic_mutation -> Neoplasm
+Cerebrovascular_accident -> Neural_Development
+Mandibular_Advancement_Devices -> Sleep_Apnea_Obstructive
+Stress -> Hypertensive_disease
+Inflammation -> Injury_wounds
+Hypertrophy -> Hypertrophic_Cardiomyopathy
+Baroreflex -> Hypertensive_disease
+Percutaneous_coronary_intervention -> Obstruction
+Primary_Health_Care -> Hypertensive_disease
+bleomycin -> Fibrosis
+Alzheimers_Disease -> Elderly
+Diet -> Hyperinsulinism
+Diet -> Diabetes
+Antiplatelet_therapy -> Cardiovascular_Diseases
+Cessation_of_life -> End_stage_renal_failure
+Adrenal_Cortex_Hormones -> Inflammation
+streptozocin -> diabetic
+Angiogenesis -> Neoplasm
+Nitric_Oxide -> Malignant_Neoplasms
+Digoxin -> Heart_failure
+Cessation_of_life -> Heart_failure
+Fibronectins -> Neoplasm
+Thrombosis -> Ischemia
+DELETION -> Neoplasm
+Inflammation -> Septicemia
+Neoplasm -> Carcinoma
+Ethanol -> Woman
+Hypoxia -> Pathogenesis
+Glucose -> Inflammation
+SMUG1 -> Neoplasm
+Cardiovascular_event -> Kidney_Failure_Chronic
+Hyperphosphatemia -> Kidney_Failure_Chronic
+Endothelial_dysfunction -> Coronary_Arteriosclerosis
+Ability -> Cerebrovascular_accident
+Hypoxia -> Oxidative_Stress
+Isoproterenol -> Fibrosis
+Glycosylation_End_Products_Advanced -> Inflammation
+RNA_Small_Interfering -> Neoplasm
+Diet -> Nonalcoholic_fatty_liver
+Delusions -> Alzheimers_Disease
+Diet -> Inflammation
+Ascorbic_Acid -> Oxidative_Stress
+Debris -> Inflammation
+Estrogen_Receptor_alpha -> Neoplasm
+NADPH_Oxidase -> Oxidative_Stress
+Renal_Cell_Carcinoma -> Neoplasm
+Ethanol -> House_mice
+Platinum -> Neoplasm
+Hypertensive_disease -> Diabetes_Mellitus_NonInsulinDependent
+Amiodarone -> Heart_failure
+Malignant_Neoplasms -> Cessation_of_life
+Nonalcoholic_Fatty_Liver_Disease -> Obesity
+Obesity -> Colorectal_Carcinoma
+Neurodegenerative_Disorders -> Dementia
+Ultrasonography -> Neoplasm
+Glucocorticoids -> Polymyalgia_Rheumatica
+Aldosterone -> sodium_ion_transport
+Ischemic_stroke -> Inflammation
+Kidney_Transplantation -> End_stage_renal_failure
+Transplantation -> End_stage_renal_failure
+ropivacaine -> Obstruction
+Signal_Transduction_Pathways -> Inflammation
+Hormone_replacement_therapy -> Cardiovascular_Diseases
+Hypertensive_disease -> Diabetes_Mellitus_InsulinDependent
+Inflammation -> Insulin_Resistance
+Dexamethasone -> Postoperative_Nausea_and_Vomiting
+Amyloid -> Cell_Death
+Ethanol -> Injury_to_liver_NOS
+Glucocorticoids -> receptor
+Reactive_Oxygen_Species -> Nitric_Oxide
+Neoplasm -> Brain
+Hypertensive_disease -> Risk_factor_cardiovascular
+Diet -> Energy_Balance
+receptor -> Glucocorticoids
+Aldosterone -> Fibrosis
+Neoplasm -> Estrogens
+Inflammation -> Crohn_Disease
+Cessation_of_life -> Pancreatitis
+3Iodobenzylguanidine -> Neoplasm
+Hypoxia -> Inflammation
+Cardiovascular_Diseases -> Disability_NOS
+Inflammation -> Rheumatism
+Monoclonal_Antibodies -> Neoplasm
+Impaired_cognition -> Cerebrovascular_accident
+Gender -> Obesity
+Adrenergic_Antagonists -> Hypertensive_disease
+Alzheimers_Disease -> Aging
+Minerals -> Kidney_Failure_Chronic
+Diabetes_Mellitus -> Cerebrovascular_accident
+COGNITIVE_DEFICIT -> Alzheimers_Disease
+Estrogens -> Cardiovascular_Diseases
+Prognosis_bad -> Obesity
+Ethanol -> Rodent
+Endothelin -> Heart_failure
+Inflammation -> Spinal_Cord_Injuries
+Status_Epilepticus -> Cessation_of_life
+Inflammation -> Cell_Death
+Hypoxia -> Autophagy
+Adrenergic_Receptor -> Heart_failure
+Cyclosporine -> Autoimmune_Diseases
+Nitric_Oxide -> Heart_failure
+CD69_protein_humanCD69 -> Cerebrovascular_accident
+Nephrectomy -> Kidney_Failure_Chronic
+Oxidative_Stress -> Metabolism
+InsulinLike_Growth_Factor_I -> Obesity
+Ligation -> Hypertrophy
+doxorubicin -> Heart_failure
+Constriction_procedure -> Mus
+Cyclosporine -> Toxic_effect
+Mutation -> Protein_Structure
+leptin_receptorLEPR -> Obesity
+Hypertrophy -> Cardiomyopathies
+Norepinephrine -> Blood_Pressure
+Nitric_Oxide -> Lipopolysaccharides
+Equilibrium -> Cerebrovascular_accident
+Supplementation -> Insulin_Resistance
+Sodium_Chloride -> Blood_Pressure
+Cardiovascular_Diseases -> Chronic_Obstructive_Airway_Disease
+gammasecretase -> Alzheimers_Disease
+Inflammation -> Colitis
+hypoglycemia -> Cessation_of_life
+Hypertrophy -> Heart_failure
+Obesity -> Negative
+Obstruction -> Hypertensive_disease
+Pain -> Obesity
+Oxidative_Stress -> Kidney_Failure_Chronic
+Nitric_Oxide -> Superoxides
+Norepinephrine -> Tension
+Cessation_of_life -> Myocardial_Infarction
+Metabolism -> Alzheimers_Disease
+Ethanol -> Locomotion
+Vaccines -> Alzheimers_Disease
+Kidney_Failure_Chronic -> Cardiovascular_event
+Stimulant -> Ethanol
+TNF_protein_humanTNF -> Insulin_Resistance
+Obstruction -> Hydronephrosis
+Parkinsonian_Disorders -> Mutation
+Arsenic -> Oxidative_Stress
+Streptozocin -> Rats_SpragueDawley
+Ischemia -> Diabetic
+Ischemia -> Cessation_of_life
+Creactive_protein -> Oxidative_Stress
+Antioxidants -> Alzheimers_Disease
+Hypertensive_disease -> Systemic_arterial_pressure
+Nitric_Oxide -> Vasodilation_disorder
+Primary_carcinoma_of_the_liver_cells -> Fibrosis
+Fibrosis -> Lesion
+Glucocorticoids -> Inflammation
+Streptozocin -> Diabetes_Mellitus_InsulinDependent
+Adenine -> Kidney_Failure_Chronic
+Operation_on_stomach -> Obesity
+angiotensin_II -> Hypertensive_disease
+Acute_myocardial_infarction -> Ischemia
+Amyloid -> Nerve_Degeneration
+Nonalcoholic_Fatty_Liver_Disease -> Cardiovascular_Diseases
+metformin -> Insulin_Resistance
+Ischemia -> Middle_Cerebral_Artery_Occlusion
+Insulin_Resistance -> Fatty_Liver
+Glucocorticoids -> Muscular_Atrophy
+Continuous_Positive_Airway_Pressure -> Hypertensive_disease
+Increased_risk -> Obesity
+Oxidative_Stress -> Cell_Survival
+Diltiazem -> Hypertensive_disease
+Inflammation -> Child
+cetuximab -> Neoplasm
+Stress -> Inflammation
+Mutation -> Periodic_syndrome
+Diet -> Metabolism
+Amino_Acids_BranchedChain -> Insulin_Resistance
+Inflammation -> Wounds_and_Injuries
+Obstruction -> Accelerated_atrioventricular_conduction
+Physostigmine -> Alzheimers_Disease
+Banding_procedure -> Cardiac_Hypertrophy
+Diabetes_Mellitus_NonInsulinDependent -> Heart_failure
+Cell_Therapy -> Heart_failure
+Cerebrovascular_Disorders -> Alzheimers_Disease
+Neural_Development -> Alzheimers_Disease
+Angiotensin_II -> Homeostasis
+Pathogenesis -> Alzheimers_Disease
+cytokine -> Cessation_of_life
+PIK3CA_genePIK3CA -> Neoplasm
+Parathyroidectomy -> Kidney_Failure_Chronic
+Right_ventricular_failure -> Cessation_of_life
+Angioplasty -> Obstruction
+Memantine -> Dementia
+Inflammation -> Inflammatory_Bowel_Diseases
+Inflammation -> Nerve_Degeneration
+Mutation -> Growth
+Cyclosporine -> Gingival_Overgrowth
+Ethanol -> Injury
+Atypical_antipsychotic -> Dementia
+Myocardial_Infarction -> Obstruction
+Gender -> Cardiovascular_Diseases
+Diet -> Nonalcoholic_Steatohepatitis
+Ethanol -> Rattus_norvegicus
+Vitamin_D -> Cardiovascular_Diseases
+Thiazide_Diuretics -> Hypertensive_disease
+Alzheimers_Disease -> Mutation
+Acetate -> Water
+Single_Nucleotide_Polymorphism -> Insulin_Resistance
+Gender -> Hypertensive_disease
+Sodium -> Liquid_ammonia
+Cerebrovascular_accident -> Ischemic_stroke
+DNA -> Mutation
+Inflammation -> Lesion
+Ethanol -> gammaAminobutyric_Acid
+Operative_Surgical_Procedures -> Fibrosis
+Ethanol -> Sodium_Chloride
+Nitric_Oxide -> Platelet_aggregation
+Dissection -> Obstruction
+Diet -> Malignant_neoplasm_of_prostate
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Heart_failure
+Cadmium -> Oxidative_Stress
+Cardiovascular_Diseases -> Obesity
+Neoplasm -> Brain_Stem
+Mutation -> Disorder_of_artery
+Polycystic_Ovary_Syndrome -> Obesity
+antagonists -> Cardiovascular_Diseases
+Angioplasty_Balloon -> Aortic_coarctation
+Streptozocin -> Rats_Wistar
+Compression_procedure -> Obstruction
+Dietary_Modification -> Obesity
+Mutation -> Sickle_Cell_Anemia
+MAPT -> Nerve_Degeneration
+MAPT -> Dementia
+Allelic_Imbalance -> Neoplasm
+Dexamethasone -> Infant_Newborn
+American_College_of_CardiologyAmerican_Heart_Association_Lesion_Complexity_Score_C -> Obesity
+Senile_Plaques -> Alzheimers_Disease
+Respiratory_Insufficiency -> Cessation_of_life
+Apoptosis -> Cessation_of_life
+Norepinephrine -> Septic_Shock
+Ethanol -> Acetaldehyde
+Injury -> Hypertensive_disease
+Mutation -> DominantNegative_Mutation
+Solvents -> Salts
+Oxidative_Stress -> Energy_Metabolism
+Mutation -> Autosomal_Recessive_Polycystic_Kidney_Disease
+Ethanol -> NMethylDAspartate_Receptors
+Endoscopic_dilatation -> Stenosis
+Endothelial_dysfunction -> Cardiovascular_event
+Diet_HighFat -> Insulin_Resistance
+Injection_procedure -> Inflammation
+Adipose_tissue -> Insulin_Resistance
+Xenograft_Model -> Neoplasm
+Congestion -> Heart_failure
+Angiotensin_II -> MitogenActivated_Protein_Kinases
+Isoproterenol -> Heart_failure
+Apolipoprotein_EAPOE -> Atherosclerosis
+Transjugular_intrahepatic_portosystemic_shunt_procedure -> Fibrosis
+Cerebrovascular_accident -> MOTOR_DEFICIT
+Cerebrovascular_accident -> Cardiovascular_Diseases
+Obesity -> Postoperative_Complications
+Ethanol -> Lipid_Peroxidation
+Chemoembolisation -> Neoplasm
+Aldosterone -> Homeostasis
+Epithelial_Cells -> Nitric_Oxide
+Corticotropin -> Cushing_Syndrome
+Hypertensive_disease -> Adult
+Photosensitizing_Agents -> Neoplasms
+Excision -> Obstruction
+Congenital_Abnormality -> Mutation
+Glucocorticoids -> Immune_response
+Cerebrovascular_accident -> Hypertensive_disease
+Ethanol -> Injury_of_stomach
+Limb_Salvage -> Ischemia
+Mutation -> Encephalopathies
+Nitric_Oxide_Synthase_Type_I -> Nitric_Oxide
+Increased_risk -> Hypertensive_disease
+Glucocorticoids -> biological_adaptation_to_stress
+Mutation -> Immunologic_Deficiency_Syndromes
+Vascular_Endothelial_Growth_Factor_C -> Neoplasm
+trimethyltin -> Nerve_Degeneration
+Kidney_Failure_Chronic -> Cerebrovascular_accident
+Mutation -> Embryonic_Development
+Amputation -> Ischemia
+eplerenone -> Aldosterone
+Neoplasm -> Renal_Cell_Carcinoma
+Cardiovascular_morbidity -> Sleep_Apnea_Obstructive
+Dopamine -> Ethanol
+Alcohol_consumption -> Cerebrovascular_accident
+Hemodialysis -> End_stage_renal_failure
+PreEclampsia -> Hypertensive_disease
+malondialdehyde -> Oxidative_Stress
+Vitamin_D_Deficiency -> Cardiovascular_Diseases
+Hypoxia -> Sleep_Apnea_Syndromes
+Anticoagulants -> Cerebrovascular_accident
+Heart_failure -> Cessation_of_life
+Neoplasm -> Organ
+Neoplasm -> Lymphoma
+SodiumGlucose_Transporter_2_Inhibitors -> Heart_failure
+Fibrosis -> Fatty_degeneration
+Diet -> Weight_Gain
+Neoplasm -> Neoplasm_progression
+Endothelium -> Nitric_Oxide
+irbesartan -> Hypertensive_disease
+Enalapril -> Hypertensive_disease
+Treatment_Protocols -> Heart_failure
+Chemotherapy_Adjuvant -> Neoplasm
+Norepinephrine -> Catecholamines
+Insulin_Resistance -> Diabetes_Mellitus_InsulinDependent
+Insulin_Resistance -> Adiponectin
+Obstruction -> Atrial_Fibrillation
+Angiotensin_II -> Mean_blood_pressure
+Angiotensin_II -> Renal_function
+Diet -> Energy_Metabolism
+Mutagens -> Mutation
+Reconstructive_Surgical_Procedures -> Obstruction
+Inflammation -> Reperfusion_Injury
+Oxidative_Stress -> Aging
+Epinephrine -> Rattus_norvegicus
+Cerebral_hemisphere_hemorrhage -> Edema
+Atrial_Fibrillation -> Cerebrovascular_accident
+Embolism -> Ischemia
+Adriamycin -> Kidney_Diseases
+Ethanol -> Females
+Obesity -> Cardiovascular_Diseases
+Insulin_Resistance -> Risk_factor_cardiovascular
+Exercise -> Alzheimers_Disease
+Polycystic_Ovary_Syndrome -> Cardiovascular_Diseases
+Polyunsaturated_Fatty_Acids -> Inflammation
+Embolization_Therapeutic -> Neoplasm
+Ischemia -> Injury
+Aspiration_Pneumonia -> Cessation_of_life
+High_Density_Lipoprotein_Cholesterol -> Cardiovascular_Diseases
+Cardiovascular_Diseases -> Hypertensive_disease
+Radiotherapy_IntensityModulated -> Neoplasm
+Norepinephrine -> Blood_flow
+resveratrol -> Oxidative_Stress
+Methotrexate -> Neoplasm
+Glucocorticoids -> Leucine_Zippers
+Rett_Syndrome -> Mutation
+Energy_Metabolism -> Obesity
+Liver_diseases -> Fibrosis
+isoproterenol -> Cardiac_Hypertrophy
+Hypoxia -> HypoxiaInducible_Factor_1
+Chlorides -> Sodium
+Oxygen -> Oxidative_Stress
+Telomerase -> Neoplasm
+Evaluation -> Alzheimers_Disease
+Epinephrine -> Cyclic_AMP
+Ceramides -> Cessation_of_life
+Pagets_Disease -> Neoplasm
+Oxidative_Stress -> Chronic_Disease
+Obesity -> Stress
+Cessation_of_life -> Diabetes_Mellitus_InsulinDependent
+American_College_of_CardiologyAmerican_Heart_Association_Lesion_Complexity_Score_C -> Hypertensive_disease
+Cardiac_Output -> Heart_failure
+Cholinesterase_Inhibitors -> Alzheimers_Disease
+Histamine -> Inflammation
+Tissue_damage -> Inflammation
+Study_models -> Ischemia
+Nitric_Oxide -> Blood_Pressure
+Phosphorylation -> Alzheimers_Disease
+Pharyngoplasty -> Sleep_Apnea_Obstructive
+Induction -> Cessation_of_life
+Neoplasm -> cytokine
+Injury -> Oxidative_Stress
+Amyloid -> Apoptosis
+Pathologic_Processes -> Alzheimers_Disease
+Cardiac_Tamponade -> Cessation_of_life
+Tumor_Necrosis_Factors -> Inflammation
+Inflammation -> Chronic_Obstructive_Airway_Disease
+carrageenan -> Inflammation
+Ethanol -> Dopamine
+MicroRNAs -> Obesity
+Nitric_Oxide -> Angiogenesis
+Inflammation -> chemokine
+Creatinine -> Kidney_Diseases
+Diabetes -> End_stage_renal_failure
+APP_protein_human -> Pathogenesis
+Dexamethasone -> Control_Groups
+Vascular_occlusion -> Cerebrovascular_accident
+Breast_Feeding -> Obesity
+Endothelin1 -> Hypertensive_disease
+Diet -> Aging
+receptor_for_advanced_glycation_endproducts -> Inflammation
+Glucose -> Sodium_Chloride
+Ethanol -> Reactive_Oxygen_Species
+Mutation -> Mismatch_Repair
+Diet -> Reproduction
+Hospital_admission -> Heart_failure
+Oxidopamine -> Oxidative_Stress
+Diabetes -> Heart_failure
+Antibodies -> Inflammation
+Cardiovascular_Diseases -> Metabolic_syndrome
+cobaltous_chloride -> Hypoxia
+Ischemia -> Infarction
+Screening_procedure -> Cardiovascular_Diseases
+Dexamethasone -> Vomiting
+Glucocorticoids -> Rodent
+Aminoterminal_probrain_natriuretic_peptide -> Heart_failure
+Norepinephrine -> CA2
+Mutation -> Cell_division
+Fibrosis -> Wound_Healing
+Creatinine -> Kidney_Failure_Chronic
+Kidney_Diseases -> Hypertensive_disease
+Dementia -> Depressive_disorder
+IMPACT_gene -> Heart_failure
+Prostaglandins -> Nitric_Oxide
+Epinephrine -> Norepinephrine
+Septicemia -> Cessation_of_life
+Obstruction -> Excessive_tearing
+Vascular_Endothelial_Cells -> Nitric_Oxide
+Malignant_Neoplasms -> Mutation
+Cardiac_Arrhythmia -> Cessation_of_life
+Cessation_of_life -> Childbirth
+Rare_Diseases -> Cessation_of_life
+Inflammation -> Apoptosis
+Wounds_and_Injuries -> Obstruction
+KIT -> Neoplasm
+Dexamethasone -> Glucocorticoids
+Cyclosporine -> Aplastic_Anemia
+Injury -> Inflammation
+Lipopolysaccharides -> Endothelial_dysfunction
+Diet -> Chronic_Disease
+Hypertrophy -> Lesion
+Hypoxia -> Injury
+Cerebrovascular_accident -> Diabetes
+Epinephrine -> Infant
+Mutation -> Degenerative_disorder
+Fibrosis -> Obesity
+Immunologic_Adjuvants -> Neoplasm
+Deep_Brain_Stimulation -> Alzheimers_Disease
+Radicals_chemistry -> Neoplasm
+Operative_Surgical_Procedures -> End_stage_renal_failure
+Hypertensive_disease -> Impaired_cognition
+Norepinephrine -> Canis_familiaris
+Ethanol -> Malignant_Neoplasms
+Ozone -> Inflammation
+Single_Nucleotide_Polymorphism -> Obstruction
+Nitric_Oxide -> Smooth_muscle_tissue
+Neoplasms -> COVID19
+Operative_Surgical_Procedures -> Heart_failure
+Mutation -> Primary_immune_deficiency_disorder
+Aortic_Valve_Stenosis -> Heart_failure
+Acquired_Immunodeficiency_Syndrome -> Cessation_of_life
+Mutation -> Huntington_Disease
+Transplantation -> Obstruction
+Exercise -> Cerebrovascular_accident
+AngiotensinConverting_Enzyme_Inhibitors -> Cardiovascular_Diseases
+Cerebrovascular_accident -> Inflammation
+Recanalization -> Cerebrovascular_accident
+11betaHydroxysteroid_Dehydrogenases -> Glucocorticoids
+Ethanol -> Water
+Recombinant_Interferongamma -> Nitric_Oxide
+Increased_risk -> Inflammation
+cytokine -> Fibrosis
+Hypertensive_disease -> Normal_blood_pressure
+Neoplasm -> Ovary
+Inflammation -> Wound_Healing
+Cardiovascular_Diseases -> Pathogenesis
+Bypass -> Obstruction
+Embolism_Paradoxical -> Cerebrovascular_accident
+Premature_Birth -> Cessation_of_life
+cardiac_arrhythmia -> Heart_failure
+dexamethasone -> Refractory_Plasma_Cell_Neoplasm
+Cardiovascular_Diseases -> Oxidative_Stress
+Low_Birth_Weights -> Hypertensive_disease
+Liver_Failure -> Cessation_of_life
+Renal_Replacement_Therapy -> End_stage_renal_failure
+Excision -> Obesity
+Mammary_Neoplasms -> Neoplasm
+Cerebrovascular_accident -> Atrial_Fibrillation
+Cisplatin -> Cessation_of_life
+Evaluation -> Cerebrovascular_accident
+Atrial_Natriuretic_Factor -> Aldosterone
+Chemokine_CC_Motif_Ligand_4CCL4 -> Fibrosis
+Immunoregulation -> Inflammation
+Glucocorticoids -> Brain
+Mutation -> Autoimmune_Diseases
+Measles -> Cessation_of_life
+Prostaglandins -> Inflammation
+Mutation -> Xlinked_agammaglobulinemia
+DSP_4 -> Norepinephrine
+Hypertensive_disease -> Smoker
+Obesity -> Diabetes
+Obesity -> Hyperinsulinism
+Aldosterone -> Sodium
+Inflammation -> Obesity
+Ablation -> Neoplasm
+Retroviridae -> Neoplasm
+Nitric_Oxide_Synthase -> Nitric_Oxide
+Doxazosin -> Hypertensive_disease
+Pharmacotherapy -> Heart_failure
+Antineoplastic_Agents -> Neoplasm
+Mutation -> Pregnancy
+Dexamethasone -> Insulin_Resistance
+Prions -> Alzheimers_Disease
+Norepinephrine -> depolarization
+Dementia -> Caregiver
+Acupuncture_procedure -> Alzheimers_Disease
+pleiotropism -> Mutation
+K_ATPase -> Ouabain
+Hypertensive_disease -> Endothelial_dysfunction
+Cardiovascular_Diseases -> Chronic_Kidney_Diseases
+Nitric_Oxide -> Septic_Shock
+Feeding_behaviors -> Obesity
+Long_QT_Syndrome -> Mutation
+Glucocorticoids -> Rattus_norvegicus
+MicroRNAs -> Hypertensive_disease
+Neuroglia -> Nitric_Oxide
+Mutation -> Cockayne_Syndrome
+Alzheimers_Disease -> gene_polymorphism
+Mutation -> Myopathies_Nemaline
+Cardiovascular_Diseases -> Nonalcoholic_fatty_liver
+Cyclosporine -> TLymphocyte
+Myocardial_Infarction -> Hypertensive_disease
+Cardiovascular_Diseases -> Inflammation
+COVID19 -> Cessation_of_life
+Autoimmune_Diseases -> Inflammation
+End_stage_renal_failure -> Cessation_of_life
+Vasodilation -> Nitric_Oxide
+Cardiac_resynchronisation_therapy -> Heart_failure
+Ethanol -> cytotoxicity
+Neoplasm -> Bladder
+Reconstructive_Surgical_Procedures -> Obesity
+Nitric_Oxide -> Signal_Transduction
+Arginine -> Nitric_Oxide
+Arthroplasty_Replacement_Knee -> Obesity
+Food -> Obesity
+Free_Radicals -> Oxidative_Stress
+Sleep -> Obesity
+MAPT -> Tauopathies
+Palliative_Care -> Heart_failure
+Streptozocin -> Impaired_cognition
+Acute_respiratory_infection_NOS -> Cessation_of_life
+Mutation -> Epidermolysis_Bullosa_Dystrophica
+Nitric_Oxide -> Hypoxia
+Iron -> Oxidative_Stress
+Neuroprotection -> Alzheimers_Disease
+Kidney_Diseases -> Pathogenesis
+Hypertensive_disease -> Proteinuria
+Obesity -> Atrial_Fibrillation
+Constriction_procedure -> Cardiac_Hypertrophy
+Carbohydrates -> Obesity
+Dexamethasone -> Cell_Death
+Chronic_Kidney_Diseases -> Cardiovascular_Diseases
+Receptor_Angiotensin_II -> Angiotensin_II
+Inflammation -> Acute_Lung_Injury
+Supplementation -> Obesity
+Obesity -> Chronic_disease
+ethanol -> water
+Agent -> Heart_failure
+Evaluation_procedure -> Alzheimers_Disease
+gefitinib -> Neoplasm
+Moyamoya_Disease -> Cerebrovascular_accident
+Phosphotransferases -> MAPT
+Streptozocin -> Mus
+Obesity -> Energy_Balance
+Fibrosis -> Hypertensive_disease
+Mutation -> CharcotMarieTooth_Disease
+Cerebrovascular_accident -> Urinary_Incontinence
+Implants -> Obstruction
+Hypertensive_disease -> Dyslipidemias
+Sodium_Chloride -> Growth
+Kidney_Failure -> Multiple_Myeloma
+Norepinephrine -> Hypertrophy
+Angiotensin_I -> Angiotensin_II
+Renal_fibrosis -> Kidney_Failure_Chronic
+Ethanol -> Gene_Expression
+Kidney_Failure_Chronic -> Anemia
+Gastroesophageal_reflux_disease -> Obesity
+RPE65UVRAGTP63CKAP4 -> Neoplasm
+Cyclosporine -> Psoriasis
+Nitric_Oxide -> Motility
+Injury -> Kidney_Diseases
+infliximab -> Inflammation
+Neoplasm -> Mucins
+Cerebrovascular_accident -> Aphasia
+Reperfusion_Injury -> Inflammation
+Pathogenicity -> Alzheimers_Disease
+Mutation -> Ataxia_Telangiectasia
+Adenocarcinoma -> Neoplasm
+Chromosomal_Instability -> Neoplasm
+stem_cell_therapy -> Heart_failure
+Nerve_Degeneration -> Dementia
+Accumulation -> Obesity
+Aldosterone -> Blood_Pressure
+Arterial_Stiffness -> Cardiovascular_Diseases
+CRYGCCRYGEP -> Fibrosis
+Oxidative_Stress -> Age_related_macular_degeneration
+Salts -> Growth
+Collagen -> Neoplasm
+Ethanol -> Pancreatitis
+Pancreatitis -> Cessation_of_life
+Insulin -> Obesity
+receptor -> Obesity
+Iron -> Inflammation
+Injury -> Kidney_Failure_Chronic
+TRANSCRIPTION_FACTOR -> Hypoxia
+Obesity -> Adipose_tissue
+Kidney_Diseases -> Kidney_Failure
+Corticotropin -> Infantile_spasms
+Kidney_Failure_Chronic -> Diabetes_Mellitus_NonInsulinDependent
+Inflammation -> Mental_disorders
+Placebos -> Heart_failure
+APP_gene -> Alzheimers_Disease
+Guanethidine -> Hypertensive_disease
+metformin -> Obesity
+Aspirin -> Hypertensive_disease
+Injection_procedure -> Cerebral_hemisphere_hemorrhage
+Fatty_Acids_Nonesterified -> Insulin_Resistance
+HRAS_geneHRAS -> Neoplasm
+Excision -> Hypertensive_disease
+Septic_Shock -> Cessation_of_life
+Cyclosporine -> Gingival_Hyperplasia
+Myocarditis -> Cessation_of_life
+Inflammation -> Acute_coronary_syndrome
+Cerebrovascular_accident -> COVID19
+Fructose -> Water
+Aging -> Cardiovascular_Diseases
+Amino_Acids_BranchedChain -> Obesity
+Therapeutic_agent_substance -> Cardiovascular_Diseases
+Sodium_Urate_Monohydrate -> Inflammation
+ethanol -> Negative
+Ethanol -> Binge_Eating
+Inflammation -> Endotoxemia
+Oxidopamine -> Cessation_of_life
+Mutation -> Hereditary_hemochromatosis
+Inflammation -> Hypertensive_disease
+Neoplasm -> Colorectal_Cancer
+Dexamethasone -> Child
+Screening_procedure -> Sleep_Apnea_Obstructive
+Dinoprostone -> Inflammation
+Mitochondria -> Cessation_of_life
+Radiosurgery_Stereotactic -> Neoplasms
+Equilibrium -> Obesity
+Ethanol -> Liver_diseases
+calcification -> Neoplasm
+Hypertensive_disease -> Sleep_Apnea_Obstructive
+Mechanical_thrombectomy -> Cerebrovascular_accident
+Fibrosis -> Chronic_infectious_disease
+Acupuncture_procedure -> Cerebrovascular_accident
+Thiazides -> Hypertensive_disease
+Ethanol -> Male_population_group
+Inflammation -> Stress
+Neoplasm -> Von_HippelLindau_Syndrome
+Dobutamine -> Heart_failure
+Hypoxia -> Reactive_Oxygen_Species
+Epinephrine -> Glycogenolysis
+Neoplasm -> CorticotropinPOMC
+Hyperinsulinism -> Insulin_Resistance
+Vaccines -> Neoplasm
+Single_Nucleotide_Polymorphism -> Obesity
+Gene_Expression -> Inflammation
+Angiotensin_II -> Protein_Kinase_C
+NMethylaspartate -> Cessation_of_life
+receptor -> Ethanol
+MicroRNAs -> Oxidative_Stress
+Alzheimers_Disease -> Nerve_Degeneration
+Alzheimers_Disease -> Dementia
+Fenfluramine -> Obesity
+Risk_factor_cardiovascular -> Insulin_Resistance
+Superoxide_Dismutase -> Oxidative_Stress
+Evaluation_procedure -> Heart_failure
+Hypertensive_disease -> Cerebrovascular_Circulation
+Body_Weight -> Obesity
+Sleep -> Hypertensive_disease
+Potassium -> Aldosterone
+Peritoneal_Dialysis -> End_stage_renal_failure
+Metoprolol -> Hypertensive_disease
+Photochemotherapy -> Neoplasm
+Ability -> Hypertensive_disease
+Transplantation -> Obesity
+Obesity -> Metabolism
+Cessation_of_life -> Ischemic_stroke
+Depressive_disorder -> Alzheimers_Disease
+Percutaneous_coronary_intervention -> Kidney_Failure_Chronic
+Surgical_Procedures_Laparoscopic -> Neoplasm
+inhibitors -> Cerebrovascular_accident
+Nitric_Oxide -> Respiratory_Distress_Syndrome_Adult
+cytotoxicity -> Neoplasm
+Neurons -> MAPT
+Diet -> Metabolic_Diseases
+Left_ventricular_assist_device -> Heart_failure
+Ligation -> Fibrosis
+Neurobehavioral_Manifestations -> Alzheimers_Disease
+Obesity -> COVID19
+Ischemia -> Heart_failure
+Neuroprotection -> Cerebrovascular_accident
+Fatty_Acids -> Insulin_Resistance
+Supplementation -> Hypertensive_disease
+MitogenActivated_Protein_Kinases -> Neoplasm
+Ethanol -> Liquid_diet
+Mutation -> Familial_disease
+Dexamethasone -> Transcription_Genetic
+Bypass -> Obesity
+Aggressive_behavior -> Dementia
+Renal_vascular_disorders_NOS -> Hypertensive_disease
+Glucocorticoids -> Atrophic
+Norepinephrine -> Inositol_Phosphates
+Mutation -> Polycystic_Kidney_Autosomal_Dominant
+Sodium -> phosphate_transport
+Hypoxia -> Malignant_Neoplasms
+Antipsychotic_Agents -> Dementia
+Coronary_heart_disease -> Heart_failure
+Inflammation -> Metabolic_syndrome
+Hypoxia -> Solid_Neoplasm
+Norepinephrine -> Vascular_constriction_function
+Mutation -> Carcinogenesis
+Hypertrophy_Left_Ventricular -> Hypertrophic_Cardiomyopathy
+angiotensin_II -> Cardiac_Hypertrophy
+Insulin_Resistance -> Cardiovascular_Diseases
+Cardiovascular_Diseases -> Kidney_Failure_Chronic
+Carbon_tetrachloride_homeopathic_preparation -> Fibrosis
+Neoplasm -> Glioblastoma
+Fibrosis -> Pathogenesis
+Extravasation -> Inflammation
+Matrix_Metalloproteinases -> Neoplasm
+Milrinone -> Heart_failure
+Endothelial_dysfunction -> Diabetes_Mellitus
+Hypertensive_disease -> Myocardial_Ischemia
+Oxidative_Stress -> Gene_Expression
+Inflammation -> Chronic_infectious_disease
+ERBB2NEU1NEURL1 -> Neoplasm
+MicroRNAs -> Inflammation
+VEGF_protein_humanVEGFA -> Neoplasm
+Astrocytes -> Apolipoprotein_EAPOE
+leptin -> Obesity
+Myocardial_Infarction -> Inflammation
+Insulin_Resistance -> Polycystic_Ovary_Syndrome
+Aging -> Endothelial_dysfunction
+Kidney_Failure_Chronic -> Systemic_arterial_pressure
+Glioblastoma -> Neoplasm
+TP53_geneTP53 -> Neoplasms
+Warfarin -> Cerebrovascular_accident
+Obesity -> Malignant_neoplasm_of_prostate
+Parkinson_Disease -> Cessation_of_life
+Cardiovascular_Diseases -> Woman
+Amyloid -> Pathogenesis
+receptor -> Hypertensive_disease
+Subarachnoid_Hemorrhage -> Oxidative_Stress
+Angiotensin_II -> RNA_Messenger
+Obesity -> Heart_Diseases
+Nicardipine -> Hypertensive_disease
+Endothelial_dysfunction -> Diabetes_Mellitus_NonInsulinDependent
+Hypertensive_disease -> Cessation_of_life
+Hypertrophy -> Obesity
+Cessation_of_life -> Birth
+Hypertensive_disease -> Cardiovascular_morbidity
+receptor -> Angiotensin_II
+Combined_Modality_Therapy -> Neoplasm
+Inflammation -> Nitric_Oxide
+Diet -> Nonalcoholic_Fatty_Liver_Disease
+Cessation_of_life -> Cardiovascular_Diseases
+Angiotensin_II -> Blood_flow
+Cocaine -> Ethanol
+Shock -> Sleep_Apnea_Obstructive
+TLR4_geneTLR4 -> Inflammation
+Fibrosis -> Nonalcoholic_fatty_liver
+19q -> Neoplasm
+Fibrosis -> Inflammation
+inhibitors -> Insulin_Resistance
+dapagliflozin -> Heart_failure
+Neoplasm -> Squamous_cell_carcinoma
+Hospitalization -> Heart_failure
+Angiotensin_II -> Apoptosis
+Hypertensive_disease -> Pregnancy
+Mutation -> Cell_Growth
+Study_models -> Dependence
+Assessment_procedure -> Sleep_Apnea_Obstructive
+Equilibrium -> Hypertensive_disease
+Inflammation -> Pathogenesis
+Acetylcysteine -> Kidney_Diseases
+Iron -> Kidney_Failure_Chronic
+Nitroarginine -> Nitric_Oxide
+Operation_on_nose -> Sleep_Apnea_Obstructive
+Neoplasm -> Prolactin
+apolipoprotein_E4 -> Alzheimers_Disease
+Inflammation -> Oxidative_Stress
+Armed_macrophage -> Nitric_Oxide
+Ischemia -> Inflammatory_Response
+Nicotine -> Ethanol
+Kidney_Diseases -> Kidney_Failure_Chronic
+Oxidative_Stress -> Insulin_Resistance
+Rest -> Heart_failure
+Subarachnoid_Hemorrhage -> Inflammation
+Cyclic_GMP -> Nitric_Oxide
+Mutation -> Tumor_Suppressor_Genes
+Tonsillectomy_and_adenoidectomy -> Sleep_Apnea_Obstructive
+Obstruction -> Stroke_Acute
+interleukin1_beta -> Inflammation
+Diet -> Gene_Expression
+Stress -> Alzheimers_Disease
+risk_factors -> Cardiovascular_Diseases
+rivastigmine -> Alzheimers_Disease
+Polycystic_Kidney_Autosomal_Dominant -> End_stage_renal_failure
+Single_Nucleotide_Polymorphism -> Hypertensive_disease
+Stereotactic_radiotherapy -> Neoplasm
+Ischemic_stroke -> Cerebrovascular_accident
+Apoptosis -> Heart_failure
+Eating -> Obesity
+Cerebrovascular_accident -> Hypertensive
+Heart_Arrest -> Cessation_of_life
+Recanalization -> Obstruction
+Sudden_Cardiac_Death -> Cessation_of_life
+Endoscopic_Submucosal_Dissection -> Neoplasms
+Spironolactone -> Hypertensive_disease
+Mutation -> Retinal_dystrophy
+Hypoxia -> Pulmonary_arterial_hypertension
+Nitric_Oxide -> Cell_physiology
+ethanol -> Present
+KL_geneKL -> Kidney_Failure_Chronic
+Oxidative_Stress -> DNA_Damage
+Neoplasm -> Disease_Progression
+Ischemia -> Myocardial_Infarction
+Aspirationaction -> Cerebrovascular_accident
+Excision -> Inflammation
+Inflammation -> Well_adult
+Transplantation -> Hypertensive_disease
+Inflammation -> Chronic_Kidney_Diseases
+Cessation_of_life -> Parkinson_Disease
+Headache -> Hypertensive_disease
+Azoxymethane -> Neoplasm
+Inflammation -> Hemostatic_function
+3MC -> Neoplasm
+Oxidative_Stress -> Cell_Death
+Inflammation -> Nonalcoholic_fatty_liver
+Left_ventricular_systolic_dysfunction -> Heart_failure
+Mutation -> Autosomal_Recessive_Disorder
+interleukin6 -> Inflammation
+Glucocorticoids -> Osteopenia
+Obesity -> Weight_Gain
+Pharmacotherapy -> Dementia
+Hypoxia -> Gene_Expression
+Neoplasm -> Kidney
+Glucocorticoids -> cytokine
+Toxin -> Kidney_Failure_Chronic
+Glucocorticoids -> Phosphotransferases
+Hypertrophy_Left_Ventricular -> Heart_failure
+Diethylnitrosamine -> Neoplasm
+Neoplasm -> Blood_Vessels
+Nitric_Oxide -> Cardiovascular_Diseases
+Inflammation -> Arteriosclerosis
+Insulin -> Nitric_Oxide
+Shock -> Cessation_of_life
+cyclooxygenase_2 -> Neoplasm
+Angiotensin_II_Type_1_Receptor_Blockers -> Hypertensive_disease
+Apolipoprotein_EAPOE -> Dementia
+Stabilization -> Neoplasm
+Airway_Obstruction -> Sleep_Apnea_Obstructive
+Ischemia -> Kidney_Failure_Acute
+Mutation -> Becker_Muscular_Dystrophy
+Neoplasm -> Epidermal_Growth_Factor_ReceptorEGFR
+Cerebrovascular_accident -> Ischemia
+Excision -> Pheochromocytoma
+Staphylococcus_aureus -> Inflammation
+streptozocin -> Diabetes
+Heart_failure -> Cardiomyopathies
+Angiotensin_II -> Canis_familiaris
+Insulin_Resistance -> Dyslipidemias
+Insulin_Resistance -> Glucose
+Blood_Pressure -> Heart_failure
+osteopontin -> Neoplasm
+Angiotensin_II -> PeptidylDipeptidase_A
+Diet -> Insulin_Resistance
+Inflammation -> Equilibrium
+Angiotensin_II_receptor_antagonist -> Heart_failure
+Streptozocin -> Hyperglycemia
+Interleukin6 -> Obesity
+Neoplasm -> Insulin
+Vas_Occlusion -> Ischemia
+TNF_protein_humanTNF -> Oxidative_Stress
+Cessation_of_life -> Embryonic_Development
+Sodium -> Membrane_Transport_Proteins
+Reconstructive_Surgical_Procedures -> Neoplasms
+adiposity -> Obesity
+MicroRNAs -> Kidney_Diseases
+polyphenols -> Oxidative_Stress
+Aldosterone -> Conn_Syndrome
+Ischemia -> Necrosis
+Chronic_inflammation -> Insulin_Resistance
+Female -> Obesity
+Dexamethasone -> RNA_Messenger
+Ischemia -> Ventricular_Fibrillation
+Obesity -> Thromboembolism
+Neoplasm -> Intussusception
+Dexamethasone -> NOS2A_protein_humanNOS2
+Chemicals -> Neoplasm
+Supplementation -> Inflammation
+Pheochromocytoma -> Cardiomyopathies
+Fibrosis -> Diabetic_Nephropathy
+Ethanol -> Problem_drinker
+Insulin -> Hyperinsulinism
+Waist_circumference -> Insulin_Resistance
+Obesity -> Coronary_Arteriosclerosis
+Mutation -> Ubiquitination
+Neoplasm -> Tumorigenesis
+Atrial_Natriuretic_Factor -> Heart_failure
+GraftvsHost_Disease -> Cessation_of_life
+Fructose -> Fatty_Liver
+Cerebrovascular_accident -> Evolution
+APC -> Neoplasm
+Hypotension -> Hypertensive_disease
+Tonsillectomy -> Sleep_Apnea_Obstructive
+Neoplasm -> Glioma
+anthracene -> Neoplasm
+Anosognosia -> Alzheimers_Disease
+Ethanol -> Rats_SpragueDawley
+CD69_protein_humanCD69 -> Oxidative_Stress
+Inspiration_function -> Cessation_of_life
+Dexamethasone -> Apoptosis
+Adrenalectomy -> Conn_Syndrome
+Dexamethasone -> Hydrocortisone
+BrainDerived_Neurotrophic_Factor -> Alzheimers_Disease
+Nitrate -> Nitric_Oxide
+TNF_protein_humanTNF -> Inflammation
+Psychotic_Disorders -> Dementia
+Mutation -> Hypertrophic_Cardiomyopathy
+Fibrosis -> Kidney_Diseases
+Glucocorticoids -> Gene_Expression
+Creactive_protein -> Heart_failure
+Myocardial_Ischemia -> Hypertensive_disease
+Constriction_procedure -> Heart_failure
+Sulfonic_Acids -> Inflammation
+Cessation_of_life -> Diabetes
+Obesity -> Aging
+Diabetes_Mellitus_NonInsulinDependent -> Cardiovascular_Diseases
+Cell_Therapy -> Cardiovascular_Diseases
+receptor -> Inflammation
+Inflammation -> Schizophrenia
+Oxidative_Stress -> Nerve_Degeneration
+Norepinephrine -> Melatonin
+Carcinogenesis -> Neoplasm
+Corticotropin -> Mus
+Insulin_Resistance -> Sleep_Apnea_Obstructive
+Opportunistic_Infections -> Cessation_of_life
+Mutation -> beta_catenin
+Inflammation -> Systemic_disease
+Fibrosis -> Kidney_Failure_Chronic
+Ligation -> Heart_failure
+Memory_impairment -> Dementia
+Nerve_Growth_FactorsNGF -> Alzheimers_Disease
+Proteinuria -> Hypertensive_disease
+valsartan -> Hypertensive_disease
+Postoperative_Complications -> Obesity
+Foramen_Ovale_Patent -> Cerebrovascular_accident
+Movement -> Cerebrovascular_accident
+END_ORGAN_DAMAGE -> Hypertensive_disease
+Inflammation -> Diabetic_Nephropathy
+Inflammation -> Cell_Proliferation
+Aldosterone -> Canis_familiaris
+Hypertensive_disease -> Polycystic_Kidney_Autosomal_Dominant
+Kidney_Failure -> Cessation_of_life
+Transforming_Growth_Factor_beta -> Fibrosis
+Endarterectomy -> Obstruction
+Microalbuminuria -> Kidney_Diseases
+Edema -> Inflammation
+Obesity -> Chronic_Disease
+ARGINASE -> Nitric_Oxide
+Loss_of_Heterozygosity -> Neoplasm
+Semantic_impairment -> Alzheimers_Disease
+Oxidative_Stress -> Transcription_Genetic
+Cerebrovascular_accident -> Pneumonia
+Inflammation -> Immune_response
+Equilibrium -> Inflammation
+Oxidative_Stress -> Amyotrophic_Lateral_Sclerosis
+Hyperlipidemia -> Cardiovascular_Diseases
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Cardiovascular_Diseases
+Glomerulonephritis -> End_stage_renal_failure
+Wounds_and_Injuries -> Inflammation
+Neuroblastoma -> Neoplasm
+Heart_failure -> Sinus_rhythm
+Lipids -> Cardiovascular_Diseases
+Glucocorticoids -> Steroids
+Fibrosis -> Systemic_Scleroderma
+Palliative_Care -> Obstruction
+Angiotensin_II -> Hypertensive_disease
+Fibrosis -> Collagen
+Inflammation -> Metabolism
+Behavior_Therapy -> Obesity
+Nonalcoholic_fatty_liver -> Fibrosis
+Walking -> Obesity
+Pesticides -> Oxidative_Stress
+Inflammatory_Response -> Obesity
+Teleradiotherapy_procedure -> Neoplasm
+tolllike_receptor_4 -> Inflammation
+Ethanol -> Oryctolagus_cuniculus
+Inflammation -> Kidney_Diseases
+Ribavirin -> Fibrosis
+Virulence_Factors -> Alzheimers_Disease
+Study_models -> Nerve_Degeneration
+Neurons -> Nitric_Oxide
+Mutation -> Fragile_X_Syndrome
+Single_Nucleotide_Polymorphism -> Inflammation
+Sodium -> Action_Potentials
+Cardiovascular_Diseases -> Polymorphism_Genetic
+Heart_failure -> Myocardial_Infarction
+Nitric_Oxide -> Vascular_constriction_function
+Nicotine -> Oxidative_Stress
+Ethanol -> Rats_Wistar
+Tumor_Necrosis_FactoralphaTNF -> Inflammation
+Evolution -> Mutation
+2cyclopentyl55isoquinolylsulfonyl6nitro1HbenzoDimidazole -> Nitric_Oxide
+Dexamethasone -> Canis_familiaris
+Angioplasty_Balloon -> Stenosis
+Cesarean_section -> Obesity
+Hyperglycemia -> Oxidative_Stress
+Testosterone -> Obesity
+Inflammation -> Kidney_Failure_Chronic
+Cyclosporine -> Rheumatoid_Arthritis
+Systemic_Therapy -> Neoplasm
+Oxidative_Stress -> Diabetes_Mellitus
+Transplantation -> Kidney_Failure
+Transplantation -> Inflammation
+gene_therapy -> Heart_failure
+PPAR_gamma -> Obesity
+Nitric_Oxide -> Diabetes
+Mutation -> Translation_Genetic
+Mutation -> Homeostasis
+Streptozocin -> Memory_impairment
+Carcinogens -> Neoplasm
+Targeted_Therapy -> Neoplasms
+Cerebral_atrophy -> Alzheimers_Disease
+Inflammation -> Hypersensitivity
+Hypertensive_disease -> Peripheral_Vascular_Diseases
+Fibrosis -> Pancreatitis_Chronic
+Operative_Surgical_Procedures -> Conn_Syndrome
+Encephalitis -> Cessation_of_life
+Inflammation -> Woman
+Oxidative_Stress -> Diabetes_Mellitus_NonInsulinDependent
+Therapeutic_radiology_procedure -> Neoplasms
+Hypertrophy -> Diabetes
+Acetate -> Growth
+Inflammation -> Systemic_Scleroderma
+Physical_therapy -> Cerebrovascular_accident
+Mutation -> Cardiomyopathies
+Metformin -> Obesity
+Screening_procedure -> Fibrosis
+Isoproterenol -> Hypertrophy
+Hypertensive_disease -> PreEclampsia
+Antibodies -> Alzheimers_Disease
+Insulin_Resistance -> LeptinLEP
+Cytokeratin -> Neoplasm
+Labetalol -> Hypertensive_disease
+Adipose_tissue -> Inflammation
+directive_therapy -> Heart_failure
+Mutation -> Signal_Transduction_Pathways
+Sleep_Apnea_Obstructive -> Hypoxia
+Hemorrhage -> Cerebrovascular_accident
+Obesity -> Mutation
+Hypertensive_disease -> Fibrosis
+Lipid_Metabolism -> Obesity
+Supplementation -> Kidney_Failure_Chronic
+Atherosclerosis -> Cessation_of_life
+Hypoxia -> Solid_tumor
+Starvation -> Cessation_of_life
+Fibrinogen -> Cardiovascular_Diseases
+Acetate -> Mus
+Hypertensive_disease -> Hemorrhage
+Obstruction -> Cerebrovascular_accident
+Injury -> Alzheimers_Disease
+Biliary_calculi -> Obstruction
+Nitric_Oxide -> CYTOCHROME_C_OXIDASE
+Interleukin2 -> Neoplasm
+Angiotensin_II -> receptor
+Growth -> Hypertensive_disease
+Cerebrovascular_accident -> Cardiovascular_event
+Laparotomy -> Obstruction
+Aldosterone -> Hypertensive_disease
+Lymphoma -> Neoplasm
+Norepinephrine -> Rats_Inbred_SHR
+Hypoxia -> Glioblastoma
+Bacteria -> Cessation_of_life
+Sodium_Chloride -> Rats_Inbred_SHR
+alphaSynuclein -> Nerve_Degeneration
+Mutation -> Mitosis
+Nephrectomy -> Neoplasm
+APP_protein_human -> Alzheimers_Disease
+Tenascin -> Neoplasm
+Fatty_Acids_Nonesterified -> Obesity
+Hepatitis_B_Chronic -> Fibrosis
+Aneurysm_Dissecting -> Cerebrovascular_accident
+Antioxidants -> Oxidative_Stress
+Fibrosis -> Pancreatic_carcinoma
+Angiotensin_II -> Nitric_Oxide
+Cardiac_ablation -> Heart_failure
+MicroRNAs -> Cardiac_Hypertrophy
+Interleukin1_beta -> Nitric_Oxide
+Norepinephrine -> Hypertensive
+Mutation -> DNA_Binding
+Cerebral_hemisphere_hemorrhage -> Brain_Edema
+Operative_Surgical_Procedures -> Obesity
+Norepinephrine -> Thermogenesis
+Sodium_Chloride -> Hypertensive
+Complication_infection -> Cessation_of_life
+TRANSCRIPTION_FACTOR -> Inflammation
+Laminectomy -> Stenosis
+Losartan -> Heart_failure
+Body_mass_index -> Obesity
+LeptinLEP -> Insulin_Resistance
+Nerve_Degeneration -> Parkinson_Disease
+Diet -> Diabetes_Mellitus_NonInsulinDependent
+Interleukin6 -> Nitric_Oxide
+Particle -> Inflammation
+Ouabain -> Potassium
+Hypoxia -> Angiogenesis
+Galectin_3 -> Fibrosis
+Thrombosis_of_cerebral_veins -> Cerebrovascular_accident
+Adrenalectomy -> Hypertensive_disease
+Ethanol -> Solvents
+Epinephrine -> Adenylate_Cyclase
+Cessation_of_life -> COVID19
+Carotid_Stenosis -> Cerebrovascular_accident
+ADRBK1_geneGRK2 -> Alzheimers_Disease
+Neoplasm -> Transforming_Growth_Factor_beta
+Dexamethasone -> Hypertensive_disease
+Nitric_Oxide -> Guanylate_Cyclase
+Angiotensin_II -> Oxidative_Stress
+Epinephrine -> Oryctolagus_cuniculus
+CD4_geneCD4 -> Neoplasm
+Neoplasms -> Tumor_Progression
+Pathogenesis -> Oxidative_Stress
+Water -> Sodium_Chloride
+Hyperinsulinism -> Obesity
+Periodontitis -> Inflammation
+1Methyl4phenyl1236tetrahydropyridine -> Nerve_Degeneration
+Cholesterol -> Alzheimers_Disease
+CD69_protein_humanCD69 -> Cessation_of_life
+Angiotensin_II -> Receptor_Angiotensin_Type_1
+Coronary_Arteriosclerosis -> Obesity
+Diuretics -> Hypertensive_disease
+ECadherin -> Neoplasm
+Obesity -> Renal_Cell_Carcinoma
+Cardiovascular_Diseases -> Cardiovascular_event
+Activities_of_Daily_Living -> Alzheimers_Disease
+CD274_protein_humanCD274 -> Neoplasms
+Risk_factor_cardiovascular -> Obesity
+Antihypertensive_Agents -> Hypertensive_disease
+Neoplasm -> sarcoma
+Ethanol -> Adult
+Cyclin_D1CCND1 -> Neoplasm
+Lung_Diseases_Interstitial -> Cessation_of_life
+Radiation_therapy -> Neoplasm
+Glucocorticoids -> TYROSINE_AMINOTRANSFERASETAT
+Angiotensin_II -> Phosphorylation
+Local_excision -> Neoplasm
+Knowledge_acquisition -> Obesity
+Covered_Stents -> Obstruction
+Obesity -> Lipid_Metabolism
+Nitric_Oxide -> Hemodynamics
+Peroxynitrite -> Nitric_Oxide
+Mutation -> Familial_Alzheimers_disease
+Hospital_admission -> Cardiovascular_Diseases
+Present -> Obesity
+Brain_Injuries -> Cerebrovascular_accident
+Neoplasm -> Secondary_malignant_neoplasm_of_lymph_node
+Diabetes -> Cardiovascular_Diseases
+Angiotensin_II -> Inflammation
+Neoplasm -> Nodule
+Interleukin1_beta -> Inflammation
+Adrenal_adenoma -> Conn_Syndrome
+Assessment_procedure -> Fibrosis
+Glucose -> Neoplasm
+Oxidative_Stress -> Apoptosis
+IMPACT_gene -> Cardiovascular_Diseases
+Cessation_of_life -> Acquired_Immunodeficiency_Syndrome
+Ethanol -> Blood_alcohol_concentration
+Diet_Mediterranean -> Cardiovascular_Diseases
+Prophylactic_treatment -> Obesity
+Pulmonary_Embolism -> Cessation_of_life
+Transplantation -> Kidney_Failure_Chronic
+Neoplasm -> TP53_geneTP53
+Mutation -> Adrenoleukodystrophy
+Inflammation -> Coronary_Arteriosclerosis
+Myocarditis -> Heart_failure
+Neurodegenerative_Disorders -> Mutation
+gemcitabine -> Neoplasm
+Angiotensin_II -> Neurons
+Mutation -> Hemophilia_A
+Diet -> Fatty_degeneration
+Amyloid -> Neurodegenerative_Disorders
+Recovery -> Cerebrovascular_accident
+Weight_Gain -> Obesity
+Cerebrovascular_accident -> Recovery
+NNdimethylarginine -> Cardiovascular_Diseases
+Radiopharmaceuticals -> Neoplasm
+Polysaccharides -> Oxidative_Stress
+cisplatin -> Oxidative_Stress
+Inflammation -> HIV_Infections
+Beverages -> Obesity
+Angiotensin_II -> Myocytes_Smooth_Muscle
+Aluminum -> malate_transporter
+Pregnancy -> Obesity
+melanoma -> Neoplasm
+hypothermia_natural -> Cessation_of_life
+Psychological_symptom -> Alzheimers_Disease
+macrophage -> Apolipoprotein_EAPOE
+Renal_Artery_Stenosis -> Hypertension_Renovascular
+Obesity -> Metabolic_Diseases
+Operative_Surgical_Procedures -> Cardiovascular_Diseases
+Sleep_Apnea_Obstructive -> Obesity
+RouxenY_Gastric_Bypass -> Obesity
+Mutation -> Amino_Acids
+Respiratory_Tract_Infections -> Cessation_of_life
+Angiotensin_II -> TGFB1_protein_humanTGFB1
+Body_mass_index -> Cardiovascular_Diseases
+Endothelial_dysfunction -> Smoker
+Malignant_Neoplasms -> Obesity
+Cardiac_Glycosides -> Heart_failure
+Medical_therapy -> Hypertensive_disease
+Somatostatin_Receptor -> Neoplasm
+Dexamethasone -> Nitric_Oxide
+Plasminogen_Activator_Inhibitor_1 -> Insulin_Resistance
+Intestinal_Microbiome -> Cardiovascular_Diseases
+Increase_in_blood_pressure -> Cardiovascular_Diseases
+inhibitors -> Obesity
+Inflammation -> Neurodegenerative_Disorders
+homocysteine -> Cardiovascular_Diseases
+Body_mass_index -> Hypertensive_disease
+Venoms -> Inflammation
+Ethanol -> Gastric_mucosa
+Iron -> Alzheimers_Disease
+Vitamin_D -> Insulin_Resistance
+Operative_Surgical_Procedures -> Hypertrophy
+Loop_Diuretics -> Heart_failure
+Physical_activity -> Obesity
+Glucocorticoids -> Rheumatoid_Arthritis
+RB1_geneRB1RBM45 -> Neoplasm
+Metabolic_syndrome -> Sleep_Apnea_Obstructive
+Heart_Transplantation -> Heart_failure
+Polysaccharides -> Inflammation
+Dexamethasone -> Meningitis_Bacterial
+NFkappa_B -> Inflammation
+Cessation_of_life -> Elderly
+NGNitroarginine_Methyl_Ester -> Nitric_Oxide
+Music_Therapy -> Dementia
+Prazosin -> Hypertensive_disease
+Hyperinsulinism -> Hypertensive_disease
+Solid_tumor -> Neoplasm
+InsulinINS -> Insulin_Resistance
+Coronary_Arteriosclerosis -> Hypertensive_disease
+Diabetes -> Endothelial_dysfunction
+Ventricular_arrhythmia -> Cessation_of_life
+Growth -> Inflammation
+Alzheimers_Disease -> Oxidative_Stress
+Creactive_proteinCRP -> Inflammation
+Dehydration -> Cessation_of_life
+Proteintyrosine_kinase_inhibitor -> Neoplasm
+Pharmacotherapy -> Cardiovascular_Diseases
+Pulmonary_Fibrosis -> Cessation_of_life
+Neoplasm -> Pathogenesis
+Risk_factor_cardiovascular -> Hypertensive_disease
+Obesity -> Nonalcoholic_Fatty_Liver_Disease
+Mutation -> Arrhythmogenic_Right_Ventricular_Dysplasia
+Deafness -> Mutation
+Thrombolytic_Therapy -> Obstruction
+Bacterial_Infections -> Cessation_of_life
+Epilepsy -> Mutation
+Cerebrovascular_accident -> Deglutition_Disorders
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Cardiovascular_morbidity
+Ethanol -> Nicotine
+Nitric_Oxide -> Respiration
+Adipokines -> Obesity
+Necrosis -> Neoplasm
+Reactive_Oxygen_Species -> Neoplasm
+Hypertensive_disease -> End_stage_renal_failure
+Cessation_of_life -> Sleep
+Angiotensin_II -> Cell_Proliferation
+Present -> Hypertensive_disease
+dexamethasone -> Mus
+Cardiovascular_Diseases -> Cerebrovascular_accident
+Mutation -> pleiotropism
+Obesity -> Cerebrovascular_accident
+Histopathology -> Neoplasm
+Mutation -> Cystic_Fibrosis
+Inflammatory_Response -> Inflammation
+Hypertensive_disease -> Heart_failure
+Death_Sudden_Cardiac -> Cessation_of_life
+Ketanserin -> Hypertensive_disease
+Study_models -> Obesity
+Ethanol -> hypothermia_natural
+Middle_Cerebral_Artery_Occlusion -> Cerebrovascular_accident
+Dexamethasone -> Inflammation
+Oxidative_Stress -> Acute_Lung_Injury
+Lisinopril -> Hypertensive_disease
+Proteinuria -> Kidney_Failure_Chronic
+Kidney_Failure_Chronic -> Kidney_Diseases
+Alzheimers_Disease -> Carrier_of_disorder
+Wound_Healing -> Fibrosis
+Ethanol -> Growth
+Prophylactic_treatment -> Hypertensive_disease
+Ethanol -> Bone_necrosis
+Gait_training_procedure -> Cerebrovascular_accident
+Banding_procedure -> Hypertrophy
+Pancreaticoduodenectomy -> Neoplasm
+Obesity -> Osteoarthritis_Knee
+Insulin_Resistance -> Atherosclerosis
+Staurosporine -> Cessation_of_life
+Pregnancy -> Cardiovascular_Diseases
+Obesity -> Comorbidity
+Acute_coronary_syndrome -> Cessation_of_life
+Agent -> Cardiovascular_Diseases
+FRAP1_protein_humanMTOR -> Neoplasm
+NNdimethylarginine -> Nitric_Oxide
+Agitation -> Alzheimers_Disease
+Chromium -> Oxidative_Stress
+sacubitril_valsartan -> Heart_failure
+Mutation -> Malignant_neoplasm_of_breast
+Adenoidectomy -> Sleep_Apnea_Obstructive
+Cessation_of_life -> Ischemia
+Ascites -> Fibrosis
+Fibrinolytic_Agents -> Cerebrovascular_accident
+Immune_Checkpoint_Inhibitors -> Neoplasms
+Metabolic_syndrome -> Cardiovascular_morbidity
+Adrenalectomy -> Pheochromocytoma
+Ethanol -> Mus
+Chronic_inflammation -> Obesity
+Virus_Diseases -> Inflammation
+Magnesium -> Hypertensive_disease
+Mutation -> PelizaeusMerzbacher_Disease
+Cessation_of_life -> Aging
+Sleep_Apnea_Obstructive -> Hypertensive_disease
+Norepinephrine -> Adrenergic_Receptor
+Amyloid_betaProtein -> Alzheimers_Disease
+Dialysis_procedure -> Kidney_Failure
+Ischemia -> Edema
+MicroRNAs -> Alzheimers_Disease
+Insulin_Resistance -> insulin_sensitivity
+Cerebrovascular_Disorders -> Cessation_of_life
+NOS2A_protein_humanNOS2 -> Inflammation
+Sleep_Apnea_Central -> Heart_failure
+Ejection_fraction -> Heart_failure
+stem_cell_therapy -> Cardiovascular_Diseases
+Captopril -> Hypertensive_disease
+Peritoneal_Dialysis_Continuous_Ambulatory -> Kidney_Failure_Chronic
+Waist_circumference -> Obesity
+Complete_excision -> Neoplasms
+inhibitors -> Hypertensive_disease
+Mutation -> Premature_aging_syndrome
+Diet -> Hyperhomocysteinemia
+Chronic_infectious_disease -> Fibrosis
+cytokine -> Obesity
+Captopril -> Angiotensin_II
+Lipoproteins -> Apolipoprotein_EAPOE
+Radiofrequency_Ablation -> Neoplasms
+Endothelial_dysfunction -> Sleep_Apnea_Obstructive
+Glucocorticoids -> Inflammatory_disorder
+Anesthesia_procedures -> Obesity
+Physical_activity -> Hypertensive_disease
+Anesthetics -> Obesity
+Mutation -> Spastic_Paraplegia_Hereditary
+trimethyloxamine -> Cardiovascular_Diseases
+Positive_pressure_therapy -> Sleep_Apnea_Obstructive
+Angiotensin_II -> Collagen
+Adrenergic_betaAntagonists -> Heart_failure
+Hydrocortisone -> Glucocorticoids
+Obesity -> Insulin_Resistance
+Progesterone -> Neoplasm
+Polycystic_Ovary_Syndrome -> Insulin_Resistance
+Angiotensin_II_Receptor_Type_2AGTR2PGRAS1 -> Angiotensin_II
+Inflammation -> Ulcerative_Colitis
+Obesity -> gene_polymorphism
+Neoplasm -> lymph_nodes
+clopidogrel -> Cerebrovascular_accident
+Dietary_restriction_NOS -> Obesity
+Cessation_of_life -> Retinal_Diseases
+Molecular_Target -> Neoplasm
+Neoplasm -> Neurofibromatosis_1
+Neoplasm -> Antigens
+Acute_myocardial_infarction -> Inflammation
+Aortic_Aneurysm_Abdominal -> Cessation_of_life
+Mutation -> EhlersDanlos_Syndrome
+Gastric_banding -> Obesity
+Ethanol -> AntiAnxiety_Agents
+RASSF1ARASSF1 -> Neoplasm
+Ventricular_Dysfunction_Left -> Heart_failure
+Cyclosporine -> Growth
+Stroke_Acute -> Cessation_of_life
+dexamethasone -> Muscular_Atrophy
+PECAM1_genePECAM1 -> Neoplasm
+Vasodilator_Agents -> Heart_failure
+Cell_Proliferation -> Inflammation
+Hypersensitivity -> Cessation_of_life
+imbalance -> Obesity
+Nitric_Oxide -> Adaptation
+Alcohol_dehydrogenase -> Ethanol
+NOS3_protein_humanNOS3 -> Endothelial_dysfunction
+Overweight -> Cardiovascular_Diseases
+Pheochromocytoma -> Catecholamines
+followup -> Obstruction
+ErythropoietinEPO -> Kidney_Failure_Chronic
+Autopsy -> Cessation_of_life
+Laparoscopic_adrenalectomy -> Pheochromocytoma
+Amyloid -> Alzheimers_Disease
+Obesity -> Family
+Herpesvirus_4_Human -> Neoplasm
+Assessment_procedure -> Heart_failure
+Hypertensive_disease -> Myocardial_Infarction
+Cholecystectomy_Laparoscopic -> Obesity
+Balloon_Dilatation -> Obstruction
+Injection_procedure -> Neoplasm
+Operative_Surgical_Procedures -> Neoplasms
+Mutation -> Polyglandular_Type_I_Autoimmune_Syndrome
+Coronary_Artery_Bypass_Surgery -> Heart_failure
+Paraquat -> Oxidative_Stress
+Transient_Ischemic_Attack -> Cerebrovascular_accident
+Dexamethasone -> Cell_Proliferation
+Hypertrophy_Left_Ventricular -> Left_ventricular_mass
+ivabradine -> Heart_failure
+Study_models -> Hypertensive_disease
+Photosensitizing_Agents -> Neoplasm
+Renal_Artery_Stenosis -> Hypertensive_disease
+Obesity -> Overweight
+Helicobacter_pylori -> Inflammation
+Microsurgery -> Neoplasm
+Esophageal_Varices -> Fibrosis
+Leukotrienes -> Inflammation
+Cessation_of_life -> Acute_myocardial_infarction
+Ethanol -> Glucose
+Cessation_of_life -> Pneumonia
+Contrast_Media -> Kidney_Diseases
+Evaluation -> Sleep_Apnea_Obstructive
+Microplastics -> Oxidative_Stress
+Boron -> Neoplasm
+Nitric_Oxide -> Atherosclerosis
+TP73ARHGAP24 -> Neoplasm
+Psychotherapy_Multiple -> Neoplasm
+Gamma_Knife_Radiosurgery -> Neoplasm
+Nitric_Oxide -> Pulmonary_Vascular_Resistance
+Rhizobium_radiobacter -> Neoplasm
+Inflammation -> Alzheimers_Disease
+Estrogen_Receptors -> Neoplasm
+Appetite_Depressants -> Obesity
+Long_Intergenic_NonProtein_Coding_RNA -> Neoplasms
+Mutation -> Optic_Atrophy_Hereditary_Leber
+Aluminum -> Oxidative_Stress
+Inflammation -> Mucous_body_substance
+Cardiomyopathy_Dilated -> Heart_failure
+Epinephrine -> Mus
+Arteriosclerosis -> Cerebrovascular_accident
+Obesity -> Colorectal_Cancer
+Steroids -> Inflammation
+Respiration_Disorders -> Cessation_of_life
+Pharmacotherapy -> Neoplasms
+MicroRNAs -> Cerebrovascular_accident
+Cyclosporine -> Graft_Survival
+cytokine -> Cardiovascular_Diseases
+Toxic_effect -> Alzheimers_Disease
+Norepinephrine -> Control_Groups
+Memory_Loss -> Alzheimers_Disease
+Cessation_of_life -> Retinitis_Pigmentosa
+Neoplasm -> tumor_growth
+Epinephrine -> Normal_blood_pressure
+Myocardial_Infarction -> Cerebrovascular_accident
+Mutation -> Virus
+IMPACT_gene -> Cessation_of_life
+Streptozocin -> cell_injury
+Waist_circumference -> Hypertensive_disease
+Inflammation -> Chronic_sinusitis_NOS
+Sodium_Chloride -> Control_Groups
+Mutation -> Ataxia
+Systemic_arterial_pressure -> Hypertensive_disease
+ProtoOncogenes -> Neoplasm
+Hypernatremia -> Fibrosis
+Obesity -> Child
+Rhabdomyolysis -> Kidney_Failure
+Fibrosis -> Nonalcoholic_Fatty_Liver_Disease
+Dialysis_procedure -> Kidney_Diseases
+Neoplasm -> Cessation_of_life
+APP_gene -> Impaired_cognition
+Fibromuscular_Dysplasia -> Renal_Artery_Stenosis
+MAPT -> Alzheimers_Disease
+Dexamethasone -> Woman
+Mutation -> Signal_Transduction
+Kidney_Diseases -> Kidney_Failure_Acute
+Neoplasm -> Hydrocephalus
+Neoplasm -> Pancreas
+Ability -> Alzheimers_Disease
+Dissection -> Cerebrovascular_accident
+Alzheimers_Disease -> Woman
+Disability_NOS -> Obesity
+Mutation -> Werner_Syndrome
+Norepinephrine -> Entire_nerve
+Ethanol -> Fibrosis_Liver
+Propranolol -> Norepinephrine
+Palliative_Care -> Neoplasms
+Oxidative_Stress -> Pathogenesis
+Supplementation -> Alzheimers_Disease
+erlotinib -> Neoplasm
+Dialysis_procedure -> Kidney_Failure_Chronic
+Nicotine -> Norepinephrine
+Nitric_Oxide -> Endothelial_Cells
+Gastrectomy -> Obesity
+Inflammation -> cytokine
+Amyloid -> cytotoxicity
+Hospitalization -> Cardiovascular_Diseases
+Diet_ProteinRestricted -> Kidney_Failure_Chronic
+Phentolamine -> Epinephrine
+mineral_metabolism -> Kidney_Failure_Chronic
+Mutation -> beta_Thalassemia
+oxidized_low_density_lipoprotein -> Endothelial_dysfunction
+Integrins -> Neoplasm
+Lipopolysaccharides -> Nerve_Degeneration
+Nitric_Oxide -> Pathological_Dilatation
+Agent -> Neoplasms
+topiramate -> Obesity
+Angiotensin_II -> Cardiac_Hypertrophy
+Sodium -> Potassium
+Proton_therapy -> Neoplasm
+Cessation_of_life -> Lupus_Erythematosus_Systemic
+cell_injury -> Ischemia
+Chronic_Obstructive_Airway_Disease -> Inflammation
+Norepinephrine -> Mean_blood_pressure
+Mutation -> RNAdirected_DNA_polymerase_activity
+Birth -> Cessation_of_life
+Malignant_Neoplasms -> Neoplasms
+Angiotensin_II -> Rattus_norvegicus
+Closure_by_clamp -> Ischemia
+inhibitors -> Inflammation
+Curcumin -> Inflammation
+Sleep_Apnea_Obstructive -> Atrial_Fibrillation
+Mutation -> Parkinsonian_Disorders
+Cerebrovascular_accident -> Diabetes_Mellitus_NonInsulinDependent
+HMGB1_Protein -> Inflammation
+Reactive_Oxygen_Species -> Hypertensive_disease
+Induced_Hyperthermia -> Neoplasm
+Hypoxia -> Growth
+phosphatidylethanol -> Ethanol
+Inflammation -> Nonalcoholic_Fatty_Liver_Disease
+Ethanol -> Drug_abuse
+Diabetes_Mellitus -> Alzheimers_Disease
+Adipogenesis -> Obesity
+LeptinLEP -> Obesity
+Steatohepatitis_nonalcoholic -> Fibrosis
+gammasecretase -> APP_protein_human
+Ions -> Oxidative_Stress
+Aspirin -> Cerebrovascular_accident
+Transcranial_magnetic_stimulation -> Cerebrovascular_accident
+Verapamil -> Hypertensive_disease
+Phosphotransferases -> Alzheimers_Disease
+Macrophages_Peritoneal -> Nitric_Oxide
+Study_models -> Oxidative_Stress
+glucose_metabolism -> Obesity
+Hepatitis_Chronic -> Fibrosis
+InsulinLike_Growth_Factor_I -> Neoplasm
+Neoplasm -> Lobe
+Microglia -> Cessation_of_life
+Antibodies -> Neoplasm
+Biological_Response_Modifiers -> Neoplasms
+Insulin_Resistance -> Metabolic_Diseases
+Von_HippelLindau_Syndrome -> Neoplasm
+Bacterial_Infections -> Fibrosis
+STAT3_geneSTAT3 -> Neoplasm
+Inflammation -> Cerebrovascular_accident
+Diet -> Pathogenesis
+Glucose -> Endothelial_dysfunction
+Hypertrophy_Left_Ventricular -> Cardiovascular_Diseases
+Hypertensive_disease -> Blood_Pressure
+Equilibrium -> Alzheimers_Disease
+Hypertension_Portal -> Fibrosis
+Oxidative_Stress -> Autophagy
+Cold_Therapy -> Neoplasm
+Diet -> Oxidative_Stress
+Inflammation -> Pathologic_Processes
+Obesity -> Diabetes_Mellitus
+Cardiovascular_Diseases -> Diabetes_Mellitus
+Fructose -> Glucose
+Oxidative_Stress -> Equilibrium
+Inflammation -> Gene_Expression
+Fibrosis -> Liver_diseases
+Inflammation -> Dermatitis_Atopic
+cytokine -> Nitric_Oxide
+Acebutolol -> Hypertensive_disease
+Hydralazine -> Hypertensive_disease
+Dexamethasone -> Postoperative_Nausea
+Ethanol -> Cessation_of_life
+Single_Nucleotide_Polymorphism -> Alzheimers_Disease
+Hypertensive_disease -> Dementia
+Obstruction -> Transient_ischemia
+VerticalBanded_Gastroplasty -> Obesity
+Polycystic_Kidney_Diseases -> End_stage_renal_failure
+Cessation_of_life -> nervous_system_disorder
+Angiotensin_II -> APP_gene
+Heart_failure -> Cardiovascular_Diseases
+Cardiovascular_Diseases -> Diabetes_Mellitus_NonInsulinDependent
+adjuvant_therapy -> Neoplasm
+Smoking -> Cardiovascular_Diseases
+Study_models -> Inflammation
+Cerebrovascular_accident -> Disability_NOS
+Neoplasms -> NonSmall_Cell_Lung_Carcinoma
+NOS2A_protein_humanNOS2 -> nitric_oxide
+Ethanol -> Toxic_effect
+Citrulline -> Nitric_Oxide
+Nodule -> Fibrosis
+Leukosis_Virus_Avian -> Neoplasm
+followup -> Obesity
+Cell_Survival -> Nitric_Oxide
+Ouabain -> NaKExchanging_ATPase
+Mutation -> NiemannPick_Diseases
+Risk_factor_cardiovascular -> Kidney_Failure_Chronic
+Hypertensive_disease -> Lesion
+neutrophil -> Nitric_Oxide
+Inflammation -> Periodontitis
+Cardiovascular_Diseases -> Rheumatoid_Arthritis
+alteplase -> Cerebrovascular_accident
+Dementia -> Lewy_Body_Disease
+Diabetic_Nephropathy -> End_stage_renal_failure
+Mutation -> DNA_biosynthesis
+Mutation -> Thrombocytopenia
+Diabetes_Mellitus_NonInsulinDependent -> Mutation
+Ethanol -> Alcoholic_Intoxication_Chronic
+Medicine_Folk -> Inflammation
+Inflammasomes -> Inflammation
+Glucocorticoids -> Growth
+Neoplasm -> Pancreatic_carcinoma
+Hypoxia -> Endothelial_dysfunction
+Insulin_Resistance -> Creactive_protein
+Glucocorticoids -> Bone_necrosis
+Peritoneal_Dialysis -> Kidney_Failure
+Aldosterone -> Rattus_norvegicus
+Inflammation -> NFkappa_B
+Cerebrovascular_accident -> Spatial_Neglect
+Diarrheal_disorder -> Cessation_of_life
+VEGFA -> Neoplasm
+Desoxycorticosterone_acetate -> Hypertensive_disease
+ovalbumin -> Inflammation
+Mutation -> Wound_Healing
+Diet -> Arteriosclerosis
+Phenylephrine -> CA2
+Hypertrophy_Left_Ventricular -> Essential_Hypertension
+Mineralocorticoid_Receptor -> Glucocorticoids
+Laparoscopic_adjustable_gastric_banding -> Obesity
+Selfexpanding_stent -> Obstruction
+Sex_Characteristics -> Heart_failure
+Impaired_cognition -> Heart_failure
+Gadolinium -> Fibrosis
+Inflammation -> Liver_diseases
+Oxidative_Stress -> Schizophrenia
+Nitric_Oxide -> Acetylcholine
+Pain_management -> Dementia
+Inflammation -> Premature_Birth
+Atrophic -> Alzheimers_Disease
+Kidney_Diseases -> Diabetes_Mellitus
+Cerebrovascular_accident -> Systemic_arterial_pressure
+Creactive_protein -> Cardiovascular_Diseases
+Thioacetamide -> Fibrosis
+Diabetes_Mellitus -> Heart_failure
+Mutation -> Blind_Vision
+Glucocorticoids -> Mus
+Diet -> Equilibrium
+Inflammation -> Infection
+Epinephrine -> CAMP
+Nitric_Oxide -> Homeostasis
+Neck_Dissection -> Neoplasm
+VASCULAR_ACCESS -> End_stage_renal_failure
+Mutation -> Obesity
+cytokine -> Inflammation
+removal_technique -> Neoplasms
+Hepatitis_C -> Fibrosis
+Isoprostanes -> Oxidative_Stress
+Radical_nephrectomy -> Neoplasm
+CD69_protein_humanCD69 -> Heart_failure
+Dexamethasone -> Rattus_norvegicus
+Endotoxins -> Nitric_Oxide
+Oxidative_Stress -> Diabetic_Nephropathy
+Cyclosporine -> Calcineurin
+Cerebrovascular_accident -> Hemiplegia
+Glucocorticoids -> Mineralocorticoid_Receptor
+Plasminogen_Activator_Inhibitor_1 -> Obesity
+Pyeloplasty -> Obstruction
+Silence -> Neoplasm
+Inflammation -> Interleukin6
+Hypoxia -> Vascular_constriction_function
+Kidney_Diseases -> Diabetes_Mellitus_NonInsulinDependent
+LeptinLEP -> Hypertensive_disease
+Constriction_procedure -> Hypertrophy
+Telemedicine -> Cerebrovascular_accident
+Vitamin_D -> Obesity
+Reactive_Oxygen_Species -> Oxidative_Stress
+Cancer_Promoting_Genes -> Neoplasm
+Cardiovascular_morbidity -> Hypertensive_disease
+BAX_geneBAX -> Neoplasm
+Nitric_Oxide -> Cardiac_function
+Mutation -> hypercholesterolemia
+Alzheimers_Disease -> Neurodegenerative_Disorders
+CharcotMarieTooth_Disease -> Mutation
+Kidney_Diseases -> Diabetes_Mellitus_InsulinDependent
+Hypertensive_disease -> Systolic_blood_pressure
+Neoplasm -> Carcinogenesis
+Cessation_of_life -> Cerebrovascular_accident
+Chronic_glomerulonephritis_NOS -> Kidney_Failure_Chronic
+Mutation -> Cell_Cycle
+Dementia -> Parkinson_Disease
+Migraine_Disorders -> Cerebrovascular_accident
+Inflammation -> Kidney_Failure_Acute
+Ethanol -> Mucous_Membrane
+Ethanol -> Fetus
+Enucleation_procedure -> Neoplasm
+MYC_geneMYC -> Neoplasm
+Ethanol -> Abnormal_coordination
+InsulinINS -> Obesity
+inhibitors -> Kidney_Failure_Chronic
+survivin -> Neoplasm
+Sodium_Chloride -> Child
+NOS3_protein_humanNOS3 -> nitric_oxide
+antagonists -> Obesity
+COVID19 -> Obesity
+Congestive_heart_failure -> Cessation_of_life
+Anesthetics -> Pheochromocytoma
+Respiratory_syncytial_virus -> Inflammation
+Depressive_Symptoms -> Obesity
+Vasospasm -> Ischemia
+Respiratory_Distress_Syndrome_Adult -> Cessation_of_life
+FAS -> Cessation_of_life
+Axotomy -> Cessation_of_life
+Angiotensin_II -> Myocytes_Cardiac
+Mutation -> SNW1_Gene
+Single_Nucleotide_Polymorphism -> Cerebrovascular_accident
+Blood_Glucose -> Obesity
+Reactive_Oxygen_Species -> Inflammation
+Obstruction -> Cerebral_Ischemia
+Sodium_Nitroprusside -> Hypertensive_disease
+Endothelial_dysfunction -> PreEclampsia
+Cigarette_smoke -> Inflammation
+Cessation_of_life -> Septicemia
+Neurotransmitters -> Alzheimers_Disease
+followup -> Hypertensive_disease
+gene_therapy -> Cardiovascular_Diseases
+First_line_treatment -> Sleep_Apnea_Obstructive
+Calcium_Channel_Blockers -> Heart_failure
+Insulin -> Insulin_Resistance
+Apoptosis -> Neoplasms
+Alzheimers_Disease -> Polymorphism_Genetic
+Pathologic_Neovascularization -> Neoplasm
+Epinephrine -> Hyperglycemia
+Transplantation -> Cerebrovascular_accident
+Mutation -> Cell_physiology
+Endotoxins -> Inflammation
+glucose_high -> Inflammation
+Coronary_heart_disease -> Cessation_of_life
+Electrolytes -> Hypertensive_disease
+Glucocorticoids -> Glucocorticoid_Receptor
+Hypoxia -> Sleep_Apnea_Obstructive
+Balloon_Dilatation -> Stenosis
+Fatty_Acids_Omega3 -> Cardiovascular_Diseases
+Operative_Surgical_Procedures -> Cerebral_hemisphere_hemorrhage
+Corticosterone -> Aldosterone
+Diet -> Immune_response
+Ethanol -> Memory_impairment
+Ventricular_Fibrillation -> Cessation_of_life
+Inflammation -> Vasculitis
+Diabetes -> Fibrosis
+Mutation -> Exocytosis
+Diabetes_Mellitus_NonInsulinDependent -> End_stage_renal_failure
+Mutation -> Hepatolenticular_Degeneration
+Heart_failure -> Diabetes
+APP_gene -> Cessation_of_life
+Amyloid_betaProtein_Precursor -> APP_gene
+Operative_Surgical_Procedures -> Ischemia
+Interleukin1_beta -> Alzheimers_Disease
+Iodine -> Sodium_Chloride
+depolarization -> Ischemia
+Detection -> Obesity
+Tachycardia -> Heart_failure
+Neoadjuvant_Therapy -> Neoplasm
+Angiotensin_II -> Protein_Biosynthesis
+Dexamethasone -> Infant
+Vitamin_E -> Oxidative_Stress
+Excessive_weight_gain -> Obesity
+Lactate -> Neoplasm
+APP_gene -> Toxic_effect
+Gammaglutamyl_transferase -> Oxidative_Stress
+Inflammation -> Diabetic_Retinopathy
+Vitamin_D_Deficiency -> Obesity
+Astrocytes -> Nitric_Oxide
+Ethanol -> Static_reflex_of_Magnus_and_de_Kleijn
+Amyotrophic_Lateral_Sclerosis -> Cessation_of_life
+Peritoneal_Dialysis -> Kidney_Failure_Chronic
+Ventricular_arrhythmia -> Heart_failure
+CDKN1ATCEAL1NSG1H3F3AP6 -> Neoplasm
+cardiac_arrhythmia -> Ischemia
+HypoxiaInducible_Factor_1 -> Hypoxia
+Phenylephrine -> Hypertrophy
+Metals_Heavy -> Oxidative_Stress
+Ethanol -> Carcinogenesis
+MAPT -> Microtubules
+Vitamin_D -> Hypertensive_disease
+Nitric_Oxide -> Renal_function
+Ethanol -> Brain_Injuries
+Stiffness -> Hypertensive_disease
+Estrogens -> Nitric_Oxide
+Ethanol -> Adolescent
+sex -> Cardiovascular_Diseases
+Ethanol -> Sleep
+Cessation_of_life -> Family
+AVP -> Ethanol
+Inflammation -> Multiple_Sclerosis
+Blood_Pressure -> Sleep_Apnea_Obstructive
+Cessation_of_life -> Cell_Death
+Aortic_Valve_Insufficiency -> Heart_failure
+Combined_Modality_Therapy -> Alzheimers_Disease
+Ischemic_stroke -> Cessation_of_life
+Thioctic_Acid -> Oxidative_Stress
+Inflammation -> Extrinsic_asthma_NOS
+Assessment_procedure -> Obstruction
+Signal_Transduction_Pathways -> Cessation_of_life
+Oncogene_Proteins -> Neoplasm
+Heart_failure -> Atrial_Fibrillation
+Nitric_Oxide -> Septicemia
+Obstruction -> Sickle_Cell_Anemia
+Zinc -> Alzheimers_Disease
+Perindopril -> Hypertensive_disease
+Endotoxemia -> Inflammation
+High_Density_Lipoprotein_Cholesterol -> Obesity
+Hydrocortisone -> Corticotropin
+Screening_procedure -> Conn_Syndrome
+Ethanol -> Mice_Inbred_C57BL
+Hypertensive_disease -> Vascular_Diseases
+TGFB1_protein_humanTGFB1 -> Neoplasm
+Coronary_Occlusion -> Ischemia
+Ouabain -> uptake
+Movement_therapy -> Cerebrovascular_accident
+Allergens -> Inflammation
+antagonists -> Hypertensive_disease
+Death_Sudden_Cardiac -> Heart_failure
+pimonidazole -> Hypoxia
+Dexamethasone -> Atrophic
+Obesity -> glucose_homeostasis
+Hypoxia -> Cessation_of_life
+Repeat_Surgery -> Stenosis
+Hypertensive_disease -> Conn_Syndrome
+Nitric_Oxide -> NFkappa_B
+Endothelium_Vascular -> Nitric_Oxide
+Proliferating_Cell_Nuclear_Antigen -> Neoplasm
+angiotensin_II -> Mus
+NMethylDAspartate_Receptors -> Ethanol
+Mutation -> Parkinson_Disease
+Galantamine -> Alzheimers_Disease
+Nitric_Oxide -> Heme
+Cardiovascular_Diseases -> Hospitalization
+Extravasation -> Neoplasm
+Amyloid -> Diabetes_Mellitus_NonInsulinDependent
+Self_Care -> Heart_failure
+Obstruction -> Pathogenesis
+Diabetes -> Mutation
+Docosahexaenoic_Acids -> Inflammation
+Mutation -> Bleeding_tendency
+betasite_APP_cleaving_enzyme_1BACE1 -> Alzheimers_Disease
+Sirolimus_substance -> Neoplasm
+Mutation -> Leukoencephalopathy
+Inflammation -> Anemia
+MicroRNAs -> Neoplasm
+Ethanol -> Paraffin
+Lupus_Erythematosus_Systemic -> Cardiovascular_Diseases
+Inflammation -> Diabetes_Mellitus
+Birth_Weight -> Obesity
+Epinephrine -> Felis_catus
+Cardiac_complication -> Cessation_of_life
+Alzheimers_Disease -> Dementia_Vascular
+Acidosis -> Ischemia
+Amyloid_betaPeptides -> Alzheimers_Disease
+Nerve_Degeneration -> nervous_system_disorder
+Mutation -> Drug_resistance
+Hypertrophy_Left_Ventricular -> Cardiovascular_morbidity
+Adrenal_Cortex -> Glucocorticoids
+Dissection -> Neoplasm
+Inflammation -> Diabetes_Mellitus_NonInsulinDependent
+Cessation_of_life -> Child
+Nitric_Oxide -> DNA_Damage
+Ethanol -> Fibrosis
+Laparoscopic_sleeve_gastrectomy -> Obesity
+Mutation -> nuclear_mRNA_cis_splicing_via_spliceosome
+Cyclosporine -> Uveitis
+Prazosin -> Norepinephrine
+GLP1_Receptor_Agonist_EPC -> Obesity
+Malondialdehyde -> Oxidative_Stress
+Hydrocortisone -> Obesity
+Screening_procedure -> Obesity
+Nitric_Oxide -> Cell_Death
+Inflammation -> Rheumatoid_Arthritis
+Cerebrovascular_accident -> Coronary_heart_disease
+Inflammatory_Response -> Alzheimers_Disease
+Detection -> Hypertensive_disease
+Obstruction -> Hepatic_Vein_Thrombosis
+Fibrosis -> Neoplasm
+Atrial_Fibrillation -> Heart_failure
+Homeostasis_model_assessment -> Insulin_Resistance
+Hypertriglyceridemia -> Cardiovascular_Diseases
+Cell_Death -> Cessation_of_life
+Hypertensive_disease -> Obesity
+Amyloid -> Microglia
+Neoplasm -> Granulocyte_ColonyStimulating_Factor
+Lidocaine -> Obstruction
+Agent -> Fibrosis
+Serotonin -> Ethanol
+Inflammation -> Disease_Progression
+Radical_prostatectomy -> Neoplasm
+Minoxidil -> Hypertensive_disease
+Stent_device -> Obstruction
+Phenylephrine -> Vascular_constriction_function
+Oxidative_Stress -> Injury
+Glucocorticoids -> Autoimmune_Diseases
+Obesity -> Sedentary
+AntiAnxiety_Agents -> Ethanol
+Implantation_procedure -> Obstruction
+APP_gene -> Memory_impairment
+MLH1_geneMLH1 -> Neoplasm
+donepezil -> Dementia
+Glucocorticoids -> Hyperglycemia
+Neuroprotective_Agents -> Alzheimers_Disease
+Neoplasm -> Malignant_Neoplasms
+Amyloid_betaProtein_Precursor -> Alzheimers_Disease
+Diabetes_Mellitus_NonInsulinDependent -> Insulin_Resistance
+Antipsychotic_Agents -> Alzheimers_Disease
+streptozocin -> Diabetes_Mellitus_NonInsulinDependent
+Oxidative_Stress -> Neurodegenerative_Disorders
+Angiotensin_II -> Renal_Blood_Flow
+Obesity -> Hypertensive_disease
+Mutation -> Diabetes
+Mutation -> Anabolism
+Cerebrovascular_accident -> Foramen_Ovale_Patent
+Heart_failure -> COVID19
+Nonalcoholic_fatty_liver -> Cardiovascular_Diseases
+Excision -> Neoplasm
+dihydropyridine -> Hypertensive_disease
+risk_factors -> Dementia
+Ischemia -> Ventricular_arrhythmia
+Thrombolytic_Therapy -> Cerebrovascular_accident
+Hypertensive_disease -> Ischemic_stroke
+Somatostatin_analogSST -> Neoplasm
+Obesity -> Coronary_heart_disease
+Inflammation -> Neoplasm
+Mutation -> Dystonia
+Hypoxia -> Respiration
+Dexamethasone -> cytokine
+Premature_Birth -> Inflammation
+Obesity -> Sarcopenia
+DHypometabolism -> Alzheimers_Disease
+Hepatitis_C_Chronic -> Fibrosis
+Glutamate -> Oxidative_Stress
+Dementia -> COVID19
+Eicosanoids -> Inflammation
+Thrombosis -> Cerebrovascular_accident
+Lipids -> Insulin_Resistance
+Transurethral_Resection -> Neoplasm
+Endothelial_dysfunction -> Heart_failure
+Fluorouracil -> Neoplasm
+Birth_Weight -> Hypertensive_disease
+Ions -> Sodium_Chloride
+Toxic_effect -> Neoplasm
+Hyperparathyroidism_Secondary -> Kidney_Failure_Chronic
+Vitamin_D -> Inflammation
+Cyclosporine -> Recipient_Transplant
+Mutation -> Cardiomyopathy_Hypertrophic_Familial
+Inflammation -> Tumorigenesis
+Diet -> Injury
+Kainic_Acid -> Nerve_Degeneration
+Colorectal_Cancer -> Neoplasm
+Reconstructive_Surgical_Procedures -> Neoplasm
+myocardium_injury -> Ischemia
+Ethanol -> Primary_carcinoma_of_the_liver_cells
+CATALASE -> Oxidative_Stress
+Mutation -> Myopathy
+EGFR_geneEGFR -> Neoplasm
+Obesity -> Metabolic_syndrome
+Mutation -> Ability
+aliskiren -> Hypertensive_disease
+Somatotropin -> Obesity
+Cerebrovascular_accident -> Pathogenesis
+Bleomycin -> Fibrosis
+COVID19 -> Inflammation
+Traumatic_Brain_Injury -> Inflammation
+Heart_failure -> Cardiomyopathy_Dilated
+Diet -> Steatohepatitis
+Ventricular_Fibrillation -> Ischemia
+Screening_procedure -> Hypertensive_disease
+Oxidative_Stress -> AgingRelated_Process
+Hypertensive_disease -> Cardiovascular_Diseases
+Inflammation -> Inflammatory_disorder
+Probes -> Neoplasms
+Assessment_procedure -> Obesity
+Walking -> Cerebrovascular_accident
+Acetylcholinesterase_Inhibitors -> Alzheimers_Disease
+Neoplasms -> Immune_response
+Acetaminophen -> Oxidative_Stress
+Carbon_Tetrachloride -> Fibrosis
+Inflammation -> Severe_asthma
+Hydrocortisone -> Dexamethasone
+docetaxel -> Neoplasm
+Exercise -> Heart_failure
+Substance_P -> Inflammation
+Glucocorticoids -> Asthma
+Hypertensive_disease -> Hypertrophy
+Cancer_Therapeutic_Procedure -> Neoplasms
+Malignant_neoplasm_of_breast -> Mutation
+TNF_protein_humanTNF -> Neoplasm
+Sodium_Chloride -> Canis_familiaris
+PROM1 -> Neoplasm
+Hypertensive_disease -> Stress
+Drainage_procedure -> Obstruction
+Ventricular_assist_device -> Heart_failure
+Operative_Surgical_Procedures -> Aortic_coarctation
+Hemorrhage -> Cessation_of_life
+R38486 -> Glucocorticoids
+Lipopolysaccharides -> Nitric_Oxide
+particle -> Oxidative_Stress
+receptor -> Neoplasm
+Hypertensive_disease -> risk_factors
+Diuretic_therapy -> Hypertensive_disease
+Evaluation -> Heart_failure
+Thrombectomy -> Obstruction
+Neuroprotective_Agents -> Cerebrovascular_accident
+DNA_Mitochondrial -> Neoplasm
+Nitric_Oxide -> Hypertension_Pulmonary
+Obesity -> glucose_metabolism
+Neoplasm -> NODE
+Obstruction -> Cessation_of_life
+Apolipoprotein_EAPOE -> Lipid_Metabolism
+AngiotensinConverting_Enzyme_Inhibitors -> Hypertensive_disease
+Norepinephrine -> Membrane
+Obstruction -> Hydrocephalus
+Obesity -> Pathogenesis
+Phosphotransferases -> Neoplasm
+Present -> Alzheimers_Disease
+Neoplasm -> ERBB2_geneERBB2
+Binder -> Kidney_Failure_Chronic
+Blood_Coagulation_Disorders -> Cessation_of_life
+Obesity -> Oxidative_Stress
+Diabetes_Mellitus_NonInsulinDependent -> Dementia
+Apolipoprotein_EAPOE -> Alzheimers_Disease
+Ethanol -> Stomach
+Cardiovascular_Diseases -> Endothelial_dysfunction
+AngiotensinConverting_Enzyme_Inhibitors -> Angiotensin_II
+Vitamin_K_3 -> Oxidative_Stress
+Edema -> Neoplasm
+Prophylactic_treatment -> Alzheimers_Disease
+Somatic_mutation -> Neoplasms
+Detection -> Neoplasms
+MAPT -> Frontotemporal_dementia
+Adrenergic_betaAntagonists -> Cardiovascular_Diseases
+Cerebrovascular_accident -> Equilibrium
+Brain_natriuretic_peptide -> Heart_failure
+Cognitive_deterioration -> Alzheimers_Disease
+Fasting -> Obesity
+High_fat_diet_NOS -> Obesity
+Mutation -> Hypophosphatasia
+Aging -> Obesity
+bisphenol_A -> Oxidative_Stress
+Diabetes_Mellitus_InsulinDependent -> Cardiovascular_Diseases
+particle -> Inflammation
+arginine_methyl_ester -> Hypertensive_disease
+Bariatric_Surgery -> Sleep_Apnea_Obstructive
+Epidermal_Growth_Factor_ReceptorEGFR -> Neoplasm
+Vascular_Diseases -> Cessation_of_life
+ChemotherapyOncologic_Procedure -> Neoplasm
+Mutation -> Muscular_Dystrophy_Duchenne
+Cessation_of_life -> Chronic_Obstructive_Airway_Disease
+Dementia -> Elderly
+Ethanol -> uptake
+Aluminum -> Alzheimers_Disease
+Obesity -> Chronic_Kidney_Diseases
+Acetylcholine -> Alzheimers_Disease
+Hyperhomocysteinemia -> Cerebrovascular_accident
+Nterminal_proBtype_natriuretic_peptide -> Heart_failure
+Single_Nucleotide_Polymorphism -> Neoplasm
+Glucocorticoid_Receptor -> Dexamethasone
+Angioplasty -> Stenosis
+Obesity -> Nonalcoholic_fatty_liver
+Fibrosis -> Alcoholic_Liver_Diseases
+heart_rate -> Heart_failure
+Obesity -> Inflammation
+Oxidative_Stress -> Reactive_Oxygen_Species
+Lipopolysaccharides -> Inflammation
+Infarction -> Cerebrovascular_accident
+Cell_Adhesion_Molecules -> Inflammation
+Nitric_Oxide -> Reperfusion_Injury
+Transplantation -> Neoplasm
+Vasodilator_Agents -> Hypertensive_disease
+Norepinephrine -> Aorta
+Dexamethasone -> Interleukin6
+Medical_therapy -> Cerebrovascular_accident
+Assessment_procedure -> Cardiovascular_Diseases
+Implantation_procedure -> Obesity
+Kidney_Failure_Acute -> Cessation_of_life
+Operative_Surgical_Procedures -> Cerebrovascular_accident
+inhibitors -> Alzheimers_Disease
+Hypertensive_disease -> Nitric_Oxide
+Erectile_dysfunction -> Cardiovascular_Diseases
+Fibrosis -> Transforming_Growth_Factor_beta
+Norepinephrine -> Neurotransmitters
+Psychotic_Disorders -> Alzheimers_Disease
+Cessation_of_life -> Apoptosis
+Assessment_procedure -> Hypertensive_disease
+Palatopharyngoplasty -> Sleep_Apnea_Obstructive
+Aluminum -> Water
+Mitral_Valve_Insufficiency -> Heart_failure
+Infection -> Neoplasm
+Mutation -> Spinal_Muscular_Atrophy
+Mutation -> Virulence
+Increased_risk -> Sleep_Apnea_Obstructive
+Mutation -> Craniosynostosis
+PGR_genePGR -> Neoplasm
+Vitamin_D -> Kidney_Failure_Chronic
+MAPT -> paired_helical_filament
+Murine_sarcoma_viruses -> Neoplasm
+Norepinephrine -> Hypertensive_disease
+Pulmonary_Thromboembolisms -> Cessation_of_life
+Oxidative_Stress -> Alzheimers_Disease
+Metformin -> Insulin_Resistance
+11betaHydroxysteroid_Dehydrogenase_Type_1 -> Glucocorticoids
+Acetylcysteine -> Oxidative_Stress
+CorticotropinPOMC -> Aldosterone
+Lupus_Erythematosus_Systemic -> Cessation_of_life
+Sodium_Chloride -> Hypertensive_disease
+Glucocorticoids -> Fracture
+Diabetes -> Insulin_Resistance
+Mutation -> Heart_Diseases
+Memory_impairment -> Alzheimers_Disease
+Lipoproteins -> Obesity
+Alzheimers_Disease -> Down_Syndrome
+Oxidative_Stress -> Malignant_Neoplasms
+Cessation_of_life -> Tuberculosis
+Norepinephrine -> Hypotension
+danshen_root_extract -> Cardiovascular_Diseases
+FGF23 -> Kidney_Failure_Chronic
+Insulin_Resistance -> Obesity
+Rotenone -> Oxidative_Stress
+Transgenes -> Neoplasm
+Norepinephrine -> reuptake
+Ethanol -> Gastric_ulcer
+Sodium_Chloride -> Stress
+Bacteremia -> Cessation_of_life
+Functional_RNA -> Neoplasm
+AntiInflammatory_Agents -> Inflammation
+apolipoprotein_E4APOE -> Alzheimers_Disease
+Asthma -> Cessation_of_life
+Hypertensive_disease -> Diabetes
+Mutation -> Marfan_Syndrome
+DNA_Damage -> Mutation
+Exercise_Training -> Obesity
+Polymers -> Neoplasm
+Open_approach -> Neoplasm
+Desoxycorticosterone_acetate -> Rattus_norvegicus
+Mutation -> Cardiomyopathy_Dilated
+Obstruction -> Asthma
+Ethanol -> Depressed_mood
+910Dimethyl12benzanthracene -> Neoplasm
+Glutamate -> Cessation_of_life
+Palmitates -> Insulin_Resistance
+Nitric_Oxide -> Chronic_Obstructive_Airway_Disease
+Neoplasm -> Necrosis
+Sodium -> Water
+Toxin -> Oxidative_Stress
+Glycoproteins -> Neoplasm
+Alzheimer_Disease_Early_Onset -> Mutation
+Ions -> Alzheimers_Disease
+Cardiovascular_Diseases -> Sleep_Apnea_Obstructive
+Nitric_Oxide -> NOS2A_protein_humanNOS2
+Neurodegenerative_Disorders -> Oxidative_Stress
+Study_models -> Alzheimers_Disease
+Atherosclerosis -> Obesity
+arginine_methyl_ester -> Nitric_Oxide
+Ethanol -> cell_injury
+Nitric_Oxide -> Blood_flow
+Excision -> Stenosis
+Angiotensin_II -> Rats_SpragueDawley
+Cerebral_hemisphere_hemorrhage -> Inflammation
+Thermogenesis -> Obesity
+Prophylactic_treatment -> Cerebrovascular_accident
+Cessation_of_life -> Obesity
+Nerve_Degeneration -> Amyotrophic_Lateral_Sclerosis
+TRANSCRIPTION_FACTOR -> Neoplasm
+Norepinephrine -> Dialysis_Solutions
+Inflammation -> Present
+Diet -> Acidosis
+Aging -> Hypertensive_disease
+Alteplase -> Obstruction
+AntiArrhythmia_Agents -> Heart_failure
+Cyclin_E -> Neoplasm
+Dexamethasone -> CorticotropinPOMC
+Formalin -> Inflammation
+Bacteria -> Obesity
+Mutation -> Lysosomal_Storage_Diseases
+Diet -> Alzheimers_Disease
+Nitric_Oxide -> Apoptosis
+Cerebrovascular_accident -> Diabetic
+Carboplatin -> Neoplasm
+Homologous_Gene -> Neoplasm
+Autophagy -> Nerve_Degeneration
+Implants -> Neoplasm
+Ligation -> Ischemia
+Disease_Progression -> Alzheimers_Disease
+Hypertensive_disease -> Atrial_Fibrillation
+tertButylhydroperoxide -> Oxidative_Stress
+Angiotensin_II -> NOS3_protein_humanNOS3
+Cardiac_Resynchronization_Therapy -> Heart_failure
+Alzheimers_Disease -> Neurofibrillary_Tangles
+Mutation -> Connective_Tissue_Diseases
+Diet -> Malignant_Neoplasms
+Hemoglobin -> Nitric_Oxide
+IGA_Glomerulonephritis -> Kidney_Failure_Chronic
+Extracorporeal_Membrane_Oxygenation -> Heart_failure
+Toxin -> Inflammation
+IFI27PSMD9SSSCA1DCTN6TMED7 -> Neoplasm
+macrophage -> Nitric_Oxide
+Rheumatoid_Arthritis -> Cardiovascular_Diseases
+Microalbuminuria -> Cardiovascular_Diseases
+Ovalbumin -> Inflammation
+Percutaneous_coronary_intervention -> Kidney_Diseases
+Sleep_Apnea_Obstructive -> Cerebrovascular_accident
+Cerebrovascular_accident -> Woman
+Respiration -> Hypoxia
+Oxidative_Stress -> cytotoxicity
+Sex_Characteristics -> Obesity
+Respiratory_complication -> Cessation_of_life
+Acids -> Kidney_Diseases
+Oxidative_Stress -> Signal_Transduction_Pathways
+risk_factors -> Obesity
+Defibrillators_Implantable -> Heart_failure
+Oxidative_Stress -> Heart_failure
+Angiotensin_II -> Kidney
+Hepatitis_B_Virus -> Fibrosis
+Stent_device -> Stenosis
+Thrombus -> Ischemia
+Kidney_Transplantation -> Obesity
+Sodium -> Heart_failure
+Angiotensin_II -> Blood_Vessels
+Embolization_Therapeutic -> Hypertrophy
+Dexamethasone -> TYROSINE_AMINOTRANSFERASETAT
+Heart_failure -> Acute_myocardial_infarction
+Obesity -> Kidney_Diseases
+Gelatinase_B -> Neoplasm
+Lower_respiratory_tract_infection -> Cessation_of_life
+Neoplasm -> Solid_tumor
+Physical_activity -> Cerebrovascular_accident
+Nitric_Oxide -> Wound_Healing
+Obstruction -> Hypertension_Portal
+Streptozocin -> Diabetes
+Streptozocin -> Diabetic_cardiomyopathy
+Inflammation -> Growth
+Lipoproteins -> Cardiovascular_Diseases
+Streptozocin -> DIANPH_geneDIANPH
+Mutation -> Codon_Nonsense
+Fibrosis_Liver -> Fibrosis
+Streptozocin -> Buffers
+Abdominal_obesity -> Cardiovascular_Diseases
+Obesity -> Kidney_Failure_Chronic
+Inflammation -> Polycystic_Ovary_Syndrome
+Mutation -> Leucodystrophy_NOS
+Oxidative_Stress -> Pathologic_Processes
+Melatonin -> Alzheimers_Disease
+Angiotensin_II -> Oryctolagus_cuniculus
+Cardiovascular_Diseases -> Diabetic
+Obesity -> Diabetic
+Inflammation -> Impaired_cognition
+Ethanol -> Gastric_mucosal_lesion
+Cardiovascular_Diseases -> Cessation_of_life
+Nitric_Oxide -> Neuronal_Transmission
+Cyclooxygenase_2_Inhibitors -> Inflammation
+Embolism -> Cerebrovascular_accident
+Hyperphagia -> Obesity
+Serum_Albumin_Bovine -> Sodium_Chloride
+Insulin_Resistance -> Hypertensive_disease
+Sodium_Chloride -> Ions
+Interleukin6 -> Neoplasm
+Adrenergic_Receptor -> Obesity
+Insulin_Resistance -> TNF_protein_humanTNF
+Vascular_calcification -> Cardiovascular_Diseases
+alphaSynuclein -> Alzheimers_Disease
+Ethanol -> Necrosis
+Vaccination -> Inflammation
+Diabetes -> Dementia
+Chromosome_abnormality -> Neoplasm
+NaKExchanging_ATPase -> Ouabain
+Obesity -> Malignant_neoplasm_of_endometrium
+Insulin -> Hypertensive_disease
+Cerebrovascular_accident -> Depressive_disorder
+Cerebral_Edema -> Cessation_of_life
+imbalance -> Alzheimers_Disease
+carvedilol -> Heart_failure
+Cardiomyopathies -> Cessation_of_life
+Obesity -> Woman
+IMPACT_gene -> Dementia
+LowDensity_Lipoproteins -> Cardiovascular_Diseases
+Angiotensin_II -> Systemic_arterial_pressure
+Agent -> Insulin_Resistance
+Insulin_Resistance -> Coronary_heart_disease
+Sodium_Chloride -> Buffers
+Neoplasm -> Angiogenesis
+Ethanol -> Fatty_Liver
+Glucocorticoids -> Tumor_Necrosis_Factor_Receptor
+Atherosclerosis -> Cardiovascular_Diseases
+Mutation -> Adaptation
+Norepinephrine -> Phosphorylation
+Interleukin1 -> Inflammation
+Reactive_Oxygen_Species -> Alzheimers_Disease
+Cessation_of_life -> Acute_coronary_syndrome
+Cyclosporine -> Renal_function
+ERBB2_geneERBB2 -> Neoplasm
+VEGF_protein_humanVEGFA -> Hypoxia
+Atherosclerosis -> Hypertensive_disease
+Neoplasm -> melanoma
+Immunity -> Inflammation
+Hypoxia -> Homeostasis
+Surgical_Replantation -> Obesity
+Rifampin -> Mutation
+Cessation_of_life -> Hypertensive_disease
+Mutation -> Aging
+Triglycerides -> Cardiovascular_Diseases
+Inflammation -> Smoker
+Sleep_disturbances -> Alzheimers_Disease
+CA9_geneCA9 -> Hypoxia
+Hypoxia -> uptake
+Aldosterone -> Kidney
+GJA1_geneGJA1 -> Obesity
+BK_Virus -> Kidney_Diseases
+Ischemia -> cell_injury
+Natriuretic_Peptides -> Heart_failure
+Corticotropin -> Canis_familiaris
+Norepinephrine -> Neurons
+Cyclosporine -> NEPHROTOXICITY
+Tumorigenesis -> Neoplasm
+Cessation_of_life -> Coronary_heart_disease
+polyphenols -> Cardiovascular_Diseases
+Tumor_Suppressor_Genes -> Neoplasms
+Hypertensive_disease -> COVID19
+Kidney_Diseases -> Diabetic
+Inflammation -> Endothelial_dysfunction
+Kidney_Diseases -> Cessation_of_life
+Insulin_Resistance -> Metabolic_syndrome
+NFkappa_B -> Neoplasm
+Screening_procedure -> Kidney_Failure_Chronic
+Oxidative_Stress -> Infection
+Nitric_Oxide -> Hemoglobin
+Sex_Characteristics -> Cardiovascular_Diseases
+Inflammation -> Steatohepatitis_nonalcoholic
+Hepatectomy -> Fibrosis
+Inflammation -> Traumatic_Brain_Injury
+Hyperuricemia -> Cardiovascular_Diseases
+Diabetes_Mellitus -> Cardiovascular_Diseases
+Mutation -> Evolution
+Alzheimers_Disease -> Disease_Progression
+Growth -> Neoplasm
+Anemia -> Kidney_Failure_Chronic
+Cyclosporine -> Nephrotic_Syndrome
+risk_factors -> Hypertensive_disease
+Toxic_effect -> Oxidative_Stress
+Diabetes_Mellitus_NonInsulinDependent -> Obesity
+nebivolol -> Hypertensive_disease
+Biological_Markers -> Cardiovascular_Diseases
+Cardiac_Hypertrophy -> Heart_failure
+Nitric_Oxide -> Alveolar_ventilation_function
+Metallothionein -> Neoplasm
+Diet -> Pancreatitis
+Mutation -> Retinal_Diseases
+LDL_Cholesterol_Lipoproteins -> Cardiovascular_Diseases
+CD69_protein_humanCD69 -> Cardiovascular_Diseases
+Prodrugs -> Neoplasm
+Cardiopulmonary_Bypass -> Inflammation
+Mutation -> voltage_gated_channel
+Norepinephrine -> Serotonin
+Pneumonia -> Cessation_of_life
+angiotensin_II -> Fibrosis
+Mitomycin -> Neoplasm
+Nitrite -> Nitric_Oxide
+Depressed_mood -> Heart_failure
+Ischemia -> Retinal_Neovascularization
+alanosine -> Hypertensive_disease
+Massive_hemorrhage -> Cessation_of_life
+Ethanol -> Malignant_neoplasm_of_breast
+Moloney_Leukemia_Virus -> Neoplasm
+Biliopancreatic_Diversion -> Obesity
+Rare_Diseases -> Mutation
+Aging -> Inflammation
+Mutation -> Hereditary_Diseases
+Hypertensive_disease -> Heart_Diseases
+Apolipoprotein_E_geneAPOE -> Alzheimers_Disease
+Ethanol -> Blood_Pressure
+Superoxides -> Nitric_Oxide
+Supplementation -> Oxidative_Stress
+Cardiac_Output -> Hypoxia
+SODIUM_INTAKE -> Hypertensive_disease
+Ethanol -> Offspring
+Bone_Diseases -> Kidney_Failure_Chronic
+AngiotensinConverting_Enzyme_Inhibitors -> Kidney_Failure_Chronic
+Study_models -> Infection
+Obesity -> Energy_Metabolism
+Endothelin -> Hypertensive_disease
+Hyperlipidemia -> Obesity
+Ethylnitrosourea -> Neoplasm
+Dexamethasone -> Oryctolagus_cuniculus
+Adrenergic_Receptor -> Hypertensive_disease
+Nitric_Oxide -> Hypertensive_disease
+Mutation -> Recombination_Genetic
+Lipids -> Obesity
+Inflammation -> Autophagy
+Male_gender -> Hypertensive_disease
+Nitrendipine -> Hypertensive_disease
+Sympathectomy -> Hypertensive_disease
+Gastrojejunostomy -> Obesity
+DNA -> Neoplasm
+Obesity -> Pancreatic_carcinoma
+Obesity -> Chronic_inflammation
+Degenerative_abnormality -> Alzheimers_Disease
+Heart_failure -> Cardiac_function
+Acetate -> Prostate_cancer_metastatic
+Nitric_Oxide -> Angiotensin_II
+Indapamide -> Hypertensive_disease
+Fructose -> Insulin_Resistance
+Sleep_Apnea_Obstructive -> Child
+Calcium -> Sodium
+Nitric_Oxide -> Stress
+renin_activity -> Hypertensive_disease
+Hypertrophy -> Hypertensive_disease
+Cessation_of_life -> Glaucoma
+Mutation -> Rare_Diseases
+Fibrosis -> Pancreatic_Ductal_Adenocarcinoma
+TNF_protein_humanTNF -> Endothelial_dysfunction
+Lobectomy -> Neoplasm
+Ethanol -> Lesion
+Insulin_Resistance -> Hyperinsulinism
+Insulin_Resistance -> Diabetes
+Aggressive_behavior -> Neoplasm
+Operative_Surgical_Procedures -> Obstruction
+Extravasation -> Cessation_of_life
+Reserpine -> Hypertensive_disease
+Primary_carcinoma_of_the_liver_cells -> Neoplasm
+Amyloid -> Amyloidosis
+Complete_excision -> Neoplasm
+Wound_Healing -> Inflammation
+Arteriosclerosis -> Cessation_of_life
+Cytostatic_Agents -> Neoplasm
+Neoplasm -> Young_adult
+Neoplasms -> Liver_carcinoma
+Ouabain -> Canis_familiaris
+Pulmonary_arterial_hypertension -> Cessation_of_life
+glucose_metabolism -> Alzheimers_Disease
+Antiplatelet_Agents -> Cardiovascular_Diseases
+cytokine -> Insulin_Resistance
+Cessation_of_life -> Pathogenesis
+Metabolic_syndrome -> Obesity
+Myocardial_Infarction -> Cessation_of_life
+semaglutide -> Obesity
+Hyperglycemia -> Cardiovascular_Diseases
+Ischemia -> Cell_Death
+Obstruction -> Hypertrophic_Cardiomyopathy
+Hyperinsulinism -> Diabetes_Mellitus_NonInsulinDependent
+Mutation -> Retinitis_Pigmentosa
+Insulin_Resistance -> Nonalcoholic_fatty_liver
+GJA1_geneGJA1 -> Hypertensive_disease
+Heart_Diseases -> Heart_failure
+Insulin_Resistance -> Inflammation
+Risk_Reduction -> Cerebrovascular_accident
+Estrogens -> Alzheimers_Disease
+Mutation -> Menkes_Kinky_Hair_Syndrome
+insulin_sensitivity -> Obesity
+Ethanol -> Intoxication
+Catecholamines -> Hypertensive_disease
+CpG_Islands -> Neoplasm
+Inflammation -> Sleep_Apnea_Obstructive
+Transient_ischemia -> Cessation_of_life
+Carcinoma -> Neoplasm
+Psychotropic_Drugs -> Dementia
+Cyclosporine -> mitochondrial_permeability_transition_pore
+Norepinephrine -> Hypothalamic_structure
+Injury -> Fibrosis
+AntigenAntibody_Complex -> Inflammation
+Neoplasm -> Ovarian_Carcinoma
+Assessment_procedure -> Kidney_Failure_Chronic
+Hydrogen_Peroxide -> Oxidative_Stress
+Hypertensive_disease -> Elderly
+Cyclosporine -> Child
+GlucagonLike_Peptide_1 -> Obesity
+Selfcare_interventions -> Heart_failure
+Immunoreactivity -> Alzheimers_Disease
+ABCB1_geneABCB1 -> Neoplasm
+Placebos -> Dementia
+Albuminuria -> Cardiovascular_Diseases
+Neoplasm -> Carcinoembryonic_Antigen
+Diabetes_Mellitus_NonInsulinDependent -> Hypertensive_disease
+Hepatocyte -> Nitric_Oxide
+Endothelial_Cells -> Nitric_Oxide
+Fibrosis -> Cessation_of_life
+Chronic_infectious_disease -> Inflammation
+Cessation_of_life -> Chronic_Kidney_Diseases
+Recovery_of_Function -> Cerebrovascular_accident
+Neoplasms -> Malignant_Neoplasms
+Neoplasm -> Catecholamines
+Nitric_Oxide -> Oxygen
+Angiogenesis_Inhibitors -> Neoplasm
+Cell_Proliferation -> Neoplasm
+AntiObesity_Agents -> Obesity
+View -> Obesity
+Acetylcholinesterase -> Alzheimers_Disease
+Antiplatelet_therapy -> Cerebrovascular_accident
+Fibrosis -> Autoimmune_Diseases
+Behavioral_Symptoms -> Alzheimers_Disease
+Treatment_Protocols -> Obesity
+Inflammation -> Behcet_Syndrome
+GABinding_Protein_Transcription_FactorGABPANFE2L2 -> Oxidative_Stress
+Guide_device -> Heart_failure
+Cessation_of_life -> Kidney_Failure
+Angiotensin_II -> Transforming_Growth_Factor_beta
+Mutation -> Rett_Syndrome
+Norepinephrine -> Woman
+Phenylephrine -> Adrenergic_Receptor
+Heart_failure -> Cerebrovascular_accident
+Hypertensive_disease -> Hypertensive
+Subarachnoid_Hemorrhage -> Cessation_of_life
+Smoking -> Cerebrovascular_accident
+Inflammation -> Degenerative_polyarthritis
+Metabolic_Diseases -> Cardiovascular_Diseases
+Amyloid -> Cessation_of_life
+Freunds_Adjuvant -> Inflammation
+Ouabain -> depolarization
+Systolic_dysfunction -> Heart_failure
+nervous_system_disorder -> Cessation_of_life
+Mutation -> Autosomal_Recessive_Juvenile_Parkinson_Disease
+Diabetic_Nephropathy -> Kidney_Failure
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Hypertensive_disease
+Amyloid -> Toxic_effect
+Angioplasty_Balloon -> Renal_Artery_Stenosis
+Estradiol -> Neoplasm
+Hypertensive_disease -> Coronary_Arteriosclerosis
+Mutation -> Myasthenic_Syndromes_Congenital
+Ethanol -> Ataxia
+Retinitis_Pigmentosa -> Mutation
+Cyclophosphamide -> Neoplasm
+racial_differences -> Cerebrovascular_accident
+Obesity -> Polymorphism_Genetic
+Nitric_Oxide -> Pathogenesis
+Irritants -> Inflammation
+Injection_procedure -> Heart_failure
+Infiltration -> Obesity
+Vimentin -> Neoplasm
+Hypertensive_disease -> Cerebral_hemisphere_hemorrhage
+Angiotensin_II -> Rats_Inbred_WKY
+Nitric_Oxide -> Oxidative_Stress
+Oxidative_Stress -> Degenerative_abnormality
+Mutation -> Neoplasm_progression
+Antioxidants -> Cardiovascular_Diseases
+neuronal -> Alzheimers_Disease
+Stenosis -> Lesion
+sarcoma -> Neoplasm
+Radioimmunotherapy -> Neoplasm
+Hyperglycemia -> Endothelial_dysfunction
+Kidney_Transplantation -> Kidney_Failure
+Norepinephrine -> Propranolol
+Inflammation -> Diabetic
+Inflammation -> Cessation_of_life
+Clonidine -> Hypertensive_disease
+Hypertrophic_Cardiomyopathy -> Mutation
+streptozocin -> Diabetic_Nephropathy
+Iodine -> Sodium_Chloride_Dietary
+Mutation -> hearing_impairment
+Ischemia -> Nerve_Degeneration
+Nitric_Oxide -> macrophage
+Drug_Delivery_Systems -> Neoplasms
+aducanumab -> Alzheimers_Disease
+Dexamethasone -> Adult
+Inflammation -> Autoimmune_Diseases
+Shock_Hemorrhagic -> Cessation_of_life
+Inflammation -> Intestinal_Microbiome
+Kidney_Failure_Chronic -> Cardiovascular_Diseases
+Ouabain -> Hypertensive_disease
+Impaired_cognition -> Sleep_Apnea_Obstructive
+Psoriasis -> Cardiovascular_Diseases
+Metabolic_syndrome -> Cardiovascular_Diseases
+Heart_failure -> Congenital_heart_disease
+Spinal_Muscular_Atrophy -> Cessation_of_life
+Infection -> Inflammation
+TLR4_protein_humanTLR4 -> Inflammation
+MDM2_geneMDM2 -> Neoplasm
+Dopamine -> Norepinephrine
+Amyloidosis -> Alzheimers_Disease
+tau_ProteinsMAPT -> Alzheimers_Disease
+Anticoagulants -> Cardiovascular_Diseases
+Hypertensive_disease -> Atherosclerosis
+Diet -> Malignant_tumor_of_colon
+Agent -> Hypoxia
+Angiotensin_II -> Growth
+Mutation -> nervous_system_disorder
+Nitric_Oxide -> Inflammation
+Dyspnea -> Heart_failure
+Diabetes -> Obesity
+Cessation_of_life -> Congestive_heart_failure
+Ethanol -> Aggressive_behavior
+InsulinINS -> Alzheimers_Disease
+Isradipine -> Hypertensive_disease
+Antineoplastic_Agents -> Neoplasms
+Hypoxia -> UpRegulation_Physiology
+resistance_education -> Obesity
+Mutation -> Metabolic_Diseases
+antagonists -> Alzheimers_Disease
+doxorubicin -> Neoplasms
+Androgens -> Neoplasm
+IMPACT_gene -> Obesity
+Serotonin -> Norepinephrine
+Depressive_Symptoms -> Alzheimers_Disease
+Diet_Mediterranean -> Obesity
+Cerebrovascular_accident -> Epilepsy
+Cardiac_rehabilitation -> Heart_failure
+Cerebrovascular_accident -> Survivors
+Neoplasm -> hypoglycemia
+Nitric_Oxide -> Neurons
+Phosphorylation -> MAPT
+Fibrosis -> Asthma
+Croton_Oil -> Inflammation
+Angiotensin_II -> Mus
+Stents -> Obstruction
+Simian_virus_40 -> Neoplasm
+Increased_calorie_diet -> Obesity
+Amputation -> Neoplasm
+Receptor_ProteinTyrosine_Kinases -> Neoplasm
+Uric_Acid -> Cardiovascular_Diseases
+Hypoxia -> Malignant_neoplasm_of_breast
+Indifferent_mood -> Alzheimers_Disease
+Angiotensin_II -> Normal_blood_pressure
+Mutation -> Motor_Neuron_Disease
+Insulin_Resistance -> Kidney_Failure_Chronic
+Acetate -> Fatty_Acids
+Malignant_Neoplasms -> Neoplasm
+Treatment_Protocols -> Hypertensive_disease
+Nitric_Oxide -> Lung
+followup -> Cerebrovascular_accident
+Intestinal_Bypass -> Obesity
+Inflammation -> Depressive_disorder
+Mutation -> Skeletal_dysplasia
+Creactive_protein -> Insulin_Resistance
+inhibitors -> Neoplasm
+TNF_protein_humanTNF -> Cessation_of_life
+Carcinoma_NonSmallCell_Lung -> Neoplasm
+Local_anesthesia -> Obstruction
+Injections_Intraperitoneal -> Inflammation
+Pyroglyphidae -> Inflammation
+Epinephrine -> Pulmonary_Edema
+Obstruction -> Pancreatitis
+Vascular_calcification -> Kidney_Failure_Chronic
+Thromboembolism -> Cessation_of_life
+Copper -> Alzheimers_Disease
+Chronic_Disease -> Obesity
+Dexamethasone -> Multiple_Myeloma
+Unilateral_adrenalectomy -> Conn_Syndrome
+interleukin6 -> nitric_oxide
+Dementia -> Family
+Insulin_Resistance -> Woman
+Blood -> Inflammation
+Fibrosis -> Hepatitis_C
+Depressive_disorder -> Dementia
+Implants -> Inflammation
+Mutation -> Fanconis_Anemia
+Increase_in_blood_pressure -> Obesity
+Angiotensin_II -> Pathogenesis
+Intestinal_Microbiome -> Obesity
+Ouabain -> ATP_phosphohydrolase
+Ischemia -> Obstruction
+Nitrites -> Nitric_Oxide
+Apoptosis -> Nerve_Degeneration
+Diabetes_Mellitus -> Cessation_of_life
+Norepinephrine -> Brain
+Angiotensin_II -> Pressors
+Obesity -> Diabetes_Gestational
+Atherosclerosis -> Kidney_Failure_Chronic
+Homeostasis -> Obesity
+Quercetin -> Oxidative_Stress
+Neoplasm -> Multiple_Myeloma
+Ureteral_obstruction -> Fibrosis
+Dyslipidemias -> Obesity
+Angiotensin_II -> Endothelial_dysfunction
+Cognition_Disorders -> Alzheimers_Disease
+Cessation_of_life -> Kidney_Failure_Chronic
+Sodium_Glutamate -> Obesity
+Diabetes_Mellitus_NonInsulinDependent -> Inflammation
+empagliflozin -> Heart_failure
+Oxidative_Stress -> Signal_Transduction
+Inflammation -> Asthma
+Mutation -> TaySachs_Disease
+Parkinson_Disease -> Mutation
+ChymosinREN -> Hypertensive_disease
+Ventricular_Fibrillation -> Obstruction
+Paclitaxel -> Neoplasm
+Obesity -> Cardiovascular_event
+InsulinLike_Growth_Factor_II -> Neoplasm
+NGNitroarginine_Methyl_Ester -> Hypertensive_disease
+Chromosomal_translocation -> Neoplasm
+Neoplasm -> Primary_Neoplasm
+Mutation -> Leigh_Disease
+Fusion_procedure -> Neoplasm
+Endothelial_dysfunction -> Cardiovascular_Diseases
+Catecholamines -> Pheochromocytoma
+Norepinephrine -> Rattus_norvegicus
+Fibrosis -> Injury
+Diabetic_Nephropathy -> Kidney_Failure_Chronic
+Pharmacotherapy -> Obesity
+Sodium_Chloride -> Rattus_norvegicus
+Inflammation -> Periodontal_Diseases
+Cessation_of_life -> Woman
+Mutation -> Dependence
+Venous_Thromboembolism -> Cessation_of_life
+Kidney_Transplantation -> Kidney_Diseases
+Nerve_Degeneration -> Glaucoma
+Obstruction -> Myocardial_Infarction
+Cerebral_Amyloid_Angiopathy -> Cerebral_hemisphere_hemorrhage
+neuron_loss -> Alzheimers_Disease
+Fibrosis -> Hypertension_Portal
+Cessation_of_life -> Systemic_Scleroderma
+Phenylephrine -> Mean_blood_pressure
+Study_models -> Neoplasm
+Mutation -> Codon_Terminator
+Hypertrophy -> Schizophrenia
+Obesity -> Alzheimers_Disease
+Ischemia -> Hypoxia
+Bacterial_Infections -> Inflammation
+Lesion -> Fibrosis
+Liposomes -> Neoplasm
+Nitric_Oxide -> Cell_Proliferation
+Aldosterone -> Mus
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Inflammation
+Communicable_Diseases -> Cessation_of_life
+Endothelial_dysfunction -> Atherogenesis
+Lipids -> Inflammation
+Kidney_Transplantation -> Kidney_Failure_Chronic
+Ethanol -> hypoglycemia
+Diabetes -> Hypertensive_disease
+Toxic_Epidermal_Necrolysis -> Cessation_of_life
+Norepinephrine -> Cyclic_AMP
+Dexamethasone -> Growth
+Cardiovascular_Diseases -> Malignant_Neoplasms
+Obesity -> Malignant_Neoplasms
+Nitric_Oxide -> Immune_response
+Abnormality_of_mitochondrial_metabolism -> Alzheimers_Disease
+Interleukin6 -> Inflammation
+Transcranial_Magnetic_Stimulation_Repetitive -> Alzheimers_Disease
+Angiotensin_II -> Baroreflex
+Depressive_Symptoms -> Cerebrovascular_accident
+Ethanol -> Canis_familiaris
+Diet_CarbohydrateRestricted -> Obesity
+dexamethasone -> Multiple_Myeloma
+Malnutrition -> Cessation_of_life
+Obstruction -> Kidney_Failure_Acute
+Epinephrine -> Catecholamines
+Aldosterone -> Essential_Hypertension
+Cyclosporine -> Apoptosis
+Alzheimers_Disease -> Impaired_cognition
+Neoplasm -> Growth
+NOS3_protein_humanNOS3 -> Obesity
+Comorbidity -> Obesity
+Exercise -> Cardiovascular_Diseases
+Tumor_Markers -> Neoplasm
+Anaphylaxis -> Cessation_of_life
+Agent -> Obesity
+Ouabain -> cardiac_arrhythmia
+Fluorides -> Oxidative_Stress
+Dexamethasone -> Mus
+Inflammation -> Injury
+Cyclosporine -> anemia_profound
+Mutation -> kinase_activity
+Increased_risk -> Heart_failure
+rivastigmine -> Dementia
+Glucose -> Fructose
+Levosimendan -> Heart_failure
+Immune_response -> Inflammation
+Inflammation -> Carcinogenesis
+Cardiovascular_Diseases -> Psoriasis
+Operative_Surgical_Procedures -> Hypertensive_disease
+AntiInflammatory_Agents -> Alzheimers_Disease
+cytokine -> Neoplasm
+orlistat -> Obesity
+Dextran_Sulfate -> Inflammation
+Angiotensin_II -> Heart
+Sedatives -> Ethanol
+Complement_System_Proteins -> Inflammation
+Operative_Surgical_Procedures -> Stenosis
+Obstruction -> reactive_hyperemia
+Cessation_of_life -> Malnutrition
+Mutation -> Severe_Combined_Immunodeficiency
+Insulin_Resistance -> Hypertensive
+Increase_in_blood_pressure -> Hypertensive_disease
+Intestinal_Microbiome -> Hypertensive_disease
+Dyslipidemias -> Cardiovascular_Diseases
+Embolization_Therapeutic -> Ischemia
+Enalapril -> Heart_failure
+Malignant_neoplasm_of_breast -> Obesity
+Screening_procedure -> Alzheimers_Disease
+Vas_Occlusion -> Cerebrovascular_accident
+Hypoxia -> Signal_Transduction
+Saralasin -> Angiotensin_II
+Cardiovascular_arteriosclerosis_unspecified -> Cessation_of_life
+Placebos -> Obesity
+Homeostasis -> Hypertensive_disease
+Ischemia -> Apoptosis
+Dyslipidemias -> Hypertensive_disease
+Detection -> Cerebrovascular_accident
+Alzheimers_Disease -> Pathogenesis
+Mutation -> Family
+Nitric_Oxide -> Vasodilation
+Cardiovascular_Diseases -> End_stage_renal_failure
+Cerebral_Ischemia -> Cessation_of_life
+Insulin_Resistance -> Coronary_Arteriosclerosis
+Insulin_ReceptorINSR -> Insulin_Resistance
+Hypertensive_disease -> Homeostasis
+Hemodialysis -> Kidney_Failure
+streptozocin -> Rattus_norvegicus
+Endothelial_dysfunction -> Nitric_Oxide
+Cardiovascular_Diseases -> Heart_failure
+Potassium -> Sodium
+MAPT -> Neurodegenerative_Disorders
+Angiotensin_II -> Calcium
+Pharmacotherapy -> Hypertensive_disease
+Treatment_Protocols -> Neoplasms
+Antigens -> Inflammation
+Mutation -> Skin_Diseases_Genetic
+Dexamethasone -> Nausea
+Cyclosporine -> Canis_familiaris
+Atrial_Fibrillation -> Sleep_Apnea_Obstructive
+Signal_Transduction -> Oxidative_Stress
+Obesity -> Desire_for_food
+Proteinuria -> Kidney_Diseases
+FOXP3 -> Neoplasm
+heart_rate -> Cardiovascular_Diseases
+22azobis2amidinopropane -> Oxidative_Stress
+Autophagy -> Inflammation
+Cessation_of_life -> Influenza
+2019_novel_coronavirus -> Inflammation
+Atenolol -> Hypertensive_disease
+Cardiomyopathies -> Heart_failure
+Overweight -> Obesity
+Ethanol -> Sedatives
+Radiofrequency_ablation -> Neoplasm
+Inflammation -> PreEclampsia
+Neurodegenerative_Disorders -> Alzheimers_Disease
+Dexamethasone -> Glucocorticoid_Receptor
+Diquat -> Oxidative_Stress
+Aldosterone_Antagonists -> Heart_failure
+Ethanol -> Hypertensive_disease
+Cessation_of_life -> Coronary_Arteriosclerosis
+Evaluation_procedure -> Obesity
+Ethanol -> TNF_protein_humanTNF
+Inflammation -> Fibrosis
+NOS3_protein_humanNOS3 -> Cardiovascular_Diseases
+Cadherins -> Neoplasm
+Infiltration -> Inflammation
+MAPT_protein_humanMAPT -> Alzheimers_Disease
+Endothelial_dysfunction -> Diabetes
+Transcranial_Magnetic_Stimulation_Repetitive -> Cerebrovascular_accident
+Tetrodotoxin -> Sodium
+Cardiomyopathy_Dilated -> Mutation
+Receptors_Progesterone -> Neoplasm
+DNA -> Inflammation
+Infiltration -> Neoplasms
+Photochemotherapy -> Cessation_of_life
+Cerebrovascular_accident -> Infection
+Diet -> Glucose_Intolerance
+Craniotomy -> Neoplasm
+Virus -> Inflammation
+Atherosclerosis -> Ischemia
+Cessation_of_life -> HIV_Infections
+Ethanol -> Stress
+Hyperinsulinism -> Polycystic_Ovary_Syndrome
+Cerebrovascular_accident -> Myocardial_Infarction
+PPAR_gamma -> Inflammation
+Kidney_Failure_Chronic -> Cessation_of_life
+Pregnancy -> Hypertensive_disease
+Signal_Transduction -> Inflammation
+Glucocorticoids -> Body_tissue
+Agent -> Hypertensive_disease
+Spironolactone -> Aldosterone
+Kidney_Diseases -> End_stage_renal_failure
+Angiogenesis_Factor -> Neoplasm
+Phenylephrine -> Blood_Pressure
+Hypoxia -> Blood_flow
+presenilin -> Alzheimers_Disease
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Kidney_Failure_Chronic
+Desire_for_food -> Obesity
+Norepinephrine -> Dopamine
+Bronchopneumonia -> Cessation_of_life
+CD44_geneCD44 -> Neoplasm
+Amyloid_deposition -> Alzheimers_Disease
+Cessation_of_life -> Neurodegenerative_Disorders
+Fibrosis -> Primary_carcinoma_of_the_liver_cells
+Phenylephrine -> Tension
+Obesity -> Fasting
+Mutation -> Nerve_Degeneration
+Sarcopenia -> Obesity
+Diabetes -> Kidney_Failure
+Diabetes -> Inflammation
+Fibrosis -> Hypertrophic_Cardiomyopathy
+Pindolol -> Hypertensive_disease
+IMPACT_gene -> Inflammation
+Obesity -> Liver_diseases
+Glucose -> Obesity
+Mutation -> Homologous_Recombination
+Screening_procedure -> Cerebrovascular_accident
+Placebos -> Hypertensive_disease
+pulmonary_complications -> Cessation_of_life
+Body_Composition -> Obesity
+IMPACT_gene -> Neoplasms
+Obesity -> Male_population_group
+homocysteine -> Oxidative_Stress
+Obesity -> Infection
+Complement_System_Proteins -> Kidney_Diseases
+Thrombus -> Obstruction
+Microglia -> Nitric_Oxide
+Mutation -> Muscular_Dystrophies_LimbGirdle
+Hypertensive_disease -> Cerebrovascular_accident
+Neoplasm -> Liver
+NME1_geneNME1 -> Neoplasm
+Homeostasis -> Oxidative_Stress
+Hyperinsulinism -> Pathogenesis
+Mucins -> Neoplasm
+Aluminum -> Growth
+Nonalcoholic_fatty_liver -> Insulin_Resistance
+Oxidative_Stress -> Cell_physiology
+Neoplasm -> Tumorinduced_osteomalacia
+Mutation -> Transcription_Genetic
+Nitric_Oxide -> Brain
+Amyloid_Fibrils -> Alzheimers_Disease
+Cyclosporine -> Hypertensive_disease
+Mutation -> Amyotrophic_Lateral_Sclerosis
+Hospitalization -> Obesity
+Cyclophosphamide -> Oxidative_Stress
+Glycosylation_End_Products_Advanced -> Oxidative_Stress
+receptor -> Norepinephrine
+Spastic_syndrome -> Hypertrophy
+Magnetic_Resonance_Imaging -> Neoplasm
+Ischemia -> depolarization
+Hypoxemia -> Sleep_Apnea_Obstructive
+Interleukin17 -> Inflammation
+Mutation -> Long_QT_Syndrome
+salt_intake -> Hypertensive_disease
+Operative_Surgical_Procedures -> Inflammation
+Malaria -> Cessation_of_life
+Hypertensive_disease -> Renal_function
+Acetate -> Malignant_neoplasm_of_prostate
+Hemodialysis -> Kidney_Diseases
+Fusion_procedure -> Stenosis
+Peroxides -> Oxidative_Stress
+Overweight -> Hypertensive_disease
+Keratoplasty -> Endothelial_dysfunction
+Nitric_Oxide_Donors -> Nitric_Oxide
+Thrombosis -> Cessation_of_life
+Chronic_Disease -> Inflammation
+caspase3 -> Neoplasm
+Inflammation -> Reactive_Oxygen_Species
+Dexamethasone -> Chronic_lung_disease
+Cardiomyoplasty -> Heart_failure
+Hypoxia -> Obesity
+Pheochromocytoma -> Multiple_Endocrine_Neoplasia_Type_2a
+Stenosis -> Hypertensive_disease
+Sodium_Chloride -> Water
+Calcium -> Hypertensive_disease
+Obesity -> Adipogenesis
+Inflammation_Mediators -> Inflammation
+NOS3_protein_humanNOS3 -> Nitric_Oxide
+Hemodialysis -> Kidney_Failure_Chronic
+Death_Sudden -> Heart_failure
+Apolipoprotein_EAPOE -> Lipids
+Evaluation_procedure -> Hypertensive_disease
+tumor_growth -> Neoplasms
+Oxidative_Stress -> Growth
+Homeostasis -> Inflammation
+Excessive_daytime_somnolence -> Sleep_Apnea_Obstructive
+Treatment_Protocols -> Kidney_Failure_Chronic
+ethanol -> Rattus_norvegicus
+Asbestos -> Fibrosis
+Mutation -> Pseudoxanthoma_Elasticum
+Estrogens -> Neoplasm
+Gelatinase_A -> Neoplasm
+eplerenone -> Hypertensive_disease
+Memantine -> Alzheimers_Disease
+Xenograft_procedure -> Neoplasm
+MicroRNAs -> Heart_failure
+Mutation -> Amino_Acid_Substitution
+Coronary_heart_disease -> Cardiovascular_Diseases
+Operative_Surgical_Procedures -> Pheochromocytoma
+Hepatitis_B -> Cessation_of_life
+Ischemia -> Hypertensive_disease
+Renal_Replacement_Therapy -> Kidney_Failure
+Fibrosis -> Chronic_liver_disease_NOS
+Aging -> Alzheimers_Disease
+Dementia_Vascular -> Alzheimers_Disease
+Fructose -> Hypertensive_disease
+Myocardial_Infarction -> Heart_failure
+Therapeutic_agent_substance -> Alzheimers_Disease
+Amyloid_betaPeptides -> Toxic_effect
+Furosemide -> Hypertensive_disease
+Coronary_heart_disease -> Hypertensive_disease
+hypothermia_natural -> Ischemia
+Hypertensive_disease -> Insulin_Resistance
+Inflammation -> Malignant_Neoplasms
+Stenosis -> Arteriovenous_fistula
+Hypertrophy_Left_Ventricular -> Obesity
+Neoplasm -> Hypercalcemia
+Inflammatory_Response -> Cessation_of_life
+Hypertensive_disease -> gene_polymorphism
+Mutation -> Neonatal_diabetes_mellitus
+Mutation -> WiskottAldrich_Syndrome
+Mycoses -> Cessation_of_life
+Diet -> Fertility
+rimonabant -> Obesity
+Fibrosis -> Cardiomyopathies
+Alzheimers_Disease -> Cessation_of_life
+Cocaine -> Norepinephrine
+Tolllike_receptors -> Inflammation
+Insulin_Resistance -> Diabetes_Gestational
+Blood_Pressure -> Obesity
+Cerebrovascular_accident -> Stenosis_unspecified
+Glucose -> Cardiovascular_Diseases
+Sleep -> Alzheimers_Disease
+PTEN_genePTEN -> Neoplasm
+Fibrosis -> Heart_failure
+Heart_failure -> Obesity
+Endothelial_dysfunction -> COVID19
+Amyloid_beta -> Alzheimers_Disease
+Sodium -> Essential_Hypertension
+Ethanol -> Liver
+Angiotensin_II -> Aldosterone
+Curcumin -> Oxidative_Stress
+Nitric_Oxide -> Endothelin1
+Endocrine_therapy -> Neoplasm
+Oxidopamine -> Nerve_Degeneration
+streptozocin -> Alzheimers_Disease
+Assessment_procedure -> Cerebrovascular_accident
+Inflammation -> Psoriasis
+Glucose -> Hypertrophy
+Virus_Diseases -> Cessation_of_life
+Diet -> Growth
+Diabetes -> Kidney_Diseases
+Dextran_Sulfate_Sodium -> Inflammation
+Adrenergic_Receptor -> Norepinephrine
+Glucocorticoids -> Canis_familiaris
+Agent -> Inflammation
+Body_Weight_decreased -> Insulin_Resistance
+Tetradecanoylphorbol_Acetate -> Inflammation
+Ventricular_arrhythmia -> Ischemia
+Oxidative_Stress -> Endothelial_dysfunction
+Radiotherapy_Adjuvant -> Neoplasm
+Sudden_infant_death_syndrome -> Cessation_of_life
+Fructose -> Metabolic_syndrome
+Hypertensive_disease -> Hypertrophy_Left_Ventricular
+Hypertensive_disease -> Overweight
+Hospitalization -> Hypertensive_disease
+Growth_Factor -> Inflammation
+Diabetes -> Kidney_Failure_Chronic
+Insulin_Resistance -> Alzheimers_Disease
+Nitric_Oxide -> nitric_oxide_receptor
+Alteplase -> Cerebral_hemisphere_hemorrhage
+Carcinoembryonic_Antigen -> Neoplasm
+Implantation_procedure -> Aortic_coarctation
+Malignant_Neoplasms -> Inflammation
+Aldosterone -> Excretory_function
+Collagen -> Fibrosis
+Angiotensin_II -> Injury
+Accumulation -> Alzheimers_Disease
+Insulin -> Alzheimers_Disease
+Microsatellite_Instability -> Neoplasm
+rosiglitazone -> Insulin_Resistance
+Doxorubicin -> Neoplasm
+Inflammation -> End_stage_renal_failure
+Adhesions -> Obstruction
+Neoplasm -> Estrogen_Receptors
+receptor -> Alzheimers_Disease
+Insulin_Resistance -> resistinRETN
+Creactive_protein -> Obesity
+Obstruction -> Aneurysm
+ProstateSpecific_Antigen -> Neoplasm
+Lipolysis -> Obesity
+Cardiovascular_Diseases -> Blood_Pressure
+Inflammation -> Heart_failure
+Very_low_energy_diet -> Obesity
+anticoagulation -> Cerebrovascular_accident
+Constriction_procedure -> Canis_familiaris
+Aneuploidy -> Neoplasm
+Iron_deficiency -> Heart_failure
+Alzheimers_Disease -> Depressive_disorder
+Reducing_diet -> Obesity
+Acute_myocardial_infarction -> Cessation_of_life
+Mutation -> Tumorigenesis
+Aortic_coarctation -> Hypertensive_disease
+Mutation -> Lebers_amaurosis
+Induction -> Obesity
+Diet -> Mouse_Model
+oxidized_low_density_lipoprotein -> Oxidative_Stress
+Epinephrine -> Glucose
+Cessation_of_life -> Alzheimers_Disease
+Infarction -> Cessation_of_life
+Energy_Balance -> Obesity
+Operative_Surgical_Procedures -> Kidney_Failure_Chronic
+Probes -> Neoplasm
+Isoproterenol -> Cardiac_Hypertrophy
+Rous_sarcoma_virus -> Neoplasm
+Hypertensive_disease -> Child
+antagonists -> Neoplasm
+Assessment_procedure -> Insulin_Resistance
+Neoplasm -> Neuroblastoma
+Study_models -> Traumatic_Brain_Injury
+CSF2LAMC2 -> Alzheimers_Disease
+Hypertrophy_Left_Ventricular -> Hypertensive_disease
+nitric_oxide -> Vasodilation
+donepezil -> Alzheimers_Disease
+Hypertensive_disease -> Erectile_dysfunction
+Parkinson_Disease -> Dementia
+Parkinson_Disease -> Nerve_Degeneration
+Norepinephrine -> Male_population_group
+Mutation -> Apoptosis
+Diet -> Steatohepatitis_nonalcoholic
+Dexamethasone -> Asthma
+Ability -> Heart_failure
+Blood_Pressure -> Cardiovascular_Diseases
+Metoprolol -> Heart_failure
+Oxygen -> Hypoxia
+dexamethasone -> COVID19
+Homeostasis -> Kidney_Failure_Chronic
+Oxidative_Stress -> genotoxicity
+Dyslipidemias -> Kidney_Failure_Chronic
+Liver_Failure_Acute -> Cessation_of_life
+Angioplasty_Balloon -> Ischemia
+Supplementation -> Heart_failure
+Blood_Pressure -> Hypertensive_disease
+Mutation -> Alports_syndrome
+Inflammation -> Pancreatitis
+Obesity -> Diabetes_Mellitus_NonInsulinDependent
+Angiotensin_II_receptor_antagonist -> Hypertensive_disease
+Exsanguination -> Cessation_of_life
+Seizures -> Alzheimers_Disease
+Propranolol -> Epinephrine
+Inflammation -> Depressed_mood
+oxidized_low_density_lipoprotein -> Inflammation
+Renal_Replacement_Therapy -> Kidney_Failure_Chronic
+Bleomycin -> Inflammation
+Maintenance_hemodialysis -> Kidney_Failure_Chronic
+Heart_failure -> Hypertensive_disease
+Drug_Delivery_Systems -> Alzheimers_Disease
+Smoking -> Hypertensive_disease
+Adiponectin -> Obesity
+cytokine -> Oxidative_Stress
+Cardiovascular_Diseases -> Diabetes_Mellitus_InsulinDependent
+Nerve_Degeneration -> Neurodegenerative_Disorders
+Injury -> Hypoxia
+Insulin_Resistance -> Nonalcoholic_Fatty_Liver_Disease
+connective_tissue_growth_factor -> Fibrosis
+Ischemia -> cardiac_arrhythmia
+Ethanol -> Metabolism
+Ischemia -> Inflammation
+ATM_geneATM -> Angiotensin_II
+Wound_Healing -> Cerebrovascular_accident
+Inflammation -> Inflammatory_Response
+Obesity -> Risk_factor_cardiovascular
+Stress -> Cardiovascular_Diseases
+adenoma -> Conn_Syndrome
+Diet -> Dyslipidemias
+Oxidative_Stress -> Sleep_Apnea_Obstructive
+Chemokine_CC_Motif_Ligand_4CCL4 -> Oxidative_Stress
+Atrial_Natriuretic_Factor -> Hypertensive_disease
+Alzheimers_Disease -> Memory_impairment
+Melatonin -> Oxidative_Stress
+Detection -> Neoplasm
+Leptin -> Obesity
+Neoplasm -> Immunity
+Cessation_of_life -> Seizures
+Hypertensive_disease -> Hyperuricemia
+Pheochromocytoma -> Hypertensive_disease
+Conn_Syndrome -> Secondary_hypertension
+Ethanol -> Triglycerides
+Behavioral_and_psychological_symptoms_of_dementia -> Alzheimers_Disease
+Diabetes_Mellitus -> End_stage_renal_failure
+Glucose -> Hyperinsulinism
+Cyclin_D1LMOD1BBS9 -> Neoplasm
+Dietary_Supplementation -> Oxidative_Stress
+Felodipine -> Hypertensive_disease
+High_fat_diet_NOS -> Insulin_Resistance
+Alzheimers_Disease -> Caregiver
+Imbalance -> Obesity
+Secondary_prevention -> Cardiovascular_Diseases
+Cognitive_Therapy -> Dementia
+Hypoxia -> Nitric_Oxide
+Telemedicine -> Heart_failure
+Stress -> Hypertrophy
+Clonidine -> Norepinephrine
+Apoptosis -> Nitric_Oxide
+particle -> Neoplasm
+Squamous_cell_carcinoma -> Neoplasm
+Sodium -> Calcium
+Creactive_protein -> Hypertensive_disease
+Inflammation -> Myocardial_Infarction
+Constriction_procedure -> Hypertensive_disease
+Hypertensive_disease -> Diabetes_Mellitus
+Mental_deterioration -> Dementia
+Agent -> Kidney_Failure_Chronic
+Equilibrium -> Heart_failure
+Ablation -> Heart_failure
+Transforming_Growth_Factor_beta -> Neoplasm
+Leukocyte_L1_Antigen_Complex -> Inflammation
+TERT_geneTERT -> Neoplasm
+Apoptosis -> Oxidative_Stress
+Ethanol -> Liver_damage
+Atherosclerosis -> Cerebrovascular_accident
+Cigarette_smoke -> Oxidative_Stress
+Reactive_Oxygen_Species -> Endothelial_dysfunction
+Ethanol -> Sedation
+Aluminum -> Toxic_effect
+sex -> Obesity
+Neoplasm -> Tumor_Antigens
+Endarterectomy_Carotid -> Cerebrovascular_accident
+Therapeutic_Intervention -> Obesity
+DNA -> Sodium_Chloride
+Diet -> Fibrosis_Liver
+Bupivacaine -> Obstruction
+Obstruction -> Ischemic_stroke
+Chronic_Obstructive_Airway_Disease -> Cessation_of_life
+Mutation -> Cataract
+Inflammation -> Arthritis
+Argipressin -> Hypertensive_disease
+Mandibular_Advancement -> Sleep_Apnea_Obstructive
+Angiotensin_II -> Sheep
+Hyponatremia -> Heart_failure
+Spironolactone -> Heart_failure
+Nitric_Oxide -> cytokine
+Protein_p53TP53 -> Neoplasm
+Transplantation -> Heart_failure
+Neoplasm -> Neoplasm_Metastasis
+Liver_diseases -> Cessation_of_life
+Hypertension_Pulmonary -> Cessation_of_life
+Oxidative_Stress -> Free_Radicals
+Cyclosporine -> Kidney_Diseases
+Oxidative_Stress -> Cessation_of_life
+Amyloid_betaProtein_Precursor -> APP_protein_human
+Endothelial_dysfunction -> Atherosclerosis
+Adiponectin -> Cardiovascular_Diseases
+Embolism -> Cessation_of_life
+Apoptosis -> Inflammation
+Diabetes_Mellitus_NonInsulinDependent -> Alzheimers_Disease
+Sex_Characteristics -> Cerebrovascular_accident
+Ethanol -> Pancreatitis_Chronic
+Hypoxia -> Neoplasms
+risk_factors -> Cerebrovascular_accident
+Seizures -> Cerebrovascular_accident
+Oxidative_Stress -> Toxic_effect
+Ethanol -> Composition
+Polycystic_Kidney_Autosomal_Dominant -> Kidney_Failure
+Angiotensin_II -> Reactive_Oxygen_Species
+Hepatitis_B -> Fibrosis
+Adiponectin -> Hypertensive_disease
+Thrombectomy -> Cerebrovascular_accident
+dietary_intervention -> Obesity
+Epinephrine -> Heart_Arrest
+Neoplasm -> AFP_geneAFP
+Heart_failure -> Pathogenesis
+Ethanol -> CYP2E1_geneCYP2E1
+gene_therapy -> Hypertensive_disease
+nitric_oxide -> Rattus_norvegicus
+Nitric_Oxide -> cytotoxicity
+Obesity -> PraderWilli_Syndrome
+Radiation_therapy -> Cessation_of_life
+Neurofibrillary_Tangles -> Alzheimers_Disease
+Streptozocin -> Diabetes_Mellitus
+Ethanol -> Social_drinker
+Asthma -> Obesity
+Cessation_of_life -> Liver_diseases
+Calcium -> Kidney_Failure_Chronic
+cholinergic_system -> Alzheimers_Disease
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Alzheimers_Disease
+Caloric_Restriction -> Obesity
+Bariatric_Surgery -> Obesity
+Precision_Medicine -> Neoplasms
+Cardiovascular_Diseases -> HIV
+Lipids -> Alzheimers_Disease
+Obstruction -> Growth
+Cessation_of_life -> Infection
+Glucocorticoids -> Diabetes
+Height -> Obesity
+Injury -> Obesity
+Cerebrovascular_accident -> Hospitalization
+Triglycerides -> Insulin_Resistance
+Phenylephrine -> Hypertensive_disease
+Cardiac_rehabilitation -> Cardiovascular_Diseases
+Mutation -> Hypertensive_disease
+Inflammation -> Cystic_Fibrosis
+Hypertriglyceridemia -> Obesity
+Streptozocin -> Diabetes_Mellitus_NonInsulinDependent
+Nitric_Oxide -> Gene_Expression
+Phosphorylation -> Ischemia
+Tourniquets -> Ischemia
+Disease_Progression -> Cessation_of_life
+Cyclosporine -> Peptidylprolyl_Isomerase
+Phenylephrine -> Hypotension
+Mutation -> Autosomal_recessive_hereditary_disorder
+Lesion -> Obstruction
+Diet -> Hyperglycemia
+Nitric_Oxide -> Platelet_Activation
+Amyloid -> Dementia
+Potassium -> Hypertensive_disease
+Glucocorticoids -> Osteoporosis
+Signaling_Molecule -> Inflammation
+sex -> Hypertensive_disease
+Apolipoprotein_EAPOE -> Alzheimer_Disease_Late_Onset
+Cessation_of_life -> Kidney_Failure_Acute
+Author -> Study_models
+Coronary_Artery_Bypass_Surgery -> Obstruction
+angiotensin_II -> Hypertrophy
+Myocardial_Ischemia -> Heart_failure
+Mutation -> Hypercholesterolemia_Familial
+Diet -> Pregnancy
+Induction -> Oxidative_Stress
+candesartan -> Hypertensive_disease
+Sodium -> Excretory_function
+Obstruction -> Restenosis
+Mutation -> Autosomal_Dominant_Disorder
+Ethanol -> Brain
+Sodium_Chloride -> Rats_SpragueDawley
+Mutation -> TP53_geneTP53
+Nonalcoholic_fatty_liver -> Obesity
+Complement_System_Proteins -> Alzheimers_Disease
+Smoke -> Oxidative_Stress
+Antiplatelet_Agents -> Cerebrovascular_accident
+Epidermal_growth_factor_receptor_inhibitor -> Neoplasm
+Losartan -> Hypertensive_disease
+Nerve_Degeneration -> Alzheimers_Disease
+Inflammation -> Immune_System_Diseases
+Down_Syndrome -> Alzheimers_Disease
+Insulin_Resistance -> Child
+RNA_Messenger -> Inflammation
+Cholesterol -> Obesity
+Oxidative_Stress -> Asthma
+Obesity -> Adult
+Lead_compound -> Alzheimers_Disease
+Inflammation -> Angiogenesis
+Body_tissue -> Inflammation
+Creactive_protein -> Inflammation
+valsartan -> Heart_failure
+Losartan -> Angiotensin_II
+Kidney_Failure_Chronic -> End_stage_renal_failure
+AntiInflammatory_Agents_NonSteroidal -> Inflammation
+Study_models -> Depressive_disorder
+TP53_geneTP53 -> Neoplasm
+Macrophages_Alveolar -> Nitric_Oxide
+Dexamethasone -> Bronchopulmonary_Dysplasia
+Diabetes_Mellitus_NonInsulinDependent -> Cerebrovascular_accident
+Cell_Therapy -> Cerebrovascular_accident
+Vaccination -> Neoplasm
+Hospitalization -> Kidney_Failure_Chronic
+View -> Alzheimers_Disease
+Deep_Vein_Thrombosis -> Cessation_of_life
+Hypoxia -> Metabolism
+temozolomide -> Neoplasm
+Neoplasm -> Mutation
+Induction -> Inflammation
+Norepinephrine -> Blood_Vessels
+Peritoneal_Dialysis_Continuous_Ambulatory -> End_stage_renal_failure
+Mutation -> receptor
+SUCLA2_geneSUCLA2 -> Alzheimers_Disease
+Smoke -> Inflammation
+Fibrosis -> Hepatitis_C_Chronic
+Neoplasm -> Primary_carcinoma_of_the_liver_cells
+Mutation -> Osteogenesis_Imperfecta
+Autophagy -> Alzheimers_Disease
+Tuberculosis -> Cessation_of_life
+Hospital_Readmissions -> Heart_failure
+IDO1 -> Neoplasm
+Immunity -> Neoplasm
+InsulinLike_Growth_Factor_I -> Hypertrophy
+MicroRNAs -> Hypoxia
+Diet -> Excretory_function
+Norepinephrine -> Adenylate_Cyclase
+Necrosis -> Cessation_of_life
+Angiotensin_II -> Superoxides
+Reactive_Oxygen_Species -> Cessation_of_life
+Bariatric_Surgery -> Hypertensive_disease
+MGMT_geneMGMT -> Neoplasm
+Oxidoreductase -> Neoplasm
+resistinRETN -> Insulin_Resistance
+HydroxymethylglutarylCoA_Reductase_Inhibitors -> Cerebrovascular_accident
+Inflammation -> Diabetes_Mellitus_InsulinDependent
+Apolipoprotein_EAPOE -> Lipoproteins
+Norepinephrine -> Oryctolagus_cuniculus
+Glomerulonephritis -> Kidney_Failure
+Polycystic_Kidney_Autosomal_Dominant -> Kidney_Failure_Chronic
+Alteplase -> Cerebrovascular_accident
+Mastectomy -> Neoplasm
+Septicemia -> Inflammation
+Mutation -> DNA_Repair
+Tamoxifen -> Neoplasm
+Cardiovascular_Diseases -> followup
+Fatty_Liver -> Insulin_Resistance
+Cerebrovascular_accident -> Hemiparesis
+Tumor_Suppressor_Genes -> Neoplasm
+Conn_Syndrome -> Secondary_hypertension_NOS
+1Methyl4phenyl1236tetrahydropyridine -> Cessation_of_life
+Hyperglycemia -> Insulin_Resistance
+Neoplasm -> Adenocarcinoma
+Heart_failure -> Hospital_admission
+Mutation -> Pathogenesis
+Cystectomy -> Neoplasm
+Frailty -> Heart_failure
+Lymphocytic_infiltration -> Neoplasm
+Jejunoileal_Bypass -> Obesity
+Embolization_Therapeutic -> Obstruction
+Mutation -> Congenital_Disorders
+Adiponectin -> Inflammation
+Risperidone -> Dementia
+CXCR4_geneCXCR4 -> Neoplasm
+Norepinephrine -> Systemic_arterial_pressure
+Cisplatin -> Oxidative_Stress
+Yohimbe_Preparation -> Norepinephrine
+Streptozocin -> Apoptosis
+Oxidative_Stress -> Carcinogenesis
+Doxorubicin -> Oxidative_Stress
+Oxidative_Stress -> Brain_Injuries
+Epinephrine -> Hypertensive
+Hypertrophy_Left_Ventricular -> Kidney_Failure_Chronic
+Increased_risk -> Cardiovascular_Diseases
+chemokine -> Inflammation
+Hypoxia -> Cell_Survival
+Carcinogenesis -> Mutation
+Insulin_Resistance -> Diabetes_Mellitus
+TREM2 -> Alzheimers_Disease
+Intracranial_Hemorrhages -> Cessation_of_life
+Cyclosporine -> Rattus_norvegicus
+Heart_Diseases -> Cessation_of_life
+Chronic_disease -> Cessation_of_life
+Cessation_of_life -> Amyotrophic_Lateral_Sclerosis
+Fatty_Acids_Omega3 -> Inflammation
+PreEclampsia -> Cardiovascular_Diseases
+sorafenib -> Neoplasm
+Glucocorticoids -> Metabolism
+Impaired_cognition -> Dementia
+Chronic_liver_disease_NOS -> Fibrosis
+Cerebrovascular_accident -> Impaired_cognition
+Blood_Pressure -> Kidney_Failure_Chronic
+Obstruction -> Moyamoya_Disease
+Metabolic_syndrome -> Cerebrovascular_accident
+Mutation -> RNA_Messenger_Splicing
+streptozocin -> Diabetes_Mellitus_InsulinDependent
+Prazosin -> Phenylephrine
+Body_Weight_decreased -> Obesity
+Mutation -> Phosphorylation
+Glucocorticoids -> COVID19
+Cholesterol -> Cardiovascular_Diseases
+Diabetes_Mellitus -> Dementia
+Cognitive_Therapy -> Obesity
+oral_anticoagulants -> Cerebrovascular_accident
+IGHE -> Inflammation
+Diabetes -> Alzheimers_Disease
+Curettage_procedure -> Neoplasm
+Immunotherapy -> Alzheimers_Disease
+Insulin_Resistance -> Diabetes_Mellitus_NonInsulinDependent
+Therapeutic_agent_substance -> Neoplasm
+Aldosterone -> Heart_failure
+Sodium_Chloride_Dietary -> Hypertensive_disease
+Biological_Markers -> Dementia
+Neuroprotection -> Ischemia
+ROS1_wt_AlleleROS1 -> Oxidative_Stress
+Glucocorticoids -> Thyroid_associated_opthalmopathies
+Obesity -> Fertility
+Ischemia -> Coronary_Arteriosclerosis
+Generalized_ischemic_myocardial_dysfunction -> Heart_failure
+CD69_protein_humanCD69 -> Dementia
+Study_models -> Injury
+HIF1alpha_protein -> Hypoxia
+IMPACT_gene -> Alzheimers_Disease
+Disability_NOS -> Cessation_of_life
+multicatalytic_endopeptidase_complex -> Alzheimers_Disease
+Neoplasm -> Stomach
+Malignant_disease -> Cessation_of_life
+vericiguat -> Heart_failure
+Neuroinflammation -> Alzheimers_Disease
+Cessation_of_life -> Anemia
+Hypertensive_disease -> Cerebrovascular_Disorders
+Oxidative_Stress -> Ischemia
+angiotensin_II -> cardiac_muscle_cell_hypertrophy
+Retinoblastoma_ProteinRB1 -> Neoplasm
+Cessation_of_life -> Diabetes_Mellitus
+Epinephrine -> Lipolysis
+Obstruction -> Sleep_Apnea_Obstructive
+Heart_failure -> Dyspnea
+Inflammation -> Signal_Transduction
+Cerebrovascular_accident -> Sickle_Cell_Anemia
+Glucocorticoids -> loss_bone
+Inotropic_agent -> Heart_failure
+Meningitis -> Cessation_of_life
+Oxygen -> Nitric_Oxide
+Apolipoprotein_EAPOE -> lipoprotein_metabolism
+Primary_bacterial_peritonitis -> Fibrosis
+hydrogen_peroxide -> Oxidative_Stress
+Inflammation -> Hypoxia
+inhibitors -> Fibrosis
+Kidney -> Nitric_Oxide
+Degenerative_abnormality -> Cessation_of_life
+Mutation -> Equilibrium
+Implantation_procedure -> Neoplasm
+Obesity -> Growth
+Diet -> Carcinogenesis
+Fructose -> Rattus_norvegicus
+Oxidative_Stress -> Atherosclerosis
+Cessation_of_life -> Diabetes_Mellitus_NonInsulinDependent
+Oxidative_Stress -> PreEclampsia
+Mutation -> Nucleotide_Excision_Repair
+Obesity -> Polycystic_Ovary_Syndrome
+Receptor_Angiotensin_Type_1 -> Angiotensin_II
+Mutation -> CADASIL
+Obesity -> Impaired_cognition
+Mutation -> Renal_tubular_acidosis
+Tumor_Progression -> Neoplasms
+Mutation -> skin_disorder
+Cell_Line -> Nitric_Oxide
+Corticotropin -> Child
+Carcinogens -> Mutation
+Copper -> Oxidative_Stress
+Cessation_of_life -> Rheumatoid_Arthritis
+Sodium -> Fibrosis
+Diuretics -> Heart_failure
+Intestinal_Microbiome -> Alzheimers_Disease
+Metals -> Alzheimers_Disease
+Continuous_Positive_Airway_Pressure -> Sleep_Apnea_Obstructive
+homocysteine -> Alzheimers_Disease
+Cardiovascular_Diseases -> risk_factors
+Denervation -> Hypertensive_disease
+Metabolic_syndrome -> Insulin_Resistance
+Epinephrine -> Hemorrhage
+Ethanol -> Mice_Knockout
+Homeostasis -> Alzheimers_Disease
+Dialysis_procedure -> End_stage_renal_failure
+Parasites -> Inflammation
+insulin_sensitivity -> Insulin_Resistance
+Hepatic_Encephalopathy -> Fibrosis
+Ouabain -> Sodium
+Insulin_Resistance -> Insulin
+Obstruction -> Myocardial_Ischemia
+Inflammation -> Tissue_damage
+Hypertensive_disease -> Coronary_heart_disease
+Secondary_malignant_neoplasm_of_lymph_node -> Neoplasm
+Pharmacological_Treatment -> Obesity
+resveratrol -> Inflammation
+Adhesions -> Inflammation
+Radiation_therapy -> Fibrosis
+Atrophic -> Dementia
+Norepinephrine -> Adult
+Pharmacotherapy -> Alzheimers_Disease
+Amnesia -> Alzheimers_Disease
+Sucrose -> Sodium_Chloride
+Dexamethasone -> Mothers
+Cyclosporine -> Dryness_of_eye
+8isoprostaglandin_F2alpha -> Oxidative_Stress
+Renal_function -> Hypertensive_disease
+Glomerulonephritis -> Kidney_Failure_Chronic
+Endothelin1 -> Hypertrophy
+Study_models -> Fibrosis
+Malignant_transformation -> Neoplasm
+Fibrosis -> Hepatitis_B_Chronic
+Ethanol -> Organ
+DownRegulation -> Neoplasm
+Asthma -> Inflammation
+Gastric_Bypass -> Obesity
+gene_therapy -> Kidney_Diseases
+Diet -> Atherosclerosis
+Inflammation -> Vascular_Diseases
+Hypoxia -> Adaptation
+Lipopolysaccharides -> Oxidative_Stress
+Thiazolidinediones -> Insulin_Resistance
+Cessation_of_life -> Neoplasm
+Obesity -> Endothelial_dysfunction
+Hypertrophy_Left_Ventricular -> Hypertensive
+Hospital_admission -> Cerebrovascular_accident
+Mutation -> Meiosis
+Angiotensin_II -> DownRegulation
+Diabetes -> Cerebrovascular_accident
+Diet -> Fibrosis
+Phagocytosis -> Nitric_Oxide
+Mutation -> Cell_Proliferation
+Hypoxia -> Ischemia
+Acute_myocardial_infarction -> Heart_failure
+Brachytherapy -> Neoplasm
+Hypertensive_disease -> Metabolic_syndrome
+cmyc_GenesMYC -> Neoplasm
+ROS1 -> Oxidative_Stress
+lipid_mediator -> Inflammation
+Glutathione -> Oxidative_Stress
+Adrenergic_betaAntagonists -> Hypertensive_disease
+Glucocorticoids -> Congenital_adrenal_hyperplasia
+Diet -> insulin_sensitivity
+Angiogenesis -> Inflammation
+Cyclosporine -> Ulcerative_Colitis
+Angioplasty -> Renal_Artery_Stenosis
+Endothelial_dysfunction -> Septicemia
+Medical_therapy -> Heart_failure
+Fibrosis -> HammanRich_syndrome
+Agent -> Alzheimers_Disease
+Inflammation -> Respiration_Disorders
+Angiotensin_II -> UpRegulation_Physiology
+Mutation -> Kidney_Diseases
+Water -> Ethanol
+Transforming_Growth_Factor_beta -> Inflammation
+Blood_flow -> Ischemia
+Nitric_Oxide -> NOS3_protein_humanNOS3
+Inflammation -> Respiratory_Distress_Syndrome_Adult
+Pathogenicity -> Mutation
+Methylene_blue -> Nitric_Oxide
+Mutation -> Multisystem_disorder
+Drug_Delivery_Systems -> Neoplasm
+Obesity -> Dyslipidemias
+liraglutide -> Obesity
+Lesion -> Hypertensive_disease
+Respiratory_Failure -> Cessation_of_life
+Curcumin -> Alzheimers_Disease
+Obstruction -> Azoospermia
+Nitric_Oxide -> Kidney
+Cerebrovascular_accident -> Carotid_Stenosis
+Methyldopa -> Hypertensive_disease
+melatonin -> Oxidative_Stress
+Amyloid_betaProtein_Precursor -> Familial_Alzheimers_disease
+VEGF_protein_humanVEGFA -> Nitric_Oxide
+Mutation -> Pathogenicity
+Obesity -> DNA_Methylation
+Acetaldehyde -> Ethanol
+Endothelial_dysfunction -> Insulin_Resistance
+Nitric_Oxide -> Blood_Vessels
+Glucocorticoids -> Leukemia_Lymphocytic_Acute
+Cardiotoxicity -> Heart_failure
+Coronary_Arteriosclerosis -> Heart_failure
+CorticotropinReleasing_Hormone -> Corticotropin
+Doxorubicin -> Cessation_of_life
+Ramipril -> Hypertensive_disease
+Neoplasm -> ERBB2NEU1NEURL1
+Angiotensin_II -> Blood_Pressure
+Pulmonary_Edema -> Cessation_of_life
+homocysteine -> Cerebrovascular_accident
+Cardiovascular_Diseases -> Diabetes
+Aldehydes -> Ethanol
+Fibroblast_Growth_Factor_2 -> Neoplasm
+Tumor_Antigens -> Neoplasm
+sibutramine -> Obesity
+Peritonitis -> Cessation_of_life
+Placebos -> Alzheimers_Disease
+hypercholesterolemia -> Cardiovascular_Diseases
+cardiac_arrhythmia -> Cerebrovascular_accident
+Hypertensive_disease -> Pathogenesis
+Arteriosclerosis -> Cardiovascular_Diseases
+Weight_decreased -> Obesity
+Diet -> Eating
+Erythropoietin -> Kidney_Failure_Chronic
+Contracture -> Ischemia
+Hypertensive_disease -> Oxidative_Stress
+MicroRNAs -> Cardiovascular_Diseases
+Nitric_Oxide -> Neoplasm
+Myocardial_Infarction -> Cardiovascular_Diseases
+Norepinephrine -> Rats_Inbred_WKY
+Amyotrophic_Lateral_Sclerosis -> Mutation
+Lymph_node_excision -> Neoplasm
+Pharmacological_Treatment -> Hypertensive_disease
+Nerve_Degeneration -> Diabetic_Retinopathy
+Epinephrine -> Adrenergic_Receptor
+Ethanol -> Control_Groups
+Sedentary -> Cardiovascular_Diseases
+Salts -> Hypertensive_disease
+Prophylactic_treatment -> Heart_failure
+RadiationSensitizing_Agents -> Neoplasm
+Mutation -> Phenylketonurias
+Insulin_Resistance -> glucose_homeostasis
+Myocardial_Infarction -> Hypertrophy
+Angiotensin_II -> Atrial_Natriuretic_Factor
+Exercise -> Insulin_Resistance
+Nitric_Oxide -> Vascular_resistance
+Phenylephrine -> Propranolol
+Ability -> Obesity
+Hypertensive_disease -> Chronic_Kidney_Diseases
+Nerve_Degeneration -> Multiple_Sclerosis
+Transcription_Genetic -> Inflammation
+Atrial_Fibrillation -> Dementia
+Inflammation -> Ischemic_stroke
+Obesity -> Sleep_Apnea_Obstructive
+Ethanol -> Lesion_of_stomach
+Neoplasm -> Infiltration
+Dementia -> Neurodegenerative_Disorders
+Hypertensive_disease -> Kidney_Failure
+External_Beam_Radiation_Therapy -> Neoplasm
+Urokinase -> Neoplasm
+Norepinephrine -> Growth
+Corticosterone -> Glucocorticoids
+Cardiac_Arrest -> Cessation_of_life
+Constriction_procedure -> Rattus_norvegicus
+Adrenal_Glands -> Glucocorticoids
+ProtoOncogene_Proteins_caktAKT1 -> Neoplasm
+Mutation -> enzyme_activity
+Study_models -> Malignant_Neoplasms
+Oxidative_Stress -> Homeostasis
+Neoplasm -> Malignant_neoplasm_of_urinary_bladder
+Hypertensive_disease -> Arteriosclerosis
+Kidney_Diseases -> Diabetes
+Ischemia -> Acidosis
+Stillbirth -> Cessation_of_life
+Triglycerides -> Obesity
+Cerebrovascular_accident -> Cessation_of_life
+Inflammation -> Interleukin1_beta
+Mutation -> Familial_Mediterranean_Fever
+Captopril -> Heart_failure
+Dexamethasone -> Cattle
+TNF_protein_humanTNF -> Obesity
+Neoplasm -> Growth_Factor
+Dyslipidemias -> Insulin_Resistance
+Agent -> Cerebrovascular_accident
+inhibitors -> Heart_failure
+Sodium -> uptake
+Alzheimers_Disease -> Amyloid_betaProtein_Precursor
+Norepinephrine -> Mus
+Physical_activity -> Heart_failure
+Obesity -> Degenerative_polyarthritis
+Sodium_Chloride -> Mus
+Ethanol -> Ulcer
+Dexamethasone -> Pain
+Aspirin -> Cardiovascular_Diseases
+Impaired_cognition -> Obesity
+Hypertension_Pulmonary -> Heart_failure
+Norepinephrine -> Normal_blood_pressure
+Ethanol -> Males
+Microalbuminuria -> Hypertensive_disease
+Diabetes_Mellitus -> Obesity
+Streptozocin -> Oxidative_Stress
+Surgical_Procedures_Endoscopic -> Neoplasm
+Norepinephrine -> Antidepressive_Agents
+cytokine -> Alzheimers_Disease
+Fitness -> Obesity
+Implantation_procedure -> Stenosis
+Angiotensin_II -> Systolic_blood_pressure
+Dexamethasone -> Equus_caballus
+Inflammation -> Cardiovascular_Diseases
+Norepinephrine -> Essential_Hypertension
+Aortic_Valve_Stenosis -> Hypertrophy_Left_Ventricular
+stem_cell_therapy -> Cerebrovascular_accident
+CD69_protein_humanCD69 -> Obesity
+Corticotropin -> Hydrocortisone
+Esophagectomy -> Neoplasm
+Polyomavirus -> Neoplasm
+Inflammation -> TNF_protein_humanTNF
+Angioplasty_Balloon -> Obstruction
+Placebos -> Cerebrovascular_accident
+Kras_OncogeneKRAS -> Neoplasm
+Norepinephrine -> Pressors
+Neoplasm -> Carcinoma_NonSmallCell_Lung
+Lipids -> Neoplasm
+Shock_Cardiogenic -> Cessation_of_life
+Obesity -> Cessation_of_life
+Obesity -> Cardiovascular_morbidity
+Neoplasm -> Malignant_neoplasm_of_breast
+Nitric_Oxide -> Microcirculation
+Diet -> Homeostasis
+Sodium_Chloride -> Oxidative_Stress
+Inflammation -> Atherogenesis
+Amyloid -> Parkinson_Disease
+Basis -> Neoplasms
+Neoplasm -> Child
+Boron_Neutron_Capture_Therapy -> Neoplasm
+Lipopolysaccharides -> Cessation_of_life
+Ethanol -> Cytochrome_P450
+ghrelin -> Obesity
+Obesity -> Intestinal_Microbiome
+Acetate -> Protein_Kinase_C
+Obesity -> Hyperglycemia
+Obesity -> LeptinLEP
+Sodium_Bicarbonate -> Kidney_Diseases
+Corticotropin -> Corticosterone
+Cancer_Treatment -> Neoplasm
+Ability -> Cardiovascular_Diseases
+Psychotic_symptom -> Alzheimers_Disease
+Cyclosporine -> Pyoderma_Gangrenosum
+Obesity -> Pregnancy
+Hypoxia -> Neoplasm_progression
+Cyclosporine -> Dermatitis_Atopic
+Lesion -> Inflammation
+Portal_vein_thrombosis -> Fibrosis
+Neurohormones -> Heart_failure
+Salts -> Ions
+Obstruction -> Ischemia
+Ischemia -> Recovery
+Mutation -> Mitochondrial_Encephalomyopathies
+Acetate -> Uterine_Fibroids
+Supplementation -> Cardiovascular_Diseases
+Hypertensive_disease -> Diabetic_Nephropathy
+Carcinoembryonic_AntigenCEACAM5CEACAM3PSG2 -> Cerebrovascular_accident
+Ethanol -> Cell_Death
+Cardiovascular_Diseases -> COVID19
+Inflammation -> Parkinson_Disease
+Obstruction -> Infarction
+Angiotensins -> Hypertensive_disease
+Exercise -> Dementia
+Phenylephrine -> Rattus_norvegicus
+Malnutrition -> Obesity
+Immune_response -> Neoplasm
+Oxidative_Stress -> cell_injury
+Antibodies_AntiIdiotypic -> Neoplasm
+Oxidative_Stress -> Inflammatory_Response
+Banding_procedure -> Hypertrophy_Left_Ventricular
+CD8B1_geneCD8B -> Neoplasm
+Cytotoxic_agent -> Neoplasm
+Evaluation_procedure -> Cerebrovascular_accident
+resistinRETN -> Obesity
+Angioplasty_Transluminal_Percutaneous_Coronary -> Obstruction
+Hemorrhage -> Fibrosis
+Glioma -> Neoplasm
+Angiotensins -> Angiotensin_II
+Screening_procedure -> Kidney_Diseases
+        }')
