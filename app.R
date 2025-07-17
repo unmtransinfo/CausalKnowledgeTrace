@@ -65,6 +65,12 @@ ui <- dashboardPage(
                 .box {
                     border-radius: 5px;
                 }
+            ")),
+            tags$script(HTML("
+                function openCreateGraph() {
+                    // Navigate to the Graph Configuration tab
+                    $('a[data-value=\"create_graph\"]').click();
+                }
             "))
         ),
         
@@ -87,7 +93,14 @@ ui <- dashboardPage(
                         status = "info",
                         solidHeader = TRUE,
                         width = 6,
-                        create_network_controls_ui()
+                        create_network_controls_ui(),
+                        br(),
+                        # Add Graph Parameters button
+                        actionButton("graph_params_btn",
+                                   "Create Graph",
+                                   class = "btn-info btn-block",
+                                   icon = icon("cogs"),
+                                   onclick = "openCreateGraph()")
                     ),
                     box(
                         title = "Legend",
@@ -466,6 +479,16 @@ server <- function(input, output, session) {
     # Reset physics button using modular function
     observeEvent(input$reset_physics, {
         reset_physics_controls(session)
+    })
+
+    # Graph Parameters button handler
+    observeEvent(input$graph_params_btn, {
+        # Show notification about navigation
+        showNotification(
+            "Navigating to Graph Configuration tab...",
+            type = "message",
+            duration = 2
+        )
     })
     
     # Node information output using modular function
