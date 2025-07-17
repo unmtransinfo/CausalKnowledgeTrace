@@ -204,6 +204,7 @@ You can customize these categories by modifying the `categorize_node` function i
    - Click nodes to select and view details
    - Adjust physics parameters with sliders
    - **Reload DAG Data** button to refresh from dag_data.R
+   - **Create Graph** button to navigate to graph configuration
 
 2. **Node Information Tab**
    - Detailed information about selected nodes
@@ -219,6 +220,13 @@ You can customize these categories by modifying the `categorize_node` function i
    - Instructions for modifying DAG data
    - Example data structure
    - Guidelines for creating custom DAGs
+
+5. **Graph Configuration Tab**
+   - Configure parameters for knowledge graph generation
+   - Set exposure and outcome CUIs (Concept Unique Identifiers)
+   - Adjust minimum PMIDs, publication year cutoff, and other parameters
+   - Save configuration to user_input.yaml file
+   - Validate input parameters with real-time feedback
 
 ### Controls
 
