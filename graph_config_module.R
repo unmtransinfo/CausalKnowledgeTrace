@@ -49,6 +49,7 @@ graphConfigUI <- function(id) {
                             textAreaInput(
                                 ns("exposure_cuis"),
                                 label = NULL,
+                                value = "C0011849, C0020538",
                                 placeholder = "C0011849, C0020538",
                                 rows = 3,
                                 width = "100%"
@@ -63,6 +64,7 @@ graphConfigUI <- function(id) {
                             textAreaInput(
                                 ns("outcome_cuis"),
                                 label = NULL,
+                                value = "C0027051, C0038454",
                                 placeholder = "C0027051, C0038454",
                                 rows = 3,
                                 width = "100%"
