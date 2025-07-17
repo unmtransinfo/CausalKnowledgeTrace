@@ -11,6 +11,16 @@ source("node_information.R")
 source("statistics.R")
 source("data_upload.R")
 
+# Try to source graph configuration module if it exists
+tryCatch({
+    source("graph_config_module.R")
+    graph_config_available <- TRUE
+    cat("Graph configuration module loaded successfully\n")
+}, error = function(e) {
+    graph_config_available <- FALSE
+    cat("Graph configuration module not found, creating placeholder\n")
+})
+
 # Try to load DAG data from external file
 tryCatch({
     source("dag_data.R")
@@ -41,7 +51,8 @@ ui <- dashboardPage(
             menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
             menuItem("Node Information", tabName = "info", icon = icon("info-circle")),
             menuItem("Statistics", tabName = "stats", icon = icon("chart-bar")),
-            menuItem("Data Upload", tabName = "upload", icon = icon("upload"))
+            menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
+            menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs"))
         )
     ),
     
@@ -221,6 +232,40 @@ ui <- dashboardPage(
                         )
                     )
                 )
+            ),
+
+            # Graph Configuration Tab
+            tabItem(tabName = "create_graph",
+                if (exists("graph_config_available") && graph_config_available) {
+                    graphConfigUI("config")
+                } else {
+                    fluidRow(
+                        box(
+                            title = "Graph Configuration",
+                            status = "primary",
+                            solidHeader = TRUE,
+                            width = 12,
+                            div(
+                                class = "alert alert-warning",
+                                icon("exclamation-triangle"),
+                                strong("Graph Configuration Module Not Available"),
+                                br(), br(),
+                                p("The graph configuration module (graph_config_module.R) was not found."),
+                                p("To enable this feature, please ensure the graph_config_module.R file is in the same directory as this application."),
+                                br(),
+                                p("This module allows you to configure parameters for knowledge graph generation including:"),
+                                tags$ul(
+                                    tags$li("Exposure and Outcome CUIs"),
+                                    tags$li("Minimum PMIDs threshold"),
+                                    tags$li("Publication year cutoff"),
+                                    tags$li("Squelch threshold"),
+                                    tags$li("K-hops parameter"),
+                                    tags$li("SemMedDB version selection")
+                                )
+                            )
+                        )
+                    )
+                }
             )
         )
     )
@@ -237,6 +282,11 @@ server <- function(input, output, session) {
         available_files = if(exists("available_dag_files")) available_dag_files else character(0),
         current_file = if(exists("dag_loaded_from")) dag_loaded_from else "default"
     )
+
+    # Initialize graph configuration module if available
+    if (exists("graph_config_available") && graph_config_available) {
+        config_params <- graphConfigServer("config")
+    }
     
     # Update file list on app start
     observe({
