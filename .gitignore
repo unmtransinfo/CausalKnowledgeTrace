@@ -1,3 +1,7 @@
 .Claude/
 user_input.yaml
 test*.R
+
+*result**
+
+.vscode/
