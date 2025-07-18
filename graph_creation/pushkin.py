@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Enhanced Epidemiological Analysis Script with Performance Monitoring
-and Centralized Variable Configuration
+Enhanced Epidemiological Analysis Script with Performance Monitoring,
+Centralized Variable Configuration, and Command Line Interface
 
 This script performs causal inference analysis using Markov blankets to identify 
 minimal adjustment sets from SemMedDB-derived data. It includes comprehensive timing
-measurements and centralized configuration.
+measurements, centralized configuration, and command line argument support.
 
 Author: Scott A. Malec PhD
 Date: February 2025
@@ -18,6 +18,10 @@ import networkx as nx
 import json
 import string
 import time
+import argparse
+import os
+import sys
+from pathlib import Path
 from typing import Dict, Set, Tuple, List
 from dataclasses import dataclass
 from datetime import datetime
@@ -52,6 +56,22 @@ EXPOSURE_OUTCOME_CONFIGS = {
         outcome_cui="C0002395",
         outcome_name="Alzheimers_Disease",
         description="Investigating the relationship between hypertension and Alzheimer's disease"
+    ),
+    "diabetes_alzheimers": ExposureOutcomePair(
+        name="diabetes_alzheimers",
+        exposure_cui="C0011849",
+        exposure_name="Diabetes_Mellitus",
+        outcome_cui="C0002395",
+        outcome_name="Alzheimers_Disease",
+        description="Investigating the relationship between diabetes mellitus and Alzheimer's disease"
+    ),
+    "smoking_cancer": ExposureOutcomePair(
+        name="smoking_cancer",
+        exposure_cui="C0037369",
+        exposure_name="Smoking",
+        outcome_cui="C0006826",
+        outcome_name="Cancer",
+        description="Investigating the relationship between smoking and cancer"
     )
 }
 
@@ -127,13 +147,22 @@ class MarkovBlanketAnalyzer:
     def __init__(self, 
                  config_name: str,
                  db_params: Dict[str, str],
-                 thresholds: Dict[str, int]):
+                 thresholds: Dict[str, int],
+                 output_dir: str = "output"):
         """Initialize the analyzer with configuration parameters."""
+        if config_name not in EXPOSURE_OUTCOME_CONFIGS:
+            raise ValueError(f"Unknown config: {config_name}. Available: {list(EXPOSURE_OUTCOME_CONFIGS.keys())}")
+        
         self.config = EXPOSURE_OUTCOME_CONFIGS[config_name]
         self.db_params = db_params
         self.thresholds = thresholds
         self.timing_data = {}
+        self.output_dir = Path(output_dir)
         self.excluded_values = ", ".join([f"('{cui}')" for cui in excluded_cuis])
+        
+        # Create output directory
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        print(f"Output directory created: {self.output_dir.absolute()}")
 
     def clean_output_name(self, name: str) -> str:
         """Normalize and clean node names for consistent output."""
@@ -333,12 +362,6 @@ class MarkovBlanketAnalyzer:
             ))
             mb_outcome_nodes = {row[0] for row in cursor.fetchall()}
             
-            # Exposure Markov blanket query (similar structure)
-            # [Implementation for exposure Markov blanket]
-            
-            # Take union and add exposure/outcome nodes
-            print(f"Found {len(mb_outcome_nodes)} nodes in outcome Markov blanket")
-
             # Exposure Markov blanket query
             print("Computing exposure Markov blanket...")
             query_exposure = f"""
@@ -456,7 +479,7 @@ class MarkovBlanketAnalyzer:
             dagitty_format = "\n".join(dagitty_lines)
             
             # Save overall DAG script
-            with open("SemDAG.R", "w") as f:
+            with open(self.output_dir / "SemDAG.R", "w") as f:
                 f.write(dagitty_format)
             
             # Generate Markov blanket-specific script
@@ -494,7 +517,7 @@ class MarkovBlanketAnalyzer:
             ])
             
             dagitty_mb_format = "\n".join(dagitty_mb_lines)
-            with open("MarkovBlanket_Union.R", "w") as f:
+            with open(self.output_dir / "MarkovBlanket_Union.R", "w") as f:
                 f.write(dagitty_mb_format)
 
     def run_analysis(self) -> Dict:
@@ -502,6 +525,7 @@ class MarkovBlanketAnalyzer:
         with TimingContext("total_execution", self.timing_data):
             print(f"\nStarting analysis for {self.config.description}...")
             print(f"Using thresholds: {self.thresholds}")
+            print(f"Output directory: {self.output_dir.absolute()}")
             
             # Connect to database
             with psycopg2.connect(**self.db_params) as conn:
@@ -519,7 +543,7 @@ class MarkovBlanketAnalyzer:
                     
                     print("\nSaving detailed assertions to JSON...")
                     # Save detailed assertions
-                    with open("causal_assertions.json", "w") as f:
+                    with open(self.output_dir / "causal_assertions.json", "w") as f:
                         json.dump(detailed_assertions, f, indent=2)
                     
                     # Compute Markov blankets
@@ -540,48 +564,228 @@ class MarkovBlanketAnalyzer:
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
                     self.generate_dagitty_scripts(all_nodes, all_edges, mb_union)
-                    print("DAGitty scripts generated: SemDAG.R and MarkovBlanket_Union.R")
+                    print(f"DAGitty scripts generated: {self.output_dir}/SemDAG.R and {self.output_dir}/MarkovBlanket_Union.R")
             
         print("\nAnalysis complete!")
         return self.timing_data
 
-# -------------------------
-# USAGE EXAMPLE
-# -------------------------
-if __name__ == "__main__":
-    # Database configuration
-    DB_CONFIG = {
-        "dbname": "causalehr",
-        "user": "rajesh",
-        "password": "Usps@6855",
-        "host": "localhost",
-        "port": "5432",
-        "options": "-c search_path=causalehr"
+def create_db_config(host: str, port: int, dbname: str, user: str, password: str, schema: str = None) -> Dict[str, str]:
+    """Create database configuration dictionary."""
+    config = {
+        "host": host,
+        "port": str(port),
+        "dbname": dbname,
+        "user": user,
+        "password": password
     }
-    
-    # Analysis thresholds
-    THRESHOLDS = {
-        "first_degree": 50,
-        "second_degree": 50,
-        "markov_blanket": 50
-    }
-    
-    # Initialize and run analysis
-    analyzer = MarkovBlanketAnalyzer(
-        config_name="hypertension_alzheimers",
-        db_params=DB_CONFIG,
-        thresholds=THRESHOLDS
+    if schema:
+        config["options"] = f"-c search_path={schema}"
+    return config
+
+def parse_arguments():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Enhanced Epidemiological Analysis Script with Markov Blanket Analysis",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=f"""
+Available exposure-outcome configurations:
+{chr(10).join([f"  {name}: {config.description}" for name, config in EXPOSURE_OUTCOME_CONFIGS.items()])}
+
+Example usage:
+  python {sys.argv[0]} --config hypertension_alzheimers --host localhost --user myuser --password mypass --dbname causalehr
+  python {sys.argv[0]} --config depression_alzheimers --output-dir results_2025 --first-degree-threshold 100
+        """
     )
     
-    timing_results = analyzer.run_analysis()
+    # Required arguments
+    parser.add_argument(
+        "--config", 
+        required=True,
+        choices=list(EXPOSURE_OUTCOME_CONFIGS.keys()),
+        help="Exposure-outcome configuration to analyze"
+    )
     
-    # Save and display timing results
-    with open("performance_metrics.json", "w") as f:
-        json.dump(timing_results, f, indent=2)
+    # Database connection parameters
+    db_group = parser.add_argument_group("Database Connection")
+    db_group.add_argument("--host", default="localhost", help="Database host (default: localhost)")
+    db_group.add_argument("--port", type=int, default=5432, help="Database port (default: 5432)")
+    db_group.add_argument("--dbname", required=True, help="Database name")
+    db_group.add_argument("--user", required=True, help="Database user")
+    db_group.add_argument("--password", required=True, help="Database password")
+    db_group.add_argument("--schema", help="Database schema (optional)")
     
-    print("\nTiming Results:")
-    for step, metrics in timing_results.items():
-        print(f"{step}: {metrics['duration']:.2f} seconds")
+    # Analysis parameters
+    analysis_group = parser.add_argument_group("Analysis Parameters")
+    analysis_group.add_argument(
+        "--first-degree-threshold", 
+        type=int, 
+        default=50,
+        help="Minimum support count for first-degree relationships (default: 50)"
+    )
+    analysis_group.add_argument(
+        "--second-degree-threshold", 
+        type=int, 
+        default=50,
+        help="Minimum support count for second-degree relationships (default: 50)"
+    )
+    analysis_group.add_argument(
+        "--markov-blanket-threshold", 
+        type=int, 
+        default=50,
+        help="Minimum support count for Markov blanket computation (default: 50)"
+    )
     
-    print("\nAll results saved to disk: performance_metrics.json")
+    # Output parameters
+    output_group = parser.add_argument_group("Output Parameters")
+    output_group.add_argument(
+        "--output-dir", 
+        default="output",
+        help="Output directory for results (default: output)"
+    )
+    output_group.add_argument(
+        "--verbose", 
+        action="store_true",
+        help="Enable verbose output"
+    )
+    
+    return parser.parse_args()
 
+def validate_arguments(args):
+    """Validate command line arguments."""
+    # Validate thresholds
+    if args.first_degree_threshold < 1:
+        raise ValueError("First degree threshold must be >= 1")
+    if args.second_degree_threshold < 1:
+        raise ValueError("Second degree threshold must be >= 1")
+    if args.markov_blanket_threshold < 1:
+        raise ValueError("Markov blanket threshold must be >= 1")
+    
+    # Validate output directory
+    try:
+        output_path = Path(args.output_dir)
+        output_path.mkdir(parents=True, exist_ok=True)
+    except Exception as e:
+        raise ValueError(f"Cannot create output directory '{args.output_dir}': {e}")
+
+def main():
+    """Main function with command line interface."""
+    try:
+        args = parse_arguments()
+        validate_arguments(args)
+        
+        if args.verbose:
+            print(f"Running analysis with configuration: {args.config}")
+            print(f"Database: {args.host}:{args.port}/{args.dbname}")
+            print(f"Thresholds: first={args.first_degree_threshold}, second={args.second_degree_threshold}, markov={args.markov_blanket_threshold}")
+            print(f"Output directory: {args.output_dir}")
+        
+        # Create database configuration
+        db_config = create_db_config(
+            host=args.host,
+            port=args.port,
+            dbname=args.dbname,
+            user=args.user,
+            password=args.password,
+            schema=args.schema
+        )
+        
+        # Create analysis thresholds
+        thresholds = {
+            "first_degree": args.first_degree_threshold,
+            "second_degree": args.second_degree_threshold,
+            "markov_blanket": args.markov_blanket_threshold
+        }
+        
+        # Initialize and run analysis
+        analyzer = MarkovBlanketAnalyzer(
+            config_name=args.config,
+            db_params=db_config,
+            thresholds=thresholds,
+            output_dir=args.output_dir
+        )
+        
+        timing_results = analyzer.run_analysis()
+        
+        # Save timing results
+        output_path = Path(args.output_dir)
+        with open(output_path / "performance_metrics.json", "w") as f:
+            json.dump(timing_results, f, indent=2)
+        
+        # Save run configuration
+        run_config = {
+            "config_name": args.config,
+            "config_description": EXPOSURE_OUTCOME_CONFIGS[args.config].description,
+            "exposure_cui": EXPOSURE_OUTCOME_CONFIGS[args.config].exposure_cui,
+            "exposure_name": EXPOSURE_OUTCOME_CONFIGS[args.config].exposure_name,
+            "outcome_cui": EXPOSURE_OUTCOME_CONFIGS[args.config].outcome_cui,
+            "outcome_name": EXPOSURE_OUTCOME_CONFIGS[args.config].outcome_name,
+            "thresholds": thresholds,
+            "database": {
+                "host": args.host,
+                "port": args.port,
+                "dbname": args.dbname,
+                "user": args.user,
+                "schema": args.schema
+            },
+            "run_timestamp": datetime.now().isoformat(),
+            "output_directory": str(output_path.absolute())
+        }
+        
+        with open(output_path / "run_configuration.json", "w") as f:
+            json.dump(run_config, f, indent=2)
+        
+        # Display results summary
+        print("\n" + "="*60)
+        print("ANALYSIS COMPLETE")
+        print("="*60)
+        print(f"Configuration: {args.config}")
+        print(f"Description: {EXPOSURE_OUTCOME_CONFIGS[args.config].description}")
+        print(f"Output directory: {output_path.absolute()}")
+        print("\nGenerated files:")
+        print(f"  - causal_assertions.json: Detailed causal relationships")
+        print(f"  - SemDAG.R: R script for full DAG visualization")
+        print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
+        print(f"  - performance_metrics.json: Timing information")
+        print(f"  - run_configuration.json: Complete run parameters")
+        
+        print("\nTiming Results:")
+        total_time = timing_results.get("total_execution", {}).get("duration", 0)
+        print(f"  Total execution time: {total_time:.2f} seconds")
+        for step, metrics in timing_results.items():
+            if step != "total_execution":
+                print(f"  {step}: {metrics['duration']:.2f} seconds")
+        
+        print("\nTo visualize results, run the R scripts in the output directory:")
+        print(f"  cd {output_path}")
+        print(f"  Rscript SemDAG.R")
+        print(f"  Rscript MarkovBlanket_Union.R")
+        
+    except KeyboardInterrupt:
+        print("\nAnalysis interrupted by user.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"\nError: {e}")
+        if args.verbose if 'args' in locals() else False:
+            import traceback
+            traceback.print_exc()
+        sys.exit(1)
+
+# -------------------------
+# MAIN ENTRY POINT
+# -------------------------
+if __name__ == "__main__":
+    # Always require command line arguments - no legacy mode
+    if len(sys.argv) == 1:
+        print("Error: Missing required arguments.")
+        print("\nThis script requires command line arguments to run.")
+        print("Use --help to see all available options.\n")
+        print("Example usage:")
+        print(f"  python {sys.argv[0]} --config hypertension_alzheimers --dbname causalehr --user myuser --password mypass")
+        print(f"  python {sys.argv[0]} --help")
+        print("\nAvailable configurations:")
+        for name, config in EXPOSURE_OUTCOME_CONFIGS.items():
+            print(f"  {name}: {config.description}")
+        sys.exit(1)
+    
+    # Run with command line arguments
+    main()
