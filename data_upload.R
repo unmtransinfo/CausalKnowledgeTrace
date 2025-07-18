@@ -158,14 +158,46 @@ create_network_data <- function(dag_object) {
     }
     
     # Convert DAG to igraph with error handling
-    tryCatch({
-        ig <- dagitty2graph(dag_object)
-    }, error = function(e) {
-        cat("Error converting DAG to igraph:", e$message, "\n")
-        # Create a simple fallback graph
+    ig <- NULL
+    conversion_success <- FALSE
+
+    # First try with dagitty2graph if available
+    if (exists("dagitty2graph")) {
+        tryCatch({
+            ig <- dagitty2graph(dag_object)
+            conversion_success <- TRUE
+            cat("Successfully converted DAG to igraph using dagitty2graph\n")
+        }, error = function(e) {
+            cat("Error converting DAG to igraph with dagitty2graph:", e$message, "\n")
+            conversion_success <- FALSE
+        })
+    } else {
+        cat("dagitty2graph function not available, trying alternative method\n")
+    }
+
+    # Fallback: try to extract edges directly from dagitty object
+    if (!conversion_success) {
+        tryCatch({
+            # Extract edges directly from dagitty object
+            edge_matrix <- edges(dag_object)
+            if (!is.null(edge_matrix) && nrow(edge_matrix) > 0) {
+                # Create a simple igraph from edge list
+                ig <- graph_from_edgelist(as.matrix(edge_matrix[, c("from", "to")]), directed = TRUE)
+                conversion_success <- TRUE
+                cat("Successfully created graph using direct edge extraction\n")
+            } else {
+                cat("No edges found in DAG object\n")
+            }
+        }, error = function(e) {
+            cat("Error with direct edge extraction:", e$message, "\n")
+        })
+    }
+
+    # Final fallback: create empty graph
+    if (!conversion_success || is.null(ig)) {
+        cat("Using empty graph fallback\n")
         ig <- graph.empty(n = 0, directed = TRUE)
-        return(list(nodes = data.frame(), edges = data.frame(), dag = dag_object))
-    })
+    }
     
     # Create nodes dataframe using the node_information module
     if (exists("create_nodes_dataframe")) {
