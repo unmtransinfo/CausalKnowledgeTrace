@@ -5,6 +5,31 @@ library(visNetwork)
 library(dplyr)
 library(DT)
 
+# Load DAG processing libraries with error handling
+tryCatch({
+    library(SEMgraph)
+    cat("✓ SEMgraph library loaded\n")
+}, error = function(e) {
+    cat("⚠ SEMgraph not available:", e$message, "\n")
+    cat("  Some DAG processing features may be limited\n")
+})
+
+tryCatch({
+    library(dagitty)
+    cat("✓ dagitty library loaded\n")
+}, error = function(e) {
+    cat("⚠ dagitty not available:", e$message, "\n")
+    cat("  DAG processing will not work without this package\n")
+})
+
+tryCatch({
+    library(igraph)
+    cat("✓ igraph library loaded\n")
+}, error = function(e) {
+    cat("⚠ igraph not available:", e$message, "\n")
+    cat("  Graph conversion features may be limited\n")
+})
+
 # Source modular components
 source("dag_visualization.R")
 source("node_information.R")
@@ -21,26 +46,39 @@ tryCatch({
     cat("Graph configuration module not found, creating placeholder\n")
 })
 
-# Try to load DAG data from external file
-tryCatch({
-    source("dag_data.R")
-    cat("Successfully loaded DAG data from dag_data.R\n")
-}, error = function(e) {
-    cat("Could not load dag_data.R, using default data structure\n")
-    # Fallback: create minimal data structure using modular functions
-    dag_object <- create_fallback_dag()
-    network_data <- create_network_data(dag_object)
-    dag_nodes <- network_data$nodes
-    dag_edges <- network_data$edges
-})
+# Initialize empty data structures for immediate app startup
+# The app will start with no graph loaded, and users will load graphs through the UI
+cat("Starting Shiny application without loading graph files...\n")
 
-# Validate the loaded data using modular functions
-dag_nodes <- validate_node_data(dag_nodes)
-dag_edges <- validate_edge_data(dag_edges)
+# Create empty data structures for immediate startup
+dag_nodes <- data.frame(
+    id = character(0),
+    label = character(0),
+    group = character(0),
+    color = character(0),
+    font.size = numeric(0),
+    font.color = character(0),
+    stringsAsFactors = FALSE
+)
 
-# Get unique groups for legend
-unique_groups <- unique(dag_nodes$group)
-group_colors <- setNames(unique(dag_nodes$color), unique(dag_nodes$group))
+dag_edges <- data.frame(
+    from = character(0),
+    to = character(0),
+    arrows = character(0),
+    smooth = logical(0),
+    width = numeric(0),
+    color = character(0),
+    stringsAsFactors = FALSE
+)
+
+dag_object <- NULL
+
+# Initialize empty groups for legend
+unique_groups <- character(0)
+group_colors <- character(0)
+
+cat("Application ready to start at localhost.\n")
+cat("Use the Data Upload tab to select and load a graph file.\n")
 
 # Define UI
 ui <- dashboardPage(
@@ -163,50 +201,83 @@ ui <- dashboardPage(
             tabItem(tabName = "upload",
                 fluidRow(
                     box(
-                        title = "DAG File Management",
-                        status = "warning",
+                        title = "Graph File Selection & Loading",
+                        status = "primary",
                         solidHeader = TRUE,
                         width = 12,
-                        
+
+                        # Welcome message for new users
+                        div(
+                            style = "background-color: #e8f4fd; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196F3;",
+                            h4(icon("info-circle"), " Welcome to the Interactive DAG Visualization"),
+                            p("The application is now running at localhost and ready to use! To get started, please select or upload a graph file below."),
+                            p(strong("No graph file is currently loaded."), " Once you load a graph, you'll be able to explore it in the DAG Visualization tab.")
+                        ),
+
                         # Current DAG status
-                        h4("Current DAG Status"),
+                        h4(icon("chart-line"), " Current Graph Status"),
                         verbatimTextOutput("current_dag_status"),
-                        
-                        # File selection
-                        h4("Load DAG from File"),
-                        p("Select a DAG file from the dropdown below:"),
-                        
+
+                        # File selection section
+                        h4(icon("folder-open"), " Load Graph from Existing File"),
+                        p("Select a graph file from the dropdown below:"),
+
                         fluidRow(
                             column(8,
-                                selectInput("dag_file_selector", 
-                                           "Choose DAG File:",
+                                selectInput("dag_file_selector",
+                                           "Choose Graph File:",
                                            choices = NULL,
                                            selected = NULL)
                             ),
                             column(4,
                                 br(),
-                                actionButton("load_selected_dag", "Load Selected DAG", 
-                                           class = "btn-primary", style = "margin-top: 5px;"),
+                                actionButton("load_selected_dag", "Load Selected Graph",
+                                           class = "btn-primary", style = "margin-top: 5px; width: 100%;"),
                                 br(), br(),
-                                actionButton("refresh_file_list", "Refresh File List", 
-                                           class = "btn-info", style = "margin-top: 5px;")
+                                actionButton("refresh_file_list", "Refresh File List",
+                                           class = "btn-info", style = "margin-top: 5px; width: 100%;")
                             )
                         ),
-                        
-                        # File upload
-                        h4("Upload New DAG File"),
-                        p("Upload a new R file containing your DAG definition:"),
-                        
+
+                        # Progress indication section
+                        conditionalPanel(
+                            condition = "input.load_selected_dag > 0 || input.upload_and_load > 0",
+                            div(id = "loading_section", style = "margin: 20px 0;",
+                                h4(icon("spinner", class = "fa-spin"), " Loading Graph File..."),
+                                div(
+                                    style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;",
+                                    p("Please wait while your graph file is being processed and loaded."),
+                                    div(class = "progress", style = "height: 25px;",
+                                        div(id = "loading_progress", class = "progress-bar progress-bar-striped progress-bar-animated",
+                                            role = "progressbar", style = "width: 0%; background-color: #007bff;",
+                                            span(id = "progress_text", "Initializing...")
+                                        )
+                                    ),
+                                    br(),
+                                    div(id = "loading_status", style = "font-size: 14px; color: #6c757d;",
+                                        "Status: Ready to load..."
+                                    )
+                                )
+                            )
+                        ),
+
+                        hr(),
+
+                        # File upload section
+                        h4(icon("upload"), " Upload New Graph File"),
+                        p("Upload a new R file containing your graph definition:"),
+
                         fluidRow(
                             column(8,
                                 fileInput("dag_file_upload", "Choose R File",
                                          accept = c(".R", ".r"),
-                                         multiple = FALSE)
+                                         multiple = FALSE,
+                                         placeholder = "No file selected")
                             ),
                             column(4,
                                 br(),
-                                actionButton("upload_and_load", "Upload & Load", 
-                                           class = "btn-success", style = "margin-top: 5px;")
+                                actionButton("upload_and_load", "Upload & Load",
+                                           class = "btn-success", style = "margin-top: 5px; width: 100%;")
                             )
                         ),
                         
@@ -281,7 +352,54 @@ ui <- dashboardPage(
                 }
             )
         )
-    )
+    ),
+
+    # Add custom JavaScript for progress indication
+    tags$script(HTML("
+        // Progress bar control functions
+        function updateProgress(percent, text, status) {
+            $('#loading_progress').css('width', percent + '%');
+            $('#progress_text').text(text);
+            $('#loading_status').text('Status: ' + status);
+        }
+
+        function showLoadingSection() {
+            $('#loading_section').show();
+            updateProgress(10, 'Starting...', 'Initializing file loading process');
+        }
+
+        function hideLoadingSection() {
+            $('#loading_section').hide();
+            updateProgress(0, 'Initializing...', 'Ready to load...');
+        }
+
+        // Event handlers for loading buttons
+        $(document).on('click', '#load_selected_dag', function() {
+            showLoadingSection();
+            updateProgress(20, 'Reading file...', 'Loading selected graph file');
+        });
+
+        $(document).on('click', '#upload_and_load', function() {
+            showLoadingSection();
+            updateProgress(20, 'Uploading file...', 'Processing uploaded graph file');
+        });
+
+        // Hide loading section on page load
+        $(document).ready(function() {
+            hideLoadingSection();
+        });
+
+        // Message handlers for server communication
+        Shiny.addCustomMessageHandler('updateProgress', function(data) {
+            updateProgress(data.percent, data.text, data.status);
+        });
+
+        Shiny.addCustomMessageHandler('hideLoadingSection', function(data) {
+            setTimeout(function() {
+                hideLoadingSection();
+            }, 1000); // Brief delay to show completion
+        });
+    "))
 )
 
 # Define server logic
@@ -291,10 +409,25 @@ server <- function(input, output, session) {
     current_data <- reactiveValues(
         nodes = dag_nodes,
         edges = dag_edges,
-        dag_object = if(exists("dag_object")) dag_object else NULL,
-        available_files = if(exists("available_dag_files")) available_dag_files else character(0),
-        current_file = if(exists("dag_loaded_from")) dag_loaded_from else "default"
+        dag_object = dag_object,
+        available_files = character(0),
+        current_file = "No graph loaded"
     )
+
+    # Initialize available files list on startup
+    observe({
+        tryCatch({
+            current_data$available_files <- scan_for_dag_files()
+            choices <- current_data$available_files
+            if (length(choices) == 0) {
+                choices <- "No DAG files found"
+            }
+            updateSelectInput(session, "dag_file_selector", choices = choices)
+        }, error = function(e) {
+            cat("Error scanning for DAG files on startup:", e$message, "\n")
+            updateSelectInput(session, "dag_file_selector", choices = "No DAG files found")
+        })
+    })
 
     # Initialize graph configuration module if available
     if (exists("graph_config_available") && graph_config_available) {
@@ -314,15 +447,26 @@ server <- function(input, output, session) {
     
     # Current DAG status
     output$current_dag_status <- renderText({
-        paste0(
-            "Currently loaded DAG:\n",
-            "- Source: ", current_data$current_file, "\n",
-            "- Nodes: ", nrow(current_data$nodes), "\n",
-            "- Edges: ", nrow(current_data$edges), "\n",
-            "- Categories: ", length(unique(current_data$nodes$group)), "\n",
-            "- Available files: ", if(length(current_data$available_files) > 0) 
-                paste(current_data$available_files, collapse = ", ") else "None"
-        )
+        if (is.null(current_data$dag_object) || nrow(current_data$nodes) == 0) {
+            paste0(
+                "STATUS: No graph currently loaded\n",
+                "APPLICATION: Running at localhost and ready to use\n",
+                "NEXT STEP: Select or upload a graph file below\n\n",
+                "Available files detected: ", length(current_data$available_files), "\n",
+                if(length(current_data$available_files) > 0)
+                    paste("Files:", paste(current_data$available_files, collapse = ", "))
+                else "No graph files found in directory"
+            )
+        } else {
+            paste0(
+                "STATUS: Graph loaded successfully ✓\n",
+                "SOURCE: ", current_data$current_file, "\n",
+                "NODES: ", nrow(current_data$nodes), "\n",
+                "EDGES: ", nrow(current_data$edges), "\n",
+                "CATEGORIES: ", length(unique(current_data$nodes$group)), "\n\n",
+                "You can now explore the graph in the DAG Visualization tab!"
+            )
+        }
     })
     
     # Refresh file list
@@ -340,29 +484,65 @@ server <- function(input, output, session) {
         })
     })
     
-    # Load selected DAG
+    # Load selected DAG with progress indication
     observeEvent(input$load_selected_dag, {
         if (is.null(input$dag_file_selector) || input$dag_file_selector == "No DAG files found") {
-            showNotification("Please select a valid DAG file", type = "error")
+            showNotification("Please select a valid graph file", type = "error")
+            session$sendCustomMessage("hideLoadingSection", list())
             return()
         }
 
         tryCatch({
+            # Update progress: File validation
+            session$sendCustomMessage("updateProgress", list(
+                percent = 40,
+                text = "Validating file...",
+                status = paste("Checking", input$dag_file_selector)
+            ))
+
             result <- load_dag_from_file(input$dag_file_selector)
+
             if (result$success) {
+                # Update progress: Processing graph
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 60,
+                    text = "Processing graph...",
+                    status = "Converting graph data structure"
+                ))
+
                 # Process the loaded DAG
                 network_data <- create_network_data(result$dag)
+
+                # Update progress: Finalizing
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 80,
+                    text = "Finalizing...",
+                    status = "Updating visualization data"
+                ))
+
                 current_data$nodes <- network_data$nodes
                 current_data$edges <- network_data$edges
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_selector
 
-                showNotification(paste("Successfully loaded DAG from", input$dag_file_selector), type = "success")
+                # Update progress: Complete
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 100,
+                    text = "Complete!",
+                    status = "Graph loaded successfully"
+                ))
+
+                # Hide loading section after a brief delay
+                session$sendCustomMessage("hideLoadingSection", list())
+
+                showNotification(paste("Successfully loaded graph from", input$dag_file_selector), type = "success")
             } else {
+                session$sendCustomMessage("hideLoadingSection", list())
                 showNotification(result$message, type = "error")
             }
         }, error = function(e) {
-            showNotification(paste("Error loading DAG:", e$message), type = "error")
+            session$sendCustomMessage("hideLoadingSection", list())
+            showNotification(paste("Error loading graph:", e$message), type = "error")
         })
     })
     
@@ -392,30 +572,60 @@ server <- function(input, output, session) {
         })
     })
     
-    # Upload and load DAG
+    # Upload and load DAG with progress indication
     observeEvent(input$upload_and_load, {
         if (is.null(input$dag_file_upload)) {
             showNotification("Please select a file first", type = "error")
+            session$sendCustomMessage("hideLoadingSection", list())
             return()
         }
-        
-        # Get the uploaded file info
-        file_info <- input$dag_file_upload
-        new_filename <- file_info$name
-        
-        # Copy file to app directory
-        file.copy(file_info$datapath, new_filename, overwrite = TRUE)
-        
-        # Load the DAG
+
         tryCatch({
+            # Get the uploaded file info
+            file_info <- input$dag_file_upload
+            new_filename <- file_info$name
+
+            # Update progress: Copying file
+            session$sendCustomMessage("updateProgress", list(
+                percent = 30,
+                text = "Copying file...",
+                status = paste("Saving", new_filename, "to app directory")
+            ))
+
+            # Copy file to app directory
+            file.copy(file_info$datapath, new_filename, overwrite = TRUE)
+
+            # Update progress: Validating file
+            session$sendCustomMessage("updateProgress", list(
+                percent = 50,
+                text = "Validating file...",
+                status = paste("Checking", new_filename)
+            ))
+
+            # Load the DAG
             result <- load_dag_from_file(new_filename)
+
             if (result$success) {
+                # Update progress: Processing graph
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 70,
+                    text = "Processing graph...",
+                    status = "Converting graph data structure"
+                ))
+
                 # Process the loaded DAG
                 network_data <- create_network_data(result$dag)
                 current_data$nodes <- network_data$nodes
                 current_data$edges <- network_data$edges
                 current_data$dag_object <- result$dag
                 current_data$current_file <- new_filename
+
+                # Update progress: Updating file list
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 90,
+                    text = "Updating file list...",
+                    status = "Refreshing available files"
+                ))
 
                 # Update file list
                 current_data$available_files <- scan_for_dag_files()
@@ -425,12 +635,24 @@ server <- function(input, output, session) {
                 }
                 updateSelectInput(session, "dag_file_selector", choices = choices, selected = new_filename)
 
-                showNotification(paste("Successfully uploaded and loaded DAG from", new_filename), type = "success")
+                # Update progress: Complete
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 100,
+                    text = "Complete!",
+                    status = "Graph uploaded and loaded successfully"
+                ))
+
+                # Hide loading section after a brief delay
+                session$sendCustomMessage("hideLoadingSection", list())
+
+                showNotification(paste("Successfully uploaded and loaded graph from", new_filename), type = "success")
             } else {
+                session$sendCustomMessage("hideLoadingSection", list())
                 showNotification(result$message, type = "error")
             }
         }, error = function(e) {
-            showNotification(paste("Error loading uploaded DAG:", e$message), type = "error")
+            session$sendCustomMessage("hideLoadingSection", list())
+            showNotification(paste("Error loading uploaded graph:", e$message), type = "error")
         })
     })
     
