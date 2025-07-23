@@ -1,4 +1,4 @@
-python graph_creation/pushkin.py --config depression_alzheimers \
+python graph_creation/markov_analysis.py --config depression_alzheimers \
   --output-dir graph_creation/result \
   --first-degree-threshold 100 \
   --host localhost \
