@@ -442,10 +442,8 @@ class MarkovBlanketAnalyzer:
                                mb_nodes: Set[str]):
         """Create R scripts for DAGitty visualization and adjustment set identification."""
         with TimingContext("dagitty_generation", self.timing_data):
-            # Overall DAG script
+            # Overall DAG script - SIMPLIFIED FORMAT
             dagitty_lines = [
-                "library(dagitty)",
-                "library(SEMgraph)",
                 "g <- dagitty('dag {",
                 f" {self.clean_output_name(self.config.exposure_name)} [exposure]",
                 f" {self.clean_output_name(self.config.outcome_name)} [outcome]"
@@ -460,34 +458,19 @@ class MarkovBlanketAnalyzer:
             for src, dst in edges:
                 dagitty_lines.append(f" {src} -> {dst}")
             
-            # Add visualization and adjustment set code
-            dagitty_lines.extend([
-                "}')",
-                "",
-                "gg <- dagitty2graph(g)",
-                "coords <- layout_nicely(gg, dim = 2)",
-                "plot(gg, layout = coords)",
-                f"adjSets <- adjustmentSets(g, exposure='{self.clean_output_name(self.config.exposure_name)}', outcome='{self.clean_output_name(self.config.outcome_name)}')",
-                "print(adjSets)",
-                "for(i in seq_along(adjSets)) {",
-                "  cat('Adjustment Set', i, ':\n')",
-                "  print(adjSets[[i]])",
-                "  V(gg)$color <- ifelse(V(gg)$name %in% adjSets[[i]], 'red', 'black')",
-                "  plot(gg, layout=coords, vertex.color=V(gg)$color, main=paste('Adjustment Set', i))",
-                "}"
-            ])
+            # Close the DAG definition
+            dagitty_lines.append("}')")
+            
             dagitty_format = "\n".join(dagitty_lines)
             
             # Save overall DAG script
             with open(self.output_dir / "SemDAG.R", "w") as f:
                 f.write(dagitty_format)
             
-            # Generate Markov blanket-specific script
+            # Generate Markov blanket-specific script - SIMPLIFIED FORMAT
             mb_edges = [(u, v) for u, v in edges if u in mb_nodes and v in mb_nodes]
             dagitty_mb_lines = [
-                "library(dagitty)",
-                "library(SEMgraph)",
-                "g_mb <- dagitty('dag {",
+                "g <- dagitty('dag {",
                 f" {self.clean_output_name(self.config.exposure_name)} [exposure]",
                 f" {self.clean_output_name(self.config.outcome_name)} [outcome]"
             ]
@@ -500,21 +483,8 @@ class MarkovBlanketAnalyzer:
             for src, dst in mb_edges:
                 dagitty_mb_lines.append(f" {src} -> {dst}")
             
-            dagitty_mb_lines.extend([
-                "}')",
-                "",
-                "gg_mb <- dagitty2graph(g_mb)",
-                "coords_mb <- layout_nicely(gg_mb, dim = 2)",
-                "plot(gg_mb, layout = coords_mb)",
-                f"adjSets_mb <- adjustmentSets(g_mb, exposure='{self.clean_output_name(self.config.exposure_name)}', outcome='{self.clean_output_name(self.config.outcome_name)}')",
-                "print(adjSets_mb)",
-                "for(i in seq_along(adjSets_mb)) {",
-                "  cat('Union Markov Blanket Adjustment Set', i, ':\n')",
-                "  print(adjSets_mb[[i]])",
-                "  V(gg_mb)$color <- ifelse(V(gg_mb)$name %in% adjSets_mb[[i]], 'red', 'black')",
-                "  plot(gg_mb, layout=coords_mb, vertex.color=V(gg_mb)$color, main=paste('Union MB Adj Set', i))",
-                "}"
-            ])
+            # Close the DAG definition
+            dagitty_mb_lines.append("}')")
             
             dagitty_mb_format = "\n".join(dagitty_mb_lines)
             with open(self.output_dir / "MarkovBlanket_Union.R", "w") as f:

@@ -14,41 +14,6 @@ class SemDAGProcessor:
         """Initialize SemDAG processor with CLI arguments"""
         self.llm = Ollama(model=args.model)
         
-        # Set up color scheme
-        self.color_scheme = {
-            "Primary": args.color_primary,
-            "Biological_Process": args.color_biological,
-            "Neural": args.color_neural,
-            "Molecular": args.color_molecular,
-            "Disease": args.color_disease,
-            "Other": args.color_other
-        }
-        
-        # Set up visualization config
-        self.visualization_config = {
-            "width": args.viz_width,
-            "height": args.viz_height,
-            "physics": {
-                "solver": "forceAtlas2Based",
-                "gravitationalConstant": args.gravitational_constant,
-                "centralGravity": 0.02,
-                "springLength": args.spring_length,
-                "springConstant": 0.08,
-                "damping": 0.4,
-                "avoidOverlap": 1
-            },
-            "nodes": {
-                "font_size": args.font_size,
-                "stroke_width": 2,
-                "shadow": True
-            },
-            "edges": {
-                "width": args.edge_width,
-                "color": "#2F4F4F80",
-                "smooth": True
-            }
-        }
-        
         # Default consolidation rules
         self.consolidation_rules = {
             "cardiac": ["cardiac", "heart", "myocardial", "coronary"],
@@ -81,98 +46,18 @@ class SemDAGProcessor:
         )
 
     def extract_dag_definition(self, r_file_path: str) -> Optional[str]:
-        """Extract DAG definition from R file"""
+        """Extract DAG definition from simplified R file"""
         with open(r_file_path, 'r') as file:
             content = file.read()
-            match = re.search(r'dag\s*{(.*?)}', content, re.DOTALL)
+            # Updated regex to match the simplified format: g <- dagitty('dag { ... }')
+            match = re.search(r"g\s*<-\s*dagitty\s*\(\s*['\"]dag\s*{\s*(.*?)\s*}\s*['\"]", content, re.DOTALL)
             if match:
                 return match.group(1).strip()
             return None
 
-    def generate_r_visualization_code(self, dag_definition: str) -> str:
-        """Generate R code for interactive visualization"""
-        viz_config = self.visualization_config
-        physics_config = viz_config["physics"]
-        nodes_config = viz_config["nodes"]
-        edges_config = viz_config["edges"]
-
-        # Generate color assignments
-        color_assignments = []
-        for group, color in self.color_scheme.items():
-            color_assignments.append(f'            {group} = "{color}"')
-        color_scheme_r = ",\n".join(color_assignments)
-
-        r_code = f"""
-        library(dagitty)
-        library(igraph)
-        library(visNetwork)
-        library(dplyr)
-
-        g <- dagitty('dag {{
-        {dag_definition}
-        }}')
-
-        # Create nodes dataframe
-        nodes <- data.frame(
-            id = V(dagitty2graph(g))$name,
-            label = gsub("_", " ", V(dagitty2graph(g))$name),
-            group = case_when(
-                V(dagitty2graph(g))$name %in% c("Depression", "Alzheimers_Disease") ~ "Primary",
-                V(dagitty2graph(g))$name %in% c("Inflammation", "Oxidative_Stress", "Cell_Death") ~ "Biological_Process",
-                V(dagitty2graph(g))$name %in% c("Neurodegeneration", "Memory_Loss", "Cognitive_Decline") ~ "Neural",
-                V(dagitty2graph(g))$name %in% c("Amyloid", "Tau", "MAPT", "APP") ~ "Molecular",
-                V(dagitty2graph(g))$name %in% c("Cardiovascular_Disease", "Diabetes", "Stroke") ~ "Disease",
-                TRUE ~ "Other"
-            ),
-            font.size = {nodes_config["font_size"]},
-            font.color = "black",
-            stringsAsFactors = FALSE
-        )
-
-        # Define color scheme
-        color_scheme <- list(
-{color_scheme_r}
-        )
-
-        nodes$color <- unlist(color_scheme[nodes$group])
-
-        # Create edges dataframe
-        edges <- data.frame(
-            from = get.edgelist(dagitty2graph(g))[,1],
-            to = get.edgelist(dagitty2graph(g))[,2],
-            arrows = "to",
-            smooth = {str(edges_config["smooth"]).lower()},
-            width = {edges_config["width"]},
-            color = "{edges_config["color"]}",
-            stringsAsFactors = FALSE
-        )
-
-        # Create interactive visualization
-        visNetwork(nodes, edges, width = "{viz_config["width"]}", height = "{viz_config["height"]}") %>%
-            visPhysics(
-                solver = "{physics_config["solver"]}",
-                forceAtlas2Based = list(
-                    gravitationalConstant = {physics_config["gravitationalConstant"]},
-                    centralGravity = {physics_config["centralGravity"]},
-                    springLength = {physics_config["springLength"]},
-                    springConstant = {physics_config["springConstant"]},
-                    damping = {physics_config["damping"]},
-                    avoidOverlap = {physics_config["avoidOverlap"]}
-                )
-            ) %>%
-            visOptions(
-                highlightNearest = list(enabled = TRUE, degree = 1),
-                nodesIdSelection = TRUE
-            ) %>%
-            visNodes(
-                shadow = {str(nodes_config["shadow"]).upper()},
-                font = list(size = {nodes_config["font_size"]}, strokeWidth = {nodes_config["stroke_width"]})
-            ) %>%
-            visEdges(
-                smooth = list(enabled = TRUE, type = "curvedCW")
-            )
-        """
-        return r_code
+    def generate_simplified_dag(self, dag_definition: str) -> str:
+        """Generate simplified DAG definition in the same format"""
+        return f"g <- dagitty('dag {{\n{dag_definition}\n}}')"
 
     def consolidate_nodes(self, dag_definition: str) -> str:
         """Use LangChain to identify and consolidate nodes"""
@@ -192,75 +77,101 @@ class SemDAGProcessor:
 
         # Apply consolidations
         for consolidation in recommendations.get('consolidations', []):
-            for synonym in consolidation['synonyms']:
-                modified_dag = modified_dag.replace(synonym, consolidation['main_term'])
+            main_term = consolidation.get('main_term', '')
+            synonyms = consolidation.get('synonyms', [])
+            for synonym in synonyms:
+                if synonym != main_term:
+                    modified_dag = modified_dag.replace(synonym, main_term)
 
-        # Remove generic nodes
+        # Remove generic nodes and their edges
         for node in recommendations.get('removals', []):
             lines = modified_dag.split('\n')
+            # Remove lines containing the node (both as standalone and in edges)
             lines = [line for line in lines if node not in line]
             modified_dag = '\n'.join(lines)
 
         return modified_dag
 
+    def clean_dag_structure(self, dag_definition: str) -> str:
+        """Clean up the DAG structure by removing duplicates and empty lines"""
+        lines = dag_definition.split('\n')
+        
+        # Remove empty lines and duplicates while preserving order
+        seen = set()
+        cleaned_lines = []
+        
+        for line in lines:
+            line = line.strip()
+            if line and line not in seen:
+                seen.add(line)
+                cleaned_lines.append(' ' + line)  # Add space for proper indentation
+        
+        return '\n'.join(cleaned_lines)
+
     def process_semdag(self, args):
         """Main processing function"""
         if args.verbose:
-            print("Processing SemDAG file...")
+            print(f"Processing SemDAG file: {args.input_file}")
 
         # Extract DAG definition
         dag_definition = self.extract_dag_definition(args.input_file)
         if not dag_definition:
-            print("Error: Could not extract DAG definition")
+            print("Error: Could not extract DAG definition from input file")
+            print("Expected format: g <- dagitty('dag { ... }')")
             return
+
+        if args.verbose:
+            print(f"Extracted DAG with {len(dag_definition.split())} elements")
 
         if args.consolidate:
             if args.verbose:
-                print("Consolidating nodes...")
+                print("Consolidating nodes using LLM...")
             consolidated_dag = self.consolidate_nodes(dag_definition)
         else:
             consolidated_dag = dag_definition
 
+        # Clean up the structure
         if args.verbose:
-            print("Generating visualization code...")
-        
-        # Generate R visualization code
-        r_code = self.generate_r_visualization_code(consolidated_dag)
+            print("Cleaning DAG structure...")
+        cleaned_dag = self.clean_dag_structure(consolidated_dag)
+
+        # Generate the simplified output
+        final_output = self.generate_simplified_dag(cleaned_dag)
 
         # Save to output file
         with open(args.output_file, 'w') as file:
-            file.write(r_code)
+            file.write(final_output)
 
         if args.verbose:
             print(f"Processing complete. Output saved to {args.output_file}")
+            print(f"Final DAG contains {len(cleaned_dag.split())} elements")
 
 def main():
-    parser = argparse.ArgumentParser(description='SemDAG Processor')
+    parser = argparse.ArgumentParser(
+        description='SemDAG Processor - Consolidates and cleans DAG files',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Example usage:
+  python semdag_processor.py --input-file SemDAG.R --output-file CleanedDAG.R
+  python semdag_processor.py --input-file MarkovBlanket_Union.R --output-file ConsolidatedMB.R --verbose
+  python semdag_processor.py --input-file SemDAG.R --no-consolidate --output-file SimpleClean.R
+        """
+    )
     
     # Required arguments
-    parser.add_argument('--model', default='llama3.3:70b', help='Ollama model name')
-    parser.add_argument('--input-file', default='SemDAG.R', help='Input R file path')
-    parser.add_argument('--output-file', default='ConsolidatedDAG.R', help='Output R file path')
+    parser.add_argument('--model', default='llama3.3:70b', help='Ollama model name (default: llama3.3:70b)')
+    parser.add_argument('--input-file', default='SemDAG.R', help='Input R file path (default: SemDAG.R)')
+    parser.add_argument('--output-file', default='ConsolidatedDAG.R', help='Output R file path (default: ConsolidatedDAG.R)')
     
     # Processing options
-    parser.add_argument('--consolidate', type=bool, default=True, help='Enable node consolidation')
+    parser.add_argument('--consolidate', dest='consolidate', action='store_true', 
+                       help='Enable node consolidation using LLM (default)')
+    parser.add_argument('--no-consolidate', dest='consolidate', action='store_false',
+                       help='Disable node consolidation')
     parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
     
-    # Color scheme
-    parser.add_argument('--color-primary', default='#E74C3C', help='Primary node color')
-    parser.add_argument('--color-biological', default='#3498DB', help='Biological process color')
-    parser.add_argument('--color-neural', default='#9B59B6', help='Neural node color')
-    parser.add_argument('--color-molecular', default='#2ECC71', help='Molecular node color')
-    parser.add_argument('--color-disease', default='#F39C12', help='Disease node color')
-    parser.add_argument('--color-other', default='#95A5A6', help='Other node color')
-    
-    # Visualization parameters
-    parser.add_argument('--viz-width', default='100%', help='Visualization width')
-    parser.add_argument('--viz-height', default='900px', help='Visualization height')
-    parser.add_argument('--font-size', type=int, default=18, help='Node font size')
-    parser.add_argument('--edge-width', type=float, default=2.0, help='Edge width')
-    parser.add_argument('--gravitational-constant', type=int, default=-200, help='Physics gravitational constant')
-    parser.add_argument('--spring-length', type=int, default=250, help='Physics spring length')
+    # Set default for consolidate
+    parser.set_defaults(consolidate=True)
     
     args = parser.parse_args()
     
@@ -268,6 +179,21 @@ def main():
     if not os.path.exists(args.input_file):
         print(f"Error: Input file '{args.input_file}' not found")
         return
+    
+    # Validate Ollama model availability if consolidation is enabled
+    if args.consolidate:
+        try:
+            if args.verbose:
+                print(f"Testing connection to Ollama model: {args.model}")
+            test_llm = Ollama(model=args.model)
+            # Simple test to verify model is available
+            test_response = test_llm("Test")
+            if args.verbose:
+                print("✓ Ollama model connection successful")
+        except Exception as e:
+            print(f"Error: Cannot connect to Ollama model '{args.model}': {e}")
+            print("Please ensure Ollama is running and the model is available")
+            return
     
     # Process the DAG
     processor = SemDAGProcessor(args)
