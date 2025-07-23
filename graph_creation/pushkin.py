@@ -42,7 +42,7 @@ class MarkovBlanketAnalyzer:
     def __init__(self, 
                  config_name: str,
                  db_params: Dict[str, str],
-                 thresholds: Dict[str, int],
+                 threshold: int,
                  output_dir: str = "output"):
         """Initialize the analyzer with configuration parameters."""
         if config_name not in EXPOSURE_OUTCOME_CONFIGS:
@@ -50,12 +50,12 @@ class MarkovBlanketAnalyzer:
         
         self.config = EXPOSURE_OUTCOME_CONFIGS[config_name]
         self.db_params = db_params
-        self.thresholds = thresholds
+        self.threshold = threshold
         self.timing_data = {}
         self.output_dir = Path(output_dir)
         
         # Initialize database operations helper
-        self.db_ops = DatabaseOperations(self.config, self.thresholds, self.timing_data)
+        self.db_ops = DatabaseOperations(self.config, self.threshold, self.timing_data)
         
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -133,7 +133,7 @@ class MarkovBlanketAnalyzer:
             "exposure_name": self.config.exposure_name,
             "outcome_cui": self.config.outcome_cui,
             "outcome_name": self.config.outcome_name,
-            "thresholds": self.thresholds,
+            "threshold": self.threshold,
             "database": {
                 "host": self.db_params.get("host"),
                 "port": self.db_params.get("port"),
@@ -181,7 +181,7 @@ class MarkovBlanketAnalyzer:
         """Execute the complete analysis pipeline and return timing data."""
         with TimingContext("total_execution", self.timing_data):
             print(f"\nStarting analysis for {self.config.description}...")
-            print(f"Using thresholds: {self.thresholds}")
+            print(f"Using threshold: {self.threshold}")
             print(f"Output directory: {self.output_dir.absolute()}")
             
             # Connect to database
@@ -198,6 +198,10 @@ class MarkovBlanketAnalyzer:
                     )
                     print(f"Found {len(second_degree_links)} second-degree relationships")
                     
+                    # Fetch third-degree relationships
+                    third_degree_links = self.db_ops.fetch_third_degree_relationships(cursor, first_degree_cuis)
+                    print(f"Found {len(third_degree_links)} third-degree relationships")
+                    
                     # Compute Markov blankets
                     mb_union = self.db_ops.compute_markov_blankets(cursor)
                     
@@ -208,6 +212,8 @@ class MarkovBlanketAnalyzer:
                         for src, dst in first_degree_links:
                             G.add_edge(src, dst)
                         for src, dst in second_degree_links:
+                            G.add_edge(src, dst)
+                        for src, dst in third_degree_links:
                             G.add_edge(src, dst)
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges")
                     
@@ -235,7 +241,7 @@ Available exposure-outcome configurations:
 
 Example usage:
   python {sys.argv[0]} --config hypertension_alzheimers --host localhost --user myuser --password mypass --dbname causalehr
-  python {sys.argv[0]} --config depression_alzheimers --output-dir results_2025 --first-degree-threshold 100
+  python {sys.argv[0]} --config depression_alzheimers --output-dir results_2025 --threshold 100
         """
     )
     
@@ -259,22 +265,10 @@ Example usage:
     # Analysis parameters
     analysis_group = parser.add_argument_group("Analysis Parameters")
     analysis_group.add_argument(
-        "--first-degree-threshold", 
+        "--threshold", 
         type=int, 
         default=50,
-        help="Minimum support count for first-degree relationships (default: 50)"
-    )
-    analysis_group.add_argument(
-        "--second-degree-threshold", 
-        type=int, 
-        default=50,
-        help="Minimum support count for second-degree relationships (default: 50)"
-    )
-    analysis_group.add_argument(
-        "--markov-blanket-threshold", 
-        type=int, 
-        default=50,
-        help="Minimum support count for Markov blanket computation (default: 50)"
+        help="Minimum support count for all relationship degrees (default: 50)"
     )
     
     # Output parameters
@@ -304,14 +298,7 @@ def create_analysis_configuration(args):
         schema=args.schema
     )
     
-    # Create analysis thresholds
-    thresholds = {
-        "first_degree": args.first_degree_threshold,
-        "second_degree": args.second_degree_threshold,
-        "markov_blanket": args.markov_blanket_threshold
-    }
-    
-    return db_config, thresholds
+    return db_config, args.threshold
 
 def main():
     """Main function with command line interface."""
@@ -322,17 +309,17 @@ def main():
         if args.verbose:
             print(f"Running analysis with configuration: {args.config}")
             print(f"Database: {args.host}:{args.port}/{args.dbname}")
-            print(f"Thresholds: first={args.first_degree_threshold}, second={args.second_degree_threshold}, markov={args.markov_blanket_threshold}")
+            print(f"Threshold: {args.threshold}")
             print(f"Output directory: {args.output_dir}")
         
         # Create analysis configuration
-        db_config, thresholds = create_analysis_configuration(args)
+        db_config, threshold = create_analysis_configuration(args)
         
         # Initialize and run analysis
         analyzer = MarkovBlanketAnalyzer(
             config_name=args.config,
             db_params=db_config,
-            thresholds=thresholds,
+            threshold=threshold,
             output_dir=args.output_dir
         )
         

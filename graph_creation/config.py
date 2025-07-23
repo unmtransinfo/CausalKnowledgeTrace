@@ -130,9 +130,9 @@ class TimingContext:
 class DatabaseOperations:
     """Class containing all database operations and queries"""
     
-    def __init__(self, config, thresholds, timing_data):
+    def __init__(self, config, threshold, timing_data):
         self.config = config
-        self.thresholds = thresholds
+        self.threshold = threshold
         self.timing_data = timing_data
         self.excluded_values = ", ".join([f"('{cui}')" for cui in EXCLUDED_CUIS])
     
@@ -183,7 +183,7 @@ class DatabaseOperations:
                 self.config.outcome_cui, 
                 self.config.exposure_cui, 
                 self.config.outcome_cui,
-                self.thresholds['first_degree']
+                self.threshold
             ))
             
             results = cursor.fetchall()
@@ -237,7 +237,7 @@ class DatabaseOperations:
             ORDER BY subject_name, object_name;
             """
             
-            cursor.execute(query, (self.thresholds['second_degree'],))
+            cursor.execute(query, (self.threshold,))
             results = cursor.fetchall()
             
             detailed_assertions = []
@@ -262,6 +262,52 @@ class DatabaseOperations:
                     ))
             
             return detailed_assertions, second_degree_links
+
+    def fetch_third_degree_relationships(self, cursor, first_degree_cuis: Set[str]) -> List[Tuple[str, str]]:
+        """Retrieve third-degree causal relationships."""
+        with TimingContext("third_degree_relationships", self.timing_data):
+            cui_placeholder = ','.join([f"'{cui}'" for cui in first_degree_cuis])
+            
+            query = f"""
+            WITH third_degree AS (
+                SELECT
+                    cp.subject_cui,
+                    cp.subject_name,
+                    cp.object_cui,
+                    cp.object_name,
+                    cp.predicate,
+                    COUNT(DISTINCT cp.pmid) AS support_count
+                FROM causalpredication cp
+                WHERE cp.predicate = 'CAUSES'
+                  AND (cp.subject_cui IN ({cui_placeholder}) 
+                       OR cp.object_cui IN ({cui_placeholder}))
+                  AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                  AND NOT EXISTS (
+                      SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
+                      WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
+                  )
+                GROUP BY cp.subject_cui, cp.subject_name, cp.object_cui, 
+                         cp.object_name, cp.predicate
+                HAVING COUNT(DISTINCT cp.pmid) >= %s
+            )
+            SELECT subject_name, object_name
+            FROM third_degree
+            ORDER BY subject_name, object_name;
+            """
+            
+            cursor.execute(query, (self.threshold,))
+            results = cursor.fetchall()
+            
+            third_degree_links = []
+            for row in results:
+                if len(row) >= 2:
+                    third_degree_links.append((
+                        self.clean_output_name(row[0]),
+                        self.clean_output_name(row[1])
+                    ))
+            
+            return third_degree_links
 
     def compute_markov_blankets(self, cursor) -> Set[str]:
         """Calculate the union of Markov blankets for exposure and outcome."""
@@ -326,11 +372,11 @@ class DatabaseOperations:
             
             cursor.execute(query_outcome, (
                 self.config.outcome_cui,
-                self.thresholds['markov_blanket'],
+                self.threshold,
                 self.config.outcome_cui,
-                self.thresholds['markov_blanket'],
+                self.threshold,
                 self.config.outcome_cui,
-                self.thresholds['markov_blanket']
+                self.threshold
             ))
             mb_outcome_nodes = {row[0] for row in cursor.fetchall()}
             
@@ -392,11 +438,11 @@ class DatabaseOperations:
             
             cursor.execute(query_exposure, (
                 self.config.exposure_cui,
-                self.thresholds['markov_blanket'],
+                self.threshold,
                 self.config.exposure_cui,
-                self.thresholds['markov_blanket'],
+                self.threshold,
                 self.config.exposure_cui,
-                self.thresholds['markov_blanket']
+                self.threshold
             ))
             mb_exposure_nodes = {row[0] for row in cursor.fetchall()}
             print(f"Found {len(mb_exposure_nodes)} nodes in exposure Markov blanket")
@@ -425,13 +471,9 @@ def create_db_config(host: str, port: int, dbname: str, user: str, password: str
 
 def validate_arguments(args):
     """Validate command line arguments."""
-    # Validate thresholds
-    if args.first_degree_threshold < 1:
-        raise ValueError("First degree threshold must be >= 1")
-    if args.second_degree_threshold < 1:
-        raise ValueError("Second degree threshold must be >= 1")
-    if args.markov_blanket_threshold < 1:
-        raise ValueError("Markov blanket threshold must be >= 1")
+    # Validate threshold
+    if args.threshold < 1:
+        raise ValueError("Threshold must be >= 1")
     
     # Validate output directory
     try:
