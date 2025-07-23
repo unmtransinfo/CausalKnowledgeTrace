@@ -23,8 +23,13 @@ if (file.exists("node_information.R")) {
 #' @export
 scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_visualization.R", 
                                                  "node_information.R", "statistics.R", "data_upload.R")) {
-    # Look for R files that might contain DAG definitions
-    r_files <- list.files(pattern = "\\.(R|r)$", full.names = FALSE)
+    # Look for R files that might contain DAG definitions in graph_creation/result directory
+    result_dir <- "graph_creation/result"
+    if (!dir.exists(result_dir)) {
+        cat("Warning: graph_creation/result directory does not exist. Creating it...\n")
+        dir.create(result_dir, recursive = TRUE)
+    }
+    r_files <- list.files(path = result_dir, pattern = "\\.(R|r)$", full.names = FALSE)
     
     # Filter out system files
     dag_files <- r_files[!r_files %in% exclude_files]
@@ -33,10 +38,11 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
     valid_dag_files <- c()
     
     for (file in dag_files) {
-        if (file.exists(file)) {
+        file_path <- file.path(result_dir, file)
+        if (file.exists(file_path)) {
             tryCatch({
                 # Read first few lines to check for dagitty syntax
-                lines <- readLines(file, n = 50, warn = FALSE)
+                lines <- readLines(file_path, n = 50, warn = FALSE)
                 content <- paste(lines, collapse = " ")
                 
                 # Check for dagitty syntax
@@ -61,8 +67,15 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
 #' @return List containing success status, message, and DAG object if successful
 #' @export
 load_dag_from_file <- function(filename) {
+    # Check if filename is a full path or just a filename
     if (!file.exists(filename)) {
-        return(list(success = FALSE, message = paste("File", filename, "not found")))
+        # Try looking in the graph_creation/result directory
+        result_path <- file.path("graph_creation/result", filename)
+        if (file.exists(result_path)) {
+            filename <- result_path
+        } else {
+            return(list(success = FALSE, message = paste("File", filename, "not found in current directory or graph_creation/result")))
+        }
     }
     
     tryCatch({
