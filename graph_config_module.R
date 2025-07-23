@@ -364,7 +364,7 @@ graphConfigServer <- function(id) {
                 # Show notification
                 showNotification(
                     paste("Configuration saved successfully to", yaml_file),
-                    type = "success",
+                    type = "message",
                     duration = 5
                 )
                 
