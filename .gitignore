@@ -5,3 +5,5 @@ test*.R
 *result**
 
 .vscode/
+*__pycache__/
+*nohup.out
