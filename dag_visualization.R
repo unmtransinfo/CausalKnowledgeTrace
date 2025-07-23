@@ -164,9 +164,9 @@ create_network_controls_ui <- function() {
     
     return(list(
         sliderInput("physics_strength", "Physics Strength:", 
-                   min = -500, max = -50, value = default_settings$physics_strength, step = 25),
+                   min = -500, max = 0, value = default_settings$physics_strength, step = 25),
         sliderInput("spring_length", "Spring Length:", 
-                   min = 100, max = 400, value = default_settings$spring_length, step = 25),
+                   min = 0, max = 400, value = default_settings$spring_length, step = 25),
         actionButton("reset_physics", "Reset Physics", class = "btn-warning"),
         br(), br(),
         actionButton("reload_data", "Reload DAG Data", class = "btn-success")
