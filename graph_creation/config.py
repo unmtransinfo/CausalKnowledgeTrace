@@ -17,7 +17,7 @@ import time
 import json
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Set, Tuple, List
+from typing import Dict, Set, Tuple, List, Union
 from pathlib import Path
 
 # -------------------------
@@ -25,13 +25,35 @@ from pathlib import Path
 # -------------------------
 @dataclass
 class ExposureOutcomePair:
-    """Configuration class for exposure-outcome relationships"""
+    """Configuration class for exposure-outcome relationships with support for multiple CUIs"""
     name: str  # Name of this exposure-outcome configuration
-    exposure_cui: str  # CUI for exposure
+    exposure_cui: Union[str, List[str]]  # CUI(s) for exposure - can be single string or list
     exposure_name: str  # Clean name for exposure
-    outcome_cui: str  # CUI for outcome 
+    outcome_cui: Union[str, List[str]]  # CUI(s) for outcome - can be single string or list
     outcome_name: str  # Clean name for outcome
     description: str  # Description of this relationship
+    
+    def __post_init__(self):
+        """Convert single CUIs to lists for consistent handling"""
+        if isinstance(self.exposure_cui, str):
+            self.exposure_cui = [self.exposure_cui]
+        if isinstance(self.outcome_cui, str):
+            self.outcome_cui = [self.outcome_cui]
+    
+    @property
+    def exposure_cui_list(self) -> List[str]:
+        """Get exposure CUIs as a list"""
+        return self.exposure_cui if isinstance(self.exposure_cui, list) else [self.exposure_cui]
+    
+    @property
+    def outcome_cui_list(self) -> List[str]:
+        """Get outcome CUIs as a list"""
+        return self.outcome_cui if isinstance(self.outcome_cui, list) else [self.outcome_cui]
+    
+    @property
+    def all_target_cuis(self) -> List[str]:
+        """Get all target CUIs (exposure + outcome) as a single list"""
+        return self.exposure_cui_list + self.outcome_cui_list
 
 # Define available exposure-outcome configurations
 EXPOSURE_OUTCOME_CONFIGS = {
@@ -53,7 +75,7 @@ EXPOSURE_OUTCOME_CONFIGS = {
     ),
     "diabetes_alzheimers": ExposureOutcomePair(
         name="diabetes_alzheimers",
-        exposure_cui="C0011849",
+        exposure_cui=["C0011849", "C0011860"],  # Multiple diabetes CUIs
         exposure_name="Diabetes_Mellitus",
         outcome_cui="C0002395",
         outcome_name="Alzheimers_Disease",
@@ -63,9 +85,17 @@ EXPOSURE_OUTCOME_CONFIGS = {
         name="smoking_cancer",
         exposure_cui="C0037369",
         exposure_name="Smoking",
-        outcome_cui="C0006826",
+        outcome_cui=["C0006826", "C0024121"],  # Multiple cancer CUIs
         outcome_name="Cancer",
         description="Investigating the relationship between smoking and cancer"
+    ),
+    "cardiovascular_dementia": ExposureOutcomePair(
+        name="cardiovascular_dementia", 
+        exposure_cui=["C0020538", "C0003507", "C0018801"],  # Hypertension, Arrhythmia, Heart Failure
+        exposure_name="Cardiovascular_Disease",
+        outcome_cui=["C0002395", "C0011265"],  # Alzheimer's, Dementia
+        outcome_name="Dementia",
+        description="Investigating the relationship between cardiovascular diseases and dementia"
     )
 }
 
@@ -136,6 +166,15 @@ class DatabaseOperations:
         self.timing_data = timing_data
         self.excluded_values = ", ".join([f"('{cui}')" for cui in EXCLUDED_CUIS])
     
+    def _create_cui_placeholders(self, cui_list: List[str]) -> str:
+        """Create placeholder string for multiple CUIs in SQL queries"""
+        return ', '.join(['%s'] * len(cui_list))
+    
+    def _create_cui_conditions(self, cui_list: List[str], field_name: str) -> str:
+        """Create SQL condition for multiple CUIs"""
+        placeholders = ', '.join(['%s'] * len(cui_list))
+        return f"{field_name} IN ({placeholders})"
+    
     def clean_output_name(self, name: str) -> str:
         """Normalize and clean node names for consistent output."""
         with TimingContext("name_cleaning", self.timing_data):
@@ -150,6 +189,16 @@ class DatabaseOperations:
     def fetch_first_degree_relationships(self, cursor) -> Tuple[Set[str], Set[Tuple[str, str]]]:
         """Retrieve direct causal relationships from the database."""
         with TimingContext("first_degree_relationships", self.timing_data):
+            # Create conditions for multiple CUIs
+            exposure_cuis = self.config.exposure_cui_list
+            outcome_cuis = self.config.outcome_cui_list
+            all_target_cuis = exposure_cuis + outcome_cuis
+            
+            exposure_condition = self._create_cui_conditions(exposure_cuis, "cp.subject_cui")
+            outcome_condition = self._create_cui_conditions(outcome_cuis, "cp.object_cui")
+            exposure_condition_obj = self._create_cui_conditions(exposure_cuis, "cp.object_cui")
+            outcome_condition_subj = self._create_cui_conditions(outcome_cuis, "cp.subject_cui")
+            
             query = f"""
             WITH first_degree AS (
                 SELECT DISTINCT
@@ -161,7 +210,10 @@ class DatabaseOperations:
                     cp.pmid
                 FROM causalpredication cp
                 WHERE cp.predicate = 'CAUSES'
-                  AND (cp.subject_cui IN (%s, %s) OR cp.object_cui IN (%s, %s))
+                  AND (({exposure_condition} AND {outcome_condition}) 
+                       OR ({exposure_condition_obj} AND {outcome_condition_subj})
+                       OR ({exposure_condition}) OR ({outcome_condition})
+                       OR ({exposure_condition_obj}) OR ({outcome_condition_subj}))
                   AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                   AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                   AND NOT EXISTS (
@@ -178,13 +230,18 @@ class DatabaseOperations:
             ORDER BY support_count DESC;
             """
             
-            cursor.execute(query, (
-                self.config.exposure_cui, 
-                self.config.outcome_cui, 
-                self.config.exposure_cui, 
-                self.config.outcome_cui,
+            # Prepare parameters: all CUIs repeated for each condition, plus threshold
+            params = (
+                *exposure_cuis, *outcome_cuis,  # exposure_condition, outcome_condition
+                *exposure_cuis, *outcome_cuis,  # exposure_condition_obj, outcome_condition_subj  
+                *exposure_cuis,                 # exposure_condition (standalone)
+                *outcome_cuis,                  # outcome_condition (standalone)
+                *exposure_cuis,                 # exposure_condition_obj (standalone)
+                *outcome_cuis,                  # outcome_condition_subj (standalone)
                 self.threshold
-            ))
+            )
+            
+            cursor.execute(query, params)
             
             results = cursor.fetchall()
             first_degree_cuis = set()
@@ -314,141 +371,160 @@ class DatabaseOperations:
         with TimingContext("markov_blanket_computation", self.timing_data):
             print("\nComputing Markov blankets...")
             
-            # Outcome Markov blanket query
-            print("Computing outcome Markov blanket...")
-            query_outcome = f"""
-            WITH outcome_parents AS (
-                SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
-                FROM causalpredication cp
-                WHERE cp.predicate = 'CAUSES'
-                  AND cp.object_cui = %s
-                  AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND NOT EXISTS (
-                      SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
-                      WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
-                  )
-                GROUP BY cp.subject_name
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ),
-            outcome_children AS (
-                SELECT cp.object_name AS node, cp.object_cui AS cui, 
-                       COUNT(DISTINCT cp.pmid) AS evidence
-                FROM causalpredication cp
-                WHERE cp.predicate = 'CAUSES'
-                  AND cp.subject_cui = %s
-                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND NOT EXISTS (
-                      SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
-                      WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
-                  )
-                GROUP BY cp.object_name, cp.object_cui
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ),
-            children_parents AS (
-                SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
-                FROM causalpredication cp
-                INNER JOIN outcome_children oc ON cp.object_cui = oc.cui
-                WHERE cp.predicate = 'CAUSES'
-                  AND cp.subject_name <> (
-                      SELECT subject_name 
-                      FROM causalpredication 
-                      WHERE subject_cui = %s 
-                      LIMIT 1
-                  )
-                  AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND NOT EXISTS (
-                      SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
-                      WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
-                  )
-                GROUP BY cp.subject_name
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-            )
-            SELECT DISTINCT node FROM outcome_parents
-            UNION
-            SELECT DISTINCT node FROM outcome_children
-            UNION
-            SELECT DISTINCT node FROM children_parents;
-            """
+            # Get exposure and outcome CUIs as lists
+            exposure_cuis = self.config.exposure_cui_list
+            outcome_cuis = self.config.outcome_cui_list
             
-            cursor.execute(query_outcome, (
-                self.config.outcome_cui,
-                self.threshold,
-                self.config.outcome_cui,
-                self.threshold,
-                self.config.outcome_cui,
-                self.threshold
-            ))
-            mb_outcome_nodes = {row[0] for row in cursor.fetchall()}
+            all_mb_nodes = set()
             
-            # Exposure Markov blanket query
-            print("Computing exposure Markov blanket...")
-            query_exposure = f"""
-            WITH exposure_parents AS (
-                SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
-                FROM causalpredication cp
-                WHERE cp.predicate = 'CAUSES'
-                  AND cp.object_cui = %s
-                  AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND NOT EXISTS (
-                      SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
-                      WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
-                  )
-                GROUP BY cp.subject_name
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ),
-            exposure_children AS (
-                SELECT cp.object_name AS node, cp.object_cui AS cui, 
-                       COUNT(DISTINCT cp.pmid) AS evidence
-                FROM causalpredication cp
-                WHERE cp.predicate = 'CAUSES'
-                  AND cp.subject_cui = %s
-                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND NOT EXISTS (
-                      SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
-                      WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
-                  )
-                GROUP BY cp.object_name, cp.object_cui
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ),
-            children_parents AS (
-                SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
-                FROM causalpredication cp
-                INNER JOIN exposure_children ec ON cp.object_cui = ec.cui
-                WHERE cp.predicate = 'CAUSES'
-                  AND cp.subject_name <> (
-                      SELECT object_name 
-                      FROM causalpredication 
-                      WHERE object_cui = %s 
-                      LIMIT 1
-                  )
-                  AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND NOT EXISTS (
-                      SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
-                      WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
-                  )
-                GROUP BY cp.subject_name
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-            )
-            SELECT DISTINCT node FROM exposure_parents
-            UNION
-            SELECT DISTINCT node FROM exposure_children
-            UNION
-            SELECT DISTINCT node FROM children_parents;
-            """
+            # Process each outcome CUI
+            for outcome_cui in outcome_cuis:
+                print(f"Computing Markov blanket for outcome CUI: {outcome_cui}")
+                
+                # Create conditions for current outcome
+                outcome_condition = f"cp.object_cui = %s"
+                outcome_condition_subj = f"cp.subject_cui = %s"
+                
+                query_outcome = f"""
+                WITH outcome_parents AS (
+                    SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
+                    FROM causalpredication cp
+                    WHERE cp.predicate = 'CAUSES'
+                      AND {outcome_condition}
+                      AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                      AND NOT EXISTS (
+                          SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
+                          WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
+                      )
+                    GROUP BY cp.subject_name
+                    HAVING COUNT(DISTINCT cp.pmid) >= %s
+                ),
+                outcome_children AS (
+                    SELECT cp.object_name AS node, cp.object_cui AS cui, 
+                           COUNT(DISTINCT cp.pmid) AS evidence
+                    FROM causalpredication cp
+                    WHERE cp.predicate = 'CAUSES'
+                      AND {outcome_condition_subj}
+                      AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                      AND NOT EXISTS (
+                          SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
+                          WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
+                      )
+                    GROUP BY cp.object_name, cp.object_cui
+                    HAVING COUNT(DISTINCT cp.pmid) >= %s
+                ),
+                children_parents AS (
+                    SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
+                    FROM causalpredication cp
+                    INNER JOIN outcome_children oc ON cp.object_cui = oc.cui
+                    WHERE cp.predicate = 'CAUSES'
+                      AND cp.subject_name NOT IN (
+                          SELECT DISTINCT subject_name 
+                          FROM causalpredication 
+                          WHERE subject_cui = ANY(%s)
+                      )
+                      AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                      AND NOT EXISTS (
+                          SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
+                          WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
+                      )
+                    GROUP BY cp.subject_name
+                    HAVING COUNT(DISTINCT cp.pmid) >= %s
+                )
+                SELECT DISTINCT node FROM outcome_parents
+                UNION
+                SELECT DISTINCT node FROM outcome_children
+                UNION
+                SELECT DISTINCT node FROM children_parents;
+                """
+                
+                cursor.execute(query_outcome, (
+                    outcome_cui,        # outcome_condition
+                    self.threshold,
+                    outcome_cui,        # outcome_condition_subj
+                    self.threshold,
+                    exposure_cuis,      # children_parents exclusion
+                    self.threshold
+                ))
+                mb_outcome_nodes = {row[0] for row in cursor.fetchall()}
+                all_mb_nodes.update(mb_outcome_nodes)
             
-            cursor.execute(query_exposure, (
-                self.config.exposure_cui,
-                self.threshold,
-                self.config.exposure_cui,
-                self.threshold,
-                self.config.exposure_cui,
-                self.threshold
-            ))
-            mb_exposure_nodes = {row[0] for row in cursor.fetchall()}
-            print(f"Found {len(mb_exposure_nodes)} nodes in exposure Markov blanket")
+            # Process each exposure CUI  
+            for exposure_cui in exposure_cuis:
+                print(f"Computing Markov blanket for exposure CUI: {exposure_cui}")
+                
+                # Create conditions for current exposure
+                exposure_condition = f"cp.object_cui = %s"
+                exposure_condition_subj = f"cp.subject_cui = %s"
+                
+                query_exposure = f"""
+                WITH exposure_parents AS (
+                    SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
+                    FROM causalpredication cp
+                    WHERE cp.predicate = 'CAUSES'
+                      AND {exposure_condition}
+                      AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                      AND NOT EXISTS (
+                          SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
+                          WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
+                      )
+                    GROUP BY cp.subject_name
+                    HAVING COUNT(DISTINCT cp.pmid) >= %s
+                ),
+                exposure_children AS (
+                    SELECT cp.object_name AS node, cp.object_cui AS cui, 
+                           COUNT(DISTINCT cp.pmid) AS evidence
+                    FROM causalpredication cp
+                    WHERE cp.predicate = 'CAUSES'
+                      AND {exposure_condition_subj}
+                      AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                      AND NOT EXISTS (
+                          SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
+                          WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
+                      )
+                    GROUP BY cp.object_name, cp.object_cui
+                    HAVING COUNT(DISTINCT cp.pmid) >= %s
+                ),
+                children_parents AS (
+                    SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
+                    FROM causalpredication cp
+                    INNER JOIN exposure_children ec ON cp.object_cui = ec.cui
+                    WHERE cp.predicate = 'CAUSES'
+                      AND cp.subject_name NOT IN (
+                          SELECT DISTINCT object_name 
+                          FROM causalpredication 
+                          WHERE object_cui = ANY(%s)
+                      )
+                      AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                      AND NOT EXISTS (
+                          SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
+                          WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
+                      )
+                    GROUP BY cp.subject_name
+                    HAVING COUNT(DISTINCT cp.pmid) >= %s
+                )
+                SELECT DISTINCT node FROM exposure_parents
+                UNION
+                SELECT DISTINCT node FROM exposure_children
+                UNION
+                SELECT DISTINCT node FROM children_parents;
+                """
+                
+                cursor.execute(query_exposure, (
+                    exposure_cui,       # exposure_condition
+                    self.threshold,
+                    exposure_cui,       # exposure_condition_subj
+                    self.threshold,
+                    outcome_cuis,       # children_parents exclusion
+                    self.threshold
+                ))
+                mb_exposure_nodes = {row[0] for row in cursor.fetchall()}
+                all_mb_nodes.update(mb_exposure_nodes)
+            
+            print(f"Found {len(all_mb_nodes)} nodes across all Markov blankets")
 
-            # Take union and add exposure/outcome nodes
-            mb_union = mb_outcome_nodes.union(mb_exposure_nodes).union({
+            # Add exposure/outcome node names
+            mb_union = all_mb_nodes.union({
                 self.clean_output_name(self.config.exposure_name),
                 self.clean_output_name(self.config.outcome_name)
             })
