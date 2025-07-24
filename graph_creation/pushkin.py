@@ -125,14 +125,15 @@ class MarkovBlanketAnalyzer:
         with open(output_path / "causal_assertions.json", "w") as f:
             json.dump(detailed_assertions, f, indent=2)
         
-        # Save run configuration
+        # Save run configuration with multiple CUIs support
         run_config = {
             "config_name": self.config.name,
             "config_description": self.config.description,
-            "exposure_cui": self.config.exposure_cui,
+            "exposure_cuis": self.config.exposure_cui_list,  # Now supports multiple CUIs
             "exposure_name": self.config.exposure_name,
-            "outcome_cui": self.config.outcome_cui,
+            "outcome_cuis": self.config.outcome_cui_list,    # Now supports multiple CUIs
             "outcome_name": self.config.outcome_name,
+            "all_target_cuis": self.config.all_target_cuis,  # All exposure + outcome CUIs
             "threshold": self.threshold,
             "database": {
                 "host": self.db_params.get("host"),
@@ -142,7 +143,12 @@ class MarkovBlanketAnalyzer:
                 "schema": self.db_params.get("options", "").replace("-c search_path=", "") if "options" in self.db_params else None
             },
             "run_timestamp": datetime.now().isoformat(),
-            "output_directory": str(output_path.absolute())
+            "output_directory": str(output_path.absolute()),
+            "multiple_cuis_used": {
+                "exposure_count": len(self.config.exposure_cui_list),
+                "outcome_count": len(self.config.outcome_cui_list),
+                "total_target_cuis": len(self.config.all_target_cuis)
+            }
         }
         
         with open(output_path / "run_configuration.json", "w") as f:
@@ -157,7 +163,11 @@ class MarkovBlanketAnalyzer:
         print("="*60)
         print(f"Configuration: {self.config.name}")
         print(f"Description: {self.config.description}")
+        print(f"Exposure CUIs: {', '.join(self.config.exposure_cui_list)} ({len(self.config.exposure_cui_list)} CUIs)")
+        print(f"Outcome CUIs: {', '.join(self.config.outcome_cui_list)} ({len(self.config.outcome_cui_list)} CUIs)")
+        print(f"Total target CUIs: {len(self.config.all_target_cuis)}")
         print(f"Output directory: {output_path.absolute()}")
+        
         print("\nGenerated files:")
         print(f"  - causal_assertions.json: Detailed causal relationships")
         print(f"  - SemDAG.R: R script for full DAG visualization")
@@ -172,6 +182,10 @@ class MarkovBlanketAnalyzer:
             if step != "total_execution":
                 print(f"  {step}: {metrics['duration']:.2f} seconds")
         
+        print("\nMultiple CUIs Configuration:")
+        print(f"  This analysis used {len(self.config.exposure_cui_list)} exposure CUI(s) and {len(self.config.outcome_cui_list)} outcome CUI(s)")
+        print(f"  Total relationships analyzed across {len(self.config.all_target_cuis)} target concepts")
+        
         print("\nTo visualize results, run the R scripts in the output directory:")
         print(f"  cd {output_path}")
         print(f"  Rscript SemDAG.R")
@@ -181,6 +195,9 @@ class MarkovBlanketAnalyzer:
         """Execute the complete analysis pipeline and return timing data."""
         with TimingContext("total_execution", self.timing_data):
             print(f"\nStarting analysis for {self.config.description}...")
+            print(f"Configuration supports multiple CUIs:")
+            print(f"  Exposure CUIs: {', '.join(self.config.exposure_cui_list)} ({len(self.config.exposure_cui_list)} CUIs)")
+            print(f"  Outcome CUIs: {', '.join(self.config.outcome_cui_list)} ({len(self.config.outcome_cui_list)} CUIs)")
             print(f"Using threshold: {self.threshold}")
             print(f"Output directory: {self.output_dir.absolute()}")
             
@@ -188,6 +205,7 @@ class MarkovBlanketAnalyzer:
             with psycopg2.connect(**self.db_params) as conn:
                 with conn.cursor() as cursor:
                     print("\nFetching causal relationships from database...")
+                    print("Note: Queries now support multiple CUIs per exposure/outcome")
                     
                     # Fetch relationships using database operations helper
                     first_degree_cuis, first_degree_links = self.db_ops.fetch_first_degree_relationships(cursor)
@@ -202,7 +220,7 @@ class MarkovBlanketAnalyzer:
                     third_degree_links = self.db_ops.fetch_third_degree_relationships(cursor, first_degree_cuis)
                     print(f"Found {len(third_degree_links)} third-degree relationships")
                     
-                    # Compute Markov blankets
+                    # Compute Markov blankets (now handles multiple CUIs)
                     mb_union = self.db_ops.compute_markov_blankets(cursor)
                     
                     print("\nConstructing causal graph...")
@@ -222,7 +240,8 @@ class MarkovBlanketAnalyzer:
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
                     self.generate_dagitty_scripts(all_nodes, all_edges, mb_union)
-                    print(f"DAGitty scripts generated: {self.output_dir}/SemDAG.R and {self.output_dir}/MarkovBlanket_Union.R")
+                    print(f"  - {self.output_dir}/SemDAG.R")
+                    print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
                     
                     # Save all results and metadata
                     self.save_results_and_metadata(self.timing_data, detailed_assertions)
@@ -233,15 +252,19 @@ class MarkovBlanketAnalyzer:
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Enhanced Epidemiological Analysis Script with Markov Blanket Analysis",
+        description="Enhanced Epidemiological Analysis Script with Markov Blanket Analysis (Multiple CUIs Support)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
-Available exposure-outcome configurations:
-{chr(10).join([f"  {name}: {config.description}" for name, config in EXPOSURE_OUTCOME_CONFIGS.items()])}
+Available exposure-outcome configurations (now supporting multiple CUIs):
+{chr(10).join([f"  {name}: {config.description}" + 
+              f"{chr(10)}    Exposure CUIs: {', '.join(config.exposure_cui_list)}" +
+              f"{chr(10)}    Outcome CUIs: {', '.join(config.outcome_cui_list)}"
+              for name, config in EXPOSURE_OUTCOME_CONFIGS.items()])}
 
 Example usage:
   python {sys.argv[0]} --config hypertension_alzheimers --host localhost --user myuser --password mypass --dbname causalehr
-  python {sys.argv[0]} --config depression_alzheimers --output-dir results_2025 --threshold 100
+  python {sys.argv[0]} --config cardiovascular_dementia --output-dir results_2025 --threshold 100
+  python {sys.argv[0]} --config diabetes_alzheimers --threshold 75 --schema public
         """
     )
     
@@ -250,7 +273,7 @@ Example usage:
         "--config", 
         required=True,
         choices=list(EXPOSURE_OUTCOME_CONFIGS.keys()),
-        help="Exposure-outcome configuration to analyze"
+        help="Exposure-outcome configuration to analyze (supports multiple CUIs)"
     )
     
     # Database connection parameters
@@ -306,8 +329,15 @@ def main():
         args = parse_arguments()
         validate_arguments(args)
         
+        # Display configuration info including multiple CUIs
+        selected_config = EXPOSURE_OUTCOME_CONFIGS[args.config]
+        
         if args.verbose:
             print(f"Running analysis with configuration: {args.config}")
+            print(f"  Description: {selected_config.description}")
+            print(f"  Exposure CUIs: {', '.join(selected_config.exposure_cui_list)} ({len(selected_config.exposure_cui_list)} CUIs)")
+            print(f"  Outcome CUIs: {', '.join(selected_config.outcome_cui_list)} ({len(selected_config.outcome_cui_list)} CUIs)")
+            print(f"  Total target CUIs: {len(selected_config.all_target_cuis)}")
             print(f"Database: {args.host}:{args.port}/{args.dbname}")
             print(f"Threshold: {args.threshold}")
             print(f"Output directory: {args.output_dir}")
@@ -345,10 +375,13 @@ def show_usage_help():
     print("Use --help to see all available options.\n")
     print("Example usage:")
     print(f"  python {sys.argv[0]} --config hypertension_alzheimers --dbname causalehr --user myuser --password mypass")
+    print(f"  python {sys.argv[0]} --config cardiovascular_dementia --dbname causalehr --user myuser --password mypass")
     print(f"  python {sys.argv[0]} --help")
-    print("\nAvailable configurations:")
+    print("\nAvailable configurations (with multiple CUIs support):")
     for name, config in EXPOSURE_OUTCOME_CONFIGS.items():
         print(f"  {name}: {config.description}")
+        print(f"    Exposure CUIs: {', '.join(config.exposure_cui_list)}")
+        print(f"    Outcome CUIs: {', '.join(config.outcome_cui_list)}")
 
 # -------------------------
 # MAIN ENTRY POINT

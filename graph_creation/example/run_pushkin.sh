@@ -1,4 +1,4 @@
-python graph_creation/pushkin.py --config depression_alzheimers \
+python graph_creation/pushkin.py --config diabetes_alzheimers \
   --output-dir graph_creation/result \
   --host localhost \
   --port 5432 \
