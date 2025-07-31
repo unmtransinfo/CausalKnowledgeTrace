@@ -284,10 +284,10 @@ ui <- dashboardPage(
                         # Instructions
                         h4("Instructions"),
                         tags$div(
-                            tags$h5("Method 1: Place files in app directory"),
+                            tags$h5("Method 1: Place files in graph_creation/result directory"),
                             tags$ul(
-                                tags$li("Create an R file (e.g., 'graph.R') with your DAG definition"),
-                                tags$li("Place it in the same directory as this app"),
+                                tags$li("Create an R file (e.g., 'SemDAG.R', 'MarkovBlanket_Union.R') with your DAG definition"),
+                                tags$li("Place it in the 'graph_creation/result' directory (generated graphs are automatically saved here)"),
                                 tags$li("Click 'Refresh File List' and select your file"),
                                 tags$li("Click 'Load Selected DAG'")
                             ),
@@ -455,7 +455,7 @@ server <- function(input, output, session) {
                 "Available files detected: ", length(current_data$available_files), "\n",
                 if(length(current_data$available_files) > 0)
                     paste("Files:", paste(current_data$available_files, collapse = ", "))
-                else "No graph files found in directory"
+                else "No graph files found in graph_creation/result directory"
             )
         } else {
             paste0(
@@ -549,15 +549,21 @@ server <- function(input, output, session) {
     # Handle file upload
     observeEvent(input$dag_file_upload, {
         if (is.null(input$dag_file_upload)) return()
-        
+
         # Get the uploaded file info
         file_info <- input$dag_file_upload
-        
-        # Copy file to app directory
+
+        # Copy file to graph_creation/result directory
+        result_dir <- "../graph_creation/result"
+        if (!dir.exists(result_dir)) {
+            dir.create(result_dir, recursive = TRUE)
+        }
+
         new_filename <- file_info$name
-        file.copy(file_info$datapath, new_filename, overwrite = TRUE)
-        
-        showNotification(paste("File", new_filename, "uploaded successfully"), type = "success")
+        destination_path <- file.path(result_dir, new_filename)
+        file.copy(file_info$datapath, destination_path, overwrite = TRUE)
+
+        showNotification(paste("File", new_filename, "uploaded successfully to graph_creation/result"), type = "success")
         
         # Refresh file list
         tryCatch({
@@ -589,11 +595,16 @@ server <- function(input, output, session) {
             session$sendCustomMessage("updateProgress", list(
                 percent = 30,
                 text = "Copying file...",
-                status = paste("Saving", new_filename, "to app directory")
+                status = paste("Saving", new_filename, "to graph_creation/result directory")
             ))
 
-            # Copy file to app directory
-            file.copy(file_info$datapath, new_filename, overwrite = TRUE)
+            # Copy file to graph_creation/result directory
+            result_dir <- "../graph_creation/result"
+            if (!dir.exists(result_dir)) {
+                dir.create(result_dir, recursive = TRUE)
+            }
+            destination_path <- file.path(result_dir, new_filename)
+            file.copy(file_info$datapath, destination_path, overwrite = TRUE)
 
             # Update progress: Validating file
             session$sendCustomMessage("updateProgress", list(

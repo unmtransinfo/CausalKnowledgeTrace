@@ -23,10 +23,11 @@ if (file.exists("modules/node_information.R")) {
 #' @param exclude_files Vector of filenames to exclude from scanning (default: system files)
 #' @return Vector of valid DAG filenames
 #' @export
-scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_visualization.R", 
+scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_visualization.R",
                                                  "node_information.R", "statistics.R", "data_upload.R")) {
     # Look for R files that might contain DAG definitions in graph_creation/result directory
-    result_dir <- "graph_creation/result"
+    # Since we're running from shiny_app/, we need to go up one level to reach graph_creation/
+    result_dir <- "../graph_creation/result"
     if (!dir.exists(result_dir)) {
         cat("Warning: graph_creation/result directory does not exist. Creating it...\n")
         dir.create(result_dir, recursive = TRUE)
@@ -71,12 +72,12 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
 load_dag_from_file <- function(filename) {
     # Check if filename is a full path or just a filename
     if (!file.exists(filename)) {
-        # Try looking in the graph_creation/result directory
-        result_path <- file.path("graph_creation/result", filename)
+        # Try looking in the graph_creation/result directory (relative to project root)
+        result_path <- file.path("../graph_creation/result", filename)
         if (file.exists(result_path)) {
             filename <- result_path
         } else {
-            return(list(success = FALSE, message = paste("File", filename, "not found in current directory or graph_creation/result")))
+            return(list(success = FALSE, message = paste("File", filename, "not found in current directory or ../graph_creation/result")))
         }
     }
     
