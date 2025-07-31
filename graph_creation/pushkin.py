@@ -59,17 +59,22 @@ class MarkovBlanketAnalyzer:
         self.config = EXPOSURE_OUTCOME_CONFIGS[config_name]
         self.db_params = db_params
         self.threshold = threshold
-        self.timing_data = {}
-        self.output_dir = Path(output_dir)
+        self.output_dir = Path(output_dir)  # Convert to Path object
         self.yaml_config_data = yaml_config_data
         self.enable_markov_blanket = enable_markov_blanket
+        self.timing_data = {}
         
-        # Initialize database operations helper
-        self.db_ops = DatabaseOperations(self.config, self.threshold, self.timing_data)
+        # Extract predication types from YAML config if available
+        predication_types = ['CAUSES']  # default
+        if yaml_config_data and 'predication_types' in yaml_config_data:
+            predication_types = yaml_config_data['predication_types']
+        
+        # Initialize database operations with predication types
+        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types)
         
         # Initialize Markov blanket computer if enabled
         if self.enable_markov_blanket:
-            self.mb_computer = MarkovBlanketComputer(self.config, self.threshold, self.timing_data)
+            self.mb_computer = MarkovBlanketComputer(self.config, threshold, self.timing_data)
         
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -156,13 +161,15 @@ class MarkovBlanketAnalyzer:
         run_config = {
             "config_name": self.config.name,
             "config_description": self.config.description,
-            "exposure_cuis": self.config.exposure_cui_list,  # Now supports multiple CUIs
+            "exposure_cuis": self.config.exposure_cui_list,
             "exposure_name": self.config.exposure_name,
-            "outcome_cuis": self.config.outcome_cui_list,    # Now supports multiple CUIs
+            "outcome_cuis": self.config.outcome_cui_list,
             "outcome_name": self.config.outcome_name,
-            "all_target_cuis": self.config.all_target_cuis,  # All exposure + outcome CUIs
+            "all_target_cuis": self.config.all_target_cuis,
             "threshold": self.threshold,
             "threshold_source": "yaml_min_pmids" if self.yaml_config_data else "command_line",
+            "predication_types": self.db_ops.predication_types,
+            "predication_type_source": "yaml_config" if self.yaml_config_data else "default",
             "database": {
                 "host": self.db_params.get("host"),
                 "port": self.db_params.get("port"),

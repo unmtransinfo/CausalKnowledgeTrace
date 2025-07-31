@@ -86,12 +86,13 @@ class MarkovBlanketComputer:
         """Compute Markov blanket for a specific outcome CUI."""
         outcome_condition = f"cp.object_cui = %s"
         outcome_condition_subj = f"cp.subject_cui = %s"
+        predication_condition = self._create_predication_condition()
         
         query_outcome = f"""
         WITH outcome_parents AS (
             SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND {outcome_condition}
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
@@ -104,7 +105,7 @@ class MarkovBlanketComputer:
         outcome_children AS (
             SELECT cp.object_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND {outcome_condition_subj}
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
@@ -117,11 +118,11 @@ class MarkovBlanketComputer:
         children_parents AS (
             SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND cp.object_cui IN (
                   SELECT DISTINCT cp2.object_cui
                   FROM causalpredication cp2
-                  WHERE cp2.predicate = 'CAUSES'
+                  WHERE {predication_condition}
                     AND {outcome_condition_subj}
                     AND cp2.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                   GROUP BY cp2.object_cui
@@ -135,22 +136,14 @@ class MarkovBlanketComputer:
             GROUP BY cp.subject_name
             HAVING COUNT(DISTINCT cp.pmid) >= %s
         )
-        SELECT DISTINCT node FROM outcome_parents
-        UNION
-        SELECT DISTINCT node FROM outcome_children
-        UNION
-        SELECT DISTINCT node FROM children_parents;
         """
         
-        cursor.execute(query_outcome, (
-            outcome_cui,        # outcome_condition
-            self.threshold,
-            outcome_cui,        # outcome_condition_subj
-            self.threshold,
-            outcome_cui,        # children_parents subquery
-            self.threshold,
-            self.threshold
-        ))
+        # Parameters: predication_types (4 times) + outcome_cui (3 times) + threshold (4 times)
+        params = (self.predication_types + [outcome_cui] + [self.threshold] +
+                 self.predication_types + [outcome_cui] + [self.threshold] +
+                 self.predication_types + self.predication_types + [outcome_cui] + [self.threshold] + [self.threshold])
+        
+        cursor.execute(query_outcome, params)
         
         return {row[0] for row in cursor.fetchall()}
     
