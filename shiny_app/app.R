@@ -31,14 +31,14 @@ tryCatch({
 })
 
 # Source modular components
-source("dag_visualization.R")
-source("node_information.R")
-source("statistics.R")
-source("data_upload.R")
+source("modules/dag_visualization.R")
+source("modules/node_information.R")
+source("modules/statistics.R")
+source("modules/data_upload.R")
 
 # Try to source graph configuration module if it exists
 tryCatch({
-    source("graph_config_module.R")
+    source("modules/graph_config_module.R")
     graph_config_available <- TRUE
     cat("Graph configuration module loaded successfully\n")
 }, error = function(e) {
@@ -780,5 +780,6 @@ server <- function(input, output, session) {
     # Remove the example_structure output since it's no longer needed
 }
 
-# Run the application
+# Create and return the Shiny application object
+# This works both when sourced directly and when called by runApp()
 shinyApp(ui = ui, server = server)

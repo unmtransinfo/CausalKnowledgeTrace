@@ -343,8 +343,8 @@ graphConfigServer <- function(id) {
                     SemMedDBD_version = input$SemMedDBD_version
                 )
                 
-                # Save to YAML file
-                yaml_file <- "user_input.yaml"
+                # Save to YAML file in the project root directory
+                yaml_file <- "../user_input.yaml"
                 write_yaml(params, yaml_file)
                 
                 # Store validated parameters
@@ -403,7 +403,7 @@ graphConfigServer <- function(id) {
 #' @param yaml_file Path to the YAML configuration file (default: "user_input.yaml")
 #' @return List containing configuration parameters, or NULL if file doesn't exist
 #' @export
-load_graph_config <- function(yaml_file = "user_input.yaml") {
+load_graph_config <- function(yaml_file = "../user_input.yaml") {
     if (!file.exists(yaml_file)) {
         warning(paste("Configuration file", yaml_file, "not found"))
         return(NULL)
@@ -518,7 +518,7 @@ test_graph_config_module <- function() {
 #' @param yaml_file Path to the YAML configuration file (default: "user_input.yaml")
 #' @return List containing configuration parameters, or NULL if file doesn't exist
 #' @export
-load_graph_config <- function(yaml_file = "user_input.yaml") {
+load_graph_config <- function(yaml_file = "../user_input.yaml") {
     if (!file.exists(yaml_file)) {
         warning(paste("Configuration file", yaml_file, "not found"))
         return(NULL)
