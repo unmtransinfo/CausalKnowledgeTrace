@@ -31,6 +31,9 @@ from config import (
     create_dynamic_config_from_yaml
 )
 
+# Add import for the new Markov blanket module
+from markov_blanket import MarkovBlanketComputer
+
 class MarkovBlanketAnalyzer:
     """
     Main class for performing Markov blanket analysis on biomedical literature data.
@@ -47,7 +50,8 @@ class MarkovBlanketAnalyzer:
                  db_params: Dict[str, str],
                  threshold: int,
                  output_dir: str = "output",
-                 yaml_config_data: Optional[Dict] = None):
+                 yaml_config_data: Optional[Dict] = None,
+                 enable_markov_blanket: bool = False):
         """Initialize the analyzer with configuration parameters."""
         if config_name not in EXPOSURE_OUTCOME_CONFIGS:
             raise ValueError(f"Unknown config: {config_name}. Available: {list(EXPOSURE_OUTCOME_CONFIGS.keys())}")
@@ -57,19 +61,29 @@ class MarkovBlanketAnalyzer:
         self.threshold = threshold
         self.timing_data = {}
         self.output_dir = Path(output_dir)
-        self.yaml_config_data = yaml_config_data  # Store full YAML config for metadata
+        self.yaml_config_data = yaml_config_data
+        self.enable_markov_blanket = enable_markov_blanket
         
         # Initialize database operations helper
         self.db_ops = DatabaseOperations(self.config, self.threshold, self.timing_data)
+        
+        # Initialize Markov blanket computer if enabled
+        if self.enable_markov_blanket:
+            self.mb_computer = MarkovBlanketComputer(self.config, self.threshold, self.timing_data)
         
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
         print(f"Output directory created: {self.output_dir.absolute()}")
 
     def generate_dagitty_scripts(self, nodes: Set[str], edges: Set[Tuple[str, str]], 
-                               mb_nodes: Set[str]):
+                               mb_nodes: Optional[Set[str]] = None):
         """Create R scripts for DAGitty visualization and adjustment set identification."""
         with TimingContext("dagitty_generation", self.timing_data):
+            # Clean all node names before generating scripts
+            cleaned_nodes = {self.db_ops.clean_output_name(node) for node in nodes}
+            cleaned_edges = {(self.db_ops.clean_output_name(src), self.db_ops.clean_output_name(dst)) 
+                           for src, dst in edges}
+            
             # Overall DAG script - SIMPLIFIED FORMAT
             dagitty_lines = [
                 "g <- dagitty('dag {",
@@ -77,13 +91,16 @@ class MarkovBlanketAnalyzer:
                 f" {self.db_ops.clean_output_name(self.config.outcome_name)} [outcome]"
             ]
             
-            # Add nodes and edges
-            for node in nodes:
-                if node not in {self.db_ops.clean_output_name(self.config.exposure_name),
-                              self.db_ops.clean_output_name(self.config.outcome_name)}:
+            # Add cleaned nodes
+            exposure_clean = self.db_ops.clean_output_name(self.config.exposure_name)
+            outcome_clean = self.db_ops.clean_output_name(self.config.outcome_name)
+            
+            for node in cleaned_nodes:
+                if node not in {exposure_clean, outcome_clean}:
                     dagitty_lines.append(f" {node}")
             
-            for src, dst in edges:
+            # Add cleaned edges
+            for src, dst in cleaned_edges:
                 dagitty_lines.append(f" {src} -> {dst}")
             
             # Close the DAG definition
@@ -95,28 +112,33 @@ class MarkovBlanketAnalyzer:
             with open(self.output_dir / "SemDAG.R", "w") as f:
                 f.write(dagitty_format)
             
-            # Generate Markov blanket-specific script - SIMPLIFIED FORMAT
-            mb_edges = [(u, v) for u, v in edges if u in mb_nodes and v in mb_nodes]
-            dagitty_mb_lines = [
-                "g <- dagitty('dag {",
-                f" {self.db_ops.clean_output_name(self.config.exposure_name)} [exposure]",
-                f" {self.db_ops.clean_output_name(self.config.outcome_name)} [outcome]"
-            ]
-            
-            for node in mb_nodes:
-                if node not in {self.db_ops.clean_output_name(self.config.exposure_name),
-                              self.db_ops.clean_output_name(self.config.outcome_name)}:
-                    dagitty_mb_lines.append(f" {node}")
-            
-            for src, dst in mb_edges:
-                dagitty_mb_lines.append(f" {src} -> {dst}")
-            
-            # Close the DAG definition
-            dagitty_mb_lines.append("}')")
-            
-            dagitty_mb_format = "\n".join(dagitty_mb_lines)
-            with open(self.output_dir / "MarkovBlanket_Union.R", "w") as f:
-                f.write(dagitty_mb_format)
+            # Generate Markov blanket-specific script only if enabled and mb_nodes provided
+            if self.enable_markov_blanket and mb_nodes is not None:
+                # Clean Markov blanket nodes
+                cleaned_mb_nodes = {self.db_ops.clean_output_name(node) for node in mb_nodes}
+                mb_edges = [(self.db_ops.clean_output_name(u), self.db_ops.clean_output_name(v)) 
+                           for u, v in edges if self.db_ops.clean_output_name(u) in cleaned_mb_nodes 
+                           and self.db_ops.clean_output_name(v) in cleaned_mb_nodes]
+                
+                dagitty_mb_lines = [
+                    "g <- dagitty('dag {",
+                    f" {exposure_clean} [exposure]",
+                    f" {outcome_clean} [outcome]"
+                ]
+                
+                for node in cleaned_mb_nodes:
+                    if node not in {exposure_clean, outcome_clean}:
+                        dagitty_mb_lines.append(f" {node}")
+                
+                for src, dst in mb_edges:
+                    dagitty_mb_lines.append(f" {src} -> {dst}")
+                
+                # Close the DAG definition
+                dagitty_mb_lines.append("}')")
+                
+                dagitty_mb_format = "\n".join(dagitty_mb_lines)
+                with open(self.output_dir / "MarkovBlanket_Union.R", "w") as f:
+                    f.write(dagitty_mb_format)
 
     def save_results_and_metadata(self, timing_results: Dict, detailed_assertions: List[Dict]):
         """Save analysis results, timing data, and configuration metadata."""
@@ -184,7 +206,8 @@ class MarkovBlanketAnalyzer:
         print("\nGenerated files:")
         print(f"  - causal_assertions.json: Detailed causal relationships")
         print(f"  - SemDAG.R: R script for full DAG visualization")
-        print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
+        if self.enable_markov_blanket:
+            print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
         print(f"  - performance_metrics.json: Timing information")
         print(f"  - run_configuration.json: Complete run parameters")
         
@@ -205,7 +228,8 @@ class MarkovBlanketAnalyzer:
         print("\nTo visualize results, run the R scripts in the output directory:")
         print(f"  cd {output_path}")
         print(f"  Rscript SemDAG.R")
-        print(f"  Rscript MarkovBlanket_Union.R")
+        if self.enable_markov_blanket:
+            print(f"  Rscript MarkovBlanket_Union.R")
 
     def run_analysis(self) -> Dict:
         """Execute the complete analysis pipeline and return timing data."""
@@ -215,6 +239,7 @@ class MarkovBlanketAnalyzer:
             print(f"  Exposure CUIs: {', '.join(self.config.exposure_cui_list)} ({len(self.config.exposure_cui_list)} CUIs)")
             print(f"  Outcome CUIs: {', '.join(self.config.outcome_cui_list)} ({len(self.config.outcome_cui_list)} CUIs)")
             print(f"Using threshold: {self.threshold}")
+            print(f"Markov blanket analysis: {'Enabled' if self.enable_markov_blanket else 'Disabled'}")
             print(f"Output directory: {self.output_dir.absolute()}")
             
             # Connect to database
@@ -236,29 +261,49 @@ class MarkovBlanketAnalyzer:
                     third_degree_links = self.db_ops.fetch_third_degree_relationships(cursor, first_degree_cuis)
                     print(f"Found {len(third_degree_links)} third-degree relationships")
                     
-                    # Compute Markov blankets (now handles multiple CUIs)
-                    mb_union = self.db_ops.compute_markov_blankets(cursor)
+                    # Compute Markov blankets only if enabled
+                    mb_union = None
+                    if self.enable_markov_blanket:
+                        mb_union = self.mb_computer.compute_markov_blankets(cursor)
+                    else:
+                        print("\nSkipping Markov blanket computation (disabled)")
                     
                     print("\nConstructing causal graph...")
-                    # Build graph
+                    # Build graph with cleaned node names
                     with TimingContext("graph_construction", self.timing_data):
                         G = nx.DiGraph()
+                        
+                        # Add edges with cleaned node names
                         for src, dst in first_degree_links:
-                            G.add_edge(src, dst)
+                            clean_src = self.db_ops.clean_output_name(src)
+                            clean_dst = self.db_ops.clean_output_name(dst)
+                            G.add_edge(clean_src, clean_dst)
+                            
                         for src, dst in second_degree_links:
-                            G.add_edge(src, dst)
+                            clean_src = self.db_ops.clean_output_name(src)
+                            clean_dst = self.db_ops.clean_output_name(dst)
+                            G.add_edge(clean_src, clean_dst)
+                            
                         for src, dst in third_degree_links:
-                            G.add_edge(src, dst)
+                            clean_src = self.db_ops.clean_output_name(src)
+                            clean_dst = self.db_ops.clean_output_name(dst)
+                            G.add_edge(clean_src, clean_dst)
+                            
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges")
                     
                     print("\nGenerating DAGitty visualization scripts...")
-                    # Generate visualization scripts (now includes multiple CUIs metadata)
+                    # Generate visualization scripts
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
                     self.generate_dagitty_scripts(all_nodes, all_edges, mb_union)
-                    print(f"DAGitty scripts generated with multiple CUIs support:")
-                    print(f"  - {self.output_dir}/SemDAG.R")
-                    print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
+                    
+                    if self.enable_markov_blanket:
+                        print(f"DAGitty scripts generated with Markov blanket support:")
+                        print(f"  - {self.output_dir}/SemDAG.R")
+                        print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
+                    else:
+                        print(f"DAGitty script generated:")
+                        print(f"  - {self.output_dir}/SemDAG.R")
                     
                     # Save all results and metadata
                     self.save_results_and_metadata(self.timing_data, detailed_assertions)
@@ -288,7 +333,7 @@ YAML Configuration Support:
 
 Example usage:
   python {sys.argv[0]} --config hypertension_alzheimers --host localhost --user myuser --password mypass --dbname causalehr
-  python {sys.argv[0]} --yaml-config config.yaml --host localhost --user myuser --password mypass --dbname causalehr
+  python {sys.argv[0]} --yaml-config config.yaml --host localhost --user myuser --password mypass --dbname causalehr --markov-blanket
   python {sys.argv[0]} --config cardiovascular_dementia --output-dir results_2025 --threshold 100
         """
     )
@@ -321,6 +366,12 @@ Example usage:
         type=int, 
         default=50,
         help="Minimum support count for all relationship degrees (default: 50). Ignored if using YAML config with min_pmids."
+    )
+    analysis_group.add_argument(
+        "--markov-blanket",
+        action="store_true",
+        default=False,
+        help="Enable Markov blanket computation and generate MarkovBlanket_Union.R (default: False)"
     )
     
     # Output parameters
@@ -392,6 +443,7 @@ def main():
             print(f"  Exposure CUIs: {', '.join(selected_config.exposure_cui_list)} ({len(selected_config.exposure_cui_list)} CUIs)")
             print(f"  Outcome CUIs: {', '.join(selected_config.outcome_cui_list)} ({len(selected_config.outcome_cui_list)} CUIs)")
             print(f"  Total target CUIs: {len(selected_config.all_target_cuis)}")
+            print(f"  Markov blanket: {'Enabled' if args.markov_blanket else 'Disabled'}")
             print(f"Database: {args.host}:{args.port}/{args.dbname}")
             print(f"Output directory: {args.output_dir}")
         
@@ -401,7 +453,8 @@ def main():
             db_params=db_config,
             threshold=threshold,
             output_dir=args.output_dir,
-            yaml_config_data=yaml_config_data
+            yaml_config_data=yaml_config_data,
+            enable_markov_blanket=args.markov_blanket
         )
         
         timing_results = analyzer.run_analysis()
