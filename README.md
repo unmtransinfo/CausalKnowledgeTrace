@@ -170,9 +170,11 @@ pip install -r requirements.txt
 
 2. **Save Configuration**: Click "Create Graph" to save parameters to `user_input.yaml`
 
-3. **Generate Graph**: Run the graph creation engine to process the configuration
+3. **Generate Graph**: Run the graph creation engine to process the configuration and generate graphs
 
-4. **Visualize Results**: Load the generated DAG files back into the Shiny app for visualization
+4. **Automatic Integration**: Generated graphs are automatically saved to `graph_creation/result/` directory
+
+5. **Visualize Results**: Use the Shiny app's "Data Upload" tab to load and visualize the generated graphs
 
 ## Data Configuration
 
@@ -180,13 +182,13 @@ pip install -r requirements.txt
 
 The application now provides a flexible file loading system through the user interface:
 
-#### Method 1: Place Files in App Directory (Recommended)
+#### Method 1: Use Generated Graph Files (Recommended)
 
-1. **Create your DAG file** (e.g., `graph.R`, `my_dag.R`, etc.)
-2. **Place it in the same directory** as the app files
-3. **Go to the "Data Upload" tab** in the app
+1. **Generate graphs** using the graph creation engine (Python component)
+2. **Generated files** are automatically saved to `graph_creation/result/` directory
+3. **Go to the "Data Upload" tab** in the Shiny app
 4. **Click "Refresh File List"** to scan for available files
-5. **Select your file** from the dropdown
+5. **Select your generated file** (e.g., `SemDAG.R`, `MarkovBlanket_Union.R`) from the dropdown
 6. **Click "Load Selected DAG"**
 
 #### Method 2: Upload Through the Interface
