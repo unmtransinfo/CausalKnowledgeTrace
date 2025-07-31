@@ -9,10 +9,10 @@ library(visNetwork)
 library(dplyr)
 
 # Source modular components
-source("dag_visualization.R")
-source("node_information.R")
-source("statistics.R")
-source("data_upload.R")
+source("modules/dag_visualization.R")
+source("modules/node_information.R")
+source("modules/statistics.R")
+source("modules/data_upload.R")
 
 # DYNAMIC DAG LOADING SYSTEM
 # This system allows users to load DAG files through the UI

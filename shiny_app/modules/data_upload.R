@@ -8,7 +8,9 @@ if (!require(dagitty)) stop("dagitty package is required")
 if (!require(igraph)) stop("igraph package is required")
 
 # Source required modules
-if (file.exists("node_information.R")) {
+if (file.exists("modules/node_information.R")) {
+    source("modules/node_information.R")
+} else if (file.exists("node_information.R")) {
     source("node_information.R")
 } else {
     warning("node_information.R not found. Some functions may not work properly.")
