@@ -1,4 +1,5 @@
-python graph_creation/pushkin.py --config diabetes_alzheimers \
+python graph_creation/pushkin.py \
+  --yaml-config user_input.yaml \
   --output-dir graph_creation/result \
   --host localhost \
   --port 5432 \

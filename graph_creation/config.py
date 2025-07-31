@@ -15,10 +15,51 @@ import unicodedata
 import string
 import time
 import json
+import yaml
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, Set, Tuple, List, Union
+from typing import Dict, Set, Tuple, List, Union, Optional
 from pathlib import Path
+
+# -------------------------
+# YAML CONFIGURATION SUPPORT
+# -------------------------
+
+def load_yaml_config(yaml_file_path: str) -> Dict:
+    """Load configuration from YAML file and extract threshold (min_pmids)."""
+    try:
+        with open(yaml_file_path, 'r') as file:
+            yaml_config = yaml.safe_load(file)
+        
+        # Validate required fields
+        if 'exposure_cuis' not in yaml_config or 'outcome_cuis' not in yaml_config:
+            raise ValueError("YAML file must contain 'exposure_cuis' and 'outcome_cuis' fields")
+        
+        # Ensure CUIs are lists
+        exposure_cuis = yaml_config['exposure_cuis']
+        outcome_cuis = yaml_config['outcome_cuis']
+        
+        if not isinstance(exposure_cuis, list):
+            exposure_cuis = [exposure_cuis]
+        if not isinstance(outcome_cuis, list):
+            outcome_cuis = [outcome_cuis]
+        
+        # Extract threshold from min_pmids, default to 50 if not present
+        threshold = yaml_config.get('min_pmids', 50)
+        
+        return {
+            'exposure_cuis': exposure_cuis,
+            'outcome_cuis': outcome_cuis,
+            'threshold': threshold,
+            'full_config': yaml_config  # Store full config for future use
+        }
+        
+    except FileNotFoundError:
+        raise ValueError(f"YAML configuration file not found: {yaml_file_path}")
+    except yaml.YAMLError as e:
+        raise ValueError(f"Error parsing YAML file: {e}")
+    except Exception as e:
+        raise ValueError(f"Error loading YAML configuration: {e}")
 
 # -------------------------
 # CENTRALIZED CONFIGURATION
@@ -54,6 +95,29 @@ class ExposureOutcomePair:
     def all_target_cuis(self) -> List[str]:
         """Get all target CUIs (exposure + outcome) as a single list"""
         return self.exposure_cui_list + self.outcome_cui_list
+
+def create_dynamic_config_from_yaml(yaml_file_path: str, config_name: str = None) -> ExposureOutcomePair:
+    """Create a dynamic ExposureOutcomePair configuration from YAML file."""
+    yaml_data = load_yaml_config(yaml_file_path)
+    
+    # Generate config name if not provided
+    if config_name is None:
+        config_name = f"yaml_config_{int(time.time())}"
+    
+    # Create exposure and outcome names based on CUIs
+    exposure_name = f"Exposure_{'_'.join(yaml_data['exposure_cuis'])}"
+    outcome_name = f"Outcome_{'_'.join(yaml_data['outcome_cuis'])}"
+    
+    description = f"YAML-based configuration with {len(yaml_data['exposure_cuis'])} exposure CUI(s) and {len(yaml_data['outcome_cuis'])} outcome CUI(s)"
+    
+    return ExposureOutcomePair(
+        name=config_name,
+        exposure_cui=yaml_data['exposure_cuis'],
+        exposure_name=exposure_name,
+        outcome_cui=yaml_data['outcome_cuis'],
+        outcome_name=outcome_name,
+        description=description
+    ), yaml_data['threshold'], yaml_data['full_config']
 
 # Define available exposure-outcome configurations
 EXPOSURE_OUTCOME_CONFIGS = {
@@ -547,9 +611,10 @@ def create_db_config(host: str, port: int, dbname: str, user: str, password: str
 
 def validate_arguments(args):
     """Validate command line arguments."""
-    # Validate threshold
-    if args.threshold < 1:
-        raise ValueError("Threshold must be >= 1")
+    # Validate threshold (only if not using YAML config)
+    if not hasattr(args, 'yaml_config') or args.yaml_config is None:
+        if args.threshold < 1:
+            raise ValueError("Threshold must be >= 1")
     
     # Validate output directory
     try:
@@ -557,3 +622,12 @@ def validate_arguments(args):
         output_path.mkdir(parents=True, exist_ok=True)
     except Exception as e:
         raise ValueError(f"Cannot create output directory '{args.output_dir}': {e}")
+    
+    # Validate YAML file if provided
+    if hasattr(args, 'yaml_config') and args.yaml_config is not None:
+        if not Path(args.yaml_config).exists():
+            raise ValueError(f"YAML configuration file not found: {args.yaml_config}")
+        try:
+            load_yaml_config(args.yaml_config)
+        except Exception as e:
+            raise ValueError(f"Invalid YAML configuration: {e}")

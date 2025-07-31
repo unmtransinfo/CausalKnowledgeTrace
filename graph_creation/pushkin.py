@@ -16,8 +16,9 @@ import argparse
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Set, Tuple, List
+from typing import Dict, Set, Tuple, List, Optional
 from datetime import datetime
+import time
 
 # Import configuration and database operations from separate module
 from config import (
@@ -25,7 +26,9 @@ from config import (
     TimingContext, 
     DatabaseOperations,
     create_db_config, 
-    validate_arguments
+    validate_arguments,
+    load_yaml_config,
+    create_dynamic_config_from_yaml
 )
 
 class MarkovBlanketAnalyzer:
@@ -43,7 +46,8 @@ class MarkovBlanketAnalyzer:
                  config_name: str,
                  db_params: Dict[str, str],
                  threshold: int,
-                 output_dir: str = "output"):
+                 output_dir: str = "output",
+                 yaml_config_data: Optional[Dict] = None):
         """Initialize the analyzer with configuration parameters."""
         if config_name not in EXPOSURE_OUTCOME_CONFIGS:
             raise ValueError(f"Unknown config: {config_name}. Available: {list(EXPOSURE_OUTCOME_CONFIGS.keys())}")
@@ -53,6 +57,7 @@ class MarkovBlanketAnalyzer:
         self.threshold = threshold
         self.timing_data = {}
         self.output_dir = Path(output_dir)
+        self.yaml_config_data = yaml_config_data  # Store full YAML config for metadata
         
         # Initialize database operations helper
         self.db_ops = DatabaseOperations(self.config, self.threshold, self.timing_data)
@@ -135,6 +140,7 @@ class MarkovBlanketAnalyzer:
             "outcome_name": self.config.outcome_name,
             "all_target_cuis": self.config.all_target_cuis,  # All exposure + outcome CUIs
             "threshold": self.threshold,
+            "threshold_source": "yaml_min_pmids" if self.yaml_config_data else "command_line",
             "database": {
                 "host": self.db_params.get("host"),
                 "port": self.db_params.get("port"),
@@ -150,6 +156,13 @@ class MarkovBlanketAnalyzer:
                 "total_target_cuis": len(self.config.all_target_cuis)
             }
         }
+        
+        # Add YAML configuration data if available
+        if self.yaml_config_data:
+            run_config["yaml_configuration"] = self.yaml_config_data
+            run_config["config_source"] = "yaml_file"
+        else:
+            run_config["config_source"] = "predefined"
         
         with open(output_path / "run_configuration.json", "w") as f:
             json.dump(run_config, f, indent=2)
@@ -185,6 +198,9 @@ class MarkovBlanketAnalyzer:
         print("\nMultiple CUIs Configuration:")
         print(f"  This analysis used {len(self.config.exposure_cui_list)} exposure CUI(s) and {len(self.config.outcome_cui_list)} outcome CUI(s)")
         print(f"  Total relationships analyzed across {len(self.config.all_target_cuis)} target concepts")
+        if self.yaml_config_data:
+            print(f"  Configuration loaded from YAML file")
+            print(f"  Threshold (min_pmids): {self.threshold}")
         
         print("\nTo visualize results, run the R scripts in the output directory:")
         print(f"  cd {output_path}")
@@ -236,10 +252,11 @@ class MarkovBlanketAnalyzer:
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges")
                     
                     print("\nGenerating DAGitty visualization scripts...")
-                    # Generate visualization scripts
+                    # Generate visualization scripts (now includes multiple CUIs metadata)
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
                     self.generate_dagitty_scripts(all_nodes, all_edges, mb_union)
+                    print(f"DAGitty scripts generated with multiple CUIs support:")
                     print(f"  - {self.output_dir}/SemDAG.R")
                     print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
                     
@@ -252,7 +269,7 @@ class MarkovBlanketAnalyzer:
 def parse_arguments():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description="Enhanced Epidemiological Analysis Script with Markov Blanket Analysis (Multiple CUIs Support)",
+        description="Enhanced Epidemiological Analysis Script with Markov Blanket Analysis (Multiple CUIs Support + YAML Config)",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
 Available exposure-outcome configurations (now supporting multiple CUIs):
@@ -261,19 +278,31 @@ Available exposure-outcome configurations (now supporting multiple CUIs):
               f"{chr(10)}    Outcome CUIs: {', '.join(config.outcome_cui_list)}"
               for name, config in EXPOSURE_OUTCOME_CONFIGS.items()])}
 
+YAML Configuration Support:
+  Use --yaml-config to load exposure_cuis, outcome_cuis, and min_pmids from a YAML file.
+  YAML file should contain:
+    exposure_cuis: [list of CUIs]
+    outcome_cuis: [list of CUIs] 
+    min_pmids: threshold value (default: 50)
+    # other parameters for future use
+
 Example usage:
   python {sys.argv[0]} --config hypertension_alzheimers --host localhost --user myuser --password mypass --dbname causalehr
+  python {sys.argv[0]} --yaml-config config.yaml --host localhost --user myuser --password mypass --dbname causalehr
   python {sys.argv[0]} --config cardiovascular_dementia --output-dir results_2025 --threshold 100
-  python {sys.argv[0]} --config diabetes_alzheimers --threshold 75 --schema public
         """
     )
     
-    # Required arguments
-    parser.add_argument(
+    # Configuration method - either predefined or YAML
+    config_group = parser.add_mutually_exclusive_group(required=True)
+    config_group.add_argument(
         "--config", 
-        required=True,
         choices=list(EXPOSURE_OUTCOME_CONFIGS.keys()),
         help="Exposure-outcome configuration to analyze (supports multiple CUIs)"
+    )
+    config_group.add_argument(
+        "--yaml-config",
+        help="Path to YAML configuration file containing exposure_cuis, outcome_cuis, and min_pmids"
     )
     
     # Database connection parameters
@@ -291,7 +320,7 @@ Example usage:
         "--threshold", 
         type=int, 
         default=50,
-        help="Minimum support count for all relationship degrees (default: 50)"
+        help="Minimum support count for all relationship degrees (default: 50). Ignored if using YAML config with min_pmids."
     )
     
     # Output parameters
@@ -321,7 +350,16 @@ def create_analysis_configuration(args):
         schema=args.schema
     )
     
-    return db_config, args.threshold
+    # Handle YAML configuration
+    if args.yaml_config:
+        dynamic_config, yaml_threshold, yaml_config_data = create_dynamic_config_from_yaml(args.yaml_config)
+        # Add the dynamic config to the global configs for the session
+        config_name = f"yaml_config_{int(time.time())}"
+        EXPOSURE_OUTCOME_CONFIGS[config_name] = dynamic_config
+        return db_config, config_name, yaml_threshold, yaml_config_data
+    else:
+        # Use predefined configuration and command-line threshold
+        return db_config, args.config, args.threshold, None
 
 def main():
     """Main function with command line interface."""
@@ -329,28 +367,41 @@ def main():
         args = parse_arguments()
         validate_arguments(args)
         
+        # Create analysis configuration (handles both predefined and YAML configs)
+        config_result = create_analysis_configuration(args)
+        if len(config_result) == 4:
+            db_config, config_name, threshold, yaml_config_data = config_result
+        else:
+            # Legacy support (shouldn't happen with new argument structure)
+            db_config, threshold = config_result
+            config_name = args.config
+            yaml_config_data = None
+        
         # Display configuration info including multiple CUIs
-        selected_config = EXPOSURE_OUTCOME_CONFIGS[args.config]
+        selected_config = EXPOSURE_OUTCOME_CONFIGS[config_name]
         
         if args.verbose:
-            print(f"Running analysis with configuration: {args.config}")
+            print(f"Running analysis with configuration: {config_name}")
+            if yaml_config_data:
+                print(f"  Configuration source: YAML file ({args.yaml_config})")
+                print(f"  YAML min_pmids (threshold): {threshold}")
+            else:
+                print(f"  Configuration source: Predefined")
+                print(f"  Command-line threshold: {threshold}")
             print(f"  Description: {selected_config.description}")
             print(f"  Exposure CUIs: {', '.join(selected_config.exposure_cui_list)} ({len(selected_config.exposure_cui_list)} CUIs)")
             print(f"  Outcome CUIs: {', '.join(selected_config.outcome_cui_list)} ({len(selected_config.outcome_cui_list)} CUIs)")
             print(f"  Total target CUIs: {len(selected_config.all_target_cuis)}")
             print(f"Database: {args.host}:{args.port}/{args.dbname}")
-            print(f"Threshold: {args.threshold}")
             print(f"Output directory: {args.output_dir}")
-        
-        # Create analysis configuration
-        db_config, threshold = create_analysis_configuration(args)
         
         # Initialize and run analysis
         analyzer = MarkovBlanketAnalyzer(
-            config_name=args.config,
+            config_name=config_name,
             db_params=db_config,
             threshold=threshold,
-            output_dir=args.output_dir
+            output_dir=args.output_dir,
+            yaml_config_data=yaml_config_data
         )
         
         timing_results = analyzer.run_analysis()
@@ -374,14 +425,26 @@ def show_usage_help():
     print("\nThis script requires command line arguments to run.")
     print("Use --help to see all available options.\n")
     print("Example usage:")
+    print(f"  # Using predefined configuration:")
     print(f"  python {sys.argv[0]} --config hypertension_alzheimers --dbname causalehr --user myuser --password mypass")
-    print(f"  python {sys.argv[0]} --config cardiovascular_dementia --dbname causalehr --user myuser --password mypass")
+    print(f"  # Using YAML configuration:")
+    print(f"  python {sys.argv[0]} --yaml-config config.yaml --dbname causalehr --user myuser --password mypass")
     print(f"  python {sys.argv[0]} --help")
-    print("\nAvailable configurations (with multiple CUIs support):")
+    print("\nAvailable predefined configurations (with multiple CUIs support):")
     for name, config in EXPOSURE_OUTCOME_CONFIGS.items():
         print(f"  {name}: {config.description}")
         print(f"    Exposure CUIs: {', '.join(config.exposure_cui_list)}")
         print(f"    Outcome CUIs: {', '.join(config.outcome_cui_list)}")
+    print("\nYAML Configuration:")
+    print("  Create a YAML file with exposure_cuis, outcome_cuis, and min_pmids")
+    print("  Example YAML content:")
+    print("    exposure_cuis:")
+    print("    - C0011849") 
+    print("    - C0020538")
+    print("    outcome_cuis:")
+    print("    - C0027051")
+    print("    - C0038454")
+    print("    min_pmids: 50")
 
 # -------------------------
 # MAIN ENTRY POINT
