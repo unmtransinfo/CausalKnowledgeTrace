@@ -8,3 +8,4 @@ python graph_creation/pushkin.py \
   --password Usps@6855 \
   --schema causalehr \
   --verbose
+  # --markov-blanket  # Uncomment this line to enable Markov blanket analysis
