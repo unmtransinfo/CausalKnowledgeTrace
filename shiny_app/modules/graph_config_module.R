@@ -146,11 +146,11 @@ graphConfigUI <- function(id) {
                         textInput(
                             ns("PREDICATION_TYPE"),
                             "Predication Types",
-                            value = "",
+                            value = "CAUSES",
                             placeholder = "e.g., TREATS, CAUSES, PREVENTS",
                             width = "100%"
                         ),
-                        helpText("One or more PREDICATION types. Leave empty to include all types."),
+                        helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated)."),
                         
                         # SemMedDB Version
                         selectInput(
@@ -324,11 +324,22 @@ graphConfigServer <- function(id) {
             
             # Prepare parameters for saving
             tryCatch({
-                # Process predication types
-                predication_types <- if (is.null(input$PREDICATION_TYPE) || input$PREDICATION_TYPE == "") {
-                    ""
-                } else {
-                    input$PREDICATION_TYPE
+                # Process predication types with robust default handling
+                predication_types <- {
+                    user_input <- input$PREDICATION_TYPE
+                    
+                    # Handle various empty/null cases and ensure default to "CAUSES"
+                    if (is.null(user_input) || is.na(user_input) || trimws(user_input) == "") {
+                        "CAUSES"  # Default value
+                    } else {
+                        # User provided input - use it after trimming whitespace
+                        trimmed_input <- trimws(user_input)
+                        if (trimmed_input == "") {
+                            "CAUSES"  # Fallback if only whitespace was provided
+                        } else {
+                            trimmed_input  # Use user-specified value
+                        }
+                    }
                 }
                 
                 # Create parameter list
@@ -339,7 +350,7 @@ graphConfigServer <- function(id) {
                     pub_year_cutoff = as.integer(input$pub_year_cutoff),
                     squelch_threshold = as.integer(input$squelch_threshold),
                     k_hops = as.integer(input$k_hops),
-                    PREDICATION_TYPE = predication_types,
+                    predication_type = predication_types,
                     SemMedDBD_version = input$SemMedDBD_version
                 )
                 

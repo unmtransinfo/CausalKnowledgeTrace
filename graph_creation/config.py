@@ -47,10 +47,23 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         # Extract threshold from min_pmids, default to 50 if not present
         threshold = yaml_config.get('min_pmids', 50)
         
+        # Handle predication_type with backward compatibility and multiple types
+        predication_type = yaml_config.get('predication_type') or yaml_config.get('PREDICATION_TYPE', 'CAUSES')
+        
+        # Parse predication types - handle both single and comma-separated values
+        if isinstance(predication_type, str):
+            predication_types = [p.strip() for p in predication_type.split(',')]
+        elif isinstance(predication_type, list):
+            predication_types = predication_type
+        else:
+            predication_types = ['CAUSES']  # fallback
+        
         return {
             'exposure_cuis': exposure_cuis,
             'outcome_cuis': outcome_cuis,
             'threshold': threshold,
+            'predication_type': predication_type,
+            'predication_types': predication_types,  # parsed list for SQL queries
             'full_config': yaml_config  # Store full config for future use
         }
         
@@ -96,19 +109,18 @@ class ExposureOutcomePair:
         """Get all target CUIs (exposure + outcome) as a single list"""
         return self.exposure_cui_list + self.outcome_cui_list
 
-def create_dynamic_config_from_yaml(yaml_file_path: str, config_name: str = None) -> ExposureOutcomePair:
+def create_dynamic_config_from_yaml(yaml_file_path: str):
     """Create a dynamic ExposureOutcomePair configuration from YAML file."""
     yaml_data = load_yaml_config(yaml_file_path)
     
-    # Generate config name if not provided
-    if config_name is None:
-        config_name = f"yaml_config_{int(time.time())}"
+    # Generate a unique config name based on CUIs
+    config_name = f"yaml_config_{'_'.join(yaml_data['exposure_cuis'][:2])}_{'_'.join(yaml_data['outcome_cuis'][:2])}"
     
     # Create exposure and outcome names based on CUIs
     exposure_name = f"Exposure_{'_'.join(yaml_data['exposure_cuis'])}"
     outcome_name = f"Outcome_{'_'.join(yaml_data['outcome_cuis'])}"
     
-    description = f"YAML-based configuration with {len(yaml_data['exposure_cuis'])} exposure CUI(s) and {len(yaml_data['outcome_cuis'])} outcome CUI(s)"
+    description = f"YAML-based configuration with {len(yaml_data['exposure_cuis'])} exposure CUI(s) and {len(yaml_data['outcome_cuis'])} outcome CUI(s), predication types: {', '.join(yaml_data['predication_types'])}"
     
     return ExposureOutcomePair(
         name=config_name,
@@ -224,10 +236,11 @@ class TimingContext:
 class DatabaseOperations:
     """Helper class for database operations and queries."""
     
-    def __init__(self, config, threshold: int, timing_data: Dict):
+    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None):
         self.config = config
         self.threshold = threshold
         self.timing_data = timing_data
+        self.predication_types = predication_types or ['CAUSES']
     
     def _create_cui_placeholders(self, cui_list: List[str]) -> str:
         """Create placeholder string for multiple CUIs in SQL queries"""
@@ -237,6 +250,14 @@ class DatabaseOperations:
         """Create SQL condition for multiple CUIs"""
         placeholders = ', '.join(['%s'] * len(cui_list))
         return f"{field_name} IN ({placeholders})"
+    
+    def _create_predication_condition(self) -> str:
+        """Create SQL condition for predication types"""
+        if len(self.predication_types) == 1:
+            return "cp.predicate = %s"
+        else:
+            placeholders = ', '.join(['%s'] * len(self.predication_types))
+            return f"cp.predicate IN ({placeholders})"
     
     def clean_output_name(self, name: str) -> str:
         """Clean node names for output by removing all special characters and punctuation."""
@@ -263,14 +284,15 @@ class DatabaseOperations:
     def fetch_first_degree_relationships(self, cursor):
         """Fetch first-degree causal relationships."""
         with TimingContext("first_degree_fetch", self.timing_data):
-            # Create conditions for multiple CUIs
+            # Create conditions for multiple CUIs and predication types
             exposure_condition = self._create_cui_conditions(self.config.exposure_cui_list, "cp.subject_cui")
             outcome_condition = self._create_cui_conditions(self.config.outcome_cui_list, "cp.object_cui")
+            predication_condition = self._create_predication_condition()
             
             query_first_degree = f"""
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND ({exposure_condition})
               AND ({outcome_condition})
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
@@ -280,8 +302,8 @@ class DatabaseOperations:
             ORDER BY evidence DESC;
             """
             
-            # Execute with all CUIs as parameters
-            params = self.config.exposure_cui_list + self.config.outcome_cui_list + [self.threshold]
+            # Execute with predication types + CUIs + threshold as parameters
+            params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + [self.threshold]
             cursor.execute(query_first_degree, params)
             
             first_degree_results = cursor.fetchall()
@@ -303,14 +325,15 @@ class DatabaseOperations:
             if not first_degree_list:
                 return [], []
             
-            # Create placeholders for the CUI list
+            # Create placeholders for the CUI list and predication condition
             cui_placeholders = self._create_cui_placeholders(first_degree_list)
+            predication_condition = self._create_predication_condition()
             
             query_second_degree = f"""
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
                    cp.subject_cui, cp.object_cui, cp.predicate
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
@@ -319,8 +342,8 @@ class DatabaseOperations:
             ORDER BY evidence DESC;
             """
             
-            # Execute with first_degree_list twice (for subject and object) plus threshold
-            params = first_degree_list + first_degree_list + [self.threshold]
+            # Parameters: predication_types + first_degree_list (twice) + threshold
+            params = self.predication_types + first_degree_list + first_degree_list + [self.threshold]
             cursor.execute(query_second_degree, params)
             
             second_degree_results = cursor.fetchall()
@@ -355,14 +378,15 @@ class DatabaseOperations:
             if not first_degree_list:
                 return []
             
-            # Create placeholders for the CUI list
+            # Create placeholders for the CUI list and predication condition
             cui_placeholders = self._create_cui_placeholders(first_degree_list)
+            predication_condition = self._create_predication_condition()
             
             query_third_degree = f"""
             WITH second_degree_nodes AS (
                 SELECT DISTINCT cp.subject_name AS node_name
                 FROM causalpredication cp
-                WHERE cp.predicate = 'CAUSES'
+                WHERE {predication_condition}
                   AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
                   AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                   AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
@@ -373,7 +397,7 @@ class DatabaseOperations:
                 
                 SELECT DISTINCT cp.object_name AS node_name
                 FROM causalpredication cp
-                WHERE cp.predicate = 'CAUSES'
+                WHERE {predication_condition}
                   AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
                   AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                   AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
@@ -382,7 +406,7 @@ class DatabaseOperations:
             )
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND (cp.subject_name IN (SELECT node_name FROM second_degree_nodes) 
                    OR cp.object_name IN (SELECT node_name FROM second_degree_nodes))
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
@@ -392,9 +416,10 @@ class DatabaseOperations:
             ORDER BY evidence DESC;
             """
             
-            # Execute with parameters: first_degree_list (4 times) + threshold (3 times)
-            params = (first_degree_list + first_degree_list + [self.threshold] + 
-                     first_degree_list + first_degree_list + [self.threshold] + [self.threshold])
+            # Parameters: predication_types (3 times) + first_degree_list (4 times) + threshold (3 times)
+            params = (self.predication_types + first_degree_list + first_degree_list + [self.threshold] + 
+                     self.predication_types + first_degree_list + first_degree_list + [self.threshold] + 
+                     self.predication_types + [self.threshold])
             cursor.execute(query_third_degree, params)
             
             third_degree_results = cursor.fetchall()
