@@ -73,24 +73,16 @@ graphConfigUI <- function(id) {
                         ),
                         
                         # Minimum PMIDs
-                        selectInput(
+                        numericInput(
                             ns("min_pmids"),
                             "Minimum Number of Unique PMIDs *",
-                            choices = list(
-                                "10" = 10,
-                                "25" = 25,
-                                "50" = 50,
-                                "100" = 100,
-                                "250" = 250,
-                                "500" = 500,
-                                "1000" = 1000,
-                                "2000" = 2000,
-                                "5000" = 5000
-                            ),
-                            selected = 100,
+                            value = 1,
+                            min = 1,
+                            max = 1000,
+                            step = 1,
                             width = "100%"
                         ),
-                        helpText("Minimum number of unique PMIDs required for inclusion."),
+                        helpText("Minimum number of unique PMIDs required for inclusion (1-1000)."),
                         
                         # Publication Year Cutoff
                         selectInput(
@@ -126,21 +118,19 @@ graphConfigUI <- function(id) {
                         ),
                         helpText("Minimum number of distinct citations supporting a causal edge for inclusion."),
                         
-                        # K-hops (temporarily restricted)
-                        div(
-                            selectInput(
-                                ns("k_hops"),
-                                "K-hops *",
-                                choices = list("1" = 1),
-                                selected = 1,
-                                width = "100%"
+                        # K-hops
+                        selectInput(
+                            ns("k_hops"),
+                            "K-hops *",
+                            choices = list(
+                                "1" = 1,
+                                "2" = 2,
+                                "3" = 3
                             ),
-                            # Add disabled styling
-                            tags$script(HTML(paste0(
-                                "document.getElementById('", ns("k_hops"), "').disabled = true;"
-                            )))
+                            selected = 1,
+                            width = "100%"
                         ),
-                        helpText("K-hops is temporarily locked to 1. Additional options will be available in future updates."),
+                        helpText("Number of hops for graph traversal (1-3). Controls the depth of relationships included in the graph."),
                         
                         # Predication Type
                         textInput(
@@ -259,8 +249,12 @@ graphConfigServer <- function(id) {
             }
             
             # Validate required fields
-            if (is.null(input$min_pmids) || input$min_pmids == "") {
+            if (is.null(input$min_pmids) || is.na(input$min_pmids)) {
                 errors <- c(errors, "Minimum PMIDs is required")
+            } else if (!is.numeric(input$min_pmids) || input$min_pmids < 1 || input$min_pmids > 1000) {
+                errors <- c(errors, "Minimum PMIDs must be a number between 1 and 1000")
+            } else if (input$min_pmids != as.integer(input$min_pmids)) {
+                errors <- c(errors, "Minimum PMIDs must be a whole number")
             }
             
             if (is.null(input$pub_year_cutoff) || input$pub_year_cutoff == "") {
@@ -601,8 +595,10 @@ validate_graph_config <- function(config) {
 
     # Validate numeric ranges
     if ("min_pmids" %in% names(config)) {
-        if (!is.numeric(config$min_pmids) || config$min_pmids < 1) {
-            errors <- c(errors, "min_pmids must be a positive number")
+        if (!is.numeric(config$min_pmids) || config$min_pmids < 1 || config$min_pmids > 1000) {
+            errors <- c(errors, "min_pmids must be a number between 1 and 1000")
+        } else if (config$min_pmids != as.integer(config$min_pmids)) {
+            errors <- c(errors, "min_pmids must be a whole number")
         }
     }
 
@@ -613,8 +609,8 @@ validate_graph_config <- function(config) {
     }
 
     if ("k_hops" %in% names(config)) {
-        if (!is.numeric(config$k_hops) || config$k_hops < 1 || config$k_hops > 5) {
-            errors <- c(errors, "k_hops must be between 1 and 5")
+        if (!is.numeric(config$k_hops) || config$k_hops < 1 || config$k_hops > 3) {
+            errors <- c(errors, "k_hops must be between 1 and 3")
         }
     }
 
