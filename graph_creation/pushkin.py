@@ -80,39 +80,78 @@ class MarkovBlanketAnalyzer:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         print(f"Output directory created: {self.output_dir.absolute()}")
 
-    def generate_dagitty_scripts(self, nodes: Set[str], edges: Set[Tuple[str, str]], 
+    def generate_dagitty_scripts(self, nodes: Set[str], edges: Set[Tuple[str, str]],
                                mb_nodes: Optional[Set[str]] = None):
         """Create R scripts for DAGitty visualization and adjustment set identification."""
         with TimingContext("dagitty_generation", self.timing_data):
+            # Fetch CUI-to-name mappings for exposure and outcome CUIs
+            exposure_concept_names = []
+            outcome_concept_names = []
+
+            try:
+                with psycopg2.connect(**self.db_params) as conn:
+                    with conn.cursor() as cursor:
+                        # Get all CUIs for mapping
+                        all_cuis = self.config.exposure_cui_list + self.config.outcome_cui_list
+                        cui_name_mapping = self.db_ops.fetch_cui_name_mappings(cursor, all_cuis)
+
+                        # Build exposure concept names
+                        for cui in self.config.exposure_cui_list:
+                            if cui in cui_name_mapping:
+                                concept_name = self.db_ops.clean_output_name(cui_name_mapping[cui])
+                                exposure_concept_names.append(concept_name)
+                            else:
+                                # Fallback to CUI if name not found
+                                exposure_concept_names.append(f"Exposure_{cui}")
+
+                        # Build outcome concept names
+                        for cui in self.config.outcome_cui_list:
+                            if cui in cui_name_mapping:
+                                concept_name = self.db_ops.clean_output_name(cui_name_mapping[cui])
+                                outcome_concept_names.append(concept_name)
+                            else:
+                                # Fallback to CUI if name not found
+                                outcome_concept_names.append(f"Outcome_{cui}")
+
+            except Exception as e:
+                print(f"Warning: Could not fetch CUI name mappings for DAG generation: {e}")
+                # Fallback to original CUI-based names
+                exposure_concept_names = [f"Exposure_{cui}" for cui in self.config.exposure_cui_list]
+                outcome_concept_names = [f"Outcome_{cui}" for cui in self.config.outcome_cui_list]
+
             # Clean all node names before generating scripts
             cleaned_nodes = {self.db_ops.clean_output_name(node) for node in nodes}
-            cleaned_edges = {(self.db_ops.clean_output_name(src), self.db_ops.clean_output_name(dst)) 
+            cleaned_edges = {(self.db_ops.clean_output_name(src), self.db_ops.clean_output_name(dst))
                            for src, dst in edges}
-            
-            # Overall DAG script - SIMPLIFIED FORMAT
-            dagitty_lines = [
-                "g <- dagitty('dag {",
-                f" {self.db_ops.clean_output_name(self.config.exposure_name)} [exposure]",
-                f" {self.db_ops.clean_output_name(self.config.outcome_name)} [outcome]"
-            ]
-            
-            # Add cleaned nodes
-            exposure_clean = self.db_ops.clean_output_name(self.config.exposure_name)
-            outcome_clean = self.db_ops.clean_output_name(self.config.outcome_name)
-            
+
+            # Overall DAG script - ENHANCED FORMAT with human-readable names
+            dagitty_lines = ["g <- dagitty('dag {"]
+
+            # Add exposure nodes with human-readable names
+            for concept_name in exposure_concept_names:
+                dagitty_lines.append(f" {concept_name} [exposure]")
+
+            # Add outcome nodes with human-readable names
+            for concept_name in outcome_concept_names:
+                dagitty_lines.append(f" {concept_name} [outcome]")
+
+            # Collect all exposure and outcome concept names for filtering
+            all_exposure_outcome_names = set(exposure_concept_names + outcome_concept_names)
+
+            # Add other cleaned nodes (excluding exposure/outcome nodes)
             for node in cleaned_nodes:
-                if node not in {exposure_clean, outcome_clean}:
+                if node not in all_exposure_outcome_names:
                     dagitty_lines.append(f" {node}")
-            
+
             # Add cleaned edges
             for src, dst in cleaned_edges:
                 dagitty_lines.append(f" {src} -> {dst}")
-            
+
             # Close the DAG definition
             dagitty_lines.append("}')")
-            
+
             dagitty_format = "\n".join(dagitty_lines)
-            
+
             # Save overall DAG script
             with open(self.output_dir / "SemDAG.R", "w") as f:
                 f.write(dagitty_format)
@@ -121,26 +160,31 @@ class MarkovBlanketAnalyzer:
             if self.enable_markov_blanket and mb_nodes is not None:
                 # Clean Markov blanket nodes
                 cleaned_mb_nodes = {self.db_ops.clean_output_name(node) for node in mb_nodes}
-                mb_edges = [(self.db_ops.clean_output_name(u), self.db_ops.clean_output_name(v)) 
-                           for u, v in edges if self.db_ops.clean_output_name(u) in cleaned_mb_nodes 
+                mb_edges = [(self.db_ops.clean_output_name(u), self.db_ops.clean_output_name(v))
+                           for u, v in edges if self.db_ops.clean_output_name(u) in cleaned_mb_nodes
                            and self.db_ops.clean_output_name(v) in cleaned_mb_nodes]
-                
-                dagitty_mb_lines = [
-                    "g <- dagitty('dag {",
-                    f" {exposure_clean} [exposure]",
-                    f" {outcome_clean} [outcome]"
-                ]
-                
+
+                dagitty_mb_lines = ["g <- dagitty('dag {"]
+
+                # Add exposure nodes with human-readable names for Markov blanket
+                for concept_name in exposure_concept_names:
+                    dagitty_mb_lines.append(f" {concept_name} [exposure]")
+
+                # Add outcome nodes with human-readable names for Markov blanket
+                for concept_name in outcome_concept_names:
+                    dagitty_mb_lines.append(f" {concept_name} [outcome]")
+
+                # Add other Markov blanket nodes (excluding exposure/outcome nodes)
                 for node in cleaned_mb_nodes:
-                    if node not in {exposure_clean, outcome_clean}:
+                    if node not in all_exposure_outcome_names:
                         dagitty_mb_lines.append(f" {node}")
-                
+
                 for src, dst in mb_edges:
                     dagitty_mb_lines.append(f" {src} -> {dst}")
-                
+
                 # Close the DAG definition
                 dagitty_mb_lines.append("}')")
-                
+
                 dagitty_mb_format = "\n".join(dagitty_mb_lines)
                 with open(self.output_dir / "MarkovBlanket_Union.R", "w") as f:
                     f.write(dagitty_mb_format)
@@ -199,14 +243,46 @@ class MarkovBlanketAnalyzer:
     def display_results_summary(self, timing_results: Dict):
         """Display a comprehensive summary of analysis results."""
         output_path = self.output_dir
-        
+
         print("\n" + "="*60)
         print("ANALYSIS COMPLETE")
         print("="*60)
         print(f"Configuration: {self.config.name}")
         print(f"Description: {self.config.description}")
-        print(f"Exposure CUIs: {', '.join(self.config.exposure_cui_list)} ({len(self.config.exposure_cui_list)} CUIs)")
-        print(f"Outcome CUIs: {', '.join(self.config.outcome_cui_list)} ({len(self.config.outcome_cui_list)} CUIs)")
+
+        # Fetch CUI-to-name mappings from database
+        exposure_cui_display = []
+        outcome_cui_display = []
+
+        try:
+            with psycopg2.connect(**self.db_params) as conn:
+                with conn.cursor() as cursor:
+                    # Get all CUIs for mapping
+                    all_cuis = self.config.exposure_cui_list + self.config.outcome_cui_list
+                    cui_name_mapping = self.db_ops.fetch_cui_name_mappings(cursor, all_cuis)
+
+                    # Build exposure CUI display with names
+                    for cui in self.config.exposure_cui_list:
+                        if cui in cui_name_mapping:
+                            exposure_cui_display.append(f"{cui} -> {cui_name_mapping[cui]}")
+                        else:
+                            exposure_cui_display.append(f"{cui} -> CUI name mapping not found for {cui}")
+
+                    # Build outcome CUI display with names
+                    for cui in self.config.outcome_cui_list:
+                        if cui in cui_name_mapping:
+                            outcome_cui_display.append(f"{cui} -> {cui_name_mapping[cui]}")
+                        else:
+                            outcome_cui_display.append(f"{cui} -> CUI name mapping not found for {cui}")
+
+        except Exception as e:
+            print(f"Warning: Could not fetch CUI name mappings: {e}")
+            # Fallback to CUI-only display
+            exposure_cui_display = self.config.exposure_cui_list
+            outcome_cui_display = self.config.outcome_cui_list
+
+        print(f"Exposure CUIs: {', '.join(exposure_cui_display)} ({len(self.config.exposure_cui_list)} CUIs)")
+        print(f"Outcome CUIs: {', '.join(outcome_cui_display)} ({len(self.config.outcome_cui_list)} CUIs)")
         print(f"Total target CUIs: {len(self.config.all_target_cuis)}")
         print(f"Output directory: {output_path.absolute()}")
         
