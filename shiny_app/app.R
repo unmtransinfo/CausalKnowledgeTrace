@@ -110,6 +110,50 @@ ui <- dashboardPage(
                     // Navigate to the Graph Configuration tab
                     $('a[data-value=\"create_graph\"]').click();
                 }
+
+                // Progress bar control functions
+                function updateProgress(percent, text, status) {
+                    $('#loading_progress').css('width', percent + '%');
+                    $('#progress_text').text(text);
+                    $('#loading_status').text('Status: ' + status);
+                }
+
+                function showLoadingSection() {
+                    $('#loading_section').show();
+                    updateProgress(10, 'Starting...', 'Initializing file loading process');
+                }
+
+                function hideLoadingSection() {
+                    $('#loading_section').hide();
+                    updateProgress(0, 'Initializing...', 'Ready to load...');
+                }
+
+                // Event handlers for loading buttons
+                $(document).on('click', '#load_selected_dag', function() {
+                    showLoadingSection();
+                    updateProgress(20, 'Reading file...', 'Loading selected graph file');
+                });
+
+                $(document).on('click', '#upload_and_load', function() {
+                    showLoadingSection();
+                    updateProgress(20, 'Uploading file...', 'Processing uploaded graph file');
+                });
+
+                // Hide loading section on page load
+                $(document).ready(function() {
+                    hideLoadingSection();
+                });
+
+                // Message handlers for server communication
+                Shiny.addCustomMessageHandler('updateProgress', function(data) {
+                    updateProgress(data.percent, data.text, data.status);
+                });
+
+                Shiny.addCustomMessageHandler('hideLoadingSection', function(data) {
+                    setTimeout(function() {
+                        hideLoadingSection();
+                    }, 1000); // Brief delay to show completion
+                });
             "))
         ),
         
@@ -362,54 +406,7 @@ ui <- dashboardPage(
                 }
             )
         )
-    ),
-
-    # Add custom JavaScript for progress indication
-    tags$script(HTML("
-        // Progress bar control functions
-        function updateProgress(percent, text, status) {
-            $('#loading_progress').css('width', percent + '%');
-            $('#progress_text').text(text);
-            $('#loading_status').text('Status: ' + status);
-        }
-
-        function showLoadingSection() {
-            $('#loading_section').show();
-            updateProgress(10, 'Starting...', 'Initializing file loading process');
-        }
-
-        function hideLoadingSection() {
-            $('#loading_section').hide();
-            updateProgress(0, 'Initializing...', 'Ready to load...');
-        }
-
-        // Event handlers for loading buttons
-        $(document).on('click', '#load_selected_dag', function() {
-            showLoadingSection();
-            updateProgress(20, 'Reading file...', 'Loading selected graph file');
-        });
-
-        $(document).on('click', '#upload_and_load', function() {
-            showLoadingSection();
-            updateProgress(20, 'Uploading file...', 'Processing uploaded graph file');
-        });
-
-        // Hide loading section on page load
-        $(document).ready(function() {
-            hideLoadingSection();
-        });
-
-        // Message handlers for server communication
-        Shiny.addCustomMessageHandler('updateProgress', function(data) {
-            updateProgress(data.percent, data.text, data.status);
-        });
-
-        Shiny.addCustomMessageHandler('hideLoadingSection', function(data) {
-            setTimeout(function() {
-                hideLoadingSection();
-            }, 1000); // Brief delay to show completion
-        });
-    "))
+    )
 )
 
 # Define server logic
