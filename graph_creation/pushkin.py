@@ -13,7 +13,7 @@ import psycopg2
 import networkx as nx
 import json
 import argparse
-import os
+# import os  # Not used in this module
 import sys
 from pathlib import Path
 from typing import Dict, Set, Tuple, List, Optional
@@ -45,16 +45,33 @@ class MarkovBlanketAnalyzer:
     of all other variables, making it valuable for confounder selection.
     """
     
-    def __init__(self, 
+    def __init__(self,
                  config_name: str,
                  db_params: Dict[str, str],
                  threshold: int,
                  output_dir: str = "output",
                  yaml_config_data: Optional[Dict] = None,
-                 enable_markov_blanket: bool = False):
-        """Initialize the analyzer with configuration parameters."""
+                 enable_markov_blanket: bool = False,
+                 k_hops: int = 3):
+        """Initialize the analyzer with configuration parameters.
+
+        Args:
+            config_name: Name of the predefined configuration
+            db_params: Database connection parameters
+            threshold: Minimum evidence threshold for relationships
+            output_dir: Directory for output files
+            yaml_config_data: Optional YAML configuration data
+            enable_markov_blanket: Whether to enable Markov blanket analysis
+            k_hops: Number of hops for graph traversal (1-3, default: 3)
+        """
         if config_name not in EXPOSURE_OUTCOME_CONFIGS:
             raise ValueError(f"Unknown config: {config_name}. Available: {list(EXPOSURE_OUTCOME_CONFIGS.keys())}")
+
+        # Validate k_hops parameter
+        if not isinstance(k_hops, int) or k_hops < 1 or k_hops > 3:
+            raise ValueError(f"k_hops must be an integer between 1 and 3, got: {k_hops}")
+
+        self.k_hops = k_hops
         
         self.config = EXPOSURE_OUTCOME_CONFIGS[config_name]
         self.db_params = db_params
@@ -68,9 +85,9 @@ class MarkovBlanketAnalyzer:
         predication_types = ['CAUSES']  # default
         if yaml_config_data and 'predication_types' in yaml_config_data:
             predication_types = yaml_config_data['predication_types']
-        
-        # Initialize database operations with predication types
-        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types)
+
+        # Initialize database operations with predication types and k_hops
+        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, k_hops)
         
         # Initialize Markov blanket computer if enabled
         if self.enable_markov_blanket:
@@ -330,19 +347,11 @@ class MarkovBlanketAnalyzer:
                 with conn.cursor() as cursor:
                     print("\nFetching causal relationships from database...")
                     print("Note: Queries now support multiple CUIs per exposure/outcome")
-                    
-                    # Fetch relationships using database operations helper
-                    first_degree_cuis, first_degree_links = self.db_ops.fetch_first_degree_relationships(cursor)
-                    print(f"Found {len(first_degree_links)} first-degree relationships")
-                    
-                    detailed_assertions, second_degree_links = self.db_ops.fetch_second_degree_relationships(
-                        cursor, first_degree_cuis
-                    )
-                    print(f"Found {len(second_degree_links)} second-degree relationships")
-                    
-                    # Fetch third-degree relationships
-                    third_degree_links = self.db_ops.fetch_third_degree_relationships(cursor, first_degree_cuis)
-                    print(f"Found {len(third_degree_links)} third-degree relationships")
+                    print(f"Using k-hop parameter: {self.k_hops} (maximum relationship depth)")
+
+                    # Fetch relationships using k-hop functionality
+                    _, all_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
+                    print(f"Found {len(all_links)} total relationships up to {self.k_hops} hops")
                     
                     # Compute Markov blankets only if enabled
                     mb_union = None
@@ -355,24 +364,14 @@ class MarkovBlanketAnalyzer:
                     # Build graph with cleaned node names
                     with TimingContext("graph_construction", self.timing_data):
                         G = nx.DiGraph()
-                        
-                        # Add edges with cleaned node names
-                        for src, dst in first_degree_links:
+
+                        # Add edges with cleaned node names from all k-hop relationships
+                        for src, dst in all_links:
                             clean_src = self.db_ops.clean_output_name(src)
                             clean_dst = self.db_ops.clean_output_name(dst)
                             G.add_edge(clean_src, clean_dst)
-                            
-                        for src, dst in second_degree_links:
-                            clean_src = self.db_ops.clean_output_name(src)
-                            clean_dst = self.db_ops.clean_output_name(dst)
-                            G.add_edge(clean_src, clean_dst)
-                            
-                        for src, dst in third_degree_links:
-                            clean_src = self.db_ops.clean_output_name(src)
-                            clean_dst = self.db_ops.clean_output_name(dst)
-                            G.add_edge(clean_src, clean_dst)
-                            
-                        print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges")
+
+                        print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (k_hops={self.k_hops})")
                     
                     print("\nGenerating DAGitty visualization scripts...")
                     # Generate visualization scripts
@@ -456,6 +455,13 @@ Example usage:
         default=False,
         help="Enable Markov blanket computation and generate MarkovBlanket_Union.R (default: False)"
     )
+    analysis_group.add_argument(
+        "--k-hops",
+        type=int,
+        default=3,
+        choices=[1, 2, 3],
+        help="Number of hops for graph traversal (1-3, default: 3). Controls the depth of relationships included in the graph."
+    )
     
     # Output parameters
     output_group = parser.add_argument_group("Output Parameters")
@@ -537,7 +543,8 @@ def main():
             threshold=threshold,
             output_dir=args.output_dir,
             yaml_config_data=yaml_config_data,
-            enable_markov_blanket=args.markov_blanket
+            enable_markov_blanket=args.markov_blanket,
+            k_hops=yaml_config_data.get('k_hops') if yaml_config_data else getattr(args, 'k_hops', 3)  # Use YAML k_hops, then command line, then default
         )
         
         timing_results = analyzer.run_analysis()

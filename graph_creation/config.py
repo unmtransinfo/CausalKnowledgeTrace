@@ -46,10 +46,15 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         
         # Extract threshold from min_pmids, default to 50 if not present
         threshold = yaml_config.get('min_pmids', 50)
-        
+
+        # Extract k_hops with default and validation
+        k_hops = yaml_config.get('k_hops', 3)
+        if not isinstance(k_hops, int) or k_hops < 1 or k_hops > 3:
+            raise ValueError(f"k_hops must be an integer between 1 and 3, got: {k_hops}")
+
         # Handle predication_type with backward compatibility and multiple types
         predication_type = yaml_config.get('predication_type') or yaml_config.get('PREDICATION_TYPE', 'CAUSES')
-        
+
         # Parse predication types - handle both single and comma-separated values
         if isinstance(predication_type, str):
             predication_types = [p.strip() for p in predication_type.split(',')]
@@ -57,11 +62,12 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
             predication_types = predication_type
         else:
             predication_types = ['CAUSES']  # fallback
-        
+
         return {
             'exposure_cuis': exposure_cuis,
             'outcome_cuis': outcome_cuis,
             'threshold': threshold,
+            'k_hops': k_hops,
             'predication_type': predication_type,
             'predication_types': predication_types,  # parsed list for SQL queries
             'full_config': yaml_config  # Store full config for future use
@@ -235,12 +241,13 @@ class TimingContext:
 
 class DatabaseOperations:
     """Helper class for database operations and queries."""
-    
-    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None):
+
+    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, k_hops: int = 3):
         self.config = config
         self.threshold = threshold
         self.timing_data = timing_data
         self.predication_types = predication_types or ['CAUSES']
+        self.k_hops = k_hops
     
     def _create_cui_placeholders(self, cui_list: List[str]) -> str:
         """Create placeholder string for multiple CUIs in SQL queries"""
@@ -453,6 +460,29 @@ class DatabaseOperations:
             third_degree_links = [(row[0], row[1]) for row in third_degree_results]
             
             return third_degree_links
+
+    def fetch_k_hop_relationships(self, cursor):
+        """Fetch causal relationships up to k hops based on the k_hops parameter."""
+        print(f"Fetching relationships up to {self.k_hops} hops...")
+
+        # Always fetch first-degree relationships as the starting point
+        first_degree_cuis, first_degree_links = self.fetch_first_degree_relationships(cursor)
+
+        all_links = first_degree_links.copy()
+        all_detailed_assertions = []
+
+        if self.k_hops >= 2:
+            # Fetch second-degree relationships
+            detailed_assertions, second_degree_links = self.fetch_second_degree_relationships(cursor, first_degree_cuis)
+            all_links.extend(second_degree_links)
+            all_detailed_assertions.extend(detailed_assertions)
+
+        if self.k_hops >= 3:
+            # Fetch third-degree relationships
+            third_degree_links = self.fetch_third_degree_relationships(cursor, first_degree_cuis)
+            all_links.extend(third_degree_links)
+
+        return first_degree_cuis, all_links, all_detailed_assertions
 
 def create_db_config(host: str, port: int, dbname: str, user: str, password: str, schema: str = None) -> Dict[str, str]:
     """Create database configuration dictionary."""
