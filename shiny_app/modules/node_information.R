@@ -8,78 +8,43 @@ if (!require(dplyr)) stop("dplyr package is required")
 if (!require(dagitty)) stop("dagitty package is required")
 if (!require(igraph)) stop("igraph package is required")
 
-#' Enhanced Node Categorization Function
-#' 
-#' Categorizes nodes based on their names and DAG properties (exposure/outcome)
-#' 
+#' Simplified Node Categorization Function
+#'
+#' Categorizes nodes based on DAG properties (exposure/outcome) or as "Other"
+#'
 #' @param node_name Name of the node to categorize
 #' @param dag_object dagitty object containing the DAG
-#' @return String representing the node category
+#' @return String representing the node category ("Exposure", "Outcome", or "Other")
 #' @export
 categorize_node <- function(node_name, dag_object = NULL) {
     # Extract exposure and outcome from dagitty object if available
     exposures <- character(0)
     outcomes <- character(0)
-    
+
     if (!is.null(dag_object)) {
         exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
         outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
     }
-    
-    # Convert to lowercase for pattern matching
-    node_lower <- tolower(node_name)
-    
-    # Primary categories (exposure/outcome)
+
+    # Check if node is marked as exposure or outcome in the DAG
     if (length(exposures) > 0 && node_name %in% exposures) return("Exposure")
     if (length(outcomes) > 0 && node_name %in% outcomes) return("Outcome")
-    
-    # Medical/biological categories based on keywords
-    if (grepl("(cancer|carcinoma|neoplasm|tumor|malignant|adenocarcinoma|lymphoma|sarcoma|melanoma|glioma|neuroblastoma)", node_lower)) {
-        return("Cancer")
-    } else if (grepl("(cardiovascular|heart|cardiac|myocardial|coronary|artery|vascular|blood_pressure|hypertension|stroke|infarction|bypass|angioplasty|thrombosis|embolism|atherosclerosis)", node_lower)) {
-        return("Cardiovascular")
-    } else if (grepl("(neuro|neural|brain|alzheim|dementia|parkinson|cognitive|memory|nerve|neural|cerebral|cerebrovascular|huntington|amyotrophic|multiple_sclerosis)", node_lower)) {
-        return("Neurological")
-    } else if (grepl("(kidney|renal|nephro|dialysis|glomerular|proteinuria|urinary|bladder)", node_lower)) {
-        return("Renal")
-    } else if (grepl("(diabetes|diabetic|insulin|glucose|hyperglycemia|metabolic|obesity|lipid|cholesterol|triglycerides)", node_lower)) {
-        return("Metabolic")
-    } else if (grepl("(inflammation|inflammatory|immune|autoimmune|infection|bacterial|viral|sepsis|pneumonia|tuberculosis|hepatitis)", node_lower)) {
-        return("Immune_Inflammatory")
-    } else if (grepl("(drug|medication|therapy|treatment|agent|inhibitor|antagonist|agonist|pharmaceutical)", node_lower)) {
-        return("Treatment")
-    } else if (grepl("(gene|genetic|mutation|protein|enzyme|receptor|molecular|dna|rna|chromosome)", node_lower)) {
-        return("Molecular")
-    } else if (grepl("(surgery|surgical|operation|procedure|transplant|bypass|resection|biopsy|excision)", node_lower)) {
-        return("Surgical")
-    } else if (grepl("(oxidative|stress|reactive|oxygen|free_radical|antioxidant|superoxide|peroxide|nitric_oxide)", node_lower)) {
-        return("Oxidative_Stress")
-    } else {
-        return("Other")
-    }
+
+    # All other nodes are categorized as "Other"
+    return("Other")
 }
 
 #' Get Node Color Scheme
-#' 
+#'
 #' Returns the color scheme mapping for different node categories
-#' 
+#'
 #' @return Named list of colors for each category
 #' @export
 get_node_color_scheme <- function() {
     return(list(
-        Exposure = "#FF4444",           # Bright red for exposure
-        Outcome = "#FF6B6B",            # Red for outcome
-        Cancer = "#8B0000",             # Dark red for cancer
-        Cardiovascular = "#DC143C",     # Crimson for cardiovascular
-        Neurological = "#4169E1",       # Royal blue for neurological
-        Renal = "#20B2AA",              # Light sea green for renal
-        Metabolic = "#FF8C00",          # Dark orange for metabolic
-        Immune_Inflammatory = "#32CD32", # Lime green for immune/inflammatory
-        Treatment = "#9370DB",          # Medium purple for treatments
-        Molecular = "#00CED1",          # Dark turquoise for molecular
-        Surgical = "#FF1493",           # Deep pink for surgical
-        Oxidative_Stress = "#FFD700",   # Gold for oxidative stress
-        Other = "#808080"               # Gray for other
+        Exposure = "#FF4500",           # Bright orange-red for exposure (highly contrasting)
+        Outcome = "#0066CC",            # Bright blue for outcome (highly contrasting)
+        Other = "#808080"               # Gray for all other nodes
     ))
 }
 
@@ -241,23 +206,11 @@ create_nodes_display_table <- function(nodes_df) {
 #' @export
 get_node_categories_info <- function() {
     return(data.frame(
-        Category = c("Exposure", "Outcome", "Cancer", "Cardiovascular", "Neurological", 
-                    "Renal", "Metabolic", "Immune_Inflammatory", "Treatment", 
-                    "Molecular", "Surgical", "Oxidative_Stress", "Other"),
+        Category = c("Exposure", "Outcome", "Other"),
         Description = c(
             "Variables marked as exposure in the DAG",
             "Variables marked as outcome in the DAG",
-            "Cancer-related variables and conditions",
-            "Cardiovascular system related variables",
-            "Neurological and brain-related variables",
-            "Kidney and renal system variables",
-            "Metabolic processes and conditions",
-            "Immune system and inflammatory processes",
-            "Treatments, drugs, and therapeutic interventions",
-            "Molecular, genetic, and protein-related variables",
-            "Surgical procedures and interventions",
-            "Oxidative stress and related processes",
-            "Variables that don't fit other categories"
+            "All other variables in the DAG"
         ),
         Color = unlist(get_node_color_scheme()),
         stringsAsFactors = FALSE
