@@ -195,6 +195,15 @@ ui <- dashboardPage(
                         width = 6,
                         verbatimTextOutput("dag_info")
                     )
+                ),
+                fluidRow(
+                    box(
+                        title = "Cycle Detection",
+                        status = "warning",
+                        solidHeader = TRUE,
+                        width = 12,
+                        verbatimTextOutput("cycle_detection")
+                    )
                 )
             ),
             
@@ -788,7 +797,12 @@ server <- function(input, output, session) {
     output$dag_info <- renderText({
         generate_dag_report(current_data$nodes, current_data$edges, current_data$current_file)
     })
-    
+
+    # Cycle detection using modular function
+    output$cycle_detection <- renderText({
+        generate_cycle_report(current_data$nodes, current_data$edges)
+    })
+
     # Remove the example_structure output since it's no longer needed
 }
 
