@@ -246,19 +246,10 @@ To use the large graph you provided:
 
 2. **The application will automatically**:
    - Process all nodes and edges
-   - Categorize nodes into medical/biological categories:
-     - **Exposure/Outcome**: Primary variables
-     - **Cancer**: Cancer-related terms
-     - **Cardiovascular**: Heart and vascular diseases
-     - **Neurological**: Brain and nervous system
-     - **Renal**: Kidney-related
-     - **Metabolic**: Diabetes, obesity, metabolism
-     - **Immune/Inflammatory**: Immune system and inflammation
-     - **Treatment**: Drugs and therapies
-     - **Molecular**: Genes, proteins, enzymes
-     - **Surgical**: Surgical procedures
-     - **Oxidative Stress**: Oxidative stress markers
-     - **Other**: Everything else
+   - Categorize nodes into three simple categories:
+     - **Exposure**: Variables marked as [exposure] in the DAG
+     - **Outcome**: Variables marked as [outcome] in the DAG
+     - **Other**: All other variables in the DAG
 
 3. **Performance optimizations for large graphs**:
    - Smaller font sizes for better visibility
@@ -268,23 +259,13 @@ To use the large graph you provided:
 
 ### Node Categories and Colors
 
-The application automatically categorizes nodes based on naming patterns:
+The application uses a simplified three-category system:
 
-- **Exposure** (Bright Red): Variables marked as [exposure]
-- **Outcome** (Red): Variables marked as [outcome]  
-- **Cancer** (Dark Red): Cancer and tumor-related terms
-- **Cardiovascular** (Crimson): Heart and vascular diseases
-- **Neurological** (Royal Blue): Brain and nervous system
-- **Renal** (Light Sea Green): Kidney-related terms
-- **Metabolic** (Dark Orange): Diabetes, obesity, metabolism
-- **Immune/Inflammatory** (Lime Green): Immune system and inflammation
-- **Treatment** (Medium Purple): Drugs and therapies
-- **Molecular** (Dark Turquoise): Genes, proteins, enzymes
-- **Surgical** (Deep Pink): Surgical procedures
-- **Oxidative Stress** (Gold): Oxidative stress markers
-- **Other** (Gray): Everything else
+- **Exposure** (Bright Orange-Red): Variables marked as [exposure] in the DAG
+- **Outcome** (Bright Blue): Variables marked as [outcome] in the DAG
+- **Other** (Gray): All other variables in the DAG
 
-You can customize these categories by modifying the `categorize_node` function in `dag_data.R`.
+This simplified system focuses on the causal structure rather than detailed medical categorization. You can customize the categorization logic by modifying the `categorize_node` function in `shiny_app/modules/node_information.R`.
 
 ## Installation and Running
 
@@ -369,17 +350,13 @@ You can customize these categories by modifying the `categorize_node` function i
 
 #### Node Categories and Colors
 
-The application automatically categorizes nodes based on naming patterns:
+The application uses a simplified three-category system:
 
-- **Primary**: Exposure and outcome variables (red)
-- **Biological_Process**: Biological mechanisms (teal)
-- **Neural**: Neural-related factors (blue)
-- **Molecular**: Molecular markers (green)
-- **Disease**: Related diseases (pink)
-- **Treatment**: Drugs and treatments (coral)
-- **Other**: Other factors (gray)
+- **Exposure** (Bright Orange-Red): Variables marked as [exposure] in the DAG
+- **Outcome** (Bright Blue): Variables marked as [outcome] in the DAG
+- **Other** (Gray): All other variables in the DAG
 
-You can customize these categories by modifying the `categorize_node` function in `dag_data.R`.
+You can customize the categorization logic by modifying the `categorize_node` function in `shiny_app/modules/node_information.R`.
 
 ## Advanced Usage
 
@@ -408,17 +385,25 @@ dag_object <- g
 
 ### Custom Node Categorization
 
-Modify the `categorize_node` function in `dag_data.R` to create custom categories:
+The simplified categorization system focuses on DAG structure. To customize, modify the `categorize_node` function in `shiny_app/modules/node_information.R`:
 
 ```r
-categorize_node <- function(node_name) {
-    if (node_name %in% c("MyExposure", "MyOutcome")) {
-        return("Primary")
-    } else if (grepl("treatment", node_name, ignore.case = TRUE)) {
-        return("Treatment")
-    } else {
-        return("Other")
+categorize_node <- function(node_name, dag_object = NULL) {
+    # Extract exposure and outcome from dagitty object if available
+    exposures <- character(0)
+    outcomes <- character(0)
+
+    if (!is.null(dag_object)) {
+        exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
+        outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
     }
+
+    # Check if node is marked as exposure or outcome in the DAG
+    if (length(exposures) > 0 && node_name %in% exposures) return("Exposure")
+    if (length(outcomes) > 0 && node_name %in% outcomes) return("Outcome")
+
+    # All other nodes are categorized as "Other"
+    return("Other")
 }
 ```
 

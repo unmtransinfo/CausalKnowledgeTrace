@@ -96,6 +96,7 @@ ui <- dashboardPage(
     
     dashboardBody(
         tags$head(
+            tags$title("Causal Web"),
             tags$style(HTML("
                 .content-wrapper, .right-side {
                     background-color: #f4f4f4;
