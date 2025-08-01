@@ -280,7 +280,34 @@ class DatabaseOperations:
             cleaned = "unknown_node"
         
         return cleaned
-    
+
+    def fetch_cui_name_mappings(self, cursor, cui_list: List[str]) -> Dict[str, str]:
+        """Fetch CUI-to-name mappings from the causalentity table."""
+        if not cui_list:
+            return {}
+
+        # Create placeholders for the CUI list
+        cui_placeholders = self._create_cui_placeholders(cui_list)
+
+        query = f"""
+        SELECT cui, name
+        FROM causalentity
+        WHERE cui IN ({cui_placeholders})
+        """
+
+        try:
+            cursor.execute(query, cui_list)
+            results = cursor.fetchall()
+
+            # Create mapping dictionary
+            cui_name_mapping = {row[0]: row[1] for row in results}
+
+            return cui_name_mapping
+
+        except Exception as e:
+            print(f"Warning: Error fetching CUI name mappings: {e}")
+            return {}
+
     def fetch_first_degree_relationships(self, cursor):
         """Fetch first-degree causal relationships."""
         with TimingContext("first_degree_fetch", self.timing_data):
