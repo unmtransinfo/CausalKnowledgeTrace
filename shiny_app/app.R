@@ -394,9 +394,9 @@ ui <- dashboardPage(
                                 p("This module allows you to configure parameters for knowledge graph generation including:"),
                                 tags$ul(
                                     tags$li("Exposure and Outcome CUIs"),
-                                    tags$li("Minimum PMIDs threshold"),
+                                    tags$li("Squelch Threshold (minimum unique pmids)"),
                                     tags$li("Publication year cutoff"),
-                                    tags$li("Squelch threshold"),
+
                                     tags$li("K-hops parameter"),
                                     tags$li("SemMedDB version selection")
                                 )
