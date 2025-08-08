@@ -119,11 +119,11 @@ graphConfigUI <- function(id) {
                             helpText("One or more CUIs representing outcome concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
                         ),
                         
-                        # Minimum PMIDs
+                        # Squelch Threshold (minimum unique pmids)
                         numericInput(
                             ns("min_pmids"),
-                            "Minimum Number of Unique PMIDs *",
-                            value = 1,
+                            "Squelch Threshold (minimum unique pmids) *",
+                            value = 50,
                             min = 1,
                             max = 1000,
                             step = 1,
@@ -149,21 +149,7 @@ graphConfigUI <- function(id) {
                     ),
                     
                     column(6,
-                        # Squelch Threshold
-                        selectInput(
-                            ns("squelch_threshold"),
-                            "Squelch Threshold *",
-                            choices = list(
-                                "10" = 10,
-                                "25" = 25,
-                                "50" = 50,
-                                "100" = 100,
-                                "500" = 500
-                            ),
-                            selected = 50,
-                            width = "100%"
-                        ),
-                        helpText("Minimum number of distinct citations supporting a causal edge for inclusion."),
+
                         
                         # K-hops
                         selectInput(
@@ -380,21 +366,18 @@ graphConfigServer <- function(id) {
             
             # Validate required fields
             if (is.null(input$min_pmids) || is.na(input$min_pmids)) {
-                errors <- c(errors, "Minimum PMIDs is required")
+                errors <- c(errors, "Squelch Threshold (minimum unique pmids) is required")
             } else if (!is.numeric(input$min_pmids) || input$min_pmids < 1 || input$min_pmids > 1000) {
-                errors <- c(errors, "Minimum PMIDs must be a number between 1 and 1000")
+                errors <- c(errors, "Squelch Threshold (minimum unique pmids) must be a number between 1 and 1000")
             } else if (input$min_pmids != as.integer(input$min_pmids)) {
-                errors <- c(errors, "Minimum PMIDs must be a whole number")
+                errors <- c(errors, "Squelch Threshold (minimum unique pmids) must be a whole number")
             }
             
             if (is.null(input$pub_year_cutoff) || input$pub_year_cutoff == "") {
                 errors <- c(errors, "Publication Year Cutoff is required")
             }
-            
-            if (is.null(input$squelch_threshold) || input$squelch_threshold == "") {
-                errors <- c(errors, "Squelch Threshold is required")
-            }
-            
+
+
             if (is.null(input$k_hops) || input$k_hops == "") {
                 errors <- c(errors, "K-Hops is required")
             }
@@ -497,7 +480,6 @@ graphConfigServer <- function(id) {
                     outcome_cuis = validation_result$outcome_cuis,
                     min_pmids = as.integer(input$min_pmids),
                     pub_year_cutoff = as.integer(input$pub_year_cutoff),
-                    squelch_threshold = as.integer(input$squelch_threshold),
                     k_hops = as.integer(input$k_hops),
                     predication_type = predication_types,
                     SemMedDBD_version = input$SemMedDBD_version
@@ -681,7 +663,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
 
         # Validate loaded configuration
         required_fields <- c("exposure_cuis", "outcome_cuis", "min_pmids",
-                           "pub_year_cutoff", "squelch_threshold", "k_hops",
+                           "pub_year_cutoff", "k_hops",
                            "SemMedDBD_version")
 
         missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -714,7 +696,6 @@ test_graph_config_module <- function() {
         outcome_cuis = c("C0027051", "C0038454"),
         min_pmids = 100,
         pub_year_cutoff = 2010,
-        squelch_threshold = 50,
         k_hops = 2,
         PREDICATION_TYPE = "TREATS, CAUSES",
         SemMedDBD_version = "heuristic"
@@ -796,7 +777,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
 
         # Validate loaded configuration
         required_fields <- c("exposure_cuis", "outcome_cuis", "min_pmids",
-                           "pub_year_cutoff", "squelch_threshold", "k_hops",
+                           "pub_year_cutoff", "k_hops",
                            "SemMedDBD_version")
 
         missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -830,7 +811,7 @@ validate_graph_config <- function(config) {
 
     # Check required fields
     required_fields <- c("exposure_cuis", "outcome_cuis", "min_pmids",
-                        "pub_year_cutoff", "squelch_threshold", "k_hops",
+                        "pub_year_cutoff", "k_hops",
                         "SemMedDBD_version")
 
     missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -906,7 +887,6 @@ test_graph_config_module <- function() {
         outcome_cuis = c("C0027051", "C0038454"),
         min_pmids = 100,
         pub_year_cutoff = 2010,
-        squelch_threshold = 50,
         k_hops = 2,
         PREDICATION_TYPE = "TREATS, CAUSES",
         SemMedDBD_version = "heuristic"
