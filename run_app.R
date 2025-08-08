@@ -6,9 +6,59 @@
 # Usage:
 #   source("run_app.R")
 
-# Load required library
+# Load required libraries
 if (!require(shiny, quietly = TRUE)) {
     stop("Shiny package is required but not installed. Please install it with: install.packages('shiny')")
+}
+
+# Function to check if a port is available using system netstat command
+is_port_available <- function(port, host = "127.0.0.1") {
+    # Method 1: Use system command to check if port is in use
+    if (Sys.info()["sysname"] == "Linux" || Sys.info()["sysname"] == "Darwin") {
+        # Use netstat to check for listening ports
+        result <- tryCatch({
+            system_output <- system(paste0("netstat -tuln | grep ':", port, " '"), intern = TRUE, ignore.stderr = TRUE)
+            length(system_output) == 0  # If no output, port is available
+        }, error = function(e) {
+            # If netstat fails, fall back to socket method
+            NULL
+        })
+
+        if (!is.null(result)) {
+            return(result)
+        }
+    }
+
+    # Method 2: Fallback socket-based check
+    tryCatch({
+        # Try to create a server socket and immediately close it
+        con <- socketConnection(host = host, port = port, server = TRUE, blocking = FALSE, timeout = 0.1)
+        close(con)
+        return(TRUE)  # Port is available
+    }, error = function(e) {
+        # Check specific error messages that indicate port is in use
+        error_msg <- tolower(as.character(e$message))
+        if (grepl("address already in use|bind|cannot be opened|port.*cannot be opened", error_msg)) {
+            return(FALSE)  # Port is definitely in use
+        }
+        # For other errors, be conservative and assume port is in use
+        return(FALSE)
+    })
+}
+
+# Function to find an available port starting from a given port
+find_available_port <- function(start_port = 3838, max_attempts = 100, host = "127.0.0.1") {
+    cat("🔍 Searching for available port starting from", start_port, "...\n")
+    for (port in start_port:(start_port + max_attempts - 1)) {
+        cat("   Testing port", port, "... ")
+        if (is_port_available(port, host)) {
+            cat("✅ Available!\n")
+            return(port)
+        } else {
+            cat("❌ In use\n")
+        }
+    }
+    stop("Could not find an available port after ", max_attempts, " attempts starting from port ", start_port)
 }
 
 # Set working directory to the shiny_app folder
@@ -28,14 +78,38 @@ cat("=========================================\n\n")
 
 # Configure application parameters
 host <- "127.0.0.1"
-port <- 3838  # Let Shiny handle port conflicts automatically
+default_port <- 3838
+
+# Find an available port
+cat("🔍 Checking port availability...\n")
+
+# Debug: Show what processes might be using the port
+if (Sys.info()["sysname"] == "Linux" || Sys.info()["sysname"] == "Darwin") {
+    cat("🔍 Checking what's using port", default_port, "...\n")
+    system(paste0("netstat -tuln | grep ':", default_port, " ' || echo 'No processes found using port ", default_port, "'"))
+}
+
+port_available <- is_port_available(default_port, host)
+cat("🔍 Port", default_port, "availability check result:", port_available, "\n")
+
+if (port_available) {
+    port <- default_port
+    cat("✅ Port", port, "appears to be available\n")
+} else {
+    cat("⚠️  Port", default_port, "is in use, finding alternative...\n")
+    port <- find_available_port(default_port + 1, host = host)
+    cat("✅ Found available port:", port, "\n")
+}
 
 # Display connection information
-cat("🚀 STARTING SHINY APPLICATION\n")
+cat("\n🚀 STARTING SHINY APPLICATION\n")
 cat("=====================================\n")
 cat("📍 URL: http://", host, ":", port, "\n", sep = "")
 cat("🌐 Host: ", host, "\n")
 cat("🔌 Port: ", port, "\n")
+if (port != default_port) {
+    cat("📝 Note: Using port", port, "instead of default", default_port, "\n")
+}
 cat("=====================================\n")
 cat("📱 Opening in your default browser...\n")
 cat("🔗 If browser doesn't open, copy the URL above\n")

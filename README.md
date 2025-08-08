@@ -55,7 +55,7 @@ CausalKnowledgeTrace/
     │   └── run_pushkin.sh
     └── result/                  # Generated output files
         ├── MarkovBlanket_Union.R
-        ├── SemDAG.R
+        ├── degree_X.R               # X = K-hops value (1, 2, or 3)
         ├── causal_assertions.json
         ├── performance_metrics.json
         └── run_configuration.json
@@ -188,7 +188,7 @@ The application now provides a flexible file loading system through the user int
 2. **Generated files** are automatically saved to `graph_creation/result/` directory
 3. **Go to the "Data Upload" tab** in the Shiny app
 4. **Click "Refresh File List"** to scan for available files
-5. **Select your generated file** (e.g., `SemDAG.R`, `MarkovBlanket_Union.R`) from the dropdown
+5. **Select your generated file** (e.g., `degree_1.R`, `degree_2.R`, `degree_3.R`, `MarkovBlanket_Union.R`) from the dropdown
 6. **Click "Load Selected DAG"**
 
 #### Method 2: Upload Through the Interface

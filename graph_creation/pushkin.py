@@ -97,6 +97,10 @@ class MarkovBlanketAnalyzer:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         print(f"Output directory created: {self.output_dir.absolute()}")
 
+    def get_dag_filename(self) -> str:
+        """Generate the DAG filename based on k_hops parameter."""
+        return f"degree_{self.k_hops}.R"
+
     def generate_dagitty_scripts(self, nodes: Set[str], edges: Set[Tuple[str, str]],
                                mb_nodes: Optional[Set[str]] = None):
         """Create R scripts for DAGitty visualization and adjustment set identification."""
@@ -169,8 +173,9 @@ class MarkovBlanketAnalyzer:
 
             dagitty_format = "\n".join(dagitty_lines)
 
-            # Save overall DAG script
-            with open(self.output_dir / "SemDAG.R", "w") as f:
+            # Save overall DAG script with dynamic filename based on k_hops
+            dag_filename = self.get_dag_filename()
+            with open(self.output_dir / dag_filename, "w") as f:
                 f.write(dagitty_format)
             
             # Generate Markov blanket-specific script only if enabled and mb_nodes provided
@@ -305,7 +310,7 @@ class MarkovBlanketAnalyzer:
         
         print("\nGenerated files:")
         print(f"  - causal_assertions.json: Detailed causal relationships")
-        print(f"  - SemDAG.R: R script for full DAG visualization")
+        print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (k_hops={self.k_hops})")
         if self.enable_markov_blanket:
             print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
         print(f"  - performance_metrics.json: Timing information")
@@ -327,7 +332,7 @@ class MarkovBlanketAnalyzer:
         
         print("\nTo visualize results, run the R scripts in the output directory:")
         print(f"  cd {output_path}")
-        print(f"  Rscript SemDAG.R")
+        print(f"  Rscript {self.get_dag_filename()}")
         if self.enable_markov_blanket:
             print(f"  Rscript MarkovBlanket_Union.R")
 
@@ -381,11 +386,11 @@ class MarkovBlanketAnalyzer:
                     
                     if self.enable_markov_blanket:
                         print(f"DAGitty scripts generated with Markov blanket support:")
-                        print(f"  - {self.output_dir}/SemDAG.R")
+                        print(f"  - {self.output_dir}/{self.get_dag_filename()}")
                         print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
                     else:
                         print(f"DAGitty script generated:")
-                        print(f"  - {self.output_dir}/SemDAG.R")
+                        print(f"  - {self.output_dir}/{self.get_dag_filename()}")
                     
                     # Save all results and metadata
                     self.save_results_and_metadata(self.timing_data, detailed_assertions)

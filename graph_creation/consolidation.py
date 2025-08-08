@@ -152,9 +152,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Example usage:
-  python semdag_processor.py --input-file SemDAG.R --output-file CleanedDAG.R
+  python semdag_processor.py --input-file degree_1.R --output-file CleanedDAG.R
   python semdag_processor.py --input-file MarkovBlanket_Union.R --output-file ConsolidatedMB.R --verbose
-  python semdag_processor.py --input-file SemDAG.R --no-consolidate --output-file SimpleClean.R
+  python semdag_processor.py --input-file degree_2.R --no-consolidate --output-file SimpleClean.R
         """
     )
     

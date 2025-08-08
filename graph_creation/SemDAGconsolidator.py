@@ -324,8 +324,8 @@ def main():
     processor = SemDAGProcessor()
 
     # Example usage
-    # input_file = "dag/causalWeb/SemDAG.R"
-    input_file = "SemDAG.R"
+    # input_file = "dag/causalWeb/degree_1.R"
+    input_file = "degree_1.R"
     output_file = "ConsolidatedDAG.R"
 
     if os.path.exists(input_file):
