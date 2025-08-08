@@ -76,7 +76,7 @@ user_input.yaml → config.py → Database Queries → Generated Graphs
 ```
 
 The Python engine reads the configuration and generates:
-- R DAG objects (`MarkovBlanket_Union.R`, `SemDAG.R`)
+- R DAG objects (`MarkovBlanket_Union.R`, `degree_X.R` where X is the K-hops value)
 - JSON assertion files (`causal_assertions.json`)
 - Performance metrics (`performance_metrics.json`)
 - Run configuration (`run_configuration.json`)

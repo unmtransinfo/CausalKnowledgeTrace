@@ -12,6 +12,19 @@ if (!require(yaml)) {
     library(yaml)
 }
 
+# Try to load shinyjs for better UI updates
+tryCatch({
+    if (!require(shinyjs)) {
+        message("Installing shinyjs package for better UI updates...")
+        install.packages("shinyjs")
+        library(shinyjs)
+    }
+    shinyjs_available <- TRUE
+}, error = function(e) {
+    shinyjs_available <- FALSE
+    message("shinyjs not available, using alternative UI update methods")
+})
+
 #' Graph Configuration UI Function
 #' 
 #' Creates the user interface for knowledge graph parameter configuration
@@ -21,8 +34,42 @@ if (!require(yaml)) {
 #' @export
 graphConfigUI <- function(id) {
     ns <- NS(id)
-    
+
     tagList(
+        # Add JavaScript for progress handling
+        tags$script(HTML(paste0("
+            // Progress bar control functions for graph creation
+            function updateGraphProgress_", id, "(percent, text, status) {
+                $('#", ns("graph_progress"), "').css('width', percent + '%');
+                $('#", ns("progress_text"), "').text(text);
+                $('#", ns("progress_status"), "').text('Status: ' + status);
+            }
+
+            function showGraphProgressSection_", id, "() {
+                $('#", ns("progress_section"), "').show();
+                updateGraphProgress_", id, "(10, 'Starting...', 'Initializing graph creation process');
+            }
+
+            function hideGraphProgressSection_", id, "() {
+                $('#", ns("progress_section"), "').hide();
+                updateGraphProgress_", id, "(0, 'Initializing...', 'Ready to create graph...');
+            }
+
+            // Message handlers for server communication
+            Shiny.addCustomMessageHandler('updateGraphProgress_", id, "', function(data) {
+                updateGraphProgress_", id, "(data.percent, data.text, data.status);
+            });
+
+            Shiny.addCustomMessageHandler('showGraphProgressSection_", id, "', function(data) {
+                showGraphProgressSection_", id, "();
+            });
+
+            Shiny.addCustomMessageHandler('hideGraphProgressSection_", id, "', function(data) {
+                setTimeout(function() {
+                    hideGraphProgressSection_", id, "();
+                }, 2000); // Brief delay to show completion
+            });
+        "))),
         fluidRow(
             box(
                 title = "Knowledge Graph Configuration", 
@@ -178,6 +225,25 @@ graphConfigUI <- function(id) {
                             uiOutput(ns("validation_feedback"))
                         )
                     )
+                ),
+
+                # Progress Section (initially hidden)
+                div(id = ns("progress_section"), style = "margin-top: 20px; display: none;",
+                    h4(icon("spinner", class = "fa-spin"), " Creating Graph..."),
+                    div(
+                        style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;",
+                        p("Please wait while your graph is being created. This process may take several minutes."),
+                        div(class = "progress", style = "height: 25px;",
+                            div(id = ns("graph_progress"), class = "progress-bar progress-bar-striped progress-bar-animated",
+                                role = "progressbar", style = "width: 0%; background-color: #007bff;",
+                                span(id = ns("progress_text"), "Initializing...")
+                            )
+                        ),
+                        br(),
+                        div(id = ns("progress_status"), style = "font-size: 14px; color: #6c757d;",
+                            "Status: Ready to start..."
+                        )
+                    )
                 )
             )
         )
@@ -194,13 +260,77 @@ graphConfigUI <- function(id) {
 graphConfigServer <- function(id) {
     moduleServer(id, function(input, output, session) {
         
-        # Reactive value to store validated parameters
+        # Reactive values to store validated parameters and progress
         validated_params <- reactiveVal(NULL)
-        
-        # Validation feedback output
+        progress_state <- reactiveVal("idle")  # idle, validating, saving, executing, complete, error
+        progress_message <- reactiveVal("")
+        progress_percent <- reactiveVal(0)
+
+        # Validation feedback output with reactive progress
         output$validation_feedback <- renderUI({
-            # This will be updated when validation occurs
-            NULL
+            state <- progress_state()
+            message <- progress_message()
+            percent <- progress_percent()
+
+            if (state == "idle") {
+                return(NULL)
+            }
+
+            # Determine alert class and icon based on state
+            alert_class <- switch(state,
+                "validating" = "alert-info",
+                "saving" = "alert-info",
+                "executing" = "alert-info",
+                "complete" = "alert-success",
+                "warning" = "alert-warning",
+                "error" = "alert-danger",
+                "alert-info"
+            )
+
+            icon_name <- switch(state,
+                "validating" = "spinner",
+                "saving" = "spinner",
+                "executing" = "spinner",
+                "complete" = "check-circle",
+                "warning" = "exclamation-triangle",
+                "error" = "exclamation-triangle",
+                "spinner"
+            )
+
+            icon_class <- if (state %in% c("validating", "saving", "executing")) "fa-spin" else ""
+
+            div(
+                class = paste("alert", alert_class),
+                icon(icon_name, class = icon_class),
+                strong(message),
+                if (state %in% c("saving", "executing", "complete", "warning")) {
+                    tagList(
+                        br(), br(),
+                        div(class = "progress", style = "height: 25px;",
+                            div(class = if (state == "executing") "progress-bar progress-bar-striped progress-bar-animated" else "progress-bar",
+                                role = "progressbar",
+                                style = paste0("width: ", percent, "%; background-color: ",
+                                    switch(state,
+                                        "saving" = "#17a2b8",
+                                        "executing" = "#17a2b8",
+                                        "complete" = "#28a745",
+                                        "warning" = "#ffc107",
+                                        "error" = "#dc3545",
+                                        "#17a2b8"
+                                    ), ";"),
+                                span(switch(state,
+                                    "saving" = "Saving configuration...",
+                                    "executing" = "Processing data...",
+                                    "complete" = "Complete!",
+                                    "warning" = "Completed with warnings",
+                                    "error" = "Failed",
+                                    "Processing..."
+                                ))
+                            )
+                        )
+                    )
+                }
+            )
         })
         
         # CUI validation function
@@ -283,24 +413,35 @@ graphConfigServer <- function(id) {
         
         # Process and save configuration
         observeEvent(input$create_graph, {
-            
-            # Show loading indicator
-            output$validation_feedback <- renderUI({
-                div(
-                    class = "alert alert-info",
-                    icon("spinner", class = "fa-spin"),
-                    "Validating inputs and saving configuration..."
-                )
-            })
-            
-            # Add small delay for user feedback
-            Sys.sleep(0.5)
-            
+
+            # Show progress section and start progress
+            session$sendCustomMessage(paste0("showGraphProgressSection_", id), list())
+
+            # Set initial progress state
+            progress_state("validating")
+            progress_message("Validating inputs and saving configuration...")
+            progress_percent(10)
+
+            # Update progress bar
+            session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                percent = 10,
+                text = "Validating inputs...",
+                status = "Checking configuration parameters"
+            ))
+
+            # Allow UI to update
+            Sys.sleep(1)
+
             # Validate inputs
             validation_result <- validate_inputs()
-            
+
             if (!validation_result$valid) {
                 # Show validation errors
+                progress_state("error")
+                progress_message("Validation Errors:")
+                progress_percent(0)
+
+                # Also show detailed errors in a separate output
                 output$validation_feedback <- renderUI({
                     div(
                         class = "alert alert-danger",
@@ -316,12 +457,26 @@ graphConfigServer <- function(id) {
                 return()
             }
             
+            # Update progress for saving
+            progress_state("saving")
+            progress_message("Configuration validated! Saving to YAML file...")
+            progress_percent(30)
+
+            # Update progress bar
+            session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                percent = 30,
+                text = "Saving configuration...",
+                status = "Writing parameters to user_input.yaml"
+            ))
+
+            Sys.sleep(1)
+
             # Prepare parameters for saving
             tryCatch({
                 # Process predication types with robust default handling
                 predication_types <- {
                     user_input <- input$PREDICATION_TYPE
-                    
+
                     # Handle various empty/null cases and ensure default to "CAUSES"
                     if (is.null(user_input) || is.na(user_input) || trimws(user_input) == "") {
                         "CAUSES"  # Default value
@@ -335,7 +490,7 @@ graphConfigServer <- function(id) {
                         }
                     }
                 }
-                
+
                 # Create parameter list
                 params <- list(
                     exposure_cuis = validation_result$exposure_cuis,
@@ -347,45 +502,152 @@ graphConfigServer <- function(id) {
                     predication_type = predication_types,
                     SemMedDBD_version = input$SemMedDBD_version
                 )
-                
+
                 # Save to YAML file in the project root directory
                 yaml_file <- "../user_input.yaml"
                 write_yaml(params, yaml_file)
-                
+
                 # Store validated parameters
                 validated_params(params)
-                
-                # Show success message
-                output$validation_feedback <- renderUI({
-                    div(
-                        class = "alert alert-success",
-                        icon("check-circle"),
-                        strong("Success! "),
-                        "Configuration saved to ", code("user_input.yaml"), ". ",
-                        "You can now proceed with graph generation."
+
+                # Update progress for script execution - this will show immediately
+                progress_state("executing")
+                progress_message("Configuration saved! Now executing graph creation script...")
+                progress_percent(60)
+
+                # Update progress bar for script execution
+                session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                    percent = 60,
+                    text = "Executing script...",
+                    status = "Running graph creation pipeline - this may take several minutes"
+                ))
+
+                # Add delay to ensure UI updates before blocking system call
+                Sys.sleep(2)
+
+                # Execute the graph creation shell script in a way that allows UI updates
+                tryCatch({
+                    # Change to project root directory for script execution
+                    original_wd <- getwd()
+                    setwd("..")  # Move to project root
+
+                    # Check if script exists and is executable
+                    script_path <- "graph_creation/example/run_pushkin.sh"
+                    if (!file.exists(script_path)) {
+                        stop(paste("Script not found:", script_path))
+                    }
+
+                    # Update progress to show script is actually running
+                    progress_state("executing")
+                    progress_message("Script is running... This may take several minutes. Please wait.")
+                    progress_percent(80)
+
+                    # Update progress bar to show script is running
+                    session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                        percent = 80,
+                        text = "Processing data...",
+                        status = "Graph creation script is running - please be patient"
+                    ))
+
+                    # Execute the shell script with proper error handling
+                    script_exit_code <- system(script_path, wait = TRUE)
+
+                    # Return to original working directory
+                    setwd(original_wd)
+
+                    # Check exit code and update progress accordingly
+                    if (script_exit_code == 0) {
+                        # Success
+                        progress_state("complete")
+                        progress_message("Success! Configuration saved and graph creation script executed successfully. Check the graph_creation/result directory for generated graphs.")
+                        progress_percent(100)
+
+                        # Update progress bar to show completion
+                        session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                            percent = 100,
+                            text = "Complete!",
+                            status = "Graph creation completed successfully"
+                        ))
+
+                        # Hide progress section after delay
+                        session$sendCustomMessage(paste0("hideGraphProgressSection_", id), list())
+
+                        # Show notification with correct type
+                        showNotification(
+                            "Configuration saved and graph creation script executed successfully",
+                            type = "message",
+                            duration = 8
+                        )
+                    } else {
+                        # Script executed but returned non-zero exit code
+                        progress_state("warning")
+                        progress_message(paste("Configuration saved, but script execution completed with warnings. Exit code:", script_exit_code, ". Check the console output or graph_creation/result directory for details."))
+                        progress_percent(100)
+
+                        # Update progress bar to show warning
+                        session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                            percent = 100,
+                            text = "Completed with warnings",
+                            status = paste("Script completed with exit code:", script_exit_code)
+                        ))
+
+                        # Hide progress section after delay
+                        session$sendCustomMessage(paste0("hideGraphProgressSection_", id), list())
+
+                        showNotification(
+                            paste("Configuration saved. Script completed with exit code:", script_exit_code),
+                            type = "warning",
+                            duration = 10
+                        )
+                    }
+
+                }, error = function(script_error) {
+                    # Return to original working directory in case of error
+                    if (exists("original_wd")) {
+                        setwd(original_wd)
+                    }
+
+                    # Update progress to show error
+                    progress_state("error")
+                    progress_message(paste("Configuration saved successfully, but script execution failed:", as.character(script_error$message), ". The configuration has been saved to user_input.yaml. You can manually run the script: graph_creation/example/run_pushkin.sh"))
+                    progress_percent(100)
+
+                    # Update progress bar to show error
+                    session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                        percent = 100,
+                        text = "Script execution failed",
+                        status = paste("Error:", as.character(script_error$message))
+                    ))
+
+                    # Hide progress section after delay
+                    session$sendCustomMessage(paste0("hideGraphProgressSection_", id), list())
+
+                    # Show notification about partial success with correct type
+                    showNotification(
+                        paste("Configuration saved, but script execution failed:", as.character(script_error$message)),
+                        type = "warning",
+                        duration = 10
                     )
                 })
-                
-                # Show notification
-                showNotification(
-                    paste("Configuration saved successfully to", yaml_file),
-                    type = "message",
-                    duration = 5
-                )
                 
             }, error = function(e) {
                 # Handle file saving errors
-                output$validation_feedback <- renderUI({
-                    div(
-                        class = "alert alert-danger",
-                        icon("exclamation-triangle"),
-                        strong("Error saving configuration: "),
-                        e$message
-                    )
-                })
-                
+                progress_state("error")
+                progress_message(paste("Error saving configuration:", as.character(e$message)))
+                progress_percent(0)
+
+                # Update progress bar to show error
+                session$sendCustomMessage(paste0("updateGraphProgress_", id), list(
+                    percent = 100,
+                    text = "Configuration save failed",
+                    status = paste("Error:", as.character(e$message))
+                ))
+
+                # Hide progress section after delay
+                session$sendCustomMessage(paste0("hideGraphProgressSection_", id), list())
+
                 showNotification(
-                    paste("Error saving configuration:", e$message),
+                    paste("Error saving configuration:", as.character(e$message)),
                     type = "error",
                     duration = 10
                 )

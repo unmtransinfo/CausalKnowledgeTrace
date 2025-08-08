@@ -340,7 +340,7 @@ ui <- dashboardPage(
                         tags$div(
                             tags$h5("Method 1: Place files in graph_creation/result directory"),
                             tags$ul(
-                                tags$li("Create an R file (e.g., 'SemDAG.R', 'MarkovBlanket_Union.R') with your DAG definition"),
+                                tags$li("Create an R file (e.g., 'degree_1.R', 'degree_2.R', 'degree_3.R', 'MarkovBlanket_Union.R') with your DAG definition"),
                                 tags$li("Place it in the 'graph_creation/result' directory (generated graphs are automatically saved here)"),
                                 tags$li("Click 'Refresh File List' and select your file"),
                                 tags$li("Click 'Load Selected DAG'")
