@@ -86,7 +86,9 @@ graphConfigUI <- function(id) {
                     "All fields marked with * are required."
                 ),
                 
-                # Configuration Form
+                # Configuration Form - Structured Layout
+
+                # Row 1: Exposure CUIs and Consolidated Exposure Name
                 fluidRow(
                     column(6,
                         # Exposure CUIs
@@ -102,8 +104,28 @@ graphConfigUI <- function(id) {
                                 width = "100%"
                             ),
                             helpText("One or more CUIs representing exposure concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
-                        ),
+                        )
+                    ),
+                    column(6,
+                        # Consolidated Exposure Name
+                        div(
+                            class = "form-group",
+                            tags$label("Consolidated Exposure Name", class = "control-label"),
+                            textInput(
+                                ns("exposure_name"),
+                                label = NULL,
+                                value = "",
+                                placeholder = "e.g., Mental Health Conditions",
+                                width = "100%"
+                            ),
+                            helpText("Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
+                        )
+                    )
+                ),
 
+                # Row 2: Outcome CUIs and Consolidated Outcome Name
+                fluidRow(
+                    column(6,
                         # Outcome CUIs
                         div(
                             class = "form-group",
@@ -117,8 +139,28 @@ graphConfigUI <- function(id) {
                                 width = "100%"
                             ),
                             helpText("One or more CUIs representing outcome concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
-                        ),
-                        
+                        )
+                    ),
+                    column(6,
+                        # Consolidated Outcome Name
+                        div(
+                            class = "form-group",
+                            tags$label("Consolidated Outcome Name", class = "control-label"),
+                            textInput(
+                                ns("outcome_name"),
+                                label = NULL,
+                                value = "",
+                                placeholder = "e.g., Cardiovascular Events",
+                                width = "100%"
+                            ),
+                            helpText("Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
+                        )
+                    )
+                ),
+
+                # Row 3: Squelch Threshold and K-hops
+                fluidRow(
+                    column(6,
                         # Squelch Threshold (minimum unique pmids)
                         numericInput(
                             ns("min_pmids"),
@@ -129,8 +171,28 @@ graphConfigUI <- function(id) {
                             step = 1,
                             width = "100%"
                         ),
-                        helpText("Minimum number of unique PMIDs required for inclusion (1-1000)."),
-                        
+                        helpText("Minimum number of unique PMIDs required for inclusion (1-1000).")
+                    ),
+                    column(6,
+                        # K-hops
+                        selectInput(
+                            ns("k_hops"),
+                            "K-hops *",
+                            choices = list(
+                                "1" = 1,
+                                "2" = 2,
+                                "3" = 3
+                            ),
+                            selected = 1,
+                            width = "100%"
+                        ),
+                        helpText("Number of hops for graph traversal (1-3). Controls the depth of relationships included in the graph.")
+                    )
+                ),
+
+                # Row 4: Publication Year Cutoff and Predication Types
+                fluidRow(
+                    column(6,
                         # Publication Year Cutoff
                         selectInput(
                             ns("pub_year_cutoff"),
@@ -147,24 +209,7 @@ graphConfigUI <- function(id) {
                         ),
                         helpText("Only include citations published on or after this year.")
                     ),
-                    
                     column(6,
-
-                        
-                        # K-hops
-                        selectInput(
-                            ns("k_hops"),
-                            "K-hops *",
-                            choices = list(
-                                "1" = 1,
-                                "2" = 2,
-                                "3" = 3
-                            ),
-                            selected = 1,
-                            width = "100%"
-                        ),
-                        helpText("Number of hops for graph traversal (1-3). Controls the depth of relationships included in the graph."),
-                        
                         # Predication Type
                         textInput(
                             ns("PREDICATION_TYPE"),
@@ -173,8 +218,13 @@ graphConfigUI <- function(id) {
                             placeholder = "e.g., TREATS, CAUSES, PREVENTS",
                             width = "100%"
                         ),
-                        helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated)."),
-                        
+                        helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated).")
+                    )
+                ),
+
+                # Row 5: SemMedDB Version (centered)
+                fluidRow(
+                    column(6,
                         # SemMedDB Version
                         selectInput(
                             ns("SemMedDBD_version"),
@@ -188,6 +238,10 @@ graphConfigUI <- function(id) {
                             width = "100%"
                         ),
                         helpText("SemMedDB version by filtering method.")
+                    ),
+                    column(6,
+                        # Empty column for balance
+                        div(style = "height: 1px;")
                     )
                 ),
                 
@@ -348,20 +402,51 @@ graphConfigServer <- function(id) {
             return(list(valid = TRUE, cuis = cuis))
         }
         
+        # Name validation function for single consolidated names
+        validate_consolidated_name <- function(name_string, field_name) {
+            if (is.null(name_string) || trimws(name_string) == "") {
+                return(list(valid = TRUE, name = NULL))  # Names are optional
+            }
+
+            # Clean the name and replace spaces with underscores
+            clean_name <- trimws(name_string)
+
+            if (clean_name == "") {
+                return(list(valid = TRUE, name = NULL))  # Empty after trimming
+            }
+
+            # Replace spaces with underscores for consistent formatting
+            formatted_name <- gsub("\\s+", "_", clean_name)
+
+            return(list(valid = TRUE, name = formatted_name))
+        }
+
         # Main validation function
         validate_inputs <- function() {
             errors <- c()
-            
+
             # Validate exposure CUIs
             exposure_validation <- validate_cui(input$exposure_cuis)
             if (!exposure_validation$valid) {
                 errors <- c(errors, paste("Exposure CUIs:", exposure_validation$message))
             }
-            
+
             # Validate outcome CUIs
             outcome_validation <- validate_cui(input$outcome_cuis)
             if (!outcome_validation$valid) {
                 errors <- c(errors, paste("Outcome CUIs:", outcome_validation$message))
+            }
+
+            # Validate consolidated exposure name if provided
+            exposure_name_validation <- validate_consolidated_name(input$exposure_name, "exposure")
+            if (!exposure_name_validation$valid) {
+                errors <- c(errors, paste("Exposure Name:", exposure_name_validation$message))
+            }
+
+            # Validate consolidated outcome name if provided
+            outcome_name_validation <- validate_consolidated_name(input$outcome_name, "outcome")
+            if (!outcome_name_validation$valid) {
+                errors <- c(errors, paste("Outcome Name:", outcome_name_validation$message))
             }
             
             # Validate required fields
@@ -390,7 +475,9 @@ graphConfigServer <- function(id) {
                 valid = length(errors) == 0,
                 errors = errors,
                 exposure_cuis = if (exposure_validation$valid) exposure_validation$cuis else NULL,
-                outcome_cuis = if (outcome_validation$valid) outcome_validation$cuis else NULL
+                outcome_cuis = if (outcome_validation$valid) outcome_validation$cuis else NULL,
+                exposure_name = if (exposure_name_validation$valid) exposure_name_validation$name else NULL,
+                outcome_name = if (outcome_name_validation$valid) outcome_name_validation$name else NULL
             ))
         }
         
@@ -478,6 +565,8 @@ graphConfigServer <- function(id) {
                 params <- list(
                     exposure_cuis = validation_result$exposure_cuis,
                     outcome_cuis = validation_result$outcome_cuis,
+                    exposure_name = validation_result$exposure_name,
+                    outcome_name = validation_result$outcome_name,
                     min_pmids = as.integer(input$min_pmids),
                     pub_year_cutoff = as.integer(input$pub_year_cutoff),
                     k_hops = as.integer(input$k_hops),
@@ -833,6 +922,29 @@ validate_graph_config <- function(config) {
         invalid_outcome <- config$outcome_cuis[!grepl(cui_pattern, config$outcome_cuis)]
         if (length(invalid_outcome) > 0) {
             errors <- c(errors, paste("Invalid outcome CUIs:", paste(invalid_outcome, collapse = ", ")))
+        }
+    }
+
+    # Validate consolidated name fields if they exist (these are single strings, not arrays)
+    if ("exposure_name" %in% names(config) && !is.null(config$exposure_name)) {
+        if (!is.character(config$exposure_name) || length(config$exposure_name) != 1) {
+            errors <- c(errors, "exposure_name must be a single character string")
+        } else {
+            # Check if name contains spaces (should be underscores in saved format)
+            if (grepl("\\s", config$exposure_name)) {
+                errors <- c(errors, "exposure_name should not contain spaces (use underscores instead)")
+            }
+        }
+    }
+
+    if ("outcome_name" %in% names(config) && !is.null(config$outcome_name)) {
+        if (!is.character(config$outcome_name) || length(config$outcome_name) != 1) {
+            errors <- c(errors, "outcome_name must be a single character string")
+        } else {
+            # Check if name contains spaces (should be underscores in saved format)
+            if (grepl("\\s", config$outcome_name)) {
+                errors <- c(errors, "outcome_name should not contain spaces (use underscores instead)")
+            }
         }
     }
 
