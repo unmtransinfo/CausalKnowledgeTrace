@@ -1,0 +1,26 @@
+# CausalKnowledgeTrace R Dependencies
+# This file lists all R packages required for the application
+# 
+# Usage with pak (modern R package manager):
+#   pak::pkg_install(readLines("requirements_r.txt"))
+#
+# Usage with install.packages():
+#   install.packages(readLines("requirements_r.txt"))
+
+# REQUIRED PACKAGES (Core functionality)
+shiny
+shinydashboard
+visNetwork
+dplyr
+DT
+dagitty
+igraph
+yaml
+
+# OPTIONAL PACKAGES (Enhanced functionality)
+shinyjs
+SEMgraph
+ggplot2
+testthat
+knitr
+rmarkdown
