@@ -162,9 +162,9 @@ pip install -r requirements.txt
 
 1. **Configure Parameters**: Use the Shiny app's "Graph Configuration" tab to set:
    - Exposure and Outcome CUIs
-   - Minimum PMIDs threshold
+   - Squelch Threshold (minimum unique pmids)
    - Publication year cutoff
-   - Squelch threshold
+
    - K-hops parameter
    - SemMedDB version
 

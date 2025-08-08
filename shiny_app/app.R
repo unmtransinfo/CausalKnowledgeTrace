@@ -175,7 +175,7 @@ ui <- dashboardPage(
                         title = "Network Controls",
                         status = "info",
                         solidHeader = TRUE,
-                        width = 6,
+                        width = 4,
                         create_network_controls_ui(),
                         br(),
                         # Add Graph Parameters button
@@ -186,10 +186,32 @@ ui <- dashboardPage(
                                    onclick = "openCreateGraph()")
                     ),
                     box(
+                        title = "Navigation Guide",
+                        status = "warning",
+                        solidHeader = TRUE,
+                        width = 4,
+                        h5(icon("keyboard"), " Keyboard Controls:"),
+                        tags$ul(
+                            tags$li(HTML("<strong>Arrow Keys:</strong> Pan the graph (↑↓←→)")),
+                            tags$li(HTML("<strong>+ / =:</strong> Zoom in")),
+                            tags$li(HTML("<strong>-:</strong> Zoom out")),
+                            tags$li(HTML("<strong>0:</strong> Fit graph to view"))
+                        ),
+                        h5(icon("mouse-pointer"), " Mouse Controls:"),
+                        tags$ul(
+                            tags$li("Drag to pan the view"),
+                            tags$li("Scroll wheel to zoom"),
+                            tags$li("Click nodes to select"),
+                            tags$li("Use navigation buttons (bottom-right)")
+                        ),
+                        tags$small(class = "text-muted",
+                                  "Click on the graph area first to enable keyboard navigation.")
+                    ),
+                    box(
                         title = "Legend",
                         status = "success",
                         solidHeader = TRUE,
-                        width = 6,
+                        width = 4,
                         htmlOutput("legend_html")
                     )
                 )
