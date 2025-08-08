@@ -57,9 +57,9 @@ User Input (Shiny UI) → Validation → user_input.yaml
 The Shiny app's "Graph Configuration" tab allows users to set:
 - Exposure CUIs (Concept Unique Identifiers)
 - Outcome CUIs
-- Minimum PMIDs threshold
+- Squelch Threshold (minimum unique pmids)
 - Publication year cutoff
-- Squelch threshold
+
 - K-hops parameter
 - SemMedDB version
 

@@ -85,14 +85,104 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
             highlightNearest = list(enabled = TRUE, degree = 1),
             nodesIdSelection = TRUE
         ) %>%
+        visInteraction(
+            navigationButtons = TRUE,
+            keyboard = list(
+                enabled = TRUE,
+                speed = list(x = 10, y = 10, zoom = 0.02),
+                bindToWindow = FALSE
+            ),
+            dragView = TRUE,
+            zoomView = TRUE,
+            selectConnectedEdges = TRUE,
+            hover = TRUE,
+            hoverConnectedEdges = TRUE,
+            tooltipDelay = 300
+        ) %>%
+        visLayout(randomSeed = 123) %>%
         visNodes(
             shadow = TRUE,
-            font = list(size = 20, strokeWidth = 2)
+            font = list(size = 20, strokeWidth = 2),
+            borderWidth = 2
         ) %>%
         visEdges(
-            smooth = list(enabled = TRUE, type = "curvedCW")
+            smooth = list(enabled = TRUE, type = "curvedCW"),
+            arrows = list(to = list(enabled = TRUE, scaleFactor = 1))
+        ) %>%
+        visEvents(
+            type = "once",
+            afterDrawing = "function() {
+                // Enhanced keyboard navigation
+                var network = this;
+                var container = network.body.container;
+
+                // Make container focusable
+                container.setAttribute('tabindex', '0');
+                container.style.outline = 'none';
+
+                // Focus on container to enable keyboard events
+                container.focus();
+
+                // Add keyboard event listener
+                container.addEventListener('keydown', function(event) {
+                    var moveDistance = 50;
+                    var zoomFactor = 0.1;
+                    var currentScale = network.getScale();
+                    var currentPosition = network.getViewPosition();
+
+                    switch(event.key) {
+                        case 'ArrowUp':
+                            event.preventDefault();
+                            network.moveTo({
+                                position: {x: currentPosition.x, y: currentPosition.y - moveDistance},
+                                scale: currentScale
+                            });
+                            break;
+                        case 'ArrowDown':
+                            event.preventDefault();
+                            network.moveTo({
+                                position: {x: currentPosition.x, y: currentPosition.y + moveDistance},
+                                scale: currentScale
+                            });
+                            break;
+                        case 'ArrowLeft':
+                            event.preventDefault();
+                            network.moveTo({
+                                position: {x: currentPosition.x - moveDistance, y: currentPosition.y},
+                                scale: currentScale
+                            });
+                            break;
+                        case 'ArrowRight':
+                            event.preventDefault();
+                            network.moveTo({
+                                position: {x: currentPosition.x + moveDistance, y: currentPosition.y},
+                                scale: currentScale
+                            });
+                            break;
+                        case '+':
+                        case '=':
+                            event.preventDefault();
+                            network.moveTo({
+                                position: currentPosition,
+                                scale: currentScale * (1 + zoomFactor)
+                            });
+                            break;
+                        case '-':
+                            event.preventDefault();
+                            network.moveTo({
+                                position: currentPosition,
+                                scale: currentScale * (1 - zoomFactor)
+                            });
+                            break;
+                        case '0':
+                            event.preventDefault();
+                            network.fit();
+                            break;
+                    }
+                });
+            }"
         )
-    
+
     return(network)
 }
 
