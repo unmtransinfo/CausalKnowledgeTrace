@@ -5,6 +5,15 @@ library(visNetwork)
 library(dplyr)
 library(DT)
 
+# Load shinyjs for UI interactions (with error handling)
+tryCatch({
+    library(shinyjs)
+    cat("✓ shinyjs library loaded\n")
+}, error = function(e) {
+    cat("⚠ shinyjs not available:", e$message, "\n")
+    cat("  Some UI interactions may be limited\n")
+})
+
 # Load DAG processing libraries with error handling
 tryCatch({
     library(SEMgraph)
@@ -35,6 +44,7 @@ source("modules/dag_visualization.R")
 source("modules/node_information.R")
 source("modules/statistics.R")
 source("modules/data_upload.R")
+source("modules/causal_analysis.R")
 
 # Try to source graph configuration module if it exists
 tryCatch({
@@ -86,7 +96,9 @@ ui <- dashboardPage(
     
     dashboardSidebar(
         sidebarMenu(
+            id = "sidebar",
             menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
+            menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus")),
             menuItem("Node Information", tabName = "info", icon = icon("info-circle")),
             menuItem("Statistics", tabName = "stats", icon = icon("chart-bar")),
             menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
@@ -95,6 +107,7 @@ ui <- dashboardPage(
     ),
     
     dashboardBody(
+        useShinyjs(),  # Enable shinyjs functionality
         tags$head(
             tags$title("Causal Web"),
             tags$style(HTML("
@@ -109,6 +122,11 @@ ui <- dashboardPage(
                 function openCreateGraph() {
                     // Navigate to the Graph Configuration tab
                     $('a[data-value=\"create_graph\"]').click();
+                }
+
+                function openCausalAnalysis() {
+                    // Navigate to the Causal Analysis tab
+                    $('a[data-value=\"causal\"]').click();
                 }
 
                 // Progress bar control functions
@@ -183,7 +201,17 @@ ui <- dashboardPage(
                                    "Create Graph",
                                    class = "btn-info btn-block",
                                    icon = icon("cogs"),
-                                   onclick = "openCreateGraph()")
+                                   onclick = "openCreateGraph()"),
+
+                        br(),
+
+                        # Quick access to causal analysis
+                        actionButton("quick_causal_analysis",
+                                   "Causal Analysis",
+                                   class = "btn-success btn-block",
+                                   icon = icon("search-plus"),
+                                   onclick = "openCausalAnalysis()",
+                                   title = "Go to causal analysis tab")
                     ),
                     box(
                         title = "Navigation Guide",
@@ -216,7 +244,135 @@ ui <- dashboardPage(
                     )
                 )
             ),
-            
+
+            # Causal Analysis Tab
+            tabItem(tabName = "causal",
+                fluidRow(
+                    box(
+                        title = "Causal Analysis Controls",
+                        status = "primary",
+                        solidHeader = TRUE,
+                        width = 4,
+                        h4(icon("cogs"), " Analysis Settings"),
+
+                        # Variable selection
+                        selectInput("causal_exposure",
+                                  "Exposure Variable:",
+                                  choices = NULL,
+                                  selected = NULL),
+
+                        selectInput("causal_outcome",
+                                  "Outcome Variable:",
+                                  choices = NULL,
+                                  selected = NULL),
+
+                        selectInput("causal_effect_type",
+                                  "Effect Type:",
+                                  choices = list("Total Effect" = "total", "Direct Effect" = "direct"),
+                                  selected = "total"),
+
+                        br(),
+
+                        # Analysis buttons
+                        actionButton("calculate_adjustment_sets",
+                                   "Calculate Adjustment Sets",
+                                   class = "btn-primary btn-block",
+                                   icon = icon("calculator")),
+
+                        br(),
+
+                        actionButton("find_instruments",
+                                   "Find Instrumental Variables",
+                                   class = "btn-info btn-block",
+                                   icon = icon("search")),
+
+                        br(),
+
+                        actionButton("analyze_paths",
+                                   "Analyze Causal Paths",
+                                   class = "btn-success btn-block",
+                                   icon = icon("route")),
+
+                        br(),
+
+                        # Quick analysis button
+                        actionButton("run_full_analysis",
+                                   "Run Complete Analysis",
+                                   class = "btn-warning btn-block",
+                                   icon = icon("magic"),
+                                   title = "Run all analyses at once"),
+
+                        br(),
+
+                        # Progress indicator
+                        div(id = "causal_progress", style = "display: none;",
+                            h5("Analysis in progress..."),
+                            div(class = "progress progress-striped active",
+                                div(class = "progress-bar", style = "width: 100%")
+                            )
+                        )
+                    ),
+
+                    box(
+                        title = "Analysis Results",
+                        status = "success",
+                        solidHeader = TRUE,
+                        width = 8,
+
+                        # Results tabs
+                        tabsetPanel(
+                            id = "causal_results_tabs",
+
+                            tabPanel("Adjustment Sets",
+                                br(),
+                                verbatimTextOutput("adjustment_sets_result"),
+                                br(),
+                                h5("Quick Guide:"),
+                                tags$ul(
+                                    tags$li("Empty set (∅) means no adjustment needed"),
+                                    tags$li("Multiple sets give you options - choose based on data availability"),
+                                    tags$li("Control for ALL variables in the chosen set")
+                                )
+                            ),
+
+                            tabPanel("Instrumental Variables",
+                                br(),
+                                verbatimTextOutput("instrumental_vars_result"),
+                                br(),
+                                h5("About Instrumental Variables:"),
+                                tags$ul(
+                                    tags$li("Variables that affect exposure but not outcome directly"),
+                                    tags$li("Useful when adjustment sets are not sufficient"),
+                                    tags$li("Enable causal identification through natural experiments")
+                                )
+                            ),
+
+                            tabPanel("Causal Paths",
+                                br(),
+                                verbatimTextOutput("causal_paths_result"),
+                                br(),
+                                h5("Path Analysis:"),
+                                tags$ul(
+                                    tags$li("Shows all paths from exposure to outcome"),
+                                    tags$li("Open paths create confounding"),
+                                    tags$li("Blocked paths are already controlled")
+                                )
+                            )
+                        )
+                    )
+                ),
+
+                fluidRow(
+                    box(
+                        title = "DAG Variables Overview",
+                        status = "info",
+                        solidHeader = TRUE,
+                        width = 12,
+                        verbatimTextOutput("dag_variables_info")
+                    )
+                )
+            ),
+
             # Node Information Tab
             tabItem(tabName = "info",
                 fluidRow(
@@ -565,6 +721,18 @@ server <- function(input, output, session) {
                 session$sendCustomMessage("hideLoadingSection", list())
 
                 showNotification(paste("Successfully loaded graph from", input$dag_file_selector), type = "success")
+
+                # Suggest causal analysis for newly loaded DAGs
+                if (!is.null(current_data$dag_object)) {
+                    vars_info <- get_dag_variables(current_data$dag_object)
+                    if (vars_info$success && vars_info$total_count >= 3) {
+                        showNotification(
+                            HTML("DAG loaded successfully! <br/>Try the <strong>Causal Analysis</strong> tab to identify adjustment sets."),
+                            type = "message",
+                            duration = 5
+                        )
+                    }
+                }
             } else {
                 session$sendCustomMessage("hideLoadingSection", list())
                 showNotification(result$message, type = "error")
@@ -752,6 +920,22 @@ server <- function(input, output, session) {
             duration = 2
         )
     })
+
+    # Quick causal analysis navigation
+    observeEvent(input$quick_causal_analysis, {
+        if (is.null(current_data$dag_object)) {
+            showNotification("Please load a DAG first", type = "warning")
+            return()
+        }
+
+        # Navigate to causal analysis tab
+        updateTabItems(session, "sidebar", "causal")
+        showNotification(
+            "Navigating to Causal Analysis tab...",
+            type = "message",
+            duration = 2
+        )
+    })
     
     # Node information output using modular function
     output$node_info <- renderText({
@@ -820,6 +1004,366 @@ server <- function(input, output, session) {
     # Cycle detection using modular function
     output$cycle_detection <- renderText({
         generate_cycle_report(current_data$nodes, current_data$edges)
+    })
+
+    # ===== CAUSAL ANALYSIS SERVER LOGIC =====
+
+    # Update variable choices when DAG changes
+    observe({
+        if (!is.null(current_data$dag_object)) {
+            vars_info <- get_dag_variables(current_data$dag_object)
+            if (vars_info$success) {
+                # Update exposure choices
+                exp_choices <- vars_info$variables
+                names(exp_choices) <- vars_info$variables
+                updateSelectInput(session, "causal_exposure",
+                                choices = exp_choices,
+                                selected = if (length(vars_info$exposures) > 0) vars_info$exposures[1] else NULL)
+
+                # Update outcome choices
+                out_choices <- vars_info$variables
+                names(out_choices) <- vars_info$variables
+                updateSelectInput(session, "causal_outcome",
+                                choices = out_choices,
+                                selected = if (length(vars_info$outcomes) > 0) vars_info$outcomes[1] else NULL)
+            }
+        } else {
+            # Clear choices when no DAG is loaded
+            updateSelectInput(session, "causal_exposure", choices = NULL)
+            updateSelectInput(session, "causal_outcome", choices = NULL)
+        }
+    })
+
+    # DAG variables overview
+    output$dag_variables_info <- renderText({
+        if (is.null(current_data$dag_object)) {
+            return("No DAG loaded. Please load a DAG file from the Data Upload tab.")
+        }
+
+        vars_info <- get_dag_variables(current_data$dag_object)
+        if (!vars_info$success) {
+            return(paste("Error:", vars_info$message))
+        }
+
+        paste0(
+            "DAG Variables Summary\n",
+            "====================\n",
+            "Total Variables: ", vars_info$total_count, "\n",
+            "Exposure Variables: ", if (length(vars_info$exposures) > 0) paste(vars_info$exposures, collapse = ", ") else "None defined", "\n",
+            "Outcome Variables: ", if (length(vars_info$outcomes) > 0) paste(vars_info$outcomes, collapse = ", ") else "None defined", "\n",
+            "Other Variables: ", if (length(vars_info$other_variables) > 0) paste(vars_info$other_variables, collapse = ", ") else "None", "\n\n",
+            "Note: You can select any variable as exposure or outcome for analysis, regardless of DAG definitions."
+        )
+    })
+
+    # Calculate adjustment sets
+    observeEvent(input$calculate_adjustment_sets, {
+        if (is.null(current_data$dag_object)) {
+            showNotification("Please load a DAG first", type = "error")
+            return()
+        }
+
+        if (is.null(input$causal_exposure) || is.null(input$causal_outcome)) {
+            showNotification("Please select both exposure and outcome variables", type = "warning")
+            return()
+        }
+
+        if (input$causal_exposure == input$causal_outcome) {
+            showNotification("Exposure and outcome must be different variables", type = "warning")
+            return()
+        }
+
+        # Show progress
+        shinyjs::show("causal_progress")
+
+        # Calculate adjustment sets
+        result <- calculate_adjustment_sets(
+            current_data$dag_object,
+            exposure = input$causal_exposure,
+            outcome = input$causal_outcome,
+            effect = input$causal_effect_type
+        )
+
+        # Hide progress
+        shinyjs::hide("causal_progress")
+
+        # Update results
+        output$adjustment_sets_result <- renderText({
+            format_adjustment_sets_display(result)
+        })
+
+        # Show notification
+        if (result$success) {
+            showNotification(
+                paste("Found", result$total_sets, "adjustment set(s)"),
+                type = "message"
+            )
+        } else {
+            showNotification(result$message, type = "error")
+        }
+    })
+
+    # Find instrumental variables
+    observeEvent(input$find_instruments, {
+        if (is.null(current_data$dag_object)) {
+            showNotification("Please load a DAG first", type = "error")
+            return()
+        }
+
+        if (is.null(input$causal_exposure) || is.null(input$causal_outcome)) {
+            showNotification("Please select both exposure and outcome variables", type = "warning")
+            return()
+        }
+
+        # Show progress
+        shinyjs::show("causal_progress")
+
+        # Find instruments
+        result <- find_instrumental_variables(
+            current_data$dag_object,
+            exposure = input$causal_exposure,
+            outcome = input$causal_outcome
+        )
+
+        # Hide progress
+        shinyjs::hide("causal_progress")
+
+        # Update results
+        output$instrumental_vars_result <- renderText({
+            if (!result$success) {
+                return(paste("Error:", result$message))
+            }
+
+            if (result$count == 0) {
+                return(paste0(
+                    "No instrumental variables found for:\n",
+                    "Exposure: ", input$causal_exposure, "\n",
+                    "Outcome: ", input$causal_outcome, "\n\n",
+                    "This means there are no variables in the DAG that:\n",
+                    "1. Affect the exposure variable\n",
+                    "2. Do not directly affect the outcome\n",
+                    "3. Are not affected by unmeasured confounders\n\n",
+                    "Consider using adjustment sets for causal identification."
+                ))
+            } else {
+                return(paste0(
+                    "Instrumental Variables Found\n",
+                    "============================\n",
+                    "Exposure: ", input$causal_exposure, "\n",
+                    "Outcome: ", input$causal_outcome, "\n",
+                    "Instruments: ", paste(result$instruments, collapse = ", "), "\n\n",
+                    "These variables can be used for instrumental variable analysis\n",
+                    "to estimate causal effects when adjustment is not sufficient."
+                ))
+            }
+        })
+
+        # Show notification
+        showNotification(result$message, type = if (result$success) "message" else "error")
+    })
+
+    # Analyze causal paths
+    observeEvent(input$analyze_paths, {
+        if (is.null(current_data$dag_object)) {
+            showNotification("Please load a DAG first", type = "error")
+            return()
+        }
+
+        if (is.null(input$causal_exposure) || is.null(input$causal_outcome)) {
+            showNotification("Please select both exposure and outcome variables", type = "warning")
+            return()
+        }
+
+        if (input$causal_exposure == input$causal_outcome) {
+            showNotification("Exposure and outcome must be different variables", type = "warning")
+            return()
+        }
+
+        # Show progress
+        shinyjs::show("causal_progress")
+
+        # Analyze paths
+        result <- analyze_causal_paths(
+            current_data$dag_object,
+            from = input$causal_exposure,
+            to = input$causal_outcome
+        )
+
+        # Hide progress
+        shinyjs::hide("causal_progress")
+
+        # Update results
+        output$causal_paths_result <- renderText({
+            if (!result$success) {
+                return(paste("Error:", result$message))
+            }
+
+            if (result$total_paths == 0) {
+                return(paste0(
+                    "No paths found from ", input$causal_exposure, " to ", input$causal_outcome, "\n\n",
+                    "This means there is no causal relationship between these variables\n",
+                    "according to the current DAG structure."
+                ))
+            }
+
+            # Format paths output
+            header <- paste0(
+                "Causal Paths Analysis\n",
+                "====================\n",
+                "From: ", result$from, "\n",
+                "To: ", result$to, "\n",
+                "Total Paths: ", result$total_paths, "\n\n"
+            )
+
+            paths_text <- ""
+            for (i in seq_along(result$paths)) {
+                path_info <- result$paths[[i]]
+                status <- if (path_info$is_open) "OPEN (creates confounding)" else "BLOCKED"
+                paths_text <- paste0(
+                    paths_text,
+                    "Path ", i, ": ", path_info$description, "\n",
+                    "Status: ", status, "\n",
+                    "Length: ", path_info$length, " variables\n\n"
+                )
+            }
+
+            interpretation <- paste0(
+                "Interpretation:\n",
+                "- OPEN paths create confounding and need to be blocked\n",
+                "- BLOCKED paths are already controlled by the DAG structure\n",
+                "- Use adjustment sets to block open confounding paths"
+            )
+
+            return(paste0(header, paths_text, interpretation))
+        })
+
+        # Show notification
+        showNotification(result$message, type = if (result$success) "message" else "error")
+    })
+
+    # Run complete causal analysis
+    observeEvent(input$run_full_analysis, {
+        if (is.null(current_data$dag_object)) {
+            showNotification("Please load a DAG first", type = "error")
+            return()
+        }
+
+        if (is.null(input$causal_exposure) || is.null(input$causal_outcome)) {
+            showNotification("Please select both exposure and outcome variables", type = "warning")
+            return()
+        }
+
+        if (input$causal_exposure == input$causal_outcome) {
+            showNotification("Exposure and outcome must be different variables", type = "warning")
+            return()
+        }
+
+        # Show progress
+        shinyjs::show("causal_progress")
+
+        # Run complete analysis
+        summary_result <- create_causal_analysis_summary(
+            current_data$dag_object,
+            exposure = input$causal_exposure,
+            outcome = input$causal_outcome
+        )
+
+        # Hide progress
+        shinyjs::hide("causal_progress")
+
+        if (summary_result$success) {
+            # Update all result tabs
+            output$adjustment_sets_result <- renderText({
+                format_adjustment_sets_display(summary_result$adjustment_sets)
+            })
+
+            output$instrumental_vars_result <- renderText({
+                result <- summary_result$instrumental_variables
+                if (!result$success) {
+                    return(paste("Error:", result$message))
+                }
+
+                if (result$count == 0) {
+                    return(paste0(
+                        "No instrumental variables found for:\n",
+                        "Exposure: ", input$causal_exposure, "\n",
+                        "Outcome: ", input$causal_outcome, "\n\n",
+                        "This means there are no variables in the DAG that:\n",
+                        "1. Affect the exposure variable\n",
+                        "2. Do not directly affect the outcome\n",
+                        "3. Are not affected by unmeasured confounders\n\n",
+                        "Consider using adjustment sets for causal identification."
+                    ))
+                } else {
+                    return(paste0(
+                        "Instrumental Variables Found\n",
+                        "============================\n",
+                        "Exposure: ", input$causal_exposure, "\n",
+                        "Outcome: ", input$causal_outcome, "\n",
+                        "Instruments: ", paste(result$instruments, collapse = ", "), "\n\n",
+                        "These variables can be used for instrumental variable analysis\n",
+                        "to estimate causal effects when adjustment is not sufficient."
+                    ))
+                }
+            })
+
+            output$causal_paths_result <- renderText({
+                result <- summary_result$causal_paths
+                if (is.null(result) || !result$success) {
+                    return("Path analysis not available")
+                }
+
+                if (result$total_paths == 0) {
+                    return(paste0(
+                        "No paths found from ", input$causal_exposure, " to ", input$causal_outcome, "\n\n",
+                        "This means there is no causal relationship between these variables\n",
+                        "according to the current DAG structure."
+                    ))
+                }
+
+                # Format paths output
+                header <- paste0(
+                    "Causal Paths Analysis\n",
+                    "====================\n",
+                    "From: ", result$from, "\n",
+                    "To: ", result$to, "\n",
+                    "Total Paths: ", result$total_paths, "\n\n"
+                )
+
+                paths_text <- ""
+                for (i in seq_along(result$paths)) {
+                    path_info <- result$paths[[i]]
+                    status <- if (path_info$is_open) "OPEN (creates confounding)" else "BLOCKED"
+                    paths_text <- paste0(
+                        paths_text,
+                        "Path ", i, ": ", path_info$description, "\n",
+                        "Status: ", status, "\n",
+                        "Length: ", path_info$length, " variables\n\n"
+                    )
+                }
+
+                interpretation <- paste0(
+                    "Interpretation:\n",
+                    "- OPEN paths create confounding and need to be blocked\n",
+                    "- BLOCKED paths are already controlled by the DAG structure\n",
+                    "- Use adjustment sets to block open confounding paths"
+                )
+
+                return(paste0(header, paths_text, interpretation))
+            })
+
+            # Show success notification
+            showNotification(
+                "Complete causal analysis finished! Check all result tabs.",
+                type = "message",
+                duration = 5
+            )
+        } else {
+            showNotification(
+                paste("Analysis failed:", summary_result$message),
+                type = "error"
+            )
+        }
     })
 
     # Remove the example_structure output since it's no longer needed
