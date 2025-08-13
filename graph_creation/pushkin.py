@@ -105,61 +105,54 @@ class MarkovBlanketAnalyzer:
                                mb_nodes: Optional[Set[str]] = None):
         """Create R scripts for DAGitty visualization and adjustment set identification."""
         with TimingContext("dagitty_generation", self.timing_data):
-            # Fetch CUI-to-name mappings for exposure and outcome CUIs
-            exposure_concept_names = []
-            outcome_concept_names = []
-
             try:
                 with psycopg2.connect(**self.db_params) as conn:
                     with conn.cursor() as cursor:
-                        # Get all CUIs for mapping
-                        all_cuis = self.config.exposure_cui_list + self.config.outcome_cui_list
-                        cui_name_mapping = self.db_ops.fetch_cui_name_mappings(cursor, all_cuis)
+                        # Create consolidated node mapping
+                        consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
 
-                        # Build exposure concept names
-                        for cui in self.config.exposure_cui_list:
-                            if cui in cui_name_mapping:
-                                concept_name = self.db_ops.clean_output_name(cui_name_mapping[cui])
-                                exposure_concept_names.append(concept_name)
-                            else:
-                                # Fallback to CUI if name not found
-                                exposure_concept_names.append(f"Exposure_{cui}")
-
-                        # Build outcome concept names
-                        for cui in self.config.outcome_cui_list:
-                            if cui in cui_name_mapping:
-                                concept_name = self.db_ops.clean_output_name(cui_name_mapping[cui])
-                                outcome_concept_names.append(concept_name)
-                            else:
-                                # Fallback to CUI if name not found
-                                outcome_concept_names.append(f"Outcome_{cui}")
+                        # Get consolidated exposure and outcome names
+                        consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
+                        consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
 
             except Exception as e:
-                print(f"Warning: Could not fetch CUI name mappings for DAG generation: {e}")
-                # Fallback to original CUI-based names
-                exposure_concept_names = [f"Exposure_{cui}" for cui in self.config.exposure_cui_list]
-                outcome_concept_names = [f"Outcome_{cui}" for cui in self.config.outcome_cui_list]
+                print(f"Warning: Could not create consolidated mapping for DAG generation: {e}")
+                # Fallback to basic consolidated names
+                consolidated_mapping = {}
+                consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
+                consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
 
-            # Clean all node names before generating scripts
-            cleaned_nodes = {self.db_ops.clean_output_name(node) for node in nodes}
-            cleaned_edges = {(self.db_ops.clean_output_name(src), self.db_ops.clean_output_name(dst))
-                           for src, dst in edges}
+            # Clean all node names and apply consolidated mapping
+            cleaned_nodes = set()
+            for node in nodes:
+                clean_node = self.db_ops.clean_output_name(node)
+                consolidated_node = self.db_ops.apply_consolidated_mapping(clean_node, consolidated_mapping)
+                cleaned_nodes.add(consolidated_node)
 
-            # Overall DAG script - ENHANCED FORMAT with human-readable names
+            # Clean edges and apply consolidated mapping
+            cleaned_edges = set()
+            for src, dst in edges:
+                clean_src = self.db_ops.clean_output_name(src)
+                clean_dst = self.db_ops.clean_output_name(dst)
+                consolidated_src = self.db_ops.apply_consolidated_mapping(clean_src, consolidated_mapping)
+                consolidated_dst = self.db_ops.apply_consolidated_mapping(clean_dst, consolidated_mapping)
+                # Only add edge if source and destination are different (avoid self-loops from consolidation)
+                if consolidated_src != consolidated_dst:
+                    cleaned_edges.add((consolidated_src, consolidated_dst))
+
+            # Overall DAG script - ENHANCED FORMAT with consolidated nodes
             dagitty_lines = ["g <- dagitty('dag {"]
 
-            # Add exposure nodes with human-readable names
-            for concept_name in exposure_concept_names:
-                dagitty_lines.append(f" {concept_name} [exposure]")
+            # Add consolidated exposure node
+            dagitty_lines.append(f" {consolidated_exposure_name} [exposure]")
 
-            # Add outcome nodes with human-readable names
-            for concept_name in outcome_concept_names:
-                dagitty_lines.append(f" {concept_name} [outcome]")
+            # Add consolidated outcome node
+            dagitty_lines.append(f" {consolidated_outcome_name} [outcome]")
 
-            # Collect all exposure and outcome concept names for filtering
-            all_exposure_outcome_names = set(exposure_concept_names + outcome_concept_names)
+            # Collect consolidated exposure and outcome names for filtering
+            all_exposure_outcome_names = {consolidated_exposure_name, consolidated_outcome_name}
 
-            # Add other cleaned nodes (excluding exposure/outcome nodes)
+            # Add other cleaned nodes (excluding consolidated exposure/outcome nodes)
             for node in cleaned_nodes:
                 if node not in all_exposure_outcome_names:
                     dagitty_lines.append(f" {node}")
@@ -180,23 +173,37 @@ class MarkovBlanketAnalyzer:
             
             # Generate Markov blanket-specific script only if enabled and mb_nodes provided
             if self.enable_markov_blanket and mb_nodes is not None:
-                # Clean Markov blanket nodes
-                cleaned_mb_nodes = {self.db_ops.clean_output_name(node) for node in mb_nodes}
-                mb_edges = [(self.db_ops.clean_output_name(u), self.db_ops.clean_output_name(v))
-                           for u, v in edges if self.db_ops.clean_output_name(u) in cleaned_mb_nodes
-                           and self.db_ops.clean_output_name(v) in cleaned_mb_nodes]
+                # Clean Markov blanket nodes and apply consolidated mapping
+                cleaned_mb_nodes = set()
+                for node in mb_nodes:
+                    clean_node = self.db_ops.clean_output_name(node)
+                    consolidated_node = self.db_ops.apply_consolidated_mapping(clean_node, consolidated_mapping)
+                    cleaned_mb_nodes.add(consolidated_node)
+
+                # Create consolidated Markov blanket edges
+                mb_edges = set()
+                for u, v in edges:
+                    clean_u = self.db_ops.clean_output_name(u)
+                    clean_v = self.db_ops.clean_output_name(v)
+                    consolidated_u = self.db_ops.apply_consolidated_mapping(clean_u, consolidated_mapping)
+                    consolidated_v = self.db_ops.apply_consolidated_mapping(clean_v, consolidated_mapping)
+
+                    # Only include edges where both nodes are in the Markov blanket and not self-loops
+                    if (consolidated_u in cleaned_mb_nodes and consolidated_v in cleaned_mb_nodes
+                        and consolidated_u != consolidated_v):
+                        mb_edges.add((consolidated_u, consolidated_v))
 
                 dagitty_mb_lines = ["g <- dagitty('dag {"]
 
-                # Add exposure nodes with human-readable names for Markov blanket
-                for concept_name in exposure_concept_names:
-                    dagitty_mb_lines.append(f" {concept_name} [exposure]")
+                # Add consolidated exposure node for Markov blanket
+                if consolidated_exposure_name in cleaned_mb_nodes:
+                    dagitty_mb_lines.append(f" {consolidated_exposure_name} [exposure]")
 
-                # Add outcome nodes with human-readable names for Markov blanket
-                for concept_name in outcome_concept_names:
-                    dagitty_mb_lines.append(f" {concept_name} [outcome]")
+                # Add consolidated outcome node for Markov blanket
+                if consolidated_outcome_name in cleaned_mb_nodes:
+                    dagitty_mb_lines.append(f" {consolidated_outcome_name} [outcome]")
 
-                # Add other Markov blanket nodes (excluding exposure/outcome nodes)
+                # Add other Markov blanket nodes (excluding consolidated exposure/outcome nodes)
                 for node in cleaned_mb_nodes:
                     if node not in all_exposure_outcome_names:
                         dagitty_mb_lines.append(f" {node}")
@@ -366,17 +373,30 @@ class MarkovBlanketAnalyzer:
                         print("\nSkipping Markov blanket computation (disabled)")
                     
                     print("\nConstructing causal graph...")
-                    # Build graph with cleaned node names
+                    # Build graph with cleaned node names and consolidated mapping
                     with TimingContext("graph_construction", self.timing_data):
                         G = nx.DiGraph()
 
+                        # Create consolidated node mapping
+                        consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
+
                         # Add edges with cleaned node names from all k-hop relationships
+                        consolidated_edges = set()
                         for src, dst in all_links:
                             clean_src = self.db_ops.clean_output_name(src)
                             clean_dst = self.db_ops.clean_output_name(dst)
-                            G.add_edge(clean_src, clean_dst)
+
+                            # Apply consolidated mapping
+                            consolidated_src = self.db_ops.apply_consolidated_mapping(clean_src, consolidated_mapping)
+                            consolidated_dst = self.db_ops.apply_consolidated_mapping(clean_dst, consolidated_mapping)
+
+                            # Only add edge if source and destination are different (avoid self-loops from consolidation)
+                            if consolidated_src != consolidated_dst:
+                                consolidated_edges.add((consolidated_src, consolidated_dst))
+                                G.add_edge(consolidated_src, consolidated_dst)
 
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (k_hops={self.k_hops})")
+                        print(f"Consolidated {len(all_links)} original relationships into {len(consolidated_edges)} consolidated relationships")
                     
                     print("\nGenerating DAGitty visualization scripts...")
                     # Generate visualization scripts

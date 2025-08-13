@@ -118,16 +118,23 @@ class ExposureOutcomePair:
 def create_dynamic_config_from_yaml(yaml_file_path: str):
     """Create a dynamic ExposureOutcomePair configuration from YAML file."""
     yaml_data = load_yaml_config(yaml_file_path)
-    
+
     # Generate a unique config name based on CUIs
     config_name = f"yaml_config_{'_'.join(yaml_data['exposure_cuis'][:2])}_{'_'.join(yaml_data['outcome_cuis'][:2])}"
-    
-    # Create exposure and outcome names based on CUIs
-    exposure_name = f"Exposure_{'_'.join(yaml_data['exposure_cuis'])}"
-    outcome_name = f"Outcome_{'_'.join(yaml_data['outcome_cuis'])}"
-    
+
+    # Use exposure_name and outcome_name from YAML if provided, otherwise generate from CUIs
+    if 'exposure_name' in yaml_data['full_config'] and yaml_data['full_config']['exposure_name']:
+        exposure_name = yaml_data['full_config']['exposure_name']
+    else:
+        exposure_name = f"Exposure_{'_'.join(yaml_data['exposure_cuis'])}"
+
+    if 'outcome_name' in yaml_data['full_config'] and yaml_data['full_config']['outcome_name']:
+        outcome_name = yaml_data['full_config']['outcome_name']
+    else:
+        outcome_name = f"Outcome_{'_'.join(yaml_data['outcome_cuis'])}"
+
     description = f"YAML-based configuration with {len(yaml_data['exposure_cuis'])} exposure CUI(s) and {len(yaml_data['outcome_cuis'])} outcome CUI(s), predication types: {', '.join(yaml_data['predication_types'])}"
-    
+
     return ExposureOutcomePair(
         name=config_name,
         exposure_cui=yaml_data['exposure_cuis'],
@@ -270,23 +277,74 @@ class DatabaseOperations:
         """Clean node names for output by removing all special characters and punctuation."""
         if not name:
             return ""
-        
+
         # Convert to string if not already
         name = str(name)
-        
+
         # Remove or replace special characters with underscores
         # Handle pipe symbols, commas, apostrophes, colons, spaces, etc.
         cleaned = re.sub(r'[|,\':;()[\]{}<>!@#$%^&*+=~`"\\/?.\s-]+', '_', name)
-        
+
         # Remove leading/trailing underscores and collapse multiple underscores
         cleaned = re.sub(r'_+', '_', cleaned)  # Collapse multiple underscores
         cleaned = cleaned.strip('_')  # Remove leading/trailing underscores
-        
+
         # Ensure we don't have empty strings
         if not cleaned:
             cleaned = "unknown_node"
-        
+
         return cleaned
+
+    def create_consolidated_node_mapping(self, cursor) -> Dict[str, str]:
+        """Create mapping from individual CUI names to consolidated node names."""
+        consolidated_mapping = {}
+
+        try:
+            # Get all CUIs for mapping
+            all_cuis = self.config.exposure_cui_list + self.config.outcome_cui_list
+            cui_name_mapping = self.fetch_cui_name_mappings(cursor, all_cuis)
+
+            # Map exposure CUI names to consolidated exposure name
+            consolidated_exposure_name = self.clean_output_name(self.config.exposure_name)
+            for cui in self.config.exposure_cui_list:
+                if cui in cui_name_mapping:
+                    cui_name = self.clean_output_name(cui_name_mapping[cui])
+                    consolidated_mapping[cui_name] = consolidated_exposure_name
+                else:
+                    # Fallback to CUI-based name
+                    cui_name = self.clean_output_name(f"Exposure_{cui}")
+                    consolidated_mapping[cui_name] = consolidated_exposure_name
+
+            # Map outcome CUI names to consolidated outcome name
+            consolidated_outcome_name = self.clean_output_name(self.config.outcome_name)
+            for cui in self.config.outcome_cui_list:
+                if cui in cui_name_mapping:
+                    cui_name = self.clean_output_name(cui_name_mapping[cui])
+                    consolidated_mapping[cui_name] = consolidated_outcome_name
+                else:
+                    # Fallback to CUI-based name
+                    cui_name = self.clean_output_name(f"Outcome_{cui}")
+                    consolidated_mapping[cui_name] = consolidated_outcome_name
+
+        except Exception as e:
+            print(f"Warning: Could not create consolidated node mapping: {e}")
+            # Fallback mapping using CUI-based names
+            consolidated_exposure_name = self.clean_output_name(self.config.exposure_name)
+            consolidated_outcome_name = self.clean_output_name(self.config.outcome_name)
+
+            for cui in self.config.exposure_cui_list:
+                cui_name = self.clean_output_name(f"Exposure_{cui}")
+                consolidated_mapping[cui_name] = consolidated_exposure_name
+
+            for cui in self.config.outcome_cui_list:
+                cui_name = self.clean_output_name(f"Outcome_{cui}")
+                consolidated_mapping[cui_name] = consolidated_outcome_name
+
+        return consolidated_mapping
+
+    def apply_consolidated_mapping(self, node_name: str, consolidated_mapping: Dict[str, str]) -> str:
+        """Apply consolidated mapping to a node name if it exists in the mapping."""
+        return consolidated_mapping.get(node_name, node_name)
 
     def fetch_cui_name_mappings(self, cursor, cui_list: List[str]) -> Dict[str, str]:
         """Fetch CUI-to-name mappings from the causalentity table."""
