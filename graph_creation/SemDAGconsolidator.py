@@ -80,34 +80,52 @@ g <- dagitty('dag {{
 {dag_definition}
 }}')
 
-# Create nodes dataframe
+# Create nodes dataframe using standardized three-category system
 nodes <- data.frame(
     id = V(dagitty2graph(g))$name,
     label = gsub("_", " ", V(dagitty2graph(g))$name),
-    group = case_when(
-        V(dagitty2graph(g))$name %in% c("Depression", "Alzheimers_Disease") ~ "Primary",
-        V(dagitty2graph(g))$name %in% c("Inflammation", "Oxidative_Stress", "Cell_Death") ~ "Biological_Process",
-        V(dagitty2graph(g))$name %in% c("Neurodegeneration", "Memory_Loss", "Cognitive_Decline") ~ "Neural",
-        V(dagitty2graph(g))$name %in% c("Amyloid", "Tau", "MAPT", "APP") ~ "Molecular",
-        V(dagitty2graph(g))$name %in% c("Cardiovascular_Disease", "Diabetes", "Stroke") ~ "Disease",
-        TRUE ~ "Other"
-    ),
     font.size = 16,
     font.color = "black",
     stringsAsFactors = FALSE
 )
 
-# Define color scheme
+# Categorize nodes based on DAG properties (exposure/outcome) or as "Other"
+categorize_node <- function(node_name, dag_object) {
+    # Extract exposure and outcome from dagitty object if available
+    exposures <- character(0)
+    outcomes <- character(0)
+
+    if (!is.null(dag_object)) {
+        exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
+        outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
+    }
+
+    # Check if node is marked as exposure or outcome in the DAG
+    if (length(exposures) > 0 && node_name %in% exposures) return("Exposure")
+    if (length(outcomes) > 0 && node_name %in% outcomes) return("Outcome")
+
+    # All other nodes are categorized as "Other"
+    return("Other")
+}
+
+# Apply categorization
+nodes$group <- sapply(nodes$id, function(x) categorize_node(x, g))
+
+# Define standardized three-category color scheme
 color_scheme <- list(
-    Primary = "#FF6B6B",
-    Biological_Process = "#4ECDC4",
-    Neural = "#45B7D1",
-    Molecular = "#96CEB4",
-    Disease = "#D4A5A5",
-    Other = "#A9B7C0"
+    Exposure = "#FF4500",    # Bright orange-red for exposure (highly contrasting)
+    Outcome = "#0066CC",     # Bright blue for outcome (highly contrasting)
+    Other = "#808080"        # Gray for all other nodes
 )
 
-nodes$color <- unlist(color_scheme[nodes$group])
+# Apply colors based on group
+nodes$color <- sapply(nodes$group, function(g) {
+    if (g %in% names(color_scheme)) {
+        return(color_scheme[[g]])
+    } else {
+        return("#808080")  # Default gray
+    }
+})
 
 # Create edges dataframe
 edges <- data.frame(

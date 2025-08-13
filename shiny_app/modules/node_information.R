@@ -133,7 +133,7 @@ validate_node_data <- function(nodes) {
         if (!"id" %in% names(nodes)) stop("Node 'id' column is required")
         if (!"label" %in% names(nodes)) nodes$label <- nodes$id
         if (!"group" %in% names(nodes)) nodes$group <- "Other"
-        if (!"color" %in% names(nodes)) nodes$color <- "#A9B7C0"
+        if (!"color" %in% names(nodes)) nodes$color <- "#808080"
     }
     
     # Add optional columns if missing

@@ -442,39 +442,43 @@ The application includes built-in data validation that will:
 ### Simple Three-Node DAG
 
 ```r
-# dag_data.R
-dag_nodes <- data.frame(
-    id = c("A", "B", "C"),
-    label = c("Variable A", "Variable B", "Variable C"),
-    group = c("Primary", "Mediator", "Outcome"),
-    color = c("#FF6B6B", "#4ECDC4", "#45B7D1"),
-    stringsAsFactors = FALSE
-)
+# Example using dagitty format (recommended)
+g <- dagitty('dag {
+    Variable_A [exposure]
+    Variable_B
+    Variable_C [outcome]
 
-dag_edges <- data.frame(
-    from = c("A", "B"),
-    to = c("B", "C"),
-    stringsAsFactors = FALSE
-)
+    Variable_A -> Variable_B
+    Variable_B -> Variable_C
+}')
+
+# The application will automatically categorize and color nodes:
+# - Variable_A: Exposure (Orange-Red #FF4500)
+# - Variable_C: Outcome (Blue #0066CC)
+# - Variable_B: Other (Gray #808080)
 ```
 
 ### Complex Medical DAG
 
 ```r
-# dag_data.R with medical variables
-dag_nodes <- data.frame(
-    id = c("Hypertension", "Diabetes", "Stroke", "Age", "BMI"),
-    label = c("Hypertension", "Diabetes", "Stroke", "Age", "BMI"),
-    group = c("Disease", "Disease", "Outcome", "Demographic", "Risk_Factor"),
-    color = c("#D4A5A5", "#D4A5A5", "#FF6B6B", "#A9B7C0", "#FFA07A"),
-    stringsAsFactors = FALSE
-)
+# Example medical DAG using dagitty format
+g <- dagitty('dag {
+    Hypertension [exposure]
+    Diabetes
+    Stroke [outcome]
+    Age
+    BMI
 
-dag_edges <- data.frame(
-    from = c("Age", "BMI", "Hypertension", "Diabetes"),
-    to = c("Hypertension", "Diabetes", "Stroke", "Stroke"),
-    stringsAsFactors = FALSE
-)
+    Age -> Hypertension
+    BMI -> Diabetes
+    Hypertension -> Stroke
+    Diabetes -> Stroke
+}')
+
+# The application will automatically categorize and color nodes:
+# - Hypertension: Exposure (Orange-Red #FF4500)
+# - Stroke: Outcome (Blue #0066CC)
+# - Diabetes, Age, BMI: Other (Gray #808080)
 ```
 
 ## Support
