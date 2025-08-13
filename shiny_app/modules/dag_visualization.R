@@ -20,9 +20,21 @@ generate_legend_html <- function(nodes_df) {
     }
     
     # Group nodes by category and get color and count information
-    group_info <- nodes_df %>%
-        group_by(group) %>%
-        summarise(color = first(color), count = n(), .groups = 'drop')
+    # Handle both 'group' and 'category' column names for backward compatibility
+    if ("group" %in% names(nodes_df)) {
+        group_info <- nodes_df %>%
+            group_by(group) %>%
+            summarise(color = first(color), count = n(), .groups = 'drop')
+    } else if ("category" %in% names(nodes_df)) {
+        group_info <- nodes_df %>%
+            group_by(category) %>%
+            summarise(color = first(color), count = n(), .groups = 'drop')
+        # Rename for consistent display
+        names(group_info)[1] <- "group"
+    } else {
+        # Fallback if neither column exists
+        return("<div style='margin: 10px;'>No category information available</div>")
+    }
     
     # Build HTML legend
     legend_html <- "<div style='margin: 10px;'>"
@@ -66,6 +78,11 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
         )
         nodes_df <- empty_nodes
         edges_df <- empty_edges
+    }
+
+    # Ensure visNetwork uses explicit colors by renaming 'group' to avoid automatic coloring
+    if ("group" %in% names(nodes_df)) {
+        names(nodes_df)[names(nodes_df) == "group"] <- "category"
     }
     
     # Create the network visualization
