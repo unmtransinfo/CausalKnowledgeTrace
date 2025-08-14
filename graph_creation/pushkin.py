@@ -91,7 +91,7 @@ class MarkovBlanketAnalyzer:
         
         # Initialize Markov blanket computer if enabled
         if self.enable_markov_blanket:
-            self.mb_computer = MarkovBlanketComputer(self.config, threshold, self.timing_data)
+            self.mb_computer = MarkovBlanketComputer(self.config, threshold, self.timing_data, predication_types)
         
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -431,11 +431,13 @@ Available exposure-outcome configurations (now supporting multiple CUIs):
               for name, config in EXPOSURE_OUTCOME_CONFIGS.items()])}
 
 YAML Configuration Support:
-  Use --yaml-config to load exposure_cuis, outcome_cuis, and min_pmids from a YAML file.
+  Use --yaml-config to load exposure_cuis, outcome_cuis, min_pmids, and predication_type from a YAML file.
   YAML file should contain:
     exposure_cuis: [list of CUIs]
-    outcome_cuis: [list of CUIs] 
+    outcome_cuis: [list of CUIs]
     min_pmids: threshold value (default: 50)
+    predication_type: [list of predication types] or "comma,separated,string" (backward compatible)
+    k_hops: number of hops (1-3, default: 3)
     # other parameters for future use
 
 Example usage:

@@ -176,6 +176,34 @@ pip install -r requirements.txt
 
 5. **Visualize Results**: Use the Shiny app's "Data Upload" tab to load and visualize the generated graphs
 
+### YAML Configuration Format
+
+The `user_input.yaml` file uses the following structure:
+
+```yaml
+exposure_cuis:
+  - C0011849
+  - C0020538
+outcome_cuis:
+  - C0027051
+  - C0038454
+exposure_name: ~  # Optional: custom name for exposure
+outcome_name: ~   # Optional: custom name for outcome
+min_pmids: 50
+pub_year_cutoff: 2010
+k_hops: 1
+predication_type:  # List format (recommended)
+  - CAUSES
+  - INTERACTS_WITH
+SemMedDBD_version: heuristic
+```
+
+**Predication Types**: The system supports both list format (recommended) and comma-separated string format for backward compatibility:
+- **List format** (recommended): `predication_type: [CAUSES, TREATS, PREVENTS]`
+- **String format** (legacy): `predication_type: "CAUSES,TREATS,PREVENTS"`
+
+Common predication types include: CAUSES, TREATS, PREVENTS, INTERACTS_WITH, AFFECTS, ASSOCIATED_WITH, PREDISPOSES, COMPLICATES, and others.
+
 ## Data Configuration
 
 ### Using Your Own DAG Files

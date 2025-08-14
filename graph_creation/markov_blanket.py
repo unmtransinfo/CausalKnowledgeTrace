@@ -20,11 +20,12 @@ class MarkovBlanketComputer:
     Class for computing Markov blankets for exposure and outcome variables.
     """
     
-    def __init__(self, config, threshold: int, timing_data: Dict):
+    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None):
         """Initialize the Markov blanket computer."""
         self.config = config
         self.threshold = threshold
         self.timing_data = timing_data
+        self.predication_types = predication_types or ['CAUSES']
         self.excluded_values = "('C0030705'),('C0030705'),('C0030705')"  # Placeholder exclusions
     
     def clean_output_name(self, name: str) -> str:
@@ -48,7 +49,15 @@ class MarkovBlanketComputer:
             cleaned = "unknown_node"
         
         return cleaned
-    
+
+    def _create_predication_condition(self) -> str:
+        """Create SQL condition for predication types"""
+        if len(self.predication_types) == 1:
+            return "cp.predicate = %s"
+        else:
+            placeholders = ', '.join(['%s'] * len(self.predication_types))
+            return f"cp.predicate IN ({placeholders})"
+
     def compute_markov_blankets(self, cursor) -> Set[str]:
         """Calculate the union of Markov blankets for exposure and outcome."""
         with TimingContext("markov_blanket_computation", self.timing_data):
@@ -151,12 +160,13 @@ class MarkovBlanketComputer:
         """Compute Markov blanket for a specific exposure CUI."""
         exposure_condition = f"cp.object_cui = %s"
         exposure_condition_subj = f"cp.subject_cui = %s"
-        
+        predication_condition = self._create_predication_condition()
+
         query_exposure = f"""
         WITH exposure_parents AS (
             SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND {exposure_condition}
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
@@ -169,7 +179,7 @@ class MarkovBlanketComputer:
         exposure_children AS (
             SELECT cp.object_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND {exposure_condition_subj}
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
@@ -182,11 +192,11 @@ class MarkovBlanketComputer:
         children_parents AS (
             SELECT cp.subject_name AS node, COUNT(DISTINCT cp.pmid) AS evidence
             FROM causalpredication cp
-            WHERE cp.predicate = 'CAUSES'
+            WHERE {predication_condition}
               AND cp.object_cui IN (
                   SELECT DISTINCT cp2.object_cui
                   FROM causalpredication cp2
-                  WHERE cp2.predicate = 'CAUSES'
+                  WHERE {predication_condition}
                     AND {exposure_condition_subj}
                     AND cp2.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                     AND cp2.object_cui NOT IN %s
@@ -208,14 +218,11 @@ class MarkovBlanketComputer:
         SELECT DISTINCT node FROM children_parents;
         """
         
-        cursor.execute(query_exposure, (
-            exposure_cui,       # exposure_condition
-            self.threshold,
-            exposure_cui,       # exposure_condition_subj
-            self.threshold,
-            tuple(outcome_cuis), # children_parents exclusion
-            self.threshold,
-            self.threshold
-        ))
+        # Parameters: predication_types (4 times) + exposure_cui (3 times) + threshold (4 times) + outcome_cuis (1 time)
+        params = (self.predication_types + [exposure_cui] + [self.threshold] +
+                 self.predication_types + [exposure_cui] + [self.threshold] +
+                 self.predication_types + self.predication_types + [exposure_cui] + tuple(outcome_cuis) + [self.threshold] + [self.threshold])
+
+        cursor.execute(query_exposure, params)
         
         return {row[0] for row in cursor.fetchall()}
