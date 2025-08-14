@@ -110,7 +110,7 @@ graphConfigUI <- function(id) {
                         # Consolidated Exposure Name
                         div(
                             class = "form-group",
-                            tags$label("Consolidated Exposure Name", class = "control-label"),
+                            tags$label("Consolidated Exposure Name *", class = "control-label"),
                             textInput(
                                 ns("exposure_name"),
                                 label = NULL,
@@ -118,7 +118,7 @@ graphConfigUI <- function(id) {
                                 placeholder = "e.g., Mental Health Conditions",
                                 width = "100%"
                             ),
-                            helpText("Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
+                            helpText("Required: Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
                         )
                     )
                 ),
@@ -145,7 +145,7 @@ graphConfigUI <- function(id) {
                         # Consolidated Outcome Name
                         div(
                             class = "form-group",
-                            tags$label("Consolidated Outcome Name", class = "control-label"),
+                            tags$label("Consolidated Outcome Name *", class = "control-label"),
                             textInput(
                                 ns("outcome_name"),
                                 label = NULL,
@@ -153,7 +153,7 @@ graphConfigUI <- function(id) {
                                 placeholder = "e.g., Cardiovascular Events",
                                 width = "100%"
                             ),
-                            helpText("Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
+                            helpText("Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
                         )
                     )
                 ),
@@ -441,14 +441,14 @@ graphConfigServer <- function(id) {
         # Name validation function for single consolidated names
         validate_consolidated_name <- function(name_string, field_name) {
             if (is.null(name_string) || trimws(name_string) == "") {
-                return(list(valid = TRUE, name = NULL))  # Names are optional
+                return(list(valid = FALSE, message = paste("Consolidated", field_name, "name is required and cannot be empty")))
             }
 
             # Clean the name and replace spaces with underscores
             clean_name <- trimws(name_string)
 
             if (clean_name == "") {
-                return(list(valid = TRUE, name = NULL))  # Empty after trimming
+                return(list(valid = FALSE, message = paste("Consolidated", field_name, "name is required and cannot be empty")))
             }
 
             # Replace spaces with underscores for consistent formatting
@@ -779,8 +779,8 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
         config <- read_yaml(yaml_file)
 
         # Validate loaded configuration
-        required_fields <- c("exposure_cuis", "outcome_cuis", "min_pmids",
-                           "pub_year_cutoff", "k_hops",
+        required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
+                           "min_pmids", "pub_year_cutoff", "k_hops",
                            "SemMedDBD_version")
 
         missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -893,8 +893,8 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
         config <- read_yaml(yaml_file)
 
         # Validate loaded configuration
-        required_fields <- c("exposure_cuis", "outcome_cuis", "min_pmids",
-                           "pub_year_cutoff", "k_hops",
+        required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
+                           "min_pmids", "pub_year_cutoff", "k_hops",
                            "SemMedDBD_version")
 
         missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -927,8 +927,8 @@ validate_graph_config <- function(config) {
     errors <- c()
 
     # Check required fields
-    required_fields <- c("exposure_cuis", "outcome_cuis", "min_pmids",
-                        "pub_year_cutoff", "k_hops",
+    required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
+                        "min_pmids", "pub_year_cutoff", "k_hops",
                         "SemMedDBD_version")
 
     missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -953,8 +953,10 @@ validate_graph_config <- function(config) {
         }
     }
 
-    # Validate consolidated name fields if they exist (these are single strings, not arrays)
-    if ("exposure_name" %in% names(config) && !is.null(config$exposure_name)) {
+    # Validate consolidated name fields (these are required single strings, not arrays)
+    if (!"exposure_name" %in% names(config) || is.null(config$exposure_name) || config$exposure_name == "") {
+        errors <- c(errors, "exposure_name is required and cannot be empty")
+    } else {
         if (!is.character(config$exposure_name) || length(config$exposure_name) != 1) {
             errors <- c(errors, "exposure_name must be a single character string")
         } else {
@@ -965,7 +967,9 @@ validate_graph_config <- function(config) {
         }
     }
 
-    if ("outcome_name" %in% names(config) && !is.null(config$outcome_name)) {
+    if (!"outcome_name" %in% names(config) || is.null(config$outcome_name) || config$outcome_name == "") {
+        errors <- c(errors, "outcome_name is required and cannot be empty")
+    } else {
         if (!is.character(config$outcome_name) || length(config$outcome_name) != 1) {
             errors <- c(errors, "outcome_name must be a single character string")
         } else {
@@ -1025,6 +1029,8 @@ test_graph_config_module <- function() {
     test_config <- list(
         exposure_cuis = c("C0011849", "C0020538"),
         outcome_cuis = c("C0027051", "C0038454"),
+        exposure_name = "Test_Exposure",
+        outcome_name = "Test_Outcome",
         min_pmids = 100,
         pub_year_cutoff = 2010,
         k_hops = 2,
