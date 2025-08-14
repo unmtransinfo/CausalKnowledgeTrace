@@ -117,6 +117,60 @@ ui <- dashboardPage(
                 .box {
                     border-radius: 5px;
                 }
+
+                /* Resizable DAG visualization styles */
+                .resizable-dag-container {
+                    position: relative;
+                    min-height: 400px;
+                    max-height: 1200px;
+                    height: 800px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    overflow: hidden;
+                }
+
+                .dag-resize-handle {
+                    position: absolute;
+                    bottom: -1px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    width: 60px;
+                    height: 12px;
+                    background: #f8f9fa;
+                    border: 1px solid #dee2e6;
+                    border-radius: 6px 6px 0 0;
+                    cursor: ns-resize;
+                    z-index: 1000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    transition: all 0.2s ease;
+                }
+
+                .dag-resize-handle:before {
+                    content: '';
+                    width: 30px;
+                    height: 3px;
+                    background: #6c757d;
+                    border-radius: 2px;
+                    box-shadow: 0 3px 0 #6c757d, 0 6px 0 #6c757d;
+                }
+
+                .dag-resize-handle:hover {
+                    background: #e9ecef;
+                    border-color: #007bff;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                }
+
+                .dag-resize-handle:hover:before {
+                    background: #007bff;
+                    box-shadow: 0 3px 0 #007bff, 0 6px 0 #007bff;
+                }
+
+                .dag-network-output {
+                    width: 100%;
+                    height: 100%;
+                }
             ")),
             tags$script(HTML("
                 function openCreateGraph() {
@@ -172,6 +226,82 @@ ui <- dashboardPage(
                         hideLoadingSection();
                     }, 1000); // Brief delay to show completion
                 });
+
+                // DAG Visualization Resize Functionality
+                function initializeDAGResize() {
+                    var isResizing = false;
+                    var startY = 0;
+                    var startHeight = 0;
+                    var container = null;
+
+                    // Initialize resize functionality when DOM is ready
+                    $(document).ready(function() {
+                        setTimeout(function() {
+                            setupResizeHandlers();
+                        }, 1000); // Delay to ensure elements are rendered
+                    });
+
+                    function setupResizeHandlers() {
+                        container = $('.resizable-dag-container');
+                        var handle = $('.dag-resize-handle');
+
+                        if (container.length === 0 || handle.length === 0) {
+                            // Retry setup if elements not found
+                            setTimeout(setupResizeHandlers, 500);
+                            return;
+                        }
+
+                        handle.on('mousedown', function(e) {
+                            isResizing = true;
+                            startY = e.clientY;
+                            startHeight = container.height();
+
+                            // Prevent text selection during resize
+                            $('body').addClass('no-select');
+                            e.preventDefault();
+                        });
+
+                        $(document).on('mousemove', function(e) {
+                            if (!isResizing) return;
+
+                            var deltaY = e.clientY - startY;
+                            var newHeight = startHeight + deltaY;
+
+                            // Enforce min and max height constraints
+                            newHeight = Math.max(400, Math.min(1200, newHeight));
+
+                            container.height(newHeight);
+
+                            // Trigger resize event for visNetwork
+                            if (window.Shiny && window.Shiny.onInputChange) {
+                                window.Shiny.onInputChange('dag_container_height', newHeight);
+                            }
+                        });
+
+                        $(document).on('mouseup', function() {
+                            if (isResizing) {
+                                isResizing = false;
+                                $('body').removeClass('no-select');
+
+                                // Force visNetwork to redraw after resize
+                                setTimeout(function() {
+                                    if (window.network && typeof window.network.redraw === 'function') {
+                                        window.network.redraw();
+                                    }
+                                }, 100);
+                            }
+                        });
+                    }
+                }
+
+                // Initialize resize functionality
+                initializeDAGResize();
+
+                // Add CSS for preventing text selection during resize
+                $('<style>')
+                    .prop('type', 'text/css')
+                    .html('.no-select { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }')
+                    .appendTo('head');
             "))
         ),
         
@@ -180,12 +310,14 @@ ui <- dashboardPage(
             tabItem(tabName = "dag",
                 fluidRow(
                     box(
-                        title = "Interactive DAG Network", 
-                        status = "primary", 
+                        title = "Interactive DAG Network",
+                        status = "primary",
                         solidHeader = TRUE,
                         width = 12,
-                        height = "900px",
-                        visNetworkOutput("network", height = "800px")
+                        div(class = "resizable-dag-container",
+                            visNetworkOutput("network", height = "100%", width = "100%"),
+                            div(class = "dag-resize-handle")
+                        )
                     )
                 ),
                 fluidRow(
