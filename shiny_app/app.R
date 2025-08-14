@@ -795,7 +795,7 @@ server <- function(input, output, session) {
                 choices <- "No DAG files found"
             }
             updateSelectInput(session, "dag_file_selector", choices = choices)
-            showNotification("File list refreshed", type = "success")
+            showNotification("File list refreshed", type = "message")
         }, error = function(e) {
             showNotification(paste("Error refreshing file list:", e$message), type = "error")
         })
@@ -852,7 +852,7 @@ server <- function(input, output, session) {
                 # Hide loading section after a brief delay
                 session$sendCustomMessage("hideLoadingSection", list())
 
-                showNotification(paste("Successfully loaded graph from", input$dag_file_selector), type = "success")
+                showNotification(paste("Successfully loaded graph from", input$dag_file_selector), type = "message")
 
                 # Suggest causal analysis for newly loaded DAGs
                 if (!is.null(current_data$dag_object)) {
@@ -892,7 +892,7 @@ server <- function(input, output, session) {
         destination_path <- file.path(result_dir, new_filename)
         file.copy(file_info$datapath, destination_path, overwrite = TRUE)
 
-        showNotification(paste("File", new_filename, "uploaded successfully to graph_creation/result"), type = "success")
+        showNotification(paste("File", new_filename, "uploaded successfully to graph_creation/result"), type = "message")
         
         # Refresh file list
         tryCatch({
@@ -985,7 +985,7 @@ server <- function(input, output, session) {
                 # Hide loading section after a brief delay
                 session$sendCustomMessage("hideLoadingSection", list())
 
-                showNotification(paste("Successfully uploaded and loaded graph from", new_filename), type = "success")
+                showNotification(paste("Successfully uploaded and loaded graph from", new_filename), type = "message")
             } else {
                 session$sendCustomMessage("hideLoadingSection", list())
                 showNotification(result$message, type = "error")
@@ -1018,7 +1018,7 @@ server <- function(input, output, session) {
                 if (exists("available_dag_files")) {
                     current_data$available_files <- available_dag_files
                 }
-                showNotification("DAG data reloaded successfully!", type = "success")
+                showNotification("DAG data reloaded successfully!", type = "message")
             } else {
                 showNotification("Error: dag_nodes or dag_edges not found in dag_data.R", type = "error")
             }
