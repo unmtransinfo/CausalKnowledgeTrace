@@ -218,7 +218,7 @@ graphConfigUI <- function(id) {
                             placeholder = "e.g., TREATS, CAUSES, PREVENTS",
                             width = "100%"
                         ),
-                        helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated).")
+                        helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated). Will be saved as a list in YAML format.")
                     )
                 ),
 
@@ -401,7 +401,43 @@ graphConfigServer <- function(id) {
             
             return(list(valid = TRUE, cuis = cuis))
         }
-        
+
+        # Predication type validation function
+        validate_predication_types <- function(predication_string) {
+            # Define valid predication types (common ones from SemMedDB)
+            valid_types <- c("CAUSES", "TREATS", "PREVENTS", "INTERACTS_WITH", "AFFECTS",
+                           "ASSOCIATED_WITH", "PREDISPOSES", "COMPLICATES", "AUGMENTS",
+                           "DISRUPTS", "INHIBITS", "STIMULATES", "PRODUCES", "MANIFESTATION_OF",
+                           "RESULT_OF", "PROCESS_OF", "PART_OF", "ISA", "LOCATION_OF",
+                           "ADMINISTERED_TO", "METHOD_OF", "USES", "DIAGNOSES")
+
+            if (is.null(predication_string) || trimws(predication_string) == "") {
+                return(list(valid = TRUE, types = c("CAUSES")))  # Default to CAUSES
+            }
+
+            # Split and clean predication types
+            types <- trimws(unlist(strsplit(predication_string, ",")))
+            types <- types[types != ""]  # Remove empty strings
+            types <- toupper(types)  # Convert to uppercase for comparison
+
+            if (length(types) == 0) {
+                return(list(valid = TRUE, types = c("CAUSES")))  # Default if empty
+            }
+
+            # Check for invalid types
+            invalid_types <- types[!types %in% valid_types]
+
+            if (length(invalid_types) > 0) {
+                return(list(
+                    valid = FALSE,
+                    message = paste("Invalid predication types:", paste(invalid_types, collapse = ", "),
+                                  ". Valid types include:", paste(head(valid_types, 10), collapse = ", "), "...")
+                ))
+            }
+
+            return(list(valid = TRUE, types = types))
+        }
+
         # Name validation function for single consolidated names
         validate_consolidated_name <- function(name_string, field_name) {
             if (is.null(name_string) || trimws(name_string) == "") {
@@ -448,7 +484,13 @@ graphConfigServer <- function(id) {
             if (!outcome_name_validation$valid) {
                 errors <- c(errors, paste("Outcome Name:", outcome_name_validation$message))
             }
-            
+
+            # Validate predication types
+            predication_validation <- validate_predication_types(input$PREDICATION_TYPE)
+            if (!predication_validation$valid) {
+                errors <- c(errors, paste("Predication Types:", predication_validation$message))
+            }
+
             # Validate required fields
             if (is.null(input$min_pmids) || is.na(input$min_pmids)) {
                 errors <- c(errors, "Squelch Threshold (minimum unique pmids) is required")
@@ -477,7 +519,8 @@ graphConfigServer <- function(id) {
                 exposure_cuis = if (exposure_validation$valid) exposure_validation$cuis else NULL,
                 outcome_cuis = if (outcome_validation$valid) outcome_validation$cuis else NULL,
                 exposure_name = if (exposure_name_validation$valid) exposure_name_validation$name else NULL,
-                outcome_name = if (outcome_name_validation$valid) outcome_name_validation$name else NULL
+                outcome_name = if (outcome_name_validation$valid) outcome_name_validation$name else NULL,
+                predication_types = if (predication_validation$valid) predication_validation$types else c("CAUSES")
             ))
         }
         
@@ -543,23 +586,8 @@ graphConfigServer <- function(id) {
 
             # Prepare parameters for saving
             tryCatch({
-                # Process predication types with robust default handling
-                predication_types <- {
-                    user_input <- input$PREDICATION_TYPE
-
-                    # Handle various empty/null cases and ensure default to "CAUSES"
-                    if (is.null(user_input) || is.na(user_input) || trimws(user_input) == "") {
-                        "CAUSES"  # Default value
-                    } else {
-                        # User provided input - use it after trimming whitespace
-                        trimmed_input <- trimws(user_input)
-                        if (trimmed_input == "") {
-                            "CAUSES"  # Fallback if only whitespace was provided
-                        } else {
-                            trimmed_input  # Use user-specified value
-                        }
-                    }
-                }
+                # Use validated predication types from validation result
+                predication_types <- validation_result$predication_types
 
                 # Create parameter list
                 params <- list(

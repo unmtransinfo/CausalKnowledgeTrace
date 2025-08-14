@@ -25,6 +25,38 @@ from pathlib import Path
 # YAML CONFIGURATION SUPPORT
 # -------------------------
 
+# Common predication types found in SemMedDB
+VALID_PREDICATION_TYPES = {
+    'CAUSES', 'TREATS', 'PREVENTS', 'INTERACTS_WITH', 'AFFECTS', 'ASSOCIATED_WITH',
+    'PREDISPOSES', 'COMPLICATES', 'AUGMENTS', 'DISRUPTS', 'INHIBITS', 'STIMULATES',
+    'PRODUCES', 'MANIFESTATION_OF', 'RESULT_OF', 'PROCESS_OF', 'PART_OF', 'ISA',
+    'LOCATION_OF', 'ADMINISTERED_TO', 'METHOD_OF', 'USES', 'DIAGNOSES'
+}
+
+def validate_predication_types(predication_types: List[str]) -> Tuple[bool, List[str]]:
+    """
+    Validate predication types against known valid types.
+
+    Args:
+        predication_types: List of predication type strings to validate
+
+    Returns:
+        Tuple of (is_valid, list_of_invalid_types)
+    """
+    if not predication_types:
+        return False, ["Empty predication types list"]
+
+    invalid_types = []
+    for pred_type in predication_types:
+        if not isinstance(pred_type, str):
+            invalid_types.append(f"Non-string type: {type(pred_type)}")
+        elif pred_type.strip() == "":
+            invalid_types.append("Empty string")
+        elif pred_type.strip().upper() not in VALID_PREDICATION_TYPES:
+            invalid_types.append(pred_type.strip())
+
+    return len(invalid_types) == 0, invalid_types
+
 def load_yaml_config(yaml_file_path: str) -> Dict:
     """Load configuration from YAML file and extract threshold (min_pmids)."""
     try:
@@ -59,9 +91,20 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         if isinstance(predication_type, str):
             predication_types = [p.strip() for p in predication_type.split(',')]
         elif isinstance(predication_type, list):
-            predication_types = predication_type
+            predication_types = [str(p).strip() for p in predication_type]  # Ensure all elements are strings
         else:
             predication_types = ['CAUSES']  # fallback
+
+        # Validate predication types
+        is_valid, invalid_types = validate_predication_types(predication_types)
+        if not is_valid:
+            print(f"Warning: Invalid predication types found: {invalid_types}")
+            print(f"Valid predication types include: {', '.join(sorted(VALID_PREDICATION_TYPES))}")
+            # Filter out invalid types and keep only valid ones
+            predication_types = [p.strip().upper() for p in predication_types
+                               if p.strip().upper() in VALID_PREDICATION_TYPES]
+            if not predication_types:
+                predication_types = ['CAUSES']  # fallback if all were invalid
 
         return {
             'exposure_cuis': exposure_cuis,
@@ -142,7 +185,7 @@ def create_dynamic_config_from_yaml(yaml_file_path: str):
         outcome_cui=yaml_data['outcome_cuis'],
         outcome_name=outcome_name,
         description=description
-    ), yaml_data['threshold'], yaml_data['full_config']
+    ), yaml_data['threshold'], yaml_data  # Return complete parsed data instead of just full_config
 
 # Define available exposure-outcome configurations
 EXPOSURE_OUTCOME_CONFIGS = {
