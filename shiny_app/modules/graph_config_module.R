@@ -98,8 +98,8 @@ graphConfigUI <- function(id) {
                             textAreaInput(
                                 ns("exposure_cuis"),
                                 label = NULL,
-                                value = "C0011849, C0020538",
-                                placeholder = "C0011849, C0020538",
+                                value = "C0020538, C4013784, C0221155, C0745114, C0745135",
+                                placeholder = "C0020538, C4013784, C0221155, C0745114, C0745135",
                                 rows = 3,
                                 width = "100%"
                             ),
@@ -114,8 +114,8 @@ graphConfigUI <- function(id) {
                             textInput(
                                 ns("exposure_name"),
                                 label = NULL,
-                                value = "",
-                                placeholder = "e.g., Mental Health Conditions",
+                                value = "Hypertension",
+                                placeholder = "Hypertension",
                                 width = "100%"
                             ),
                             helpText("Required: Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
@@ -133,8 +133,8 @@ graphConfigUI <- function(id) {
                             textAreaInput(
                                 ns("outcome_cuis"),
                                 label = NULL,
-                                value = "C0027051, C0038454",
-                                placeholder = "C0027051, C0038454",
+                                value = "C2677888, C0750901, C0494463, C0002395",
+                                placeholder = "C2677888, C0750901, C0494463, C0002395",
                                 rows = 3,
                                 width = "100%"
                             ),
@@ -149,8 +149,8 @@ graphConfigUI <- function(id) {
                             textInput(
                                 ns("outcome_name"),
                                 label = NULL,
-                                value = "",
-                                placeholder = "e.g., Cardiovascular Events",
+                                value = "Alzheimers",
+                                placeholder = "Alzheimers",
                                 width = "100%"
                             ),
                             helpText("Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
@@ -165,7 +165,7 @@ graphConfigUI <- function(id) {
                         numericInput(
                             ns("min_pmids"),
                             "Squelch Threshold (minimum unique pmids) *",
-                            value = 50,
+                            value = 10,
                             min = 1,
                             max = 1000,
                             step = 1,
