@@ -47,29 +47,29 @@ graphConfigModuleUI <- function(id) {
                 fluidRow(
                     column(6,
                         h4("Exposure Configuration"),
-                        textAreaInput(ns("exposure_cuis"), 
+                        textAreaInput(ns("exposure_cuis"),
                                     "Exposure CUIs (one per line):",
-                                    value = "",
+                                    value = "C0020538\nC4013784\nC0221155\nC0745114\nC0745135",
                                     height = "120px",
-                                    placeholder = "Enter CUIs, one per line:\nC0011849\nC0020538"),
+                                    placeholder = "Enter CUIs, one per line:\nC0020538\nC4013784\nC0221155\nC0745114\nC0745135"),
                         
-                        textInput(ns("exposure_name"), 
+                        textInput(ns("exposure_name"),
                                 "Exposure Name:",
-                                value = "",
-                                placeholder = "e.g., Diabetes_Hypertension")
+                                value = "Hypertension",
+                                placeholder = "Hypertension")
                     ),
                     column(6,
                         h4("Outcome Configuration"),
-                        textAreaInput(ns("outcome_cuis"), 
+                        textAreaInput(ns("outcome_cuis"),
                                     "Outcome CUIs (one per line):",
-                                    value = "",
+                                    value = "C2677888\nC0750901\nC0494463\nC0002395",
                                     height = "120px",
-                                    placeholder = "Enter CUIs, one per line:\nC0002395\nC0011265"),
+                                    placeholder = "Enter CUIs, one per line:\nC2677888\nC0750901\nC0494463\nC0002395"),
                         
-                        textInput(ns("outcome_name"), 
+                        textInput(ns("outcome_name"),
                                 "Outcome Name:",
-                                value = "",
-                                placeholder = "e.g., Alzheimers_Dementia")
+                                value = "Alzheimers",
+                                placeholder = "Alzheimers")
                     )
                 ),
                 
@@ -78,9 +78,9 @@ graphConfigModuleUI <- function(id) {
                 fluidRow(
                     column(4,
                         h4("Analysis Parameters"),
-                        numericInput(ns("min_pmids"), 
+                        numericInput(ns("min_pmids"),
                                    "Minimum PMIDs:",
-                                   value = 50,
+                                   value = 10,
                                    min = 1,
                                    max = 1000,
                                    step = 1),

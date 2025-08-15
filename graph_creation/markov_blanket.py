@@ -2,8 +2,29 @@
 """
 Markov Blanket Analysis Module
 
-This module provides functionality for computing Markov blankets in causal graphs.
-Extracted from the main pushkin.py for modularity.
+This module provides specialized functionality for computing Markov blankets in causal graphs.
+It follows the single responsibility principle by focusing exclusively on Markov blanket
+computation and related operations.
+
+Key Responsibilities:
+- Computing Markov blankets for exposure and outcome variables
+- Handling complex SQL queries for parent, child, and spouse relationships
+- Managing multiple CUI (Concept Unique Identifier) processing
+- Providing clean, consolidated node names for Markov blanket analysis
+
+This module does NOT handle:
+- General graph construction or visualization
+- Basic DAGitty script generation
+- Database connection management
+- Performance metrics or result saving
+
+For general graph operations without Markov blanket functionality, use the
+GraphAnalyzer class from analysis_core.py or graph_operations.py.
+
+Epidemiological Context:
+Markov blankets provide a principled approach to identifying confounders in causal inference.
+The Markov blanket of a node contains all variables that make it conditionally independent
+of all other variables, making it valuable for confounder selection in epidemiological studies.
 
 Author: Scott A. Malec PhD
 Date: February 2025
@@ -17,7 +38,32 @@ import re
 
 class MarkovBlanketComputer:
     """
-    Class for computing Markov blankets for exposure and outcome variables.
+    Specialized class for computing Markov blankets for exposure and outcome variables.
+
+    This class implements the core Markov blanket computation algorithm for causal graphs
+    derived from biomedical literature. It focuses exclusively on Markov blanket operations
+    and follows the single responsibility principle.
+
+    Key Features:
+    - Computes Markov blankets for multiple exposure and outcome CUIs
+    - Handles complex parent-child-spouse relationships in causal graphs
+    - Supports configurable predication types (e.g., 'CAUSES', 'TREATS')
+    - Provides evidence-based filtering using publication thresholds
+    - Excludes irrelevant semantic types (activities, behaviors, events, etc.)
+
+    Markov Blanket Definition:
+    For a target node X, the Markov blanket MB(X) consists of:
+    1. Parents of X (direct causes)
+    2. Children of X (direct effects)
+    3. Spouses of X (other parents of X's children)
+
+    This implementation computes the union of Markov blankets for all specified
+    exposure and outcome variables, providing a comprehensive set of potential
+    confounders for causal inference.
+
+    Usage:
+        computer = MarkovBlanketComputer(config, threshold=5, timing_data={})
+        mb_nodes = computer.compute_markov_blankets(cursor)
     """
     
     def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None):
@@ -59,7 +105,24 @@ class MarkovBlanketComputer:
             return f"cp.predicate IN ({placeholders})"
 
     def compute_markov_blankets(self, cursor) -> Set[str]:
-        """Calculate the union of Markov blankets for exposure and outcome."""
+        """
+        Calculate the union of Markov blankets for all exposure and outcome variables.
+
+        This is the main entry point for Markov blanket computation. It processes
+        each exposure and outcome CUI separately, computes their individual Markov
+        blankets, and returns the union of all nodes.
+
+        Args:
+            cursor: Database cursor for executing SQL queries
+
+        Returns:
+            Set[str]: Union of all Markov blanket nodes, including cleaned exposure
+                     and outcome names
+
+        Note:
+            This method handles multiple CUIs per exposure/outcome, which is important
+            for complex medical concepts that may be represented by multiple identifiers.
+        """
         with TimingContext("markov_blanket_computation", self.timing_data):
             print("\nComputing Markov blankets...")
             

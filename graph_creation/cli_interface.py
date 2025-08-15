@@ -23,7 +23,7 @@ from config_models import (
 )
 
 # Import the core analysis functionality
-from analysis_core import MarkovBlanketAnalyzer
+from analysis_core import GraphAnalyzer, MarkovBlanketAnalyzer
 
 
 def parse_arguments():
@@ -201,21 +201,35 @@ def main():
             print(f"Database: {args.host}:{args.port}/{args.dbname}")
             print(f"Output directory: {args.output_dir}")
         
-        # Initialize and run analysis
-        analyzer = MarkovBlanketAnalyzer(
-            config_name=config_name,
-            db_params=db_config,
-            threshold=threshold,
-            output_dir=args.output_dir,
-            yaml_config_data=yaml_config_data,
-            enable_markov_blanket=args.markov_blanket,
-            k_hops=yaml_config_data.get('k_hops') if yaml_config_data else getattr(args, 'k_hops', 3)  # Use YAML k_hops, then command line, then default
-        )
-        
-        timing_results = analyzer.run_analysis()
-        
-        # Display comprehensive results summary
-        analyzer.display_results_summary(timing_results)
+        # Initialize and run analysis based on whether Markov blanket is enabled
+        k_hops = yaml_config_data.get('k_hops') if yaml_config_data else getattr(args, 'k_hops', 3)
+
+        if args.markov_blanket:
+            # Use MarkovBlanketAnalyzer for Markov blanket analysis
+            analyzer = MarkovBlanketAnalyzer(
+                config_name=config_name,
+                db_params=db_config,
+                threshold=threshold,
+                output_dir=args.output_dir,
+                yaml_config_data=yaml_config_data,
+                k_hops=k_hops
+            )
+
+            timing_results = analyzer.run_markov_blanket_analysis()
+            analyzer.display_markov_blanket_summary(timing_results)
+        else:
+            # Use GraphAnalyzer for general graph analysis
+            analyzer = GraphAnalyzer(
+                config_name=config_name,
+                db_params=db_config,
+                threshold=threshold,
+                output_dir=args.output_dir,
+                yaml_config_data=yaml_config_data,
+                k_hops=k_hops
+            )
+
+            timing_results = analyzer.run_analysis()
+            analyzer.display_results_summary(timing_results)
         
     except KeyboardInterrupt:
         print("\nAnalysis interrupted by user.")
