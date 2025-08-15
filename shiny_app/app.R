@@ -39,6 +39,17 @@ tryCatch({
     cat("  Graph conversion features may be limited\n")
 })
 
+# Source utility functions first
+tryCatch({
+    if (file.exists("utils/data_validation.R")) source("utils/data_validation.R")
+    if (file.exists("utils/file_upload.R")) source("utils/file_upload.R")
+    if (file.exists("utils/dag_utils.R")) source("utils/dag_utils.R")
+    if (file.exists("utils/network_utils.R")) source("utils/network_utils.R")
+    if (file.exists("utils/causal_utils.R")) source("utils/causal_utils.R")
+}, error = function(e) {
+    cat("Warning: Some utility files not found:", e$message, "\n")
+})
+
 # Source modular components
 source("modules/dag_visualization.R")
 source("modules/node_information.R")
@@ -90,6 +101,57 @@ group_colors <- character(0)
 cat("Application ready to start at localhost.\n")
 cat("Use the Data Upload tab to select and load a graph file.\n")
 
+# Create graph configuration content based on availability
+graph_config_content <- tryCatch({
+    if (exists("graph_config_available") && graph_config_available) {
+        graphConfigUI("config")
+    } else {
+        fluidRow(
+            box(
+                title = "Graph Configuration",
+                status = "primary",
+                solidHeader = TRUE,
+                width = 12,
+                div(
+                    class = "alert alert-warning",
+                    icon("exclamation-triangle"),
+                    strong("Graph Configuration Module Not Available"),
+                    br(), br(),
+                    p("The graph configuration module (graph_config_module.R) was not found."),
+                    p("To enable this feature, please ensure the graph_config_module.R file is in the same directory as this application."),
+                    br(),
+                    p("This module allows you to configure parameters for knowledge graph generation including:"),
+                    tags$ul(
+                        tags$li("Exposure and Outcome CUIs"),
+                        tags$li("Squelch Threshold (minimum unique pmids)"),
+                        tags$li("Publication year cutoff"),
+                        tags$li("K-hops parameter"),
+                        tags$li("SemMedDB version selection")
+                    )
+                )
+            )
+        )
+    }
+}, error = function(e) {
+    cat("Error creating graph config content:", e$message, "\n")
+    fluidRow(
+        box(
+            title = "Graph Configuration",
+            status = "warning",
+            solidHeader = TRUE,
+            width = 12,
+            div(
+                class = "alert alert-danger",
+                icon("exclamation-triangle"),
+                strong("Graph Configuration Error"),
+                br(), br(),
+                p("There was an error loading the graph configuration module."),
+                p("Error:", e$message)
+            )
+        )
+    )
+})
+
 # Define UI
 ui <- dashboardPage(
     dashboardHeader(title = "Interactive DAG Visualization"),
@@ -97,12 +159,12 @@ ui <- dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             id = "sidebar",
+            menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
+            menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
             menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
             menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus")),
             menuItem("Node Information", tabName = "info", icon = icon("info-circle")),
-            menuItem("Statistics", tabName = "stats", icon = icon("chart-bar")),
-            menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
-            menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs"))
+            menuItem("Statistics", tabName = "stats", icon = icon("chart-bar"))
         )
     ),
     
@@ -304,8 +366,112 @@ ui <- dashboardPage(
                     .appendTo('head');
             "))
         ),
-        
+
         tabItems(
+            # Graph Configuration Tab
+            tabItem(tabName = "create_graph", graph_config_content),
+
+            # Data Upload Tab
+            tabItem(tabName = "upload",
+                fluidRow(
+                    box(
+                        title = "Graph File Selection & Loading",
+                        status = "primary",
+                        solidHeader = TRUE,
+                        width = 12,
+
+                        fluidRow(
+                            column(6,
+                                selectInput("file_selector",
+                                          "Select Graph File:",
+                                          choices = "Loading...",
+                                          width = "100%")
+                            ),
+                            column(3,
+                                actionButton("refresh_files",
+                                           "Refresh Files",
+                                           icon = icon("refresh"),
+                                           class = "btn-info",
+                                           style = "margin-top: 25px;")
+                            ),
+                            column(3,
+                                actionButton("load_selected_file",
+                                           "Load Selected File",
+                                           icon = icon("upload"),
+                                           class = "btn-success",
+                                           style = "margin-top: 25px;")
+                            )
+                        ),
+
+                        br(),
+
+                        fluidRow(
+                            column(12,
+                                h4("File Upload"),
+                                fileInput("file_upload",
+                                        "Upload Graph File (.txt, .dag, .yaml, .yml):",
+                                        accept = c(".txt", ".dag", ".yaml", ".yml"),
+                                        width = "100%"),
+
+                                conditionalPanel(
+                                    condition = "output.show_upload_options",
+
+                                    h5("Upload Options:"),
+
+                                    fluidRow(
+                                        column(6,
+                                            selectInput("file_format",
+                                                      "File Format:",
+                                                      choices = list(
+                                                          "Auto-detect" = "auto",
+                                                          "DAGitty format" = "dagitty",
+                                                          "YAML format" = "yaml",
+                                                          "Edge list" = "edgelist"
+                                                      ),
+                                                      selected = "auto",
+                                                      width = "100%")
+                                        ),
+                                        column(6,
+                                            checkboxInput("validate_dag",
+                                                        "Validate DAG structure",
+                                                        value = TRUE)
+                                        )
+                                    ),
+
+                                    actionButton("process_upload",
+                                               "Process Uploaded File",
+                                               icon = icon("cogs"),
+                                               class = "btn-primary")
+                                )
+                            )
+                        ),
+
+                        br(),
+
+                        conditionalPanel(
+                            condition = "output.show_file_info",
+
+                            h4("Current File Information"),
+                            verbatimTextOutput("file_info"),
+
+                            h5("File Preview:"),
+                            verbatimTextOutput("file_preview")
+                        )
+                    )
+                ),
+
+                fluidRow(
+                    box(
+                        title = "Upload Status & Messages",
+                        status = "info",
+                        solidHeader = TRUE,
+                        width = 12,
+
+                        verbatimTextOutput("upload_messages")
+                    )
+                )
+            ),
+
             # DAG Visualization Tab
             tabItem(tabName = "dag",
                 fluidRow(
@@ -559,161 +725,6 @@ ui <- dashboardPage(
                         verbatimTextOutput("cycle_detection")
                     )
                 )
-            ),
-            
-            # Data Upload Tab
-            tabItem(tabName = "upload",
-                fluidRow(
-                    box(
-                        title = "Graph File Selection & Loading",
-                        status = "primary",
-                        solidHeader = TRUE,
-                        width = 12,
-
-                        # Welcome message for new users
-                        div(
-                            style = "background-color: #e8f4fd; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196F3;",
-                            h4(icon("info-circle"), " Welcome to the Interactive DAG Visualization"),
-                            p("The application is now running at localhost and ready to use! To get started, please select or upload a graph file below."),
-                            p(strong("No graph file is currently loaded."), " Once you load a graph, you'll be able to explore it in the DAG Visualization tab.")
-                        ),
-
-                        # Current DAG status
-                        h4(icon("chart-line"), " Current Graph Status"),
-                        verbatimTextOutput("current_dag_status"),
-
-                        # File selection section
-                        h4(icon("folder-open"), " Load Graph from Existing File"),
-                        p("Select a graph file from the dropdown below:"),
-
-                        fluidRow(
-                            column(8,
-                                selectInput("dag_file_selector",
-                                           "Choose Graph File:",
-                                           choices = NULL,
-                                           selected = NULL)
-                            ),
-                            column(4,
-                                br(),
-                                actionButton("load_selected_dag", "Load Selected Graph",
-                                           class = "btn-primary", style = "margin-top: 5px; width: 100%;"),
-                                br(), br(),
-                                actionButton("refresh_file_list", "Refresh File List",
-                                           class = "btn-info", style = "margin-top: 5px; width: 100%;")
-                            )
-                        ),
-
-                        # Progress indication section
-                        conditionalPanel(
-                            condition = "input.load_selected_dag > 0 || input.upload_and_load > 0",
-                            div(id = "loading_section", style = "margin: 20px 0;",
-                                h4(icon("spinner", class = "fa-spin"), " Loading Graph File..."),
-                                div(
-                                    style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;",
-                                    p("Please wait while your graph file is being processed and loaded."),
-                                    div(class = "progress", style = "height: 25px;",
-                                        div(id = "loading_progress", class = "progress-bar progress-bar-striped progress-bar-animated",
-                                            role = "progressbar", style = "width: 0%; background-color: #007bff;",
-                                            span(id = "progress_text", "Initializing...")
-                                        )
-                                    ),
-                                    br(),
-                                    div(id = "loading_status", style = "font-size: 14px; color: #6c757d;",
-                                        "Status: Ready to load..."
-                                    )
-                                )
-                            )
-                        ),
-
-                        hr(),
-
-                        # File upload section
-                        h4(icon("upload"), " Upload New Graph File"),
-                        p("Upload a new R file containing your graph definition:"),
-
-                        fluidRow(
-                            column(8,
-                                fileInput("dag_file_upload", "Choose R File",
-                                         accept = c(".R", ".r"),
-                                         multiple = FALSE,
-                                         placeholder = "No file selected")
-                            ),
-                            column(4,
-                                br(),
-                                actionButton("upload_and_load", "Upload & Load",
-                                           class = "btn-success", style = "margin-top: 5px; width: 100%;")
-                            )
-                        ),
-                        
-                        # Instructions
-                        h4("Instructions"),
-                        tags$div(
-                            tags$h5("Method 1: Place files in graph_creation/result directory"),
-                            tags$ul(
-                                tags$li("Create an R file (e.g., 'degree_1.R', 'degree_2.R', 'degree_3.R', 'MarkovBlanket_Union.R') with your DAG definition"),
-                                tags$li("Place it in the 'graph_creation/result' directory (generated graphs are automatically saved here)"),
-                                tags$li("Click 'Refresh File List' and select your file"),
-                                tags$li("Click 'Load Selected DAG'")
-                            ),
-                            
-                            tags$h5("Method 2: Upload files through the interface"),
-                            tags$ul(
-                                tags$li("Use the file upload interface above"),
-                                tags$li("Select your R file containing the DAG"),
-                                tags$li("Click 'Upload & Load'")
-                            ),
-                            
-                            tags$h5("DAG File Format"),
-                            tags$p("Your R file should contain a dagitty graph definition like:"),
-                            tags$pre(style = "background-color: #f8f9fa; padding: 10px;",
-'g <- dagitty(\'dag {
-    Variable1 [exposure]
-    Variable2 [outcome]
-    Variable3
-    Variable4
-    
-    Variable1 -> Variable2
-    Variable2 -> Variable3
-    Variable3 -> Variable4
-}\')'),
-                            tags$p("The variable name must be 'g' for the app to recognize it.")
-                        )
-                    )
-                )
-            ),
-
-            # Graph Configuration Tab
-            tabItem(tabName = "create_graph",
-                if (exists("graph_config_available") && graph_config_available) {
-                    graphConfigUI("config")
-                } else {
-                    fluidRow(
-                        box(
-                            title = "Graph Configuration",
-                            status = "primary",
-                            solidHeader = TRUE,
-                            width = 12,
-                            div(
-                                class = "alert alert-warning",
-                                icon("exclamation-triangle"),
-                                strong("Graph Configuration Module Not Available"),
-                                br(), br(),
-                                p("The graph configuration module (graph_config_module.R) was not found."),
-                                p("To enable this feature, please ensure the graph_config_module.R file is in the same directory as this application."),
-                                br(),
-                                p("This module allows you to configure parameters for knowledge graph generation including:"),
-                                tags$ul(
-                                    tags$li("Exposure and Outcome CUIs"),
-                                    tags$li("Squelch Threshold (minimum unique pmids)"),
-                                    tags$li("Publication year cutoff"),
-
-                                    tags$li("K-hops parameter"),
-                                    tags$li("SemMedDB version selection")
-                                )
-                            )
-                        )
-                    )
-                }
             )
         )
     )
@@ -742,7 +753,7 @@ server <- function(input, output, session) {
             updateSelectInput(session, "dag_file_selector", choices = choices)
         }, error = function(e) {
             cat("Error scanning for DAG files on startup:", e$message, "\n")
-            updateSelectInput(session, "dag_file_selector", choices = "No DAG files found")
+            updateSelectInput(session, "dag_file_selector", choices = list("No DAG files found"))
         })
     })
 
@@ -1034,8 +1045,12 @@ server <- function(input, output, session) {
     
     # Render the network using modular function
     output$network <- renderVisNetwork({
+        # Provide default values if inputs are NULL
+        physics_strength <- if(is.null(input$physics_strength)) -150 else input$physics_strength
+        spring_length <- if(is.null(input$spring_length)) 200 else input$spring_length
+
         create_interactive_network(current_data$nodes, current_data$edges,
-                                 input$physics_strength, input$spring_length)
+                                 physics_strength, spring_length)
     })
 
     # Reset physics button using modular function
@@ -1161,8 +1176,8 @@ server <- function(input, output, session) {
             }
         } else {
             # Clear choices when no DAG is loaded
-            updateSelectInput(session, "causal_exposure", choices = NULL)
-            updateSelectInput(session, "causal_outcome", choices = NULL)
+            updateSelectInput(session, "causal_exposure", choices = list("No DAG loaded"))
+            updateSelectInput(session, "causal_outcome", choices = list("No DAG loaded"))
         }
     })
 
