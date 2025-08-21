@@ -32,12 +32,12 @@ create_dashboard_sidebar <- function() {
         width = 300,
         sidebarMenu(
             id = "tabs",
+            menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
+            menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
             menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
             menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus")),
             menuItem("Node Information", tabName = "info", icon = icon("info-circle")),
-            menuItem("Statistics", tabName = "stats", icon = icon("chart-bar")),
-            menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
-            menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs"))
+            menuItem("Statistics", tabName = "stats", icon = icon("chart-bar"))
         )
     )
 }
@@ -485,12 +485,12 @@ create_dashboard_body <- function() {
         ),
 
         tabItems(
+            create_config_tab(),
+            create_upload_tab(),
             create_dag_tab(),
             create_causal_tab(),
             create_info_tab(),
-            create_stats_tab(),
-            create_upload_tab(),
-            create_config_tab()
+            create_stats_tab()
         )
     )
 }
