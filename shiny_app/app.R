@@ -97,12 +97,12 @@ ui <- dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             id = "sidebar",
+            menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
+            menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
             menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
             menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus")),
             menuItem("Node Information", tabName = "info", icon = icon("info-circle")),
-            menuItem("Statistics", tabName = "stats", icon = icon("chart-bar")),
-            menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
-            menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs"))
+            menuItem("Statistics", tabName = "stats", icon = icon("chart-bar"))
         )
     ),
     
