@@ -84,7 +84,14 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
     if ("group" %in% names(nodes_df)) {
         names(nodes_df)[names(nodes_df) == "group"] <- "category"
     }
-    
+
+    # Add unique IDs to edges for selection handling
+    if (!is.null(edges_df) && nrow(edges_df) > 0) {
+        if (!"id" %in% names(edges_df)) {
+            edges_df$id <- paste(edges_df$from, edges_df$to, sep = "_")
+        }
+    }
+
     # Create the network visualization
     network <- visNetwork(nodes_df, edges_df, width = "100%", height = "100%") %>%
         visPhysics(
@@ -197,6 +204,32 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                             break;
                     }
                 });
+            }"
+        ) %>%
+        visEvents(
+            selectNode = "function(params) {
+                if (params.nodes.length > 0) {
+                    var nodeId = params.nodes[0];
+                    Shiny.onInputChange('selected_node_info', nodeId);
+                    Shiny.onInputChange('selected_edge_info', null);
+                }
+            }",
+            selectEdge = "function(params) {
+                if (params.edges.length > 0) {
+                    var edgeId = this.body.data.edges.get(params.edges[0]).id;
+                    Shiny.onInputChange('selected_edge_info', edgeId);
+                    Shiny.onInputChange('selected_node_info', null);
+                }
+            }",
+            deselectNode = "function(params) {
+                if (params.previousSelection.nodes.length > 0) {
+                    Shiny.onInputChange('selected_node_info', null);
+                }
+            }",
+            deselectEdge = "function(params) {
+                if (params.previousSelection.edges.length > 0) {
+                    Shiny.onInputChange('selected_edge_info', null);
+                }
             }"
         )
 

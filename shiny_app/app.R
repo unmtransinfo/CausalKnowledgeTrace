@@ -308,6 +308,7 @@ ui <- dashboardPage(
         tabItems(
             # DAG Visualization Tab
             tabItem(tabName = "dag",
+                # Row 1: Interactive DAG Network (top)
                 fluidRow(
                     box(
                         title = "Interactive DAG Network",
@@ -317,9 +318,27 @@ ui <- dashboardPage(
                         div(class = "resizable-dag-container",
                             visNetworkOutput("network", height = "100%", width = "100%"),
                             div(class = "dag-resize-handle")
+                        ),
+                        div(style = "margin-top: 10px;",
+                            helpText("Click on nodes or edges to view information below.")
                         )
                     )
                 ),
+                # Row 2: Node/Edge Information Panel (directly below DAG)
+                fluidRow(
+                    box(
+                        title = "Node/Edge Information Panel",
+                        status = "info",
+                        solidHeader = TRUE,
+                        width = 12,
+                        height = "400px",
+                        div(id = "selection_info_panel",
+                            h5(textOutput("selected_item_title")),
+                            DT::dataTableOutput("selection_info_table", height = "300px")
+                        )
+                    )
+                ),
+                # Row 3: Controls, Navigation Guide, and Legend (bottom)
                 fluidRow(
                     box(
                         title = "Network Controls",
@@ -362,6 +381,7 @@ ui <- dashboardPage(
                             tags$li("Drag to pan the view"),
                             tags$li("Scroll wheel to zoom"),
                             tags$li("Click nodes to select"),
+                            tags$li("Click edges to view information"),
                             tags$li("Use navigation buttons (bottom-right)")
                         ),
                         tags$small(class = "text-muted",
@@ -1042,6 +1062,141 @@ server <- function(input, output, session) {
     observeEvent(input$reset_physics, {
         reset_physics_controls(session)
     })
+
+    # ===== SELECTION EVENT HANDLERS =====
+
+    # Reactive values for storing selection information
+    selection_data <- reactiveValues(
+        selected_node = NULL,
+        selected_edge = NULL,
+        selection_type = NULL
+    )
+
+    # Handle node selection
+    observeEvent(input$selected_node_info, {
+        if (!is.null(input$selected_node_info)) {
+            selection_data$selected_node <- input$selected_node_info
+            selection_data$selected_edge <- NULL
+            selection_data$selection_type <- "node"
+        }
+    })
+
+    # Handle edge selection
+    observeEvent(input$selected_edge_info, {
+        if (!is.null(input$selected_edge_info)) {
+            # Parse edge ID to extract from and to nodes
+            edge_parts <- strsplit(input$selected_edge_info, "_", fixed = TRUE)[[1]]
+            if (length(edge_parts) >= 2) {
+                # Handle cases where node names might contain underscores
+                for (split_point in 1:(length(edge_parts)-1)) {
+                    potential_from <- paste(edge_parts[1:split_point], collapse = "_")
+                    potential_to <- paste(edge_parts[(split_point+1):length(edge_parts)], collapse = "_")
+
+                    # Check if this combination exists in our edges
+                    if (!is.null(current_data$edges) && nrow(current_data$edges) > 0) {
+                        edge_exists <- any(current_data$edges$from == potential_from &
+                                         current_data$edges$to == potential_to)
+
+                        if (edge_exists) {
+                            selection_data$selected_edge <- list(
+                                from = potential_from,
+                                to = potential_to,
+                                id = input$selected_edge_info
+                            )
+                            selection_data$selected_node <- NULL
+                            selection_data$selection_type <- "edge"
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    })
+
+    # Render selection title
+    output$selected_item_title <- renderText({
+        if (selection_data$selection_type == "node" && !is.null(selection_data$selected_node)) {
+            # Find node label
+            if (!is.null(current_data$nodes)) {
+                node_row <- current_data$nodes[current_data$nodes$id == selection_data$selected_node, ]
+                if (nrow(node_row) > 0) {
+                    paste("Node Information:", node_row$label[1])
+                } else {
+                    paste("Node Information:", selection_data$selected_node)
+                }
+            } else {
+                paste("Node Information:", selection_data$selected_node)
+            }
+        } else if (selection_data$selection_type == "edge" && !is.null(selection_data$selected_edge)) {
+            paste("Edge Information:", selection_data$selected_edge$from, "→", selection_data$selected_edge$to)
+        } else {
+            "Select a node or edge to view information"
+        }
+    })
+
+    # Render selection information table
+    output$selection_info_table <- DT::renderDataTable({
+        if (selection_data$selection_type == "node" && !is.null(selection_data$selected_node)) {
+            # Create placeholder node information
+            if (!is.null(current_data$nodes)) {
+                node_row <- current_data$nodes[current_data$nodes$id == selection_data$selected_node, ]
+                if (nrow(node_row) > 0) {
+                    node_info <- data.frame(
+                        Property = c("ID", "Label", "Group", "Title", "Description", "Type"),
+                        Value = c(
+                            node_row$id[1],
+                            node_row$label[1],
+                            if("group" %in% names(node_row)) node_row$group[1] else "Not specified",
+                            "[Placeholder] Node title information",
+                            "[Placeholder] Detailed description of this node's role in the causal model",
+                            "[Placeholder] Node type classification"
+                        ),
+                        stringsAsFactors = FALSE
+                    )
+                } else {
+                    node_info <- data.frame(
+                        Property = "Error",
+                        Value = "Node information not found",
+                        stringsAsFactors = FALSE
+                    )
+                }
+            } else {
+                node_info <- data.frame(
+                    Property = "Error",
+                    Value = "No node data available",
+                    stringsAsFactors = FALSE
+                )
+            }
+            node_info
+        } else if (selection_data$selection_type == "edge" && !is.null(selection_data$selected_edge)) {
+            # Create placeholder edge information
+            edge_info <- data.frame(
+                Property = c("From Node", "To Node", "Relationship Type", "Evidence Strength", "Description", "Supporting Studies"),
+                Value = c(
+                    selection_data$selected_edge$from,
+                    selection_data$selected_edge$to,
+                    "[Placeholder] Causal relationship type",
+                    "[Placeholder] Strong/Moderate/Weak",
+                    "[Placeholder] Description of the causal relationship between these variables",
+                    "[Placeholder] Number of supporting studies and evidence"
+                ),
+                stringsAsFactors = FALSE
+            )
+            edge_info
+        } else {
+            data.frame(
+                Information = "Click on a node or edge in the network above to view detailed information",
+                stringsAsFactors = FALSE
+            )
+        }
+    }, escape = FALSE, options = list(
+        pageLength = 10,
+        scrollX = TRUE,
+        dom = 't',
+        columnDefs = list(
+            list(className = 'dt-left', targets = '_all')
+        )
+    ))
 
     # Graph Parameters button handler
     observeEvent(input$graph_params_btn, {
