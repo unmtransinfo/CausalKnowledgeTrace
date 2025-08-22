@@ -324,10 +324,10 @@ ui <- dashboardPage(
                         )
                     )
                 ),
-                # Row 2: Node/Edge Information Panel (directly below DAG)
+                # Row 2: Node/Edge Information (directly below DAG)
                 fluidRow(
                     box(
-                        title = "Node/Edge Information Panel",
+                        title = "Node/Edge Information",
                         status = "info",
                         solidHeader = TRUE,
                         width = 12,
@@ -1137,50 +1137,43 @@ server <- function(input, output, session) {
     # Render selection information table
     output$selection_info_table <- DT::renderDataTable({
         if (selection_data$selection_type == "node" && !is.null(selection_data$selected_node)) {
-            # Create placeholder node information
+            # Create placeholder node information in column-based format
             if (!is.null(current_data$nodes)) {
                 node_row <- current_data$nodes[current_data$nodes$id == selection_data$selected_node, ]
                 if (nrow(node_row) > 0) {
                     node_info <- data.frame(
-                        Property = c("ID", "Label", "Group", "Title", "Description", "Type"),
-                        Value = c(
-                            node_row$id[1],
-                            node_row$label[1],
-                            if("group" %in% names(node_row)) node_row$group[1] else "Not specified",
-                            "[Placeholder] Node title information",
-                            "[Placeholder] Detailed description of this node's role in the causal model",
-                            "[Placeholder] Node type classification"
-                        ),
+                        ID = node_row$id[1],
+                        Label = node_row$label[1],
+                        Group = if("group" %in% names(node_row)) node_row$group[1] else "Not specified",
+                        Title = "[Placeholder] Node title information",
+                        Description = "[Placeholder] Detailed description of this node's role in the causal model",
+                        Type = "[Placeholder] Node type classification",
                         stringsAsFactors = FALSE
                     )
                 } else {
                     node_info <- data.frame(
-                        Property = "Error",
-                        Value = "Node information not found",
+                        Error = "Node information not found",
                         stringsAsFactors = FALSE
                     )
                 }
             } else {
                 node_info <- data.frame(
-                    Property = "Error",
-                    Value = "No node data available",
+                    Error = "No node data available",
                     stringsAsFactors = FALSE
                 )
             }
             node_info
         } else if (selection_data$selection_type == "edge" && !is.null(selection_data$selected_edge)) {
-            # Create placeholder edge information
+            # Create placeholder edge information in column-based format with specific columns
             edge_info <- data.frame(
-                Property = c("From Node", "To Node", "Relationship Type", "Evidence Strength", "Description", "Supporting Studies"),
-                Value = c(
-                    selection_data$selected_edge$from,
-                    selection_data$selected_edge$to,
-                    "[Placeholder] Causal relationship type",
-                    "[Placeholder] Strong/Moderate/Weak",
-                    "[Placeholder] Description of the causal relationship between these variables",
-                    "[Placeholder] Number of supporting studies and evidence"
-                ),
-                stringsAsFactors = FALSE
+                Title = "[Placeholder] Causal relationship title",
+                Description = "[Placeholder] Description of the causal relationship between these variables",
+                Strength = "[Placeholder] Strong",
+                "PubMed Link" = "[Placeholder] Link to supporting research",
+                "From Node" = selection_data$selected_edge$from,
+                "To Node" = selection_data$selected_edge$to,
+                stringsAsFactors = FALSE,
+                check.names = FALSE
             )
             edge_info
         } else {
