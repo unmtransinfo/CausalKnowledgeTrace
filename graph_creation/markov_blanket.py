@@ -33,6 +33,7 @@ Date: February 2025
 import psycopg2
 from typing import Dict, Set, List
 from config import TimingContext
+from database_operations import execute_query_with_logging
 import re
 
 
@@ -215,7 +216,7 @@ class MarkovBlanketComputer:
                  self.predication_types + [outcome_cui] + [self.threshold] +
                  self.predication_types + self.predication_types + [outcome_cui] + [self.threshold] + [self.threshold])
         
-        cursor.execute(query_outcome, params)
+        execute_query_with_logging(cursor, query_outcome, params, f"Compute Outcome Markov Blanket for CUI: {outcome_cui}")
         
         return {row[0] for row in cursor.fetchall()}
     
@@ -286,6 +287,6 @@ class MarkovBlanketComputer:
                  self.predication_types + [exposure_cui] + [self.threshold] +
                  self.predication_types + self.predication_types + [exposure_cui] + tuple(outcome_cuis) + [self.threshold] + [self.threshold])
 
-        cursor.execute(query_exposure, params)
+        execute_query_with_logging(cursor, query_exposure, params, f"Compute Exposure Markov Blanket for CUI: {exposure_cui}")
         
         return {row[0] for row in cursor.fetchall()}

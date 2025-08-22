@@ -19,6 +19,78 @@ from typing import Dict, Set, Tuple, List, Union, Optional
 from config_models import TimingContext
 
 
+def format_sql_query_for_logging(query: str, params: Union[List, Tuple]) -> str:
+    """
+    Format an SQL query with parameters substituted for logging purposes.
+
+    Args:
+        query: SQL query string with %s placeholders
+        params: List or tuple of parameters to substitute
+
+    Returns:
+        Formatted SQL query string with parameters substituted
+    """
+    if not params:
+        return query
+
+    # Convert all parameters to strings and properly quote them
+    formatted_params = []
+    for param in params:
+        if param is None:
+            formatted_params.append('NULL')
+        elif isinstance(param, str):
+            # Escape single quotes and wrap in quotes
+            escaped_param = param.replace("'", "''")
+            formatted_params.append(f"'{escaped_param}'")
+        elif isinstance(param, (int, float)):
+            formatted_params.append(str(param))
+        elif isinstance(param, bool):
+            formatted_params.append('TRUE' if param else 'FALSE')
+        else:
+            # For other types, convert to string and quote
+            escaped_param = str(param).replace("'", "''")
+            formatted_params.append(f"'{escaped_param}'")
+
+    # Replace %s placeholders with formatted parameters
+    formatted_query = query
+    for param in formatted_params:
+        formatted_query = formatted_query.replace('%s', param, 1)
+
+    return formatted_query
+
+
+def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = None, operation_name: str = "SQL Query"):
+    """
+    Execute a database query with complete SQL logging.
+
+    Args:
+        cursor: Database cursor object
+        query: SQL query string
+        params: Query parameters (optional)
+        operation_name: Description of the operation for logging
+    """
+    # Format and print the complete executable SQL query
+    if params:
+        formatted_query = format_sql_query_for_logging(query, params)
+        print(f"\n=== {operation_name} ===")
+        print("Complete executable SQL query:")
+        print("-" * 80)
+        print(formatted_query)
+        print("-" * 80)
+
+        # Execute the original parameterized query
+        cursor.execute(query, params)
+    else:
+        print(f"\n=== {operation_name} ===")
+        print("Complete executable SQL query:")
+        print("-" * 80)
+        print(query)
+        print("-" * 80)
+
+        # Execute the query without parameters
+        cursor.execute(query)
+
+
 class DatabaseOperations:
     """Helper class for database operations and queries."""
 
@@ -134,7 +206,7 @@ class DatabaseOperations:
         """
 
         try:
-            cursor.execute(query, cui_list)
+            execute_query_with_logging(cursor, query, cui_list, "Fetch CUI Name Mappings")
             results = cursor.fetchall()
 
             # Create mapping dictionary
@@ -164,12 +236,12 @@ class DatabaseOperations:
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
             GROUP BY cp.subject_name, cp.object_name
             HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ORDER BY evidence DESC;
+            ORDER BY cp.subject_name ASC;
             """
             
             # Execute with predication types + CUIs + threshold as parameters
             params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + [self.threshold]
-            cursor.execute(query_first_degree, params)
+            execute_query_with_logging(cursor, query_first_degree, params, "Fetch First Degree Relationships")
             
             first_degree_results = cursor.fetchall()
             first_degree_links = [(row[0], row[1]) for row in first_degree_results]
@@ -204,12 +276,12 @@ class DatabaseOperations:
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
             GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ORDER BY evidence DESC;
+            ORDER BY cp.subject_name ASC;
             """
 
             # Parameters: predication_types + first_degree_list (twice) + threshold
             params = self.predication_types + first_degree_list + first_degree_list + [self.threshold]
-            cursor.execute(query_second_degree, params)
+            execute_query_with_logging(cursor, query_second_degree, params, "Fetch Second Degree Relationships")
 
             second_degree_results = cursor.fetchall()
 
@@ -278,14 +350,14 @@ class DatabaseOperations:
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
             GROUP BY cp.subject_name, cp.object_name
             HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ORDER BY evidence DESC;
+            ORDER BY cp.subject_name ASC;
             """
 
             # Parameters: predication_types (3 times) + first_degree_list (4 times) + threshold (3 times)
             params = (self.predication_types + first_degree_list + first_degree_list + [self.threshold] +
                      self.predication_types + first_degree_list + first_degree_list + [self.threshold] +
                      self.predication_types + [self.threshold])
-            cursor.execute(query_third_degree, params)
+            execute_query_with_logging(cursor, query_third_degree, params, "Fetch Third Degree Relationships")
 
             third_degree_results = cursor.fetchall()
             third_degree_links = [(row[0], row[1]) for row in third_degree_results]
