@@ -106,7 +106,16 @@ find_instrumental_variables <- function(dag_object, exposure = NULL, outcome = N
         # Convert to character vector
         instrument_vars <- character(0)
         if (length(instruments) > 0) {
-            instrument_vars <- as.character(instruments)
+            # Extract variable names from the list structure
+            instrument_vars <- sapply(instruments, function(x) {
+                if (is.list(x) && "I" %in% names(x)) {
+                    return(x$I)
+                } else {
+                    return(as.character(x))
+                }
+            })
+            # Remove any duplicates and ensure it's a character vector
+            instrument_vars <- unique(as.character(instrument_vars))
         }
         
         return(list(
