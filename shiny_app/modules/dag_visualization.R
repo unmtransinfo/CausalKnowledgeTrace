@@ -208,22 +208,13 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
         ) %>%
         visEvents(
             selectNode = "function(params) {
-                if (params.nodes.length > 0) {
-                    var nodeId = params.nodes[0];
-                    Shiny.onInputChange('selected_node_info', nodeId);
-                    Shiny.onInputChange('selected_edge_info', null);
-                }
+                // Explicitly ignore node selections - do nothing
+                // This ensures node clicks don't trigger any information display
             }",
             selectEdge = "function(params) {
                 if (params.edges.length > 0) {
                     var edgeId = this.body.data.edges.get(params.edges[0]).id;
                     Shiny.onInputChange('selected_edge_info', edgeId);
-                    Shiny.onInputChange('selected_node_info', null);
-                }
-            }",
-            deselectNode = "function(params) {
-                if (params.previousSelection.nodes.length > 0) {
-                    Shiny.onInputChange('selected_node_info', null);
                 }
             }",
             deselectEdge = "function(params) {
