@@ -320,14 +320,14 @@ ui <- dashboardPage(
                             div(class = "dag-resize-handle")
                         ),
                         div(style = "margin-top: 10px;",
-                            helpText("Click on nodes or edges to view information below.")
+                            helpText("Click on edges to view information below.")
                         )
                     )
                 ),
-                # Row 2: Node/Edge Information (directly below DAG)
+                # Row 2: Edge Information (directly below DAG)
                 fluidRow(
                     box(
-                        title = "Node/Edge Information",
+                        title = "Edge Information",
                         status = "info",
                         solidHeader = TRUE,
                         width = 12,
@@ -380,7 +380,6 @@ ui <- dashboardPage(
                         tags$ul(
                             tags$li("Drag to pan the view"),
                             tags$li("Scroll wheel to zoom"),
-                            tags$li("Click nodes to select"),
                             tags$li("Click edges to view information"),
                             tags$li("Use navigation buttons (bottom-right)")
                         ),
@@ -1063,25 +1062,14 @@ server <- function(input, output, session) {
         reset_physics_controls(session)
     })
 
-    # ===== SELECTION EVENT HANDLERS =====
+    # ===== EDGE SELECTION EVENT HANDLERS =====
 
-    # Reactive values for storing selection information
+    # Reactive values for storing edge selection information
     selection_data <- reactiveValues(
-        selected_node = NULL,
-        selected_edge = NULL,
-        selection_type = NULL
+        selected_edge = NULL
     )
 
-    # Handle node selection
-    observeEvent(input$selected_node_info, {
-        if (!is.null(input$selected_node_info)) {
-            selection_data$selected_node <- input$selected_node_info
-            selection_data$selected_edge <- NULL
-            selection_data$selection_type <- "node"
-        }
-    })
-
-    # Handle edge selection
+    # Handle edge selection only
     observeEvent(input$selected_edge_info, {
         if (!is.null(input$selected_edge_info)) {
             # Parse edge ID to extract from and to nodes
@@ -1103,73 +1091,31 @@ server <- function(input, output, session) {
                                 to = potential_to,
                                 id = input$selected_edge_info
                             )
-                            selection_data$selected_node <- NULL
-                            selection_data$selection_type <- "edge"
                             break
                         }
                     }
                 }
             }
+        } else {
+            # Clear selection when edge is deselected
+            selection_data$selected_edge <- NULL
         }
     })
 
-    # Render selection title
+    # Render edge selection title
     output$selected_item_title <- renderText({
-        if (selection_data$selection_type == "node" && !is.null(selection_data$selected_node)) {
-            # Find node label
-            if (!is.null(current_data$nodes)) {
-                node_row <- current_data$nodes[current_data$nodes$id == selection_data$selected_node, ]
-                if (nrow(node_row) > 0) {
-                    paste("Node Information:", node_row$label[1])
-                } else {
-                    paste("Node Information:", selection_data$selected_node)
-                }
-            } else {
-                paste("Node Information:", selection_data$selected_node)
-            }
-        } else if (selection_data$selection_type == "edge" && !is.null(selection_data$selected_edge)) {
+        if (!is.null(selection_data$selected_edge)) {
             paste("Edge Information:", selection_data$selected_edge$from, "→", selection_data$selected_edge$to)
         } else {
-            "Select a node or edge to view information"
+            "Select an edge to view information"
         }
     })
 
-    # Render selection information table
+    # Render edge information table
     output$selection_info_table <- DT::renderDataTable({
-        if (selection_data$selection_type == "node" && !is.null(selection_data$selected_node)) {
-            # Create placeholder node information in column-based format
-            if (!is.null(current_data$nodes)) {
-                node_row <- current_data$nodes[current_data$nodes$id == selection_data$selected_node, ]
-                if (nrow(node_row) > 0) {
-                    node_info <- data.frame(
-                        ID = node_row$id[1],
-                        Label = node_row$label[1],
-                        Group = if("group" %in% names(node_row)) node_row$group[1] else "Not specified",
-                        Title = "[Placeholder] Node title information",
-                        Description = "[Placeholder] Detailed description of this node's role in the causal model",
-                        Type = "[Placeholder] Node type classification",
-                        stringsAsFactors = FALSE
-                    )
-                } else {
-                    node_info <- data.frame(
-                        Error = "Node information not found",
-                        stringsAsFactors = FALSE
-                    )
-                }
-            } else {
-                node_info <- data.frame(
-                    Error = "No node data available",
-                    stringsAsFactors = FALSE
-                )
-            }
-            node_info
-        } else if (selection_data$selection_type == "edge" && !is.null(selection_data$selected_edge)) {
-            # Create placeholder edge information in column-based format with specific columns
+        if (!is.null(selection_data$selected_edge)) {
+            # Create simplified edge information with only node identification columns
             edge_info <- data.frame(
-                Title = "[Placeholder] Causal relationship title",
-                Description = "[Placeholder] Description of the causal relationship between these variables",
-                Strength = "[Placeholder] Strong",
-                "PubMed Link" = "[Placeholder] Link to supporting research",
                 "From Node" = selection_data$selected_edge$from,
                 "To Node" = selection_data$selected_edge$to,
                 stringsAsFactors = FALSE,
@@ -1178,7 +1124,7 @@ server <- function(input, output, session) {
             edge_info
         } else {
             data.frame(
-                Information = "Click on a node or edge in the network above to view detailed information",
+                Information = "Click on an edge in the network above to view detailed information",
                 stringsAsFactors = FALSE
             )
         }
