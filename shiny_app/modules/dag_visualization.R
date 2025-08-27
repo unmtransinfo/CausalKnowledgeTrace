@@ -147,6 +147,14 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                 // Focus on container to enable keyboard events
                 container.focus();
 
+                // Fit network to container on load
+                network.fit({
+                    animation: {
+                        duration: 500,
+                        easingFunction: 'easeInOutQuad'
+                    }
+                });
+
                 // Add keyboard event listener
                 container.addEventListener('keydown', function(event) {
                     var moveDistance = 50;
