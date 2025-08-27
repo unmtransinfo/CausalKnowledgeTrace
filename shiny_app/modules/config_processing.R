@@ -148,7 +148,7 @@ check_generated_files <- function(output_dir = "../graph_creation/output") {
         # Look for common output files
         expected_files <- c(
             "degree_1.R", "degree_2.R", "degree_3.R",
-            "causal_assertions.json",
+            "causal_assertions_1.json", "causal_assertions_2.json", "causal_assertions_3.json",
             "performance_metrics.json",
             "run_configuration.json",
             "MarkovBlanket_Union.R"
