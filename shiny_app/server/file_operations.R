@@ -73,6 +73,31 @@ create_file_operations_server <- function(input, output, session, current_data) 
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_selector
 
+                # Try to load corresponding causal assertions data using k_hops
+                tryCatch({
+                    assertions_result <- load_causal_assertions(k_hops = result$k_hops)
+                    if (assertions_result$success) {
+                        current_data$causal_assertions <- assertions_result$assertions
+                        current_data$assertions_loaded <- TRUE
+                        cat("Loaded causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+
+                        # Show notification about loaded assertions
+                        showNotification(
+                            paste("Loaded causal assertions with", length(assertions_result$assertions), "relationships"),
+                            type = "message",
+                            duration = 3
+                        )
+                    } else {
+                        current_data$causal_assertions <- list()
+                        current_data$assertions_loaded <- FALSE
+                        cat("Could not load causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                    }
+                }, error = function(e) {
+                    current_data$causal_assertions <- list()
+                    current_data$assertions_loaded <- FALSE
+                    cat("Error loading causal assertions:", e$message, "\n")
+                })
+
                 # Update progress: Complete
                 session$sendCustomMessage("updateProgress", list(
                     percent = 100,
@@ -161,12 +186,30 @@ create_file_operations_server <- function(input, output, session, current_data) 
             if (result$success) {
                 # Process the loaded DAG
                 network_data <- create_network_data(result$dag)
-                
+
                 current_data$nodes <- network_data$nodes
                 current_data$edges <- network_data$edges
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_upload$name
-                
+
+                # Try to load corresponding causal assertions data using k_hops
+                tryCatch({
+                    assertions_result <- load_causal_assertions(k_hops = result$k_hops)
+                    if (assertions_result$success) {
+                        current_data$causal_assertions <- assertions_result$assertions
+                        current_data$assertions_loaded <- TRUE
+                        cat("Loaded causal assertions for uploaded file k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                    } else {
+                        current_data$causal_assertions <- list()
+                        current_data$assertions_loaded <- FALSE
+                        cat("Could not load causal assertions for uploaded file:", assertions_result$message, "\n")
+                    }
+                }, error = function(e) {
+                    current_data$causal_assertions <- list()
+                    current_data$assertions_loaded <- FALSE
+                    cat("Error loading causal assertions for uploaded file:", e$message, "\n")
+                })
+
                 showNotification(paste("Successfully loaded uploaded file:", input$dag_file_upload$name), type = "message")
                 
                 # Suggest causal analysis

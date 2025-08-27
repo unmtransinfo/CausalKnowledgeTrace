@@ -4,6 +4,7 @@ library(shinydashboard)
 library(visNetwork)
 library(dplyr)
 library(DT)
+library(jsonlite)
 
 # Load shinyjs for UI interactions (with error handling)
 tryCatch({
@@ -747,7 +748,9 @@ server <- function(input, output, session) {
         edges = dag_edges,
         dag_object = dag_object,
         available_files = character(0),
-        current_file = "No graph loaded"
+        current_file = "No graph loaded",
+        causal_assertions = list(),
+        assertions_loaded = FALSE
     )
 
     # Initialize available files list on startup
@@ -860,6 +863,24 @@ server <- function(input, output, session) {
                 current_data$edges <- network_data$edges
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_selector
+
+                # Try to load corresponding causal assertions data using k_hops
+                tryCatch({
+                    assertions_result <- load_causal_assertions(k_hops = result$k_hops)
+                    if (assertions_result$success) {
+                        current_data$causal_assertions <- assertions_result$assertions
+                        current_data$assertions_loaded <- TRUE
+                        cat("Loaded causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                    } else {
+                        current_data$causal_assertions <- list()
+                        current_data$assertions_loaded <- FALSE
+                        cat("Could not load causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                    }
+                }, error = function(e) {
+                    current_data$causal_assertions <- list()
+                    current_data$assertions_loaded <- FALSE
+                    cat("Error loading causal assertions:", e$message, "\n")
+                })
 
                 # Update progress: Complete
                 session$sendCustomMessage("updateProgress", list(
@@ -1114,13 +1135,40 @@ server <- function(input, output, session) {
     # Render edge information table
     output$selection_info_table <- DT::renderDataTable({
         if (!is.null(selection_data$selected_edge)) {
-            # Create simplified edge information with only node identification columns
-            edge_info <- data.frame(
-                "From Node" = selection_data$selected_edge$from,
-                "To Node" = selection_data$selected_edge$to,
-                stringsAsFactors = FALSE,
-                check.names = FALSE
+            # Get PMID data for the selected edge
+            pmid_data <- find_edge_pmid_data(
+                selection_data$selected_edge$from,
+                selection_data$selected_edge$to,
+                current_data$causal_assertions
             )
+
+            # Create edge information with individual PMID rows
+            if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
+                # Create one row per PMID
+                edge_info <- data.frame(
+                    "From Node" = rep(selection_data$selected_edge$from, length(pmid_data$pmid_list)),
+                    "To Node" = rep(selection_data$selected_edge$to, length(pmid_data$pmid_list)),
+                    "PMID" = sapply(pmid_data$pmid_list, function(pmid) {
+                        paste0('<a href="https://pubmed.ncbi.nlm.nih.gov/', pmid, '/" target="_blank">', pmid, '</a>')
+                    }),
+                    stringsAsFactors = FALSE,
+                    check.names = FALSE
+                )
+            } else {
+                # Show single row with no PMID data message
+                edge_info <- data.frame(
+                    "From Node" = selection_data$selected_edge$from,
+                    "To Node" = selection_data$selected_edge$to,
+                    "PMID" = if (current_data$assertions_loaded) {
+                        "No PMID data available for this edge"
+                    } else {
+                        "Causal assertions data not loaded"
+                    },
+                    stringsAsFactors = FALSE,
+                    check.names = FALSE
+                )
+            }
+
             edge_info
         } else {
             data.frame(
@@ -1129,11 +1177,15 @@ server <- function(input, output, session) {
             )
         }
     }, escape = FALSE, options = list(
-        pageLength = 10,
+        pageLength = 15,
         scrollX = TRUE,
-        dom = 't',
+        scrollY = "300px",
+        dom = 'frtip',
         columnDefs = list(
-            list(className = 'dt-left', targets = '_all')
+            list(className = 'dt-left', targets = '_all'),
+            list(width = '200px', targets = 0),  # From Node column
+            list(width = '200px', targets = 1),  # To Node column
+            list(width = '150px', targets = 2)   # PMID column
         )
     ))
 

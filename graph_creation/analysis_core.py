@@ -87,6 +87,10 @@ class GraphAnalyzer:
         """Generate the DAG filename based on k_hops parameter."""
         return f"degree_{self.k_hops}.R"
 
+    def get_causal_assertions_filename(self) -> str:
+        """Generate the causal assertions filename based on k_hops parameter."""
+        return f"causal_assertions_{self.k_hops}.json"
+
     def generate_basic_dagitty_script(self, nodes: Set[str], edges: Set[Tuple[str, str]]):
         """Create basic R script for DAGitty visualization."""
         with TimingContext("dagitty_generation", self.timing_data):
@@ -164,8 +168,9 @@ class GraphAnalyzer:
         with open(output_path / "performance_metrics.json", "w") as f:
             json.dump(timing_results, f, indent=2)
 
-        # Save detailed assertions
-        with open(output_path / "causal_assertions.json", "w") as f:
+        # Save detailed assertions with k_hops suffix
+        causal_assertions_filename = self.get_causal_assertions_filename()
+        with open(output_path / causal_assertions_filename, "w") as f:
             json.dump(detailed_assertions, f, indent=2)
 
         # Save run configuration with multiple CUIs support
@@ -316,7 +321,7 @@ class GraphAnalyzer:
         print(f"Output directory: {output_path.absolute()}")
 
         print("\nGenerated files:")
-        print(f"  - causal_assertions.json: Detailed causal relationships")
+        print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for DAG visualization (k_hops={self.k_hops})")
         print(f"  - performance_metrics.json: Timing information")
         print(f"  - run_configuration.json: Complete run parameters")
@@ -499,7 +504,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
         print(f"Output directory: {output_path.absolute()}")
 
         print("\nGenerated files:")
-        print(f"  - causal_assertions.json: Detailed causal relationships")
+        print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (k_hops={self.k_hops})")
         print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
         print(f"  - performance_metrics.json: Timing information")

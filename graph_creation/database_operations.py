@@ -219,39 +219,58 @@ class DatabaseOperations:
             return {}
 
     def fetch_first_degree_relationships(self, cursor):
-        """Fetch first-degree causal relationships."""
+        """Fetch first-degree causal relationships with detailed assertions including PMIDs."""
         with TimingContext("first_degree_fetch", self.timing_data):
             # Create conditions for multiple CUIs and predication types
             exposure_condition = self._create_cui_conditions(self.config.exposure_cui_list, "cp.subject_cui")
             outcome_condition = self._create_cui_conditions(self.config.outcome_cui_list, "cp.object_cui")
             predication_condition = self._create_predication_condition()
-            
+
+            # Enhanced query to include CUIs, predicate, and individual PMIDs
             query_first_degree = f"""
-            SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence
+            SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
+                   cp.subject_cui, cp.object_cui, cp.predicate,
+                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list
             FROM causalpredication cp
             WHERE {predication_condition}
               AND ({exposure_condition})
               AND ({outcome_condition})
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-            GROUP BY cp.subject_name, cp.object_name
+            GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
             """
-            
+
             # Execute with predication types + CUIs + threshold as parameters
             params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + [self.threshold]
             execute_query_with_logging(cursor, query_first_degree, params, "Fetch First Degree Relationships")
-            
+
             first_degree_results = cursor.fetchall()
             first_degree_links = [(row[0], row[1]) for row in first_degree_results]
             first_degree_cuis = set()
-            
+            detailed_assertions = []
+
             for row in first_degree_results:
-                first_degree_cuis.add(row[0])
-                first_degree_cuis.add(row[1])
-            
-            return first_degree_cuis, first_degree_links
+                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
+
+                # Add to CUI set for further degree processing
+                first_degree_cuis.add(subject_name)
+                first_degree_cuis.add(object_name)
+
+                # Create detailed assertion with PMID information
+                detailed_assertions.append({
+                    "subject_name": subject_name,
+                    "subject_cui": subject_cui,
+                    "predicate": predicate,
+                    "object_name": object_name,
+                    "object_cui": object_cui,
+                    "evidence_count": evidence,
+                    "relationship_degree": "first",
+                    "pmid_list": pmid_list.split(',') if pmid_list else []
+                })
+
+            return first_degree_cuis, first_degree_links, detailed_assertions
 
     def fetch_second_degree_relationships(self, cursor, first_degree_cuis):
         """Fetch second-degree causal relationships."""
@@ -268,7 +287,8 @@ class DatabaseOperations:
 
             query_second_degree = f"""
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-                   cp.subject_cui, cp.object_cui, cp.predicate
+                   cp.subject_cui, cp.object_cui, cp.predicate,
+                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list
             FROM causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
@@ -290,7 +310,7 @@ class DatabaseOperations:
             second_degree_links = []
 
             for row in second_degree_results:
-                subject_name, object_name, evidence, subject_cui, object_cui, predicate = row
+                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
 
                 detailed_assertions.append({
                     "subject_name": subject_name,
@@ -299,7 +319,8 @@ class DatabaseOperations:
                     "object_name": object_name,
                     "object_cui": object_cui,
                     "evidence_count": evidence,
-                    "relationship_degree": "second"
+                    "relationship_degree": "second",
+                    "pmid_list": pmid_list.split(',') if pmid_list else []
                 })
 
                 second_degree_links.append((subject_name, object_name))
@@ -307,13 +328,13 @@ class DatabaseOperations:
             return detailed_assertions, second_degree_links
 
     def fetch_third_degree_relationships(self, cursor, first_degree_cuis):
-        """Fetch third-degree causal relationships."""
+        """Fetch third-degree causal relationships with detailed assertions including PMIDs."""
         with TimingContext("third_degree_fetch", self.timing_data):
             # Convert set to list for SQL IN clause
             first_degree_list = list(first_degree_cuis)
 
             if not first_degree_list:
-                return []
+                return [], []
 
             # Create placeholders for the CUI list and predication condition
             cui_placeholders = self._create_cui_placeholders(first_degree_list)
@@ -341,14 +362,16 @@ class DatabaseOperations:
                 GROUP BY cp.object_name
                 HAVING COUNT(DISTINCT cp.pmid) >= %s
             )
-            SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence
+            SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
+                   cp.subject_cui, cp.object_cui, cp.predicate,
+                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list
             FROM causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_name IN (SELECT node_name FROM second_degree_nodes)
                    OR cp.object_name IN (SELECT node_name FROM second_degree_nodes))
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-            GROUP BY cp.subject_name, cp.object_name
+            GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
             """
@@ -361,18 +384,33 @@ class DatabaseOperations:
 
             third_degree_results = cursor.fetchall()
             third_degree_links = [(row[0], row[1]) for row in third_degree_results]
+            detailed_assertions = []
 
-            return third_degree_links
+            for row in third_degree_results:
+                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
+
+                detailed_assertions.append({
+                    "subject_name": subject_name,
+                    "subject_cui": subject_cui,
+                    "predicate": predicate,
+                    "object_name": object_name,
+                    "object_cui": object_cui,
+                    "evidence_count": evidence,
+                    "relationship_degree": "third",
+                    "pmid_list": pmid_list.split(',') if pmid_list else []
+                })
+
+            return third_degree_links, detailed_assertions
 
     def fetch_k_hop_relationships(self, cursor):
         """Fetch causal relationships up to k hops based on the k_hops parameter."""
         print(f"Fetching relationships up to {self.k_hops} hops...")
 
         # Always fetch first-degree relationships as the starting point
-        first_degree_cuis, first_degree_links = self.fetch_first_degree_relationships(cursor)
+        first_degree_cuis, first_degree_links, first_degree_assertions = self.fetch_first_degree_relationships(cursor)
 
         all_links = first_degree_links.copy()
-        all_detailed_assertions = []
+        all_detailed_assertions = first_degree_assertions.copy()
 
         if self.k_hops >= 2:
             # Fetch second-degree relationships
@@ -382,7 +420,8 @@ class DatabaseOperations:
 
         if self.k_hops >= 3:
             # Fetch third-degree relationships
-            third_degree_links = self.fetch_third_degree_relationships(cursor, first_degree_cuis)
+            third_degree_links, third_degree_assertions = self.fetch_third_degree_relationships(cursor, first_degree_cuis)
             all_links.extend(third_degree_links)
+            all_detailed_assertions.extend(third_degree_assertions)
 
         return first_degree_cuis, all_links, all_detailed_assertions
