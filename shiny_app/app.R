@@ -119,15 +119,30 @@ ui <- dashboardPage(
                     border-radius: 5px;
                 }
 
+                /* Override shinydashboard box constraints for DAG container */
+                .box .box-body {
+                    padding: 10px;
+                }
+
+                .box.dag-network-box {
+                    height: auto !important;
+                }
+
+                .box.dag-network-box .box-body {
+                    height: auto !important;
+                    padding: 0 !important;
+                }
+
                 /* Resizable DAG visualization styles */
                 .resizable-dag-container {
                     position: relative;
-                    min-height: 400px;
-                    max-height: 1200px;
-                    height: 800px;
+                    min-height: 500px;
+                    max-height: calc(100vh - 200px);
+                    height: calc(100vh - 300px);
                     border: 1px solid #ddd;
                     border-radius: 4px;
                     overflow: hidden;
+                    width: 100%;
                 }
 
                 .dag-resize-handle {
@@ -171,6 +186,75 @@ ui <- dashboardPage(
                 .dag-network-output {
                     width: 100%;
                     height: 100%;
+                }
+
+                /* Network container sizing */
+                .resizable-dag-container #network {
+                    width: 100% !important;
+                    height: 100% !important;
+                }
+
+                /* Ensure proper viewport sizing */
+                .content-wrapper {
+                    min-height: calc(100vh - 50px);
+                }
+
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .resizable-dag-container {
+                        height: 60vh;
+                        min-height: 400px;
+                    }
+                }
+
+                /* Edge Information Panel Styling */
+                .edge-info-box {
+                    height: auto !important;
+                    min-height: 350px;
+                }
+
+                .edge-info-box .box-body {
+                    padding: 15px !important;
+                    height: auto !important;
+                }
+
+                .edge-info-table-container {
+                    width: 100%;
+                    overflow: hidden;
+                }
+
+                /* DataTable styling for Edge Information */
+                .edge-info-table-container .dataTables_wrapper {
+                    width: 100% !important;
+                }
+
+                .edge-info-table-container .dataTables_scroll {
+                    width: 100% !important;
+                }
+
+                .edge-info-table-container .dataTables_scrollHead,
+                .edge-info-table-container .dataTables_scrollBody {
+                    width: 100% !important;
+                }
+
+                .edge-info-table-container table.dataTable {
+                    width: 100% !important;
+                    margin: 0 !important;
+                }
+
+                .edge-info-table-container .dataTables_filter {
+                    float: right;
+                    margin-bottom: 10px;
+                }
+
+                .edge-info-table-container .dataTables_info {
+                    float: left;
+                    margin-top: 10px;
+                }
+
+                .edge-info-table-container .dataTables_paginate {
+                    float: right;
+                    margin-top: 10px;
                 }
             ")),
             tags$script(HTML("
@@ -284,10 +368,18 @@ ui <- dashboardPage(
                                 isResizing = false;
                                 $('body').removeClass('no-select');
 
-                                // Force visNetwork to redraw after resize
+                                // Force visNetwork to redraw and fit after resize
                                 setTimeout(function() {
+                                    if (typeof HTMLWidgets !== 'undefined') {
+                                        HTMLWidgets.resize();
+                                    }
                                     if (window.network && typeof window.network.redraw === 'function') {
                                         window.network.redraw();
+                                        if (typeof window.network.fit === 'function') {
+                                            window.network.fit({
+                                                animation: { duration: 300 }
+                                            });
+                                        }
                                     }
                                 }, 100);
                             }
@@ -316,6 +408,7 @@ ui <- dashboardPage(
                         status = "primary",
                         solidHeader = TRUE,
                         width = 12,
+                        class = "dag-network-box",
                         div(class = "resizable-dag-container",
                             visNetworkOutput("network", height = "100%", width = "100%"),
                             div(class = "dag-resize-handle")
@@ -332,10 +425,12 @@ ui <- dashboardPage(
                         status = "info",
                         solidHeader = TRUE,
                         width = 12,
-                        height = "400px",
+                        class = "edge-info-box",
                         div(id = "selection_info_panel",
                             h5(textOutput("selected_item_title")),
-                            DT::dataTableOutput("selection_info_table", height = "300px")
+                            div(class = "edge-info-table-container",
+                                DT::dataTableOutput("selection_info_table")
+                            )
                         )
                     )
                 ),
@@ -1078,6 +1173,14 @@ server <- function(input, output, session) {
                                  input$physics_strength, input$spring_length)
     })
 
+    # Fit network to container after rendering
+    observe({
+        if (!is.null(current_data$nodes) && !is.null(current_data$edges)) {
+            visNetworkProxy("network") %>%
+                visFit(nodes = NULL, animation = list(duration = 500, easingFunction = "easeInOutQuad"))
+        }
+    })
+
     # Reset physics button using modular function
     observeEvent(input$reset_physics, {
         reset_physics_controls(session)
@@ -1177,17 +1280,25 @@ server <- function(input, output, session) {
             )
         }
     }, escape = FALSE, options = list(
-        pageLength = 15,
+        pageLength = 10,
         scrollX = TRUE,
-        scrollY = "300px",
+        scrollY = "250px",
         dom = 'frtip',
+        autoWidth = FALSE,
+        responsive = TRUE,
         columnDefs = list(
             list(className = 'dt-left', targets = '_all'),
-            list(width = '200px', targets = 0),  # From Node column
-            list(width = '200px', targets = 1),  # To Node column
-            list(width = '150px', targets = 2)   # PMID column
-        )
-    ))
+            list(width = '25%', targets = 0),  # From Node column
+            list(width = '25%', targets = 1),  # To Node column
+            list(width = '50%', targets = 2)   # PMID column
+        ),
+        scrollCollapse = TRUE,
+        paging = TRUE,
+        searching = TRUE,
+        ordering = TRUE,
+        info = TRUE,
+        lengthChange = FALSE
+    ), rownames = FALSE, class = 'cell-border stripe hover')
 
     # Graph Parameters button handler
     observeEvent(input$graph_params_btn, {
