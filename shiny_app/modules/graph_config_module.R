@@ -158,6 +158,26 @@ graphConfigUI <- function(id) {
                     )
                 ),
 
+                # Row 2.5: Blacklist CUIs
+                fluidRow(
+                    column(12,
+                        # Blacklist CUIs
+                        div(
+                            class = "form-group",
+                            tags$label("Blacklist CUIs", class = "control-label"),
+                            textAreaInput(
+                                ns("blacklist_cuis"),
+                                label = NULL,
+                                value = "",
+                                placeholder = "C0000000, C1111111, C2222222",
+                                rows = 2,
+                                width = "100%"
+                            ),
+                            helpText("Optional: CUIs to exclude from the graph analysis. Enter comma-delimited CUI codes (format: C followed by 7 digits). These concepts will be filtered out during graph creation.")
+                        )
+                    )
+                ),
+
                 # Row 3: Squelch Threshold and K-hops
                 fluidRow(
                     column(6,
@@ -473,6 +493,15 @@ graphConfigServer <- function(id) {
                 errors <- c(errors, paste("Outcome CUIs:", outcome_validation$message))
             }
 
+            # Validate blacklist CUIs if provided
+            blacklist_validation <- list(valid = TRUE, cuis = c())
+            if (!is.null(input$blacklist_cuis) && input$blacklist_cuis != "") {
+                blacklist_validation <- validate_cui(input$blacklist_cuis)
+                if (!blacklist_validation$valid) {
+                    errors <- c(errors, paste("Blacklist CUIs:", blacklist_validation$message))
+                }
+            }
+
             # Validate consolidated exposure name if provided
             exposure_name_validation <- validate_consolidated_name(input$exposure_name, "exposure")
             if (!exposure_name_validation$valid) {
@@ -518,6 +547,7 @@ graphConfigServer <- function(id) {
                 errors = errors,
                 exposure_cuis = if (exposure_validation$valid) exposure_validation$cuis else NULL,
                 outcome_cuis = if (outcome_validation$valid) outcome_validation$cuis else NULL,
+                blacklist_cuis = if (blacklist_validation$valid) blacklist_validation$cuis else c(),
                 exposure_name = if (exposure_name_validation$valid) exposure_name_validation$name else NULL,
                 outcome_name = if (outcome_name_validation$valid) outcome_name_validation$name else NULL,
                 predication_types = if (predication_validation$valid) predication_validation$types else c("CAUSES")
@@ -593,6 +623,7 @@ graphConfigServer <- function(id) {
                 params <- list(
                     exposure_cuis = validation_result$exposure_cuis,
                     outcome_cuis = validation_result$outcome_cuis,
+                    blacklist_cuis = validation_result$blacklist_cuis,
                     exposure_name = validation_result$exposure_name,
                     outcome_name = validation_result$outcome_name,
                     min_pmids = as.integer(input$min_pmids),
@@ -782,6 +813,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
         required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
                            "min_pmids", "pub_year_cutoff", "k_hops",
                            "SemMedDBD_version")
+        # Note: blacklist_cuis is optional, so not included in required_fields
 
         missing_fields <- required_fields[!required_fields %in% names(config)]
         if (length(missing_fields) > 0) {
@@ -811,6 +843,7 @@ test_graph_config_module <- function() {
     test_config <- list(
         exposure_cuis = c("C0011849", "C0020538"),
         outcome_cuis = c("C0027051", "C0038454"),
+        blacklist_cuis = c("C0000001", "C0000002"),
         min_pmids = 100,
         pub_year_cutoff = 2010,
         k_hops = 2,
@@ -896,6 +929,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
         required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
                            "min_pmids", "pub_year_cutoff", "k_hops",
                            "SemMedDBD_version")
+        # Note: blacklist_cuis is optional, so not included in required_fields
 
         missing_fields <- required_fields[!required_fields %in% names(config)]
         if (length(missing_fields) > 0) {
@@ -1029,6 +1063,7 @@ test_graph_config_module <- function() {
     test_config <- list(
         exposure_cuis = c("C0011849", "C0020538"),
         outcome_cuis = c("C0027051", "C0038454"),
+        blacklist_cuis = c("C0000001", "C0000002"),
         exposure_name = "Test_Exposure",
         outcome_name = "Test_Outcome",
         min_pmids = 100,

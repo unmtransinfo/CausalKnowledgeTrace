@@ -65,11 +65,14 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         # Ensure CUIs are lists
         exposure_cuis = yaml_config['exposure_cuis']
         outcome_cuis = yaml_config['outcome_cuis']
-        
+        blacklist_cuis = yaml_config.get('blacklist_cuis', [])  # Optional field
+
         if not isinstance(exposure_cuis, list):
             exposure_cuis = [exposure_cuis]
         if not isinstance(outcome_cuis, list):
             outcome_cuis = [outcome_cuis]
+        if not isinstance(blacklist_cuis, list):
+            blacklist_cuis = [blacklist_cuis] if blacklist_cuis else []
         
         # Extract threshold from min_pmids, default to 50 if not present
         threshold = yaml_config.get('min_pmids', 50)
@@ -104,6 +107,7 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         return {
             'exposure_cuis': exposure_cuis,
             'outcome_cuis': outcome_cuis,
+            'blacklist_cuis': blacklist_cuis,
             'threshold': threshold,
             'k_hops': k_hops,
             'predication_type': predication_type,

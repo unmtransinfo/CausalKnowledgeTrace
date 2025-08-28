@@ -23,6 +23,7 @@ create_yaml_config <- function(validated_params) {
     config_list <- list(
         exposure_cuis = validated_params$exposure_cuis,
         outcome_cuis = validated_params$outcome_cuis,
+        blacklist_cuis = validated_params$blacklist_cuis,
         exposure_name = validated_params$exposure_name,
         outcome_name = validated_params$outcome_name,
         min_pmids = validated_params$min_pmids,
@@ -235,12 +236,18 @@ create_config_summary <- function(validated_params) {
     summary_text <- paste0(
         "Configuration Summary\n",
         "====================\n",
-        "Exposure CUIs: ", paste(validated_params$exposure_cuis, collapse = ", "), 
+        "Exposure CUIs: ", paste(validated_params$exposure_cuis, collapse = ", "),
         " (", length(validated_params$exposure_cuis), " CUIs)\n",
         "Exposure Name: ", validated_params$exposure_name, "\n",
-        "Outcome CUIs: ", paste(validated_params$outcome_cuis, collapse = ", "), 
+        "Outcome CUIs: ", paste(validated_params$outcome_cuis, collapse = ", "),
         " (", length(validated_params$outcome_cuis), " CUIs)\n",
         "Outcome Name: ", validated_params$outcome_name, "\n",
+        if (length(validated_params$blacklist_cuis) > 0) {
+            paste0("Blacklist CUIs: ", paste(validated_params$blacklist_cuis, collapse = ", "),
+                   " (", length(validated_params$blacklist_cuis), " CUIs)\n")
+        } else {
+            "Blacklist CUIs: None\n"
+        },
         "Minimum PMIDs: ", validated_params$min_pmids, "\n",
         "Publication Year Cutoff: ", validated_params$pub_year_cutoff, "\n",
         "K-Hops: ", validated_params$k_hops, "\n",
