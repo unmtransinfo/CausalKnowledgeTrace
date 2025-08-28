@@ -1269,6 +1269,7 @@ server <- function(input, output, session) {
                 # Create one row per PMID
                 edge_info <- data.frame(
                     "From Node" = rep(selection_data$selected_edge$from, length(pmid_data$pmid_list)),
+                    "Predicate" = rep(pmid_data$predicate, length(pmid_data$pmid_list)),
                     "To Node" = rep(selection_data$selected_edge$to, length(pmid_data$pmid_list)),
                     "PMID" = sapply(pmid_data$pmid_list, function(pmid) {
                         paste0('<a href="https://pubmed.ncbi.nlm.nih.gov/', pmid, '/" target="_blank">', pmid, '</a>')
@@ -1334,6 +1335,11 @@ server <- function(input, output, session) {
                 # Show single row with no PMID data message
                 edge_info <- data.frame(
                     "From Node" = selection_data$selected_edge$from,
+                    "Predicate" = if (current_data$assertions_loaded) {
+                        pmid_data$predicate %||% "CAUSES"
+                    } else {
+                        "N/A"
+                    },
                     "To Node" = selection_data$selected_edge$to,
                     "PMID" = if (current_data$assertions_loaded) {
                         "No PMID data available for this edge"
@@ -1366,11 +1372,12 @@ server <- function(input, output, session) {
         responsive = TRUE,
         columnDefs = list(
             list(className = 'dt-left', targets = '_all'),
-            list(width = '18%', targets = 0),  # From Node column
-            list(width = '18%', targets = 1),  # To Node column
-            list(width = '12%', targets = 2),  # PMID column
-            list(width = '52%', targets = 3),  # Causal Sentences column (wider for expandable content)
-            list(className = 'dt-body-nowrap', targets = c(0, 1, 2))  # Prevent wrapping in first 3 columns
+            list(width = '15%', targets = 0),  # From Node column
+            list(width = '12%', targets = 1),  # Predicate column
+            list(width = '15%', targets = 2),  # To Node column
+            list(width = '12%', targets = 3),  # PMID column
+            list(width = '46%', targets = 4),  # Causal Sentences column (wider for expandable content)
+            list(className = 'dt-body-nowrap', targets = c(0, 1, 2, 3))  # Prevent wrapping in first 4 columns
         ),
         scrollCollapse = TRUE,
         paging = TRUE,
