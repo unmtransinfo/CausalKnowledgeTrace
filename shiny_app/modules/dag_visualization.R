@@ -210,14 +210,46 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                             event.preventDefault();
                             network.fit();
                             break;
+                        case 'Delete':
+                        case 'Backspace':
+                            event.preventDefault();
+                            // Get selected nodes and edges
+                            var selection = network.getSelection();
+                            if (selection.nodes.length > 0) {
+                                // Trigger node removal
+                                Shiny.onInputChange('keyboard_remove_node', {
+                                    nodeId: selection.nodes[0],
+                                    timestamp: new Date().getTime()
+                                });
+                            } else if (selection.edges.length > 0) {
+                                // Trigger edge removal
+                                Shiny.onInputChange('keyboard_remove_edge', {
+                                    edgeId: selection.edges[0],
+                                    timestamp: new Date().getTime()
+                                });
+                            }
+                            break;
+                        case 'z':
+                            if (event.ctrlKey || event.metaKey) {
+                                event.preventDefault();
+                                // Trigger undo
+                                Shiny.onInputChange('keyboard_undo', {
+                                    timestamp: new Date().getTime()
+                                });
+                            }
+                            break;
                     }
                 });
             }"
         ) %>%
         visEvents(
             selectNode = "function(params) {
-                // Explicitly ignore node selections - do nothing
-                // This ensures node clicks don't trigger any information display
+                // Send selected node to Shiny for removal functionality
+                if (params.nodes.length > 0) {
+                    Shiny.onInputChange('network_selected', params.nodes[0]);
+                } else {
+                    Shiny.onInputChange('network_selected', null);
+                }
             }",
             selectEdge = "function(params) {
                 if (params.edges.length > 0) {
@@ -313,15 +345,275 @@ create_network_controls_ui <- function() {
 }
 
 #' Reset Physics Controls to Default Values
-#' 
+#'
 #' Helper function to reset physics controls in Shiny session
-#' 
+#'
 #' @param session Shiny session object
 #' @export
 reset_physics_controls <- function(session) {
     default_settings <- get_default_physics_settings()
     updateSliderInput(session, "physics_strength", value = default_settings$physics_strength)
     updateSliderInput(session, "spring_length", value = default_settings$spring_length)
+}
+
+#' Remove Node and Connected Edges from Network
+#'
+#' Removes a node and all its connected edges from the network using visNetworkProxy
+#'
+#' @param session Shiny session object
+#' @param network_id ID of the visNetwork output
+#' @param node_id ID of the node to remove
+#' @param current_data Reactive values containing nodes and edges
+#' @return List with success status and message
+#' @export
+remove_node_from_network <- function(session, network_id, node_id, current_data) {
+    if (is.null(node_id) || node_id == "" || length(node_id) == 0) {
+        return(list(success = FALSE, message = "No node selected for removal"))
+    }
+
+    # Check if node exists
+    if (!node_id %in% current_data$nodes$id) {
+        return(list(success = FALSE, message = paste("Node", node_id, "not found")))
+    }
+
+    tryCatch({
+        # Store original data for undo functionality
+        if (is.null(current_data$undo_stack)) {
+            current_data$undo_stack <- list()
+        }
+
+        # Save current state
+        current_state <- list(
+            nodes = current_data$nodes,
+            edges = current_data$edges,
+            action = "remove_node",
+            removed_id = node_id,
+            timestamp = Sys.time()
+        )
+        current_data$undo_stack <- append(current_data$undo_stack, list(current_state), 0)
+
+        # Keep only last 10 undo states
+        if (length(current_data$undo_stack) > 10) {
+            current_data$undo_stack <- current_data$undo_stack[1:10]
+        }
+
+        # Find connected edges before removal
+        connected_edges <- current_data$edges[
+            current_data$edges$from == node_id | current_data$edges$to == node_id,
+        ]
+
+        # Remove node from data
+        current_data$nodes <- current_data$nodes[current_data$nodes$id != node_id, ]
+
+        # Remove all edges connected to this node
+        current_data$edges <- current_data$edges[
+            current_data$edges$from != node_id & current_data$edges$to != node_id,
+        ]
+
+        # Update network using visNetworkProxy
+        visNetworkProxy(network_id, session = session) %>%
+            visRemoveNodes(id = node_id)
+
+        # Validate network integrity after removal
+        validation <- validate_network_integrity(current_data)
+
+        # Clear any selections
+        session$sendInputMessage("network_selected", NULL)
+
+        message <- paste("Removed node:", node_id, "and", nrow(connected_edges), "connected edges")
+        if (validation$fixes_applied > 0) {
+            message <- paste(message, "|", validation$message)
+        }
+        return(list(success = TRUE, message = message))
+
+    }, error = function(e) {
+        return(list(success = FALSE, message = paste("Error removing node:", e$message)))
+    })
+}
+
+#' Remove Edge from Network
+#'
+#' Removes a specific edge from the network using visNetworkProxy
+#'
+#' @param session Shiny session object
+#' @param network_id ID of the visNetwork output
+#' @param edge_id ID of the edge to remove
+#' @param current_data Reactive values containing nodes and edges
+#' @return List with success status and message
+#' @export
+remove_edge_from_network <- function(session, network_id, edge_id, current_data) {
+    if (is.null(edge_id) || edge_id == "" || length(edge_id) == 0) {
+        return(list(success = FALSE, message = "No edge selected for removal"))
+    }
+
+    # Check if edge exists
+    if (!edge_id %in% current_data$edges$id) {
+        return(list(success = FALSE, message = paste("Edge", edge_id, "not found")))
+    }
+
+    tryCatch({
+        # Store original data for undo functionality
+        if (is.null(current_data$undo_stack)) {
+            current_data$undo_stack <- list()
+        }
+
+        # Save current state
+        current_state <- list(
+            nodes = current_data$nodes,
+            edges = current_data$edges,
+            action = "remove_edge",
+            removed_id = edge_id,
+            timestamp = Sys.time()
+        )
+        current_data$undo_stack <- append(current_data$undo_stack, list(current_state), 0)
+
+        # Keep only last 10 undo states
+        if (length(current_data$undo_stack) > 10) {
+            current_data$undo_stack <- current_data$undo_stack[1:10]
+        }
+
+        # Get edge info for message
+        edge_info <- current_data$edges[current_data$edges$id == edge_id, ]
+
+        # Remove edge from data
+        current_data$edges <- current_data$edges[current_data$edges$id != edge_id, ]
+
+        # Update network using visNetworkProxy
+        visNetworkProxy(network_id, session = session) %>%
+            visRemoveEdges(id = edge_id)
+
+        # Validate network integrity after removal
+        validation <- validate_network_integrity(current_data)
+
+        # Clear edge selection
+        session$sendInputMessage("selected_edge_info", NULL)
+
+        message <- paste("Removed edge:", edge_info$from[1], "->", edge_info$to[1])
+        if (validation$fixes_applied > 0) {
+            message <- paste(message, "|", validation$message)
+        }
+        return(list(success = TRUE, message = message))
+
+    }, error = function(e) {
+        return(list(success = FALSE, message = paste("Error removing edge:", e$message)))
+    })
+}
+
+#' Undo Last Removal Operation
+#'
+#' Restores the last removed node or edge from the undo stack
+#'
+#' @param session Shiny session object
+#' @param network_id ID of the visNetwork output
+#' @param current_data Reactive values containing nodes and edges
+#' @return List with success status and message
+#' @export
+undo_last_removal <- function(session, network_id, current_data) {
+    if (is.null(current_data$undo_stack) || length(current_data$undo_stack) == 0) {
+        return(list(success = FALSE, message = "No operations to undo"))
+    }
+
+    tryCatch({
+        # Get the last state
+        last_state <- current_data$undo_stack[[1]]
+
+        # Remove from undo stack
+        current_data$undo_stack <- current_data$undo_stack[-1]
+
+        # Restore data
+        current_data$nodes <- last_state$nodes
+        current_data$edges <- last_state$edges
+
+        # Re-render the entire network (more reliable than trying to add back)
+        # This will trigger the renderVisNetwork reactive
+        current_data$force_refresh <- Sys.time()
+
+        message <- paste("Undid", last_state$action, "of", last_state$removed_id)
+        return(list(success = TRUE, message = message))
+
+    }, error = function(e) {
+        return(list(success = FALSE, message = paste("Error during undo:", e$message)))
+    })
+}
+
+#' Get Network Statistics
+#'
+#' Returns current network statistics after modifications
+#'
+#' @param current_data Reactive values containing nodes and edges
+#' @return List with node and edge counts
+#' @export
+get_network_stats <- function(current_data) {
+    if (is.null(current_data$nodes) || is.null(current_data$edges)) {
+        return(list(nodes = 0, edges = 0))
+    }
+
+    return(list(
+        nodes = nrow(current_data$nodes),
+        edges = nrow(current_data$edges)
+    ))
+}
+
+#' Validate Network Integrity After Modifications
+#'
+#' Checks network integrity after node/edge removals and fixes issues
+#'
+#' @param current_data Reactive values containing nodes and edges
+#' @return List with validation results and any fixes applied
+#' @export
+validate_network_integrity <- function(current_data) {
+    if (is.null(current_data$nodes) || is.null(current_data$edges)) {
+        return(list(valid = TRUE, message = "No data to validate", fixes_applied = 0))
+    }
+
+    fixes_applied <- 0
+    messages <- character(0)
+
+    # Check for orphaned edges (edges pointing to non-existent nodes)
+    if (nrow(current_data$edges) > 0 && nrow(current_data$nodes) > 0) {
+        valid_from <- current_data$edges$from %in% current_data$nodes$id
+        valid_to <- current_data$edges$to %in% current_data$nodes$id
+        valid_edges <- valid_from & valid_to
+
+        if (!all(valid_edges)) {
+            orphaned_count <- sum(!valid_edges)
+            current_data$edges <- current_data$edges[valid_edges, ]
+            fixes_applied <- fixes_applied + orphaned_count
+            messages <- c(messages, paste("Removed", orphaned_count, "orphaned edges"))
+        }
+    }
+
+    # Check for duplicate edges
+    if (nrow(current_data$edges) > 0) {
+        edge_pairs <- paste(current_data$edges$from, current_data$edges$to, sep = "->")
+        if (any(duplicated(edge_pairs))) {
+            duplicate_count <- sum(duplicated(edge_pairs))
+            current_data$edges <- current_data$edges[!duplicated(edge_pairs), ]
+            fixes_applied <- fixes_applied + duplicate_count
+            messages <- c(messages, paste("Removed", duplicate_count, "duplicate edges"))
+        }
+    }
+
+    # Ensure edge IDs are consistent
+    if (nrow(current_data$edges) > 0) {
+        if (!"id" %in% names(current_data$edges) || any(is.na(current_data$edges$id))) {
+            current_data$edges$id <- paste(current_data$edges$from, current_data$edges$to, sep = "_")
+            fixes_applied <- fixes_applied + 1
+            messages <- c(messages, "Fixed edge IDs")
+        }
+    }
+
+    final_message <- if (length(messages) > 0) {
+        paste(messages, collapse = "; ")
+    } else {
+        "Network integrity validated"
+    }
+
+    return(list(
+        valid = TRUE,
+        message = final_message,
+        fixes_applied = fixes_applied
+    ))
 }
 
 #' Format Node Information for Display
