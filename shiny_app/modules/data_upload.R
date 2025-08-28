@@ -543,10 +543,24 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data) {
                 # Determine match type for debugging
                 match_type <- if (exact_match) "exact" else if (normalized_match) "normalized" else "partial"
 
+                # Extract sentence data if available
+                pmid_data <- assertion$pmid_data
+                sentence_data <- list()
+                if (!is.null(pmid_data) && is.list(pmid_data)) {
+                    for (pmid in pmid_list) {
+                        if (!is.null(pmid_data[[pmid]]) && !is.null(pmid_data[[pmid]]$sentences)) {
+                            sentence_data[[pmid]] <- pmid_data[[pmid]]$sentences
+                        } else {
+                            sentence_data[[pmid]] <- character(0)
+                        }
+                    }
+                }
+
                 return(list(
                     found = TRUE,
                     message = paste("Found", length(pmid_list), "PMIDs for edge (", match_type, "match)"),
                     pmid_list = pmid_list,
+                    sentence_data = sentence_data,
                     evidence_count = assertion$evidence_count %||% length(pmid_list),
                     relationship_degree = assertion$relationship_degree %||% "unknown",
                     predicate = assertion$predicate %||% "CAUSES",

@@ -218,6 +218,42 @@ class DatabaseOperations:
             print(f"Warning: Error fetching CUI name mappings: {e}")
             return {}
 
+    def fetch_causal_sentences(self, cursor, pmid_list: List[str]) -> Dict[str, List[str]]:
+        """Fetch causal sentences from the causalsentence table for given PMIDs."""
+        if not pmid_list:
+            return {}
+
+        # Create placeholders for the PMID list
+        pmid_placeholders = self._create_cui_placeholders(pmid_list)
+
+        query = f"""
+        SELECT pmid, sentence
+        FROM causalsentence
+        WHERE pmid IN ({pmid_placeholders})
+        ORDER BY pmid, sentence
+        """
+
+        try:
+            # Use concise logging for sentence fetching to avoid terminal clutter
+            print(f"Fetching causal sentences for {len(pmid_list)} PMIDs...")
+            cursor.execute(query, pmid_list)
+            results = cursor.fetchall()
+
+            # Create mapping dictionary: PMID -> list of sentences
+            pmid_sentences = {}
+            for row in results:
+                pmid = str(row[0])  # Ensure PMID is string
+                sentence = row[1]
+                if pmid not in pmid_sentences:
+                    pmid_sentences[pmid] = []
+                pmid_sentences[pmid].append(sentence)
+
+            return pmid_sentences
+
+        except Exception as e:
+            print(f"Warning: Error fetching causal sentences: {e}")
+            return {}
+
     def fetch_first_degree_relationships(self, cursor):
         """Fetch first-degree causal relationships with detailed assertions including PMIDs."""
         with TimingContext("first_degree_fetch", self.timing_data):
@@ -251,6 +287,16 @@ class DatabaseOperations:
             first_degree_cuis = set()
             detailed_assertions = []
 
+            # Collect all PMIDs for sentence fetching
+            all_pmids = []
+            for row in first_degree_results:
+                _, _, _, _, _, _, pmid_list = row
+                if pmid_list:
+                    all_pmids.extend(pmid_list.split(','))
+
+            # Fetch sentences for all PMIDs
+            pmid_sentences = self.fetch_causal_sentences(cursor, list(set(all_pmids))) if all_pmids else {}
+
             for row in first_degree_results:
                 subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
 
@@ -258,7 +304,16 @@ class DatabaseOperations:
                 first_degree_cuis.add(subject_name)
                 first_degree_cuis.add(object_name)
 
-                # Create detailed assertion with PMID information
+                # Process PMID list and add sentence data
+                pmids = pmid_list.split(',') if pmid_list else []
+                pmid_data = {}
+                for pmid in pmids:
+                    pmid = pmid.strip()
+                    pmid_data[pmid] = {
+                        "sentences": pmid_sentences.get(pmid, [])
+                    }
+
+                # Create detailed assertion with PMID and sentence information
                 detailed_assertions.append({
                     "subject_name": subject_name,
                     "subject_cui": subject_cui,
@@ -267,7 +322,8 @@ class DatabaseOperations:
                     "object_cui": object_cui,
                     "evidence_count": evidence,
                     "relationship_degree": "first",
-                    "pmid_list": pmid_list.split(',') if pmid_list else []
+                    "pmid_list": pmids,
+                    "pmid_data": pmid_data
                 })
 
             return first_degree_cuis, first_degree_links, detailed_assertions
@@ -309,8 +365,27 @@ class DatabaseOperations:
             detailed_assertions = []
             second_degree_links = []
 
+            # Collect all PMIDs for sentence fetching
+            all_pmids = []
+            for row in second_degree_results:
+                _, _, _, _, _, _, pmid_list = row
+                if pmid_list:
+                    all_pmids.extend(pmid_list.split(','))
+
+            # Fetch sentences for all PMIDs
+            pmid_sentences = self.fetch_causal_sentences(cursor, list(set(all_pmids))) if all_pmids else {}
+
             for row in second_degree_results:
                 subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
+
+                # Process PMID list and add sentence data
+                pmids = pmid_list.split(',') if pmid_list else []
+                pmid_data = {}
+                for pmid in pmids:
+                    pmid = pmid.strip()
+                    pmid_data[pmid] = {
+                        "sentences": pmid_sentences.get(pmid, [])
+                    }
 
                 detailed_assertions.append({
                     "subject_name": subject_name,
@@ -320,7 +395,8 @@ class DatabaseOperations:
                     "object_cui": object_cui,
                     "evidence_count": evidence,
                     "relationship_degree": "second",
-                    "pmid_list": pmid_list.split(',') if pmid_list else []
+                    "pmid_list": pmids,
+                    "pmid_data": pmid_data
                 })
 
                 second_degree_links.append((subject_name, object_name))
@@ -386,8 +462,27 @@ class DatabaseOperations:
             third_degree_links = [(row[0], row[1]) for row in third_degree_results]
             detailed_assertions = []
 
+            # Collect all PMIDs for sentence fetching
+            all_pmids = []
+            for row in third_degree_results:
+                _, _, _, _, _, _, pmid_list = row
+                if pmid_list:
+                    all_pmids.extend(pmid_list.split(','))
+
+            # Fetch sentences for all PMIDs
+            pmid_sentences = self.fetch_causal_sentences(cursor, list(set(all_pmids))) if all_pmids else {}
+
             for row in third_degree_results:
                 subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
+
+                # Process PMID list and add sentence data
+                pmids = pmid_list.split(',') if pmid_list else []
+                pmid_data = {}
+                for pmid in pmids:
+                    pmid = pmid.strip()
+                    pmid_data[pmid] = {
+                        "sentences": pmid_sentences.get(pmid, [])
+                    }
 
                 detailed_assertions.append({
                     "subject_name": subject_name,
@@ -397,7 +492,8 @@ class DatabaseOperations:
                     "object_cui": object_cui,
                     "evidence_count": evidence,
                     "relationship_degree": "third",
-                    "pmid_list": pmid_list.split(',') if pmid_list else []
+                    "pmid_list": pmids,
+                    "pmid_data": pmid_data
                 })
 
             return third_degree_links, detailed_assertions

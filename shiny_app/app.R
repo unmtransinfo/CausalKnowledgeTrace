@@ -414,7 +414,24 @@ ui <- dashboardPage(
                             div(class = "dag-resize-handle")
                         ),
                         div(style = "margin-top: 10px;",
-                            helpText("Click on edges to view information below.")
+                            helpText("Click on edges to view information below. Select nodes or edges and use removal buttons."),
+                            div(style = "margin-top: 5px;",
+                                actionButton("remove_node_btn", "Remove Selected Node",
+                                           class = "btn-danger btn-sm",
+                                           style = "margin-right: 5px;",
+                                           icon = icon("trash")),
+                                actionButton("remove_edge_btn", "Remove Selected Edge",
+                                           class = "btn-warning btn-sm",
+                                           style = "margin-right: 5px;",
+                                           icon = icon("scissors")),
+                                actionButton("undo_removal", "Undo Last Removal",
+                                           class = "btn-info btn-sm",
+                                           style = "margin-right: 10px;",
+                                           icon = icon("undo")),
+                                span(id = "network_stats",
+                                     style = "font-size: 12px; color: #666; margin-left: 10px;",
+                                     textOutput("network_stats_text", inline = TRUE))
+                            )
                         )
                     )
                 ),
@@ -1169,6 +1186,8 @@ server <- function(input, output, session) {
     
     # Render the network using modular function
     output$network <- renderVisNetwork({
+        # Include force_refresh to trigger re-rendering for undo functionality
+        current_data$force_refresh
         create_interactive_network(current_data$nodes, current_data$edges,
                                  input$physics_strength, input$spring_length)
     })
@@ -1254,6 +1273,60 @@ server <- function(input, output, session) {
                     "PMID" = sapply(pmid_data$pmid_list, function(pmid) {
                         paste0('<a href="https://pubmed.ncbi.nlm.nih.gov/', pmid, '/" target="_blank">', pmid, '</a>')
                     }),
+                    "Causal Sentences" = sapply(1:length(pmid_data$pmid_list), function(i) {
+                        pmid <- pmid_data$pmid_list[i]
+                        sentences <- pmid_data$sentence_data[[pmid]]
+                        if (is.null(sentences) || length(sentences) == 0) {
+                            return("No sentences available")
+                        } else {
+                            # Create unique IDs for this PMID's content
+                            short_id <- paste0("short_", pmid, "_", i)
+                            full_id <- paste0("full_", pmid, "_", i)
+                            expand_id <- paste0("expand_", pmid, "_", i)
+                            collapse_id <- paste0("collapse_", pmid, "_", i)
+
+                            # Format all sentences
+                            all_formatted_sentences <- sapply(sentences, function(s) {
+                                if (nchar(s) > 200) {
+                                    paste0(substr(s, 1, 197), "...")
+                                } else {
+                                    s
+                                }
+                            })
+
+                            # Create short version (first 3 sentences)
+                            display_sentences <- all_formatted_sentences[1:min(3, length(all_formatted_sentences))]
+                            short_content <- paste(display_sentences, collapse = "<br><br>")
+
+                            # Create full version (all sentences)
+                            full_content <- paste(all_formatted_sentences, collapse = "<br><br>")
+
+                            if (length(sentences) > 3) {
+                                # Create expandable content
+                                result <- paste0(
+                                    '<div id="', short_id, '">',
+                                    short_content,
+                                    '<br><a href="javascript:void(0)" onclick="',
+                                    "document.getElementById('", short_id, "').style.display='none'; ",
+                                    "document.getElementById('", full_id, "').style.display='block';",
+                                    '" style="color: #337ab7; text-decoration: underline; cursor: pointer;">',
+                                    '<i>... and ', length(sentences) - 3, ' more sentences (click to expand)</i>',
+                                    '</a></div>',
+                                    '<div id="', full_id, '" style="display: none;">',
+                                    full_content,
+                                    '<br><a href="javascript:void(0)" onclick="',
+                                    "document.getElementById('", full_id, "').style.display='none'; ",
+                                    "document.getElementById('", short_id, "').style.display='block';",
+                                    '" style="color: #337ab7; text-decoration: underline; cursor: pointer;">',
+                                    '<i>(click to collapse)</i>',
+                                    '</a></div>'
+                                )
+                            } else {
+                                result <- short_content
+                            }
+                            return(result)
+                        }
+                    }),
                     stringsAsFactors = FALSE,
                     check.names = FALSE
                 )
@@ -1264,6 +1337,11 @@ server <- function(input, output, session) {
                     "To Node" = selection_data$selected_edge$to,
                     "PMID" = if (current_data$assertions_loaded) {
                         "No PMID data available for this edge"
+                    } else {
+                        "Causal assertions data not loaded"
+                    },
+                    "Causal Sentences" = if (current_data$assertions_loaded) {
+                        "No sentence data available"
                     } else {
                         "Causal assertions data not loaded"
                     },
@@ -1288,9 +1366,11 @@ server <- function(input, output, session) {
         responsive = TRUE,
         columnDefs = list(
             list(className = 'dt-left', targets = '_all'),
-            list(width = '25%', targets = 0),  # From Node column
-            list(width = '25%', targets = 1),  # To Node column
-            list(width = '50%', targets = 2)   # PMID column
+            list(width = '18%', targets = 0),  # From Node column
+            list(width = '18%', targets = 1),  # To Node column
+            list(width = '12%', targets = 2),  # PMID column
+            list(width = '52%', targets = 3),  # Causal Sentences column (wider for expandable content)
+            list(className = 'dt-body-nowrap', targets = c(0, 1, 2))  # Prevent wrapping in first 3 columns
         ),
         scrollCollapse = TRUE,
         paging = TRUE,
@@ -1325,7 +1405,158 @@ server <- function(input, output, session) {
             duration = 2
         )
     })
-    
+
+    # ===== NODE AND EDGE REMOVAL EVENT HANDLERS =====
+
+    # Debug: Monitor node selections
+    observeEvent(input$network_selected, {
+        cat("DEBUG: Node selected:", input$network_selected, "\n")
+    })
+
+    # Debug: Monitor edge selections
+    observeEvent(input$selected_edge_info, {
+        cat("DEBUG: Edge selected:", input$selected_edge_info, "\n")
+    })
+
+    # Remove selected node
+    observeEvent(input$remove_node_btn, {
+        if (is.null(current_data$nodes) || nrow(current_data$nodes) == 0) {
+            showNotification("No graph loaded", type = "warning")
+            return()
+        }
+
+        # Get selected node from network
+        selected_node <- input$network_selected
+        cat("DEBUG: Selected node for removal:", selected_node, "\n")
+
+        if (is.null(selected_node) || length(selected_node) == 0 || selected_node == "") {
+            showNotification("Please select a node first by clicking on it", type = "warning")
+            return()
+        }
+
+        # Remove the node
+        result <- remove_node_from_network(session, "network", selected_node, current_data)
+
+        if (result$success) {
+            showNotification(result$message, type = "message", duration = 3)
+
+            # Update DAG object if it exists
+            if (!is.null(current_data$dag_object)) {
+                # Note: DAG object becomes invalid after manual modifications
+                current_data$dag_object <- NULL
+                showNotification("DAG object cleared due to manual modifications", type = "message")
+            }
+        } else {
+            showNotification(result$message, type = "error")
+        }
+    })
+
+    # Remove selected edge
+    observeEvent(input$remove_edge_btn, {
+        if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
+            showNotification("No edges in graph", type = "warning")
+            return()
+        }
+
+        # Get selected edge
+        selected_edge <- input$selected_edge_info
+        cat("DEBUG: Selected edge for removal:", selected_edge, "\n")
+
+        if (is.null(selected_edge) || selected_edge == "") {
+            showNotification("Please select an edge first by clicking on it", type = "warning")
+            return()
+        }
+
+        # Remove the edge
+        result <- remove_edge_from_network(session, "network", selected_edge, current_data)
+
+        if (result$success) {
+            showNotification(result$message, type = "message", duration = 3)
+
+            # Update DAG object if it exists
+            if (!is.null(current_data$dag_object)) {
+                # Note: DAG object becomes invalid after manual modifications
+                current_data$dag_object <- NULL
+                showNotification("DAG object cleared due to manual modifications", type = "message")
+            }
+        } else {
+            showNotification(result$message, type = "error")
+        }
+    })
+
+    # Undo last removal
+    observeEvent(input$undo_removal, {
+        result <- undo_last_removal(session, "network", current_data)
+
+        if (result$success) {
+            showNotification(result$message, type = "message", duration = 3)
+        } else {
+            showNotification(result$message, type = "warning")
+        }
+    })
+
+    # ===== KEYBOARD SHORTCUT HANDLERS =====
+
+    # Keyboard node removal (Delete/Backspace key)
+    observeEvent(input$keyboard_remove_node, {
+        if (is.null(current_data$nodes) || nrow(current_data$nodes) == 0) {
+            return()
+        }
+
+        node_id <- input$keyboard_remove_node$nodeId
+        if (!is.null(node_id) && node_id != "") {
+            result <- remove_node_from_network(session, "network", node_id, current_data)
+
+            if (result$success) {
+                showNotification(paste("Deleted:", result$message), type = "message", duration = 2)
+
+                # Update DAG object if it exists
+                if (!is.null(current_data$dag_object)) {
+                    current_data$dag_object <- NULL
+                }
+            }
+        }
+    })
+
+    # Keyboard edge removal (Delete/Backspace key)
+    observeEvent(input$keyboard_remove_edge, {
+        if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
+            return()
+        }
+
+        edge_id <- input$keyboard_remove_edge$edgeId
+        if (!is.null(edge_id) && edge_id != "") {
+            result <- remove_edge_from_network(session, "network", edge_id, current_data)
+
+            if (result$success) {
+                showNotification(paste("Deleted:", result$message), type = "message", duration = 2)
+
+                # Update DAG object if it exists
+                if (!is.null(current_data$dag_object)) {
+                    current_data$dag_object <- NULL
+                }
+            }
+        }
+    })
+
+    # Keyboard undo (Ctrl+Z)
+    observeEvent(input$keyboard_undo, {
+        result <- undo_last_removal(session, "network", current_data)
+
+        if (result$success) {
+            showNotification(paste("Undo:", result$message), type = "message", duration = 2)
+        }
+    })
+
+    # Network statistics output
+    output$network_stats_text <- renderText({
+        if (is.null(current_data$nodes) || is.null(current_data$edges)) {
+            return("No graph loaded")
+        }
+        stats <- get_network_stats(current_data)
+        paste("Nodes:", stats$nodes, "| Edges:", stats$edges)
+    })
+
     # Node information output using modular function
     output$node_info <- renderText({
         format_node_info(input$network_selected, current_data$nodes)
