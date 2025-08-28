@@ -169,6 +169,15 @@ validate_all_inputs <- function(input) {
     if (!outcome_validation$valid) {
         errors <- c(errors, paste("Outcome CUIs:", outcome_validation$message))
     }
+
+    # Validate blacklist CUIs if provided
+    blacklist_validation <- list(valid = TRUE, cuis = c())
+    if (!is.null(input$blacklist_cuis) && input$blacklist_cuis != "") {
+        blacklist_validation <- validate_cui(input$blacklist_cuis)
+        if (!blacklist_validation$valid) {
+            errors <- c(errors, paste("Blacklist CUIs:", blacklist_validation$message))
+        }
+    }
     
     # Validate exposure name
     exposure_name_validation <- validate_name(input$exposure_name)
@@ -216,6 +225,7 @@ validate_all_inputs <- function(input) {
         errors = errors,
         exposure_cuis = if (exposure_validation$valid) exposure_validation$cuis else NULL,
         outcome_cuis = if (outcome_validation$valid) outcome_validation$cuis else NULL,
+        blacklist_cuis = if (blacklist_validation$valid) blacklist_validation$cuis else c(),
         exposure_name = if (exposure_name_validation$valid) exposure_name_validation$name else NULL,
         outcome_name = if (outcome_name_validation$valid) outcome_name_validation$name else NULL,
         predication_types = if (predication_validation$valid) predication_validation$types else c("CAUSES"),
