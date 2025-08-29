@@ -566,7 +566,9 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data) {
                     predicate = assertion$predicate %||% "CAUSES",
                     match_type = match_type,
                     original_subject = assertion$subject_name,
-                    original_object = assertion$object_name
+                    original_object = assertion$object_name,
+                    subject_cui = assertion$subject_cui %||% "",
+                    object_cui = assertion$object_cui %||% ""
                 ))
             }
         }

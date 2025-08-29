@@ -1266,11 +1266,24 @@ server <- function(input, output, session) {
 
             # Create edge information with individual PMID rows
             if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
+                # Create formatted node names with CUI information
+                from_node_with_cui <- if (!is.null(pmid_data$subject_cui) && pmid_data$subject_cui != "") {
+                    paste0(selection_data$selected_edge$from, " [", pmid_data$subject_cui, "]")
+                } else {
+                    selection_data$selected_edge$from
+                }
+
+                to_node_with_cui <- if (!is.null(pmid_data$object_cui) && pmid_data$object_cui != "") {
+                    paste0(selection_data$selected_edge$to, " [", pmid_data$object_cui, "]")
+                } else {
+                    selection_data$selected_edge$to
+                }
+
                 # Create one row per PMID
                 edge_info <- data.frame(
-                    "From Node" = rep(selection_data$selected_edge$from, length(pmid_data$pmid_list)),
+                    "From Node" = rep(from_node_with_cui, length(pmid_data$pmid_list)),
                     "Predicate" = rep(pmid_data$predicate, length(pmid_data$pmid_list)),
-                    "To Node" = rep(selection_data$selected_edge$to, length(pmid_data$pmid_list)),
+                    "To Node" = rep(to_node_with_cui, length(pmid_data$pmid_list)),
                     "PMID" = sapply(pmid_data$pmid_list, function(pmid) {
                         paste0('<a href="https://pubmed.ncbi.nlm.nih.gov/', pmid, '/" target="_blank">', pmid, '</a>')
                     }),
@@ -1332,15 +1345,28 @@ server <- function(input, output, session) {
                     check.names = FALSE
                 )
             } else {
+                # Create formatted node names with CUI information (if available from pmid_data)
+                from_node_with_cui <- if (!is.null(pmid_data$subject_cui) && pmid_data$subject_cui != "") {
+                    paste0(selection_data$selected_edge$from, " [", pmid_data$subject_cui, "]")
+                } else {
+                    selection_data$selected_edge$from
+                }
+
+                to_node_with_cui <- if (!is.null(pmid_data$object_cui) && pmid_data$object_cui != "") {
+                    paste0(selection_data$selected_edge$to, " [", pmid_data$object_cui, "]")
+                } else {
+                    selection_data$selected_edge$to
+                }
+
                 # Show single row with no PMID data message
                 edge_info <- data.frame(
-                    "From Node" = selection_data$selected_edge$from,
+                    "From Node" = from_node_with_cui,
                     "Predicate" = if (current_data$assertions_loaded) {
                         pmid_data$predicate %||% "CAUSES"
                     } else {
                         "N/A"
                     },
-                    "To Node" = selection_data$selected_edge$to,
+                    "To Node" = to_node_with_cui,
                     "PMID" = if (current_data$assertions_loaded) {
                         "No PMID data available for this edge"
                     } else {
