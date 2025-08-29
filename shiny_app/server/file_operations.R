@@ -79,11 +79,22 @@ create_file_operations_server <- function(input, output, session, current_data) 
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
                         current_data$assertions_loaded <- TRUE
+                        current_data$lazy_loader <- assertions_result$lazy_loader  # Store lazy loader if available
+                        current_data$loading_strategy <- assertions_result$loading_strategy %||% "standard"
+                        current_data$edge_index <- assertions_result$edge_index  # Store edge index if available
+
                         cat("Loaded causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                        if (!is.null(assertions_result$loading_strategy)) {
+                            cat("Loading strategy:", assertions_result$loading_strategy, "\n")
+                        }
 
                         # Show notification about loaded assertions
+                        notification_msg <- paste("Loaded causal assertions with", length(assertions_result$assertions), "relationships")
+                        if (!is.null(assertions_result$loading_strategy) && assertions_result$loading_strategy != "standard") {
+                            notification_msg <- paste(notification_msg, "(", assertions_result$loading_strategy, "mode )")
+                        }
                         showNotification(
-                            paste("Loaded causal assertions with", length(assertions_result$assertions), "relationships"),
+                            notification_msg,
                             type = "message",
                             duration = 3
                         )
@@ -198,7 +209,14 @@ create_file_operations_server <- function(input, output, session, current_data) 
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
                         current_data$assertions_loaded <- TRUE
+                        current_data$lazy_loader <- assertions_result$lazy_loader  # Store lazy loader if available
+                        current_data$loading_strategy <- assertions_result$loading_strategy %||% "standard"
+                        current_data$edge_index <- assertions_result$edge_index  # Store edge index if available
+
                         cat("Loaded causal assertions for uploaded file k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                        if (!is.null(assertions_result$loading_strategy)) {
+                            cat("Loading strategy:", assertions_result$loading_strategy, "\n")
+                        }
                     } else {
                         current_data$causal_assertions <- list()
                         current_data$assertions_loaded <- FALSE
