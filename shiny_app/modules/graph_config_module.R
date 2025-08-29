@@ -158,25 +158,7 @@ graphConfigUI <- function(id) {
                     )
                 ),
 
-                # Row 2.5: Blacklist CUIs
-                fluidRow(
-                    column(12,
-                        # Blacklist CUIs
-                        div(
-                            class = "form-group",
-                            tags$label("Blacklist CUIs", class = "control-label"),
-                            textAreaInput(
-                                ns("blacklist_cuis"),
-                                label = NULL,
-                                value = "",
-                                placeholder = "C0000000, C1111111, C2222222",
-                                rows = 2,
-                                width = "100%"
-                            ),
-                            helpText("Optional: CUIs to exclude from the graph analysis. Enter comma-delimited CUI codes (format: C followed by 7 digits). These concepts will be filtered out during graph creation.")
-                        )
-                    )
-                ),
+
 
                 # Row 3: Squelch Threshold and K-hops
                 fluidRow(
@@ -242,7 +224,7 @@ graphConfigUI <- function(id) {
                     )
                 ),
 
-                # Row 5: SemMedDB Version (centered)
+                # Row 5: SemMedDB Version and Blacklist CUIs
                 fluidRow(
                     column(6,
                         # SemMedDB Version
@@ -260,8 +242,20 @@ graphConfigUI <- function(id) {
                         helpText("SemMedDB version by filtering method.")
                     ),
                     column(6,
-                        # Empty column for balance
-                        div(style = "height: 1px;")
+                        # Blacklist CUIs
+                        div(
+                            class = "form-group",
+                            tags$label("Blacklist CUIs", class = "control-label"),
+                            textAreaInput(
+                                ns("blacklist_cuis"),
+                                label = NULL,
+                                value = "",
+                                placeholder = "C0000000, C1111111, C2222222",
+                                rows = 2,
+                                width = "100%"
+                            ),
+                            helpText("Optional: CUIs to exclude from the graph analysis. Enter comma-delimited CUI codes (format: C followed by 7 digits). These concepts will be filtered out during graph creation.")
+                        )
                     )
                 ),
                 
