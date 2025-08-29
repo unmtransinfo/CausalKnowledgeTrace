@@ -277,6 +277,56 @@ class DatabaseOperations:
             print(f"Warning: Error fetching causal sentences: {e}")
             return {}
 
+    def fetch_causal_sentences_by_sentence_id(self, cursor, pmid_sentence_pairs: List[str]) -> Dict[str, str]:
+        """Fetch causal sentences from the causalsentence table using PMID and sentence_id pairs."""
+        if not pmid_sentence_pairs:
+            return {}
+
+        # Parse PMID:sentence_id pairs
+        pmid_list = []
+        sentence_id_list = []
+        for pair in pmid_sentence_pairs:
+            if ':' in pair:
+                pmid, sentence_id = pair.strip().split(':', 1)
+                pmid_list.append(pmid)
+                sentence_id_list.append(sentence_id)
+
+        if not pmid_list:
+            return {}
+
+        # Create placeholders for the lists
+        pmid_placeholders = self._create_cui_placeholders(pmid_list)
+        sentence_id_placeholders = self._create_cui_placeholders(sentence_id_list)
+
+        query = f"""
+        SELECT pmid, sentence_id, sentence
+        FROM causalsentence
+        WHERE pmid IN ({pmid_placeholders})
+          AND sentence_id IN ({sentence_id_placeholders})
+        ORDER BY pmid, sentence_id
+        """
+
+        try:
+            # Use concise logging for sentence fetching to avoid terminal clutter
+            print(f"Fetching causal sentences for {len(pmid_list)} PMID-sentence_id pairs...")
+            cursor.execute(query, pmid_list + sentence_id_list)
+            results = cursor.fetchall()
+
+            # Create mapping dictionary: "PMID:sentence_id" -> sentence
+            pmid_sentence_mapping = {}
+            for row in results:
+                pmid = str(row[0])  # Ensure PMID is string
+                sentence_id = str(row[1])  # Ensure sentence_id is string
+                sentence = row[2]
+                key = f"{pmid}:{sentence_id}"
+                pmid_sentence_mapping[key] = sentence
+
+            return pmid_sentence_mapping
+
+        except Exception as e:
+            print(f"Warning: Error fetching causal sentences by sentence_id: {e}")
+            return {}
+
     def fetch_first_degree_relationships(self, cursor):
         """Fetch first-degree causal relationships with detailed assertions including PMIDs."""
         with TimingContext("first_degree_fetch", self.timing_data):
@@ -286,11 +336,12 @@ class DatabaseOperations:
             predication_condition = self._create_predication_condition()
             blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
-            # Enhanced query to include CUIs, predicate, and individual PMIDs
+            # Enhanced query to include CUIs, predicate, and individual PMIDs with sentence_id
             query_first_degree = f"""
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
                    cp.subject_cui, cp.object_cui, cp.predicate,
-                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list
+                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+                   STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
             FROM causalpredication cp
             WHERE {predication_condition}
               AND ({exposure_condition})
@@ -311,30 +362,40 @@ class DatabaseOperations:
             first_degree_cuis = set()
             detailed_assertions = []
 
-            # Collect all PMIDs for sentence fetching
-            all_pmids = []
+            # Collect all PMID-sentence_id pairs for sentence fetching
+            all_pmid_sentence_pairs = []
             for row in first_degree_results:
-                _, _, _, _, _, _, pmid_list = row
-                if pmid_list:
-                    all_pmids.extend(pmid_list.split(','))
+                _, _, _, _, _, _, pmid_list, pmid_sentence_id_list = row
+                if pmid_sentence_id_list:
+                    all_pmid_sentence_pairs.extend(pmid_sentence_id_list.split(','))
 
-            # Fetch sentences for all PMIDs
-            pmid_sentences = self.fetch_causal_sentences(cursor, list(set(all_pmids))) if all_pmids else {}
+            # Fetch sentences for all PMID-sentence_id pairs
+            pmid_sentences = self.fetch_causal_sentences_by_sentence_id(cursor, all_pmid_sentence_pairs) if all_pmid_sentence_pairs else {}
 
             for row in first_degree_results:
-                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
+                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list, pmid_sentence_id_list = row
 
                 # Add to CUI set for further degree processing
                 first_degree_cuis.add(subject_name)
                 first_degree_cuis.add(object_name)
 
-                # Process PMID list and add sentence data
+                # Process PMID list and add sentence data using sentence_id for precise matching
                 pmids = pmid_list.split(',') if pmid_list else []
+                pmid_sentence_pairs = pmid_sentence_id_list.split(',') if pmid_sentence_id_list else []
                 pmid_data = {}
                 for pmid in pmids:
                     pmid = pmid.strip()
+                    # Find matching sentences for this specific PMID using sentence_id
+                    matching_sentences = []
+                    for pair in pmid_sentence_pairs:
+                        if ':' in pair:
+                            pair_pmid, sentence_id = pair.strip().split(':', 1)
+                            if pair_pmid == pmid:
+                                sentence_key = f"{pmid}:{sentence_id}"
+                                if sentence_key in pmid_sentences:
+                                    matching_sentences.append(pmid_sentences[sentence_key])
                     pmid_data[pmid] = {
-                        "sentences": pmid_sentences.get(pmid, [])
+                        "sentences": matching_sentences
                     }
 
                 # Create detailed assertion with PMID and sentence information
@@ -369,7 +430,8 @@ class DatabaseOperations:
             query_second_degree = f"""
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
                    cp.subject_cui, cp.object_cui, cp.predicate,
-                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list
+                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+                   STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
             FROM causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
@@ -390,26 +452,36 @@ class DatabaseOperations:
             detailed_assertions = []
             second_degree_links = []
 
-            # Collect all PMIDs for sentence fetching
-            all_pmids = []
+            # Collect all PMID-sentence_id pairs for sentence fetching
+            all_pmid_sentence_pairs = []
             for row in second_degree_results:
-                _, _, _, _, _, _, pmid_list = row
-                if pmid_list:
-                    all_pmids.extend(pmid_list.split(','))
+                _, _, _, _, _, _, pmid_list, pmid_sentence_id_list = row
+                if pmid_sentence_id_list:
+                    all_pmid_sentence_pairs.extend(pmid_sentence_id_list.split(','))
 
-            # Fetch sentences for all PMIDs
-            pmid_sentences = self.fetch_causal_sentences(cursor, list(set(all_pmids))) if all_pmids else {}
+            # Fetch sentences for all PMID-sentence_id pairs
+            pmid_sentences = self.fetch_causal_sentences_by_sentence_id(cursor, all_pmid_sentence_pairs) if all_pmid_sentence_pairs else {}
 
             for row in second_degree_results:
-                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
+                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list, pmid_sentence_id_list = row
 
-                # Process PMID list and add sentence data
+                # Process PMID list and add sentence data using sentence_id for precise matching
                 pmids = pmid_list.split(',') if pmid_list else []
+                pmid_sentence_pairs = pmid_sentence_id_list.split(',') if pmid_sentence_id_list else []
                 pmid_data = {}
                 for pmid in pmids:
                     pmid = pmid.strip()
+                    # Find matching sentences for this specific PMID using sentence_id
+                    matching_sentences = []
+                    for pair in pmid_sentence_pairs:
+                        if ':' in pair:
+                            pair_pmid, sentence_id = pair.strip().split(':', 1)
+                            if pair_pmid == pmid:
+                                sentence_key = f"{pmid}:{sentence_id}"
+                                if sentence_key in pmid_sentences:
+                                    matching_sentences.append(pmid_sentences[sentence_key])
                     pmid_data[pmid] = {
-                        "sentences": pmid_sentences.get(pmid, [])
+                        "sentences": matching_sentences
                     }
 
                 detailed_assertions.append({
@@ -466,7 +538,8 @@ class DatabaseOperations:
             )
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
                    cp.subject_cui, cp.object_cui, cp.predicate,
-                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list
+                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+                   STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
             FROM causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_name IN (SELECT node_name FROM second_degree_nodes)
@@ -488,26 +561,36 @@ class DatabaseOperations:
             third_degree_links = [(row[0], row[1]) for row in third_degree_results]
             detailed_assertions = []
 
-            # Collect all PMIDs for sentence fetching
-            all_pmids = []
+            # Collect all PMID-sentence_id pairs for sentence fetching
+            all_pmid_sentence_pairs = []
             for row in third_degree_results:
-                _, _, _, _, _, _, pmid_list = row
-                if pmid_list:
-                    all_pmids.extend(pmid_list.split(','))
+                _, _, _, _, _, _, pmid_list, pmid_sentence_id_list = row
+                if pmid_sentence_id_list:
+                    all_pmid_sentence_pairs.extend(pmid_sentence_id_list.split(','))
 
-            # Fetch sentences for all PMIDs
-            pmid_sentences = self.fetch_causal_sentences(cursor, list(set(all_pmids))) if all_pmids else {}
+            # Fetch sentences for all PMID-sentence_id pairs
+            pmid_sentences = self.fetch_causal_sentences_by_sentence_id(cursor, all_pmid_sentence_pairs) if all_pmid_sentence_pairs else {}
 
             for row in third_degree_results:
-                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list = row
+                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list, pmid_sentence_id_list = row
 
-                # Process PMID list and add sentence data
+                # Process PMID list and add sentence data using sentence_id for precise matching
                 pmids = pmid_list.split(',') if pmid_list else []
+                pmid_sentence_pairs = pmid_sentence_id_list.split(',') if pmid_sentence_id_list else []
                 pmid_data = {}
                 for pmid in pmids:
                     pmid = pmid.strip()
+                    # Find matching sentences for this specific PMID using sentence_id
+                    matching_sentences = []
+                    for pair in pmid_sentence_pairs:
+                        if ':' in pair:
+                            pair_pmid, sentence_id = pair.strip().split(':', 1)
+                            if pair_pmid == pmid:
+                                sentence_key = f"{pmid}:{sentence_id}"
+                                if sentence_key in pmid_sentences:
+                                    matching_sentences.append(pmid_sentences[sentence_key])
                     pmid_data[pmid] = {
-                        "sentences": pmid_sentences.get(pmid, [])
+                        "sentences": matching_sentences
                     }
 
                 detailed_assertions.append({
