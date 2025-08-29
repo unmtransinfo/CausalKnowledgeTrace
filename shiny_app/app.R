@@ -862,10 +862,11 @@ server <- function(input, output, session) {
         available_files = character(0),
         current_file = "No graph loaded",
         causal_assertions = list(),
-        assertions_loaded = FALSE
+        assertions_loaded = FALSE,
+        consolidated_cui_mappings = list()
     )
 
-    # Initialize available files list on startup
+    # Initialize available files list and consolidated CUI mappings on startup
     observe({
         tryCatch({
             current_data$available_files <- scan_for_dag_files()
@@ -874,9 +875,20 @@ server <- function(input, output, session) {
                 choices <- "No DAG files found"
             }
             updateSelectInput(session, "dag_file_selector", choices = choices)
+
+            # Load consolidated CUI mappings
+            cui_mappings_result <- load_consolidated_cui_mappings()
+            if (cui_mappings_result$success) {
+                current_data$consolidated_cui_mappings <- cui_mappings_result$mappings
+                cat("Loaded consolidated CUI mappings:", cui_mappings_result$message, "\n")
+            } else {
+                current_data$consolidated_cui_mappings <- list()
+                cat("Could not load consolidated CUI mappings:", cui_mappings_result$message, "\n")
+            }
         }, error = function(e) {
-            cat("Error scanning for DAG files on startup:", e$message, "\n")
+            cat("Error during initialization:", e$message, "\n")
             updateSelectInput(session, "dag_file_selector", choices = "No DAG files found")
+            current_data$consolidated_cui_mappings <- list()
         })
     })
 
@@ -1266,18 +1278,18 @@ server <- function(input, output, session) {
 
             # Create edge information with individual PMID rows
             if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
-                # Create formatted node names with CUI information
-                from_node_with_cui <- if (!is.null(pmid_data$subject_cui) && pmid_data$subject_cui != "") {
-                    paste0(selection_data$selected_edge$from, " [", pmid_data$subject_cui, "]")
-                } else {
-                    selection_data$selected_edge$from
-                }
+                # Create formatted node names with consolidated CUI information
+                from_node_with_cui <- format_node_with_cuis(
+                    selection_data$selected_edge$from,
+                    pmid_data$subject_cui,
+                    current_data$consolidated_cui_mappings
+                )
 
-                to_node_with_cui <- if (!is.null(pmid_data$object_cui) && pmid_data$object_cui != "") {
-                    paste0(selection_data$selected_edge$to, " [", pmid_data$object_cui, "]")
-                } else {
-                    selection_data$selected_edge$to
-                }
+                to_node_with_cui <- format_node_with_cuis(
+                    selection_data$selected_edge$to,
+                    pmid_data$object_cui,
+                    current_data$consolidated_cui_mappings
+                )
 
                 # Create one row per PMID
                 edge_info <- data.frame(
@@ -1345,18 +1357,18 @@ server <- function(input, output, session) {
                     check.names = FALSE
                 )
             } else {
-                # Create formatted node names with CUI information (if available from pmid_data)
-                from_node_with_cui <- if (!is.null(pmid_data$subject_cui) && pmid_data$subject_cui != "") {
-                    paste0(selection_data$selected_edge$from, " [", pmid_data$subject_cui, "]")
-                } else {
-                    selection_data$selected_edge$from
-                }
+                # Create formatted node names with consolidated CUI information
+                from_node_with_cui <- format_node_with_cuis(
+                    selection_data$selected_edge$from,
+                    pmid_data$subject_cui,
+                    current_data$consolidated_cui_mappings
+                )
 
-                to_node_with_cui <- if (!is.null(pmid_data$object_cui) && pmid_data$object_cui != "") {
-                    paste0(selection_data$selected_edge$to, " [", pmid_data$object_cui, "]")
-                } else {
-                    selection_data$selected_edge$to
-                }
+                to_node_with_cui <- format_node_with_cuis(
+                    selection_data$selected_edge$to,
+                    pmid_data$object_cui,
+                    current_data$consolidated_cui_mappings
+                )
 
                 # Show single row with no PMID data message
                 edge_info <- data.frame(
