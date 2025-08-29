@@ -189,12 +189,13 @@ def test_database_operations_creation():
         config = EXPOSURE_OUTCOME_CONFIGS["depression_alzheimers"]
         timing_data = {}
         
-        db_ops = DatabaseOperations(config, 50, timing_data, ['CAUSES'], 3)
-        
+        db_ops = DatabaseOperations(config, 50, timing_data, ['CAUSES'], 3, ['C1111111'])
+
         assert db_ops.config == config
         assert db_ops.threshold == 50
         assert db_ops.predication_types == ['CAUSES']
         assert db_ops.k_hops == 3
+        assert db_ops.blacklist_cuis == ['C1111111']
         
         print("✅ DatabaseOperations creation test passed")
         return True

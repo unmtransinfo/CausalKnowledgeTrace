@@ -76,8 +76,13 @@ class GraphAnalyzer:
         if yaml_config_data and 'predication_types' in yaml_config_data:
             predication_types = yaml_config_data['predication_types']
 
-        # Initialize database operations with predication types and k_hops
-        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, k_hops)
+        # Extract blacklist CUIs from YAML config if available
+        blacklist_cuis = []
+        if yaml_config_data and 'blacklist_cuis' in yaml_config_data:
+            blacklist_cuis = yaml_config_data['blacklist_cuis']
+
+        # Initialize database operations with predication types, k_hops, and blacklist_cuis
+        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, k_hops, blacklist_cuis)
 
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -182,6 +187,8 @@ class GraphAnalyzer:
             "outcome_cuis": self.config.outcome_cui_list,
             "outcome_name": self.config.outcome_name,
             "all_target_cuis": self.config.all_target_cuis,
+            "blacklist_cuis": self.db_ops.blacklist_cuis,
+            "blacklist_enabled": len(self.db_ops.blacklist_cuis) > 0,
             "threshold": self.threshold,
             "threshold_source": "yaml_min_pmids" if self.yaml_config_data else "command_line",
             "predication_types": self.db_ops.predication_types,

@@ -94,12 +94,18 @@ def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = 
 class DatabaseOperations:
     """Helper class for database operations and queries."""
 
-    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, k_hops: int = 3):
+    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, k_hops: int = 3, blacklist_cuis: List[str] = None):
         self.config = config
         self.threshold = threshold
         self.timing_data = timing_data
         self.predication_types = predication_types or ['CAUSES']
         self.k_hops = k_hops
+        self.blacklist_cuis = blacklist_cuis or []
+
+        # Log blacklist information if CUIs are provided
+        if self.blacklist_cuis:
+            print(f"Blacklist filtering enabled: {len(self.blacklist_cuis)} CUI(s) will be excluded from graph creation")
+            print(f"Blacklisted CUIs: {', '.join(self.blacklist_cuis)}")
     
     def _create_cui_placeholders(self, cui_list: List[str]) -> str:
         """Create placeholder string for multiple CUIs in SQL queries"""
@@ -109,6 +115,23 @@ class DatabaseOperations:
         """Create SQL condition for multiple CUIs"""
         placeholders = ', '.join(['%s'] * len(cui_list))
         return f"{field_name} IN ({placeholders})"
+
+    def _create_blacklist_conditions(self) -> Tuple[str, List[str]]:
+        """Create SQL conditions to exclude blacklisted CUIs"""
+        if not self.blacklist_cuis:
+            return "", []
+
+        # Create conditions to exclude blacklisted CUIs from both subject and object
+        subject_placeholders = ', '.join(['%s'] * len(self.blacklist_cuis))
+        object_placeholders = ', '.join(['%s'] * len(self.blacklist_cuis))
+
+        blacklist_condition = f"""
+              AND cp.subject_cui NOT IN ({subject_placeholders})
+              AND cp.object_cui NOT IN ({object_placeholders})"""
+
+        # Return condition and parameters (blacklist_cuis twice - once for subject, once for object)
+        blacklist_params = self.blacklist_cuis + self.blacklist_cuis
+        return blacklist_condition, blacklist_params
     
     def _create_predication_condition(self) -> str:
         """Create SQL condition for predication types"""
@@ -261,6 +284,7 @@ class DatabaseOperations:
             exposure_condition = self._create_cui_conditions(self.config.exposure_cui_list, "cp.subject_cui")
             outcome_condition = self._create_cui_conditions(self.config.outcome_cui_list, "cp.object_cui")
             predication_condition = self._create_predication_condition()
+            blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
             # Enhanced query to include CUIs, predicate, and individual PMIDs
             query_first_degree = f"""
@@ -272,14 +296,14 @@ class DatabaseOperations:
               AND ({exposure_condition})
               AND ({outcome_condition})
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
             GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
             """
 
-            # Execute with predication types + CUIs + threshold as parameters
-            params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + [self.threshold]
+            # Execute with predication types + CUIs + blacklist params + threshold as parameters
+            params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + blacklist_params + [self.threshold]
             execute_query_with_logging(cursor, query_first_degree, params, "Fetch First Degree Relationships")
 
             first_degree_results = cursor.fetchall()
@@ -340,6 +364,7 @@ class DatabaseOperations:
             # Create placeholders for the CUI list and predication condition
             cui_placeholders = self._create_cui_placeholders(first_degree_list)
             predication_condition = self._create_predication_condition()
+            blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
             query_second_degree = f"""
             SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
@@ -349,14 +374,14 @@ class DatabaseOperations:
             WHERE {predication_condition}
               AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
             GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
             """
 
-            # Parameters: predication_types + first_degree_list (twice) + threshold
-            params = self.predication_types + first_degree_list + first_degree_list + [self.threshold]
+            # Parameters: predication_types + first_degree_list (twice) + blacklist params + threshold
+            params = self.predication_types + first_degree_list + first_degree_list + blacklist_params + [self.threshold]
             execute_query_with_logging(cursor, query_second_degree, params, "Fetch Second Degree Relationships")
 
             second_degree_results = cursor.fetchall()
@@ -415,6 +440,7 @@ class DatabaseOperations:
             # Create placeholders for the CUI list and predication condition
             cui_placeholders = self._create_cui_placeholders(first_degree_list)
             predication_condition = self._create_predication_condition()
+            blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
             query_third_degree = f"""
             WITH second_degree_nodes AS (
@@ -423,7 +449,7 @@ class DatabaseOperations:
                 WHERE {predication_condition}
                   AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
                   AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
                 GROUP BY cp.subject_name
                 HAVING COUNT(DISTINCT cp.pmid) >= %s
 
@@ -434,7 +460,7 @@ class DatabaseOperations:
                 WHERE {predication_condition}
                   AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
                   AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
                 GROUP BY cp.object_name
                 HAVING COUNT(DISTINCT cp.pmid) >= %s
             )
@@ -446,16 +472,16 @@ class DatabaseOperations:
               AND (cp.subject_name IN (SELECT node_name FROM second_degree_nodes)
                    OR cp.object_name IN (SELECT node_name FROM second_degree_nodes))
               AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
+              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
             GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
             """
 
-            # Parameters: predication_types (3 times) + first_degree_list (4 times) + threshold (3 times)
-            params = (self.predication_types + first_degree_list + first_degree_list + [self.threshold] +
-                     self.predication_types + first_degree_list + first_degree_list + [self.threshold] +
-                     self.predication_types + [self.threshold])
+            # Parameters: predication_types (3 times) + first_degree_list (4 times) + blacklist_params (3 times) + threshold (3 times)
+            params = (self.predication_types + first_degree_list + first_degree_list + blacklist_params + [self.threshold] +
+                     self.predication_types + first_degree_list + first_degree_list + blacklist_params + [self.threshold] +
+                     self.predication_types + blacklist_params + [self.threshold])
             execute_query_with_logging(cursor, query_third_degree, params, "Fetch Third Degree Relationships")
 
             third_degree_results = cursor.fetchall()
