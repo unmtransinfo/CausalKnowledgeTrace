@@ -68,13 +68,83 @@ if (!dir.exists(app_dir)) {
     stop("Shiny app directory not found. Please ensure you're running this script from the project root directory.")
 }
 
+# Check for optimization features
+optimization_available <- file.exists(file.path(app_dir, "utils/optimize_all_files.R")) &&
+                         file.exists(file.path(app_dir, "modules/optimized_loading.R"))
+
+# Parse command line arguments for optimization
+args <- commandArgs(trailingOnly = TRUE)
+auto_optimize <- "--optimize" %in% args || "--auto-optimize" %in% args
+skip_optimize <- "--no-optimize" %in% args
+
 # Print startup information
 cat("=== CausalKnowledgeTrace Application ===\n")
 cat("Project Structure: Reorganized with separate Shiny app and graph creation components\n")
 cat("Shiny App Directory:", app_dir, "\n")
 cat("Graph Creation Directory:", file.path(dirname(app_dir), "graph_creation"), "\n")
 cat("Configuration File: user_input.yaml (saved in project root)\n")
+if (optimization_available) {
+    cat("Performance Optimizations: Available\n")
+} else {
+    cat("Performance Optimizations: Not available\n")
+}
 cat("=========================================\n\n")
+
+# Handle optimization if available and requested
+if (optimization_available && !skip_optimize) {
+    # Check if optimization is needed
+    result_dirs <- c("graph_creation/result", "graph_creation/output")
+    needs_optimization <- FALSE
+
+    for (dir in result_dirs) {
+        if (dir.exists(dir)) {
+            original_files <- list.files(dir, pattern = "^causal_assertions_[123]\\.json$", full.names = TRUE)
+            if (length(original_files) > 0) {
+                for (file in original_files) {
+                    k_hops_match <- regmatches(basename(file), regexpr("\\d+", basename(file)))
+                    if (length(k_hops_match) > 0) {
+                        k_hops <- as.numeric(k_hops_match[1])
+                        lightweight_file <- file.path(dir, paste0("causal_assertions_", k_hops, "_lightweight.json"))
+                        binary_file <- file.path(dir, paste0("causal_assertions_", k_hops, "_binary.rds"))
+                        if (!file.exists(lightweight_file) && !file.exists(binary_file)) {
+                            needs_optimization <- TRUE
+                            break
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    # Run optimization if needed
+    if (needs_optimization && (auto_optimize || interactive())) {
+        if (!auto_optimize && interactive()) {
+            cat("🚀 Performance optimization available! This will significantly improve app loading speed.\n")
+            response <- readline("Run optimization now? (y/n): ")
+            auto_optimize <- tolower(substr(response, 1, 1)) == "y"
+        }
+
+        if (auto_optimize) {
+            cat("🔧 Running performance optimization...\n")
+            tryCatch({
+                old_wd_opt <- getwd()
+                setwd(app_dir)
+                source("utils/optimize_all_files.R")
+                result <- optimize_all_files()
+                setwd(old_wd_opt)
+
+                if (result$summary$overall_success) {
+                    cat("✅ Optimization completed successfully!\n\n")
+                } else {
+                    cat("⚠️ Optimization completed with some issues.\n\n")
+                }
+            }, error = function(e) {
+                cat("❌ Optimization failed:", e$message, "\n\n")
+                if (exists("old_wd_opt")) setwd(old_wd_opt)
+            })
+        }
+    }
+}
 
 # Configure application parameters
 host <- "127.0.0.1"
@@ -122,6 +192,24 @@ old_wd <- getwd()
 tryCatch({
     setwd(app_dir)
     cat("Loading application...\n")
+
+    # Initialize optimization modules if available
+    if (optimization_available) {
+        tryCatch({
+            source("modules/graph_cache.R")
+            initialize_graph_cache()
+            cat("✅ Graph cache system initialized\n")
+        }, error = function(e) {
+            cat("⚠️ Warning: Could not initialize graph cache:", e$message, "\n")
+        })
+
+        tryCatch({
+            source("modules/optimized_loading.R")
+            cat("✅ Optimized loading system loaded\n")
+        }, error = function(e) {
+            cat("⚠️ Warning: Could not load optimized loading system:", e$message, "\n")
+        })
+    }
 
     # Source and run the app
     app <- source("app.R")$value

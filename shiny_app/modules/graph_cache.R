@@ -316,3 +316,107 @@ if (length(.graph_cache) == 0) {
     .graph_cache$memory_usage <- 0
     cat("Graph cache environment created (not initialized)\n")
 }
+
+#' Cache Causal Assertions
+#'
+#' Caches causal assertions data with file modification time tracking
+#'
+#' @param file_path Path to the assertions file
+#' @param assertions_data Assertions data to cache
+#' @param loading_strategy Strategy used to load the data
+#' @param lazy_loader Optional lazy loader function
+#' @export
+cache_causal_assertions <- function(file_path, assertions_data, loading_strategy = "standard", lazy_loader = NULL) {
+    if (!.graph_cache$config$enabled) {
+        return()
+    }
+
+    cache_key <- paste0("assertions_", generate_cache_key(file_path))
+
+    cache_data <- list(
+        assertions = assertions_data,
+        loading_strategy = loading_strategy,
+        lazy_loader = lazy_loader,
+        file_mtime = file.mtime(file_path),
+        cached_time = Sys.time()
+    )
+
+    # Store in memory cache
+    store_in_memory_cache(cache_key, cache_data, file_path)
+
+    # Store in persistent cache (without lazy_loader function)
+    persistent_data <- cache_data
+    persistent_data$lazy_loader <- NULL  # Functions can't be serialized
+    store_persistent_cache(cache_key, persistent_data, file_path)
+
+    cat("Cached causal assertions:", basename(file_path), "(", loading_strategy, "mode )\n")
+}
+
+#' Get Cached Causal Assertions
+#'
+#' Retrieves cached causal assertions if available and up-to-date
+#'
+#' @param file_path Path to the assertions file
+#' @return List with success status and cached data if available
+#' @export
+get_cached_causal_assertions <- function(file_path) {
+    if (!.graph_cache$config$enabled) {
+        return(list(success = FALSE, message = "Cache disabled"))
+    }
+
+    cache_key <- paste0("assertions_", generate_cache_key(file_path))
+
+    # Check memory cache first
+    if (cache_key %in% names(.graph_cache$items)) {
+        cached_item <- .graph_cache$items[[cache_key]]
+
+        # Check if file has been modified
+        if (cached_item$data$file_mtime == file.mtime(file_path)) {
+            # Update access time
+            .graph_cache$access_times[[cache_key]] <- Sys.time()
+
+            cat("Cache HIT (memory) for assertions:", basename(file_path), "\n")
+
+            return(list(
+                success = TRUE,
+                message = "Retrieved from memory cache",
+                assertions = cached_item$data$assertions,
+                loading_strategy = cached_item$data$loading_strategy,
+                lazy_loader = cached_item$data$lazy_loader
+            ))
+        } else {
+            # File has been modified, remove from cache
+            clear_assertions_cache(file_path)
+        }
+    }
+
+    return(list(success = FALSE, message = "Not found in cache"))
+}
+
+#' Clear Assertions Cache
+#'
+#' Clears cached assertions for a specific file
+#'
+#' @param file_path Path to the assertions file
+#' @export
+clear_assertions_cache <- function(file_path) {
+    cache_key <- paste0("assertions_", generate_cache_key(file_path))
+
+    # Clear from memory cache
+    if (cache_key %in% names(.graph_cache$items)) {
+        removed_size <- .graph_cache$items[[cache_key]]$info$estimated_size_mb
+        .graph_cache$memory_usage <- .graph_cache$memory_usage - removed_size
+
+        rm(list = cache_key, envir = .graph_cache$items)
+        rm(list = cache_key, envir = .graph_cache$access_times)
+
+        cat("Cleared assertions cache (memory):", basename(file_path), "\n")
+    }
+
+    # Clear from persistent cache
+    cache_file <- file.path(.graph_cache$config$cache_dir, paste0(cache_key, ".rds"))
+    if (file.exists(cache_file)) {
+        unlink(cache_file)
+        cat("Cleared assertions cache (disk):", basename(file_path), "\n")
+    }
+}

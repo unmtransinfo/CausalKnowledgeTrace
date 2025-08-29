@@ -368,13 +368,18 @@ format_node_with_cuis <- function(node_name, single_cui = NULL, consolidated_map
 #' Load Causal Assertions Data
 #'
 #' Loads causal assertions JSON file with PMID information
+#' Uses optimized loading strategies based on file size
 #'
 #' @param filename Name of the causal assertions file (e.g., "causal_assertions_2.json")
 #' @param k_hops K-hops parameter to match with specific assertions file
 #' @param search_dirs Vector of directories to search for the file
+#' @param force_full_load Force loading of complete data (default: FALSE)
+#' @param use_optimization Use optimized loading system (default: TRUE)
 #' @return List containing success status, message, and assertions data if successful
 #' @export
-load_causal_assertions <- function(filename = NULL, k_hops = NULL, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
+load_causal_assertions <- function(filename = NULL, k_hops = NULL,
+                                 search_dirs = c("../graph_creation/result", "../graph_creation/output"),
+                                 force_full_load = FALSE, use_optimization = TRUE) {
     # If no filename provided, try to find the appropriate causal_assertions file
     if (is.null(filename)) {
         # If k_hops is provided, look for the specific file first
@@ -445,6 +450,29 @@ load_causal_assertions <- function(filename = NULL, k_hops = NULL, search_dirs =
         }
     }
 
+    # Use optimized loading if enabled
+    if (use_optimization) {
+        # Source the optimized loading module if not already loaded
+        if (!exists("load_causal_assertions_optimized")) {
+            tryCatch({
+                source("modules/optimized_loading.R")
+            }, error = function(e) {
+                cat("Warning: Could not load optimized loading module:", e$message, "\n")
+                cat("Falling back to standard loading...\n")
+                use_optimization <- FALSE
+            })
+        }
+
+        if (use_optimization && exists("load_causal_assertions_optimized")) {
+            return(load_causal_assertions_optimized(
+                filename = filename,
+                k_hops = k_hops,
+                search_dirs = search_dirs,
+                force_full_load = force_full_load
+            ))
+        }
+    }
+
     tryCatch({
         # Load JSON data with error handling for malformed JSON
         assertions_data <- tryCatch({
@@ -474,7 +502,7 @@ load_causal_assertions <- function(filename = NULL, k_hops = NULL, search_dirs =
 
         # Check if first item has expected structure
         first_item <- assertions_data[[1]]
-        required_fields <- c("subject_name", "object_name", "pmid_list")
+        required_fields <- c("subject_name", "object_name", "pmid_data")
         missing_fields <- setdiff(required_fields, names(first_item))
 
         if (length(missing_fields) > 0) {
@@ -504,13 +532,15 @@ load_causal_assertions <- function(filename = NULL, k_hops = NULL, search_dirs =
 #' Find PMID Data for Edge
 #'
 #' Finds PMID evidence for a specific causal relationship edge
+#' Supports both full data and lazy loading modes
 #'
 #' @param from_node Name of the source node (transformed/cleaned name)
 #' @param to_node Name of the target node (transformed/cleaned name)
-#' @param assertions_data List of causal assertions loaded from JSON
+#' @param assertions_data List of causal assertions loaded from JSON or lazy loader
+#' @param lazy_loader Optional lazy loader function for on-demand data loading
 #' @return List containing PMID information for the edge
 #' @export
-find_edge_pmid_data <- function(from_node, to_node, assertions_data) {
+find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader = NULL) {
     if (is.null(assertions_data) || length(assertions_data) == 0) {
         return(list(
             found = FALSE,
@@ -518,6 +548,33 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data) {
             pmid_list = character(0),
             evidence_count = 0
         ))
+    }
+
+    # Check if we have indexed access (Phase 3 optimization)
+    if (exists("current_data") && !is.null(current_data$edge_index)) {
+        if (exists("fast_edge_lookup")) {
+            indexed_result <- fast_edge_lookup(from_node, to_node, current_data$edge_index$edge_index, assertions_data)
+            if (indexed_result$found) {
+                cat("Using indexed lookup for edge\n")
+                return(indexed_result)
+            }
+        }
+    }
+
+    # Check if we need to use lazy loading for full sentence data
+    use_lazy_loading <- !is.null(lazy_loader)
+    if (use_lazy_loading) {
+        # First check metadata for the edge
+        metadata_match <- find_edge_in_metadata(from_node, to_node, assertions_data)
+        if (metadata_match$found) {
+            # Load full data for this specific edge using lazy loader
+            full_assertion <- lazy_loader(metadata_match$subject_name, metadata_match$object_name)
+            if (!is.null(full_assertion)) {
+                # Process the full assertion data
+                return(process_full_assertion(full_assertion, metadata_match$match_type))
+            }
+        }
+        # If not found in metadata, fall through to regular processing
     }
 
     # Helper function to normalize names for matching
@@ -600,11 +657,16 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data) {
             }
 
             if (exact_match || normalized_match || partial_match) {
-                pmid_list <- assertion$pmid_list
-                if (is.null(pmid_list)) pmid_list <- character(0)
+                # Extract PMID list from pmid_data keys (optimized structure)
+                pmid_list <- if (!is.null(assertion$pmid_data)) {
+                    names(assertion$pmid_data)
+                } else if (!is.null(assertion$pmid_list)) {
+                    assertion$pmid_list  # Backward compatibility
+                } else {
+                    character(0)
+                }
 
-                # Handle mixed PMID formats (strings and objects)
-                # Extract just the PMID strings, ignoring any object metadata
+                # Handle mixed PMID formats (strings and objects) - for backward compatibility
                 if (is.list(pmid_list)) {
                     clean_pmids <- character(0)
                     for (item in pmid_list) {
@@ -621,7 +683,16 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data) {
                 # Determine match type for debugging
                 match_type <- if (exact_match) "exact" else if (normalized_match) "normalized" else "partial"
 
-                # Extract sentence data if available
+                # Extract PMID list from pmid_data keys (optimized structure) - FIRST
+                pmid_list <- if (!is.null(assertion$pmid_data)) {
+                    names(assertion$pmid_data)
+                } else if (!is.null(assertion$pmid_list)) {
+                    assertion$pmid_list  # Backward compatibility
+                } else {
+                    character(0)
+                }
+
+                # Extract sentence data if available - SECOND (using correct pmid_list)
                 pmid_data <- assertion$pmid_data
                 sentence_data <- list()
                 if (!is.null(pmid_data) && is.list(pmid_data)) {
@@ -859,4 +930,125 @@ create_fallback_dag <- function() {
         Mutation -> Neurodegenerative_Disorders
         Screening_procedure -> Kidney_Diseases
     }'))
+}
+
+#' Find Edge in Metadata
+#'
+#' Searches for an edge in metadata (lightweight) assertions data
+#'
+#' @param from_node Source node name
+#' @param to_node Target node name
+#' @param metadata_data Metadata assertions data
+#' @return List with match information
+find_edge_in_metadata <- function(from_node, to_node, metadata_data) {
+    # Helper function to normalize names for matching
+    normalize_name <- function(name) {
+        if (is.null(name) || name == "") return("")
+        normalized <- tolower(name)
+        normalized <- gsub("[^a-z0-9]+", "_", normalized)
+        normalized <- gsub("_+", "_", normalized)
+        normalized <- gsub("^_|_$", "", normalized)
+        return(normalized)
+    }
+
+    # Helper function to handle medical term variations
+    handle_medical_variations <- function(dag_name, json_name) {
+        medical_mappings <- list(
+            c("hypertension", "hypertensive_disease"),
+            c("hypertension", "hypertensive_disorder"),
+            c("alzheimers", "alzheimer_s_disease"),
+            c("alzheimers", "alzheimer_disease"),
+            c("diabetes", "diabetes_mellitus"),
+            c("heart_disease", "cardiovascular_disease")
+        )
+
+        dag_norm <- normalize_name(dag_name)
+        json_norm <- normalize_name(json_name)
+
+        if (dag_norm == json_norm) return(TRUE)
+
+        for (mapping in medical_mappings) {
+            if ((dag_norm == mapping[1] && json_norm == mapping[2]) ||
+                (dag_norm == mapping[2] && json_norm == mapping[1])) {
+                return(TRUE)
+            }
+        }
+        return(FALSE)
+    }
+
+    from_normalized <- normalize_name(from_node)
+    to_normalized <- normalize_name(to_node)
+
+    # Search through metadata
+    for (assertion in metadata_data) {
+        subject_normalized <- normalize_name(assertion$subject_name)
+        object_normalized <- normalize_name(assertion$object_name)
+
+        # Try exact normalized match
+        if (from_normalized == subject_normalized && to_normalized == object_normalized) {
+            return(list(
+                found = TRUE,
+                subject_name = assertion$subject_name,
+                object_name = assertion$object_name,
+                match_type = "exact"
+            ))
+        }
+
+        # Try medical variations
+        if (handle_medical_variations(from_node, assertion$subject_name) &&
+            handle_medical_variations(to_node, assertion$object_name)) {
+            return(list(
+                found = TRUE,
+                subject_name = assertion$subject_name,
+                object_name = assertion$object_name,
+                match_type = "medical_variation"
+            ))
+        }
+    }
+
+    return(list(found = FALSE))
+}
+
+#' Process Full Assertion
+#'
+#' Processes a full assertion object and returns formatted PMID data
+#'
+#' @param assertion Full assertion object with pmid_data
+#' @param match_type Type of match found
+#' @return List with formatted PMID information
+process_full_assertion <- function(assertion, match_type) {
+    # Extract PMID list from pmid_data keys (optimized structure)
+    pmid_list <- if (!is.null(assertion$pmid_data)) {
+        names(assertion$pmid_data)
+    } else if (!is.null(assertion$pmid_list)) {
+        assertion$pmid_list  # Backward compatibility
+    } else {
+        character(0)
+    }
+
+    sentence_data <- list()
+
+    # Extract sentence data from pmid_data
+    if (!is.null(assertion$pmid_data)) {
+        for (pmid in names(assertion$pmid_data)) {
+            if (!is.null(assertion$pmid_data[[pmid]]$sentences)) {
+                sentence_data[[pmid]] <- assertion$pmid_data[[pmid]]$sentences
+            }
+        }
+    }
+
+    return(list(
+        found = TRUE,
+        message = paste("Found", length(pmid_list), "PMIDs for edge (", match_type, "match)"),
+        pmid_list = pmid_list,
+        sentence_data = sentence_data,
+        evidence_count = assertion$evidence_count %||% length(pmid_list),
+        relationship_degree = assertion$relationship_degree %||% "unknown",
+        predicate = assertion$predicate %||% "CAUSES",
+        match_type = match_type,
+        original_subject = assertion$subject_name,
+        original_object = assertion$object_name,
+        subject_cui = assertion$subject_cui %||% "",
+        object_cui = assertion$object_cui %||% ""
+    ))
 }

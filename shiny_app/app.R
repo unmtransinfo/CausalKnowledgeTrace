@@ -46,6 +46,7 @@ source("modules/node_information.R")
 source("modules/statistics.R")
 source("modules/data_upload.R")
 source("modules/causal_analysis.R")
+source("modules/optimized_loading.R")  # For optimized causal assertions loading
 
 # Try to source graph configuration module if it exists
 tryCatch({
@@ -990,18 +991,23 @@ server <- function(input, output, session) {
 
                 # Try to load corresponding causal assertions data using k_hops
                 tryCatch({
-                    assertions_result <- load_causal_assertions(k_hops = result$k_hops)
+                    # Use optimized loading system for better performance and lazy loading support
+                    assertions_result <- load_causal_assertions_optimized(k_hops = result$k_hops)
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
+                        current_data$lazy_loader <- assertions_result$lazy_loader  # Store lazy loader for sentence data
                         current_data$assertions_loaded <- TRUE
                         cat("Loaded causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                        cat("Loading strategy:", assertions_result$loading_strategy, "\n")
                     } else {
                         current_data$causal_assertions <- list()
+                        current_data$lazy_loader <- NULL
                         current_data$assertions_loaded <- FALSE
                         cat("Could not load causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
                     }
                 }, error = function(e) {
                     current_data$causal_assertions <- list()
+                    current_data$lazy_loader <- NULL
                     current_data$assertions_loaded <- FALSE
                     cat("Error loading causal assertions:", e$message, "\n")
                 })
@@ -1273,7 +1279,8 @@ server <- function(input, output, session) {
             pmid_data <- find_edge_pmid_data(
                 selection_data$selected_edge$from,
                 selection_data$selected_edge$to,
-                current_data$causal_assertions
+                current_data$causal_assertions,
+                current_data$lazy_loader
             )
 
             # Create edge information with individual PMID rows
@@ -1301,6 +1308,7 @@ server <- function(input, output, session) {
                     }),
                     "Causal Sentences" = sapply(1:length(pmid_data$pmid_list), function(i) {
                         pmid <- pmid_data$pmid_list[i]
+                        # Fix: Access sentence_data directly (it's already a named list of PMID -> sentences)
                         sentences <- pmid_data$sentence_data[[pmid]]
                         if (is.null(sentences) || length(sentences) == 0) {
                             return("No sentences available")

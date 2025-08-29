@@ -122,22 +122,8 @@ pip install -r requirements.txt
 2. **Launch the Shiny application** (choose one method):
 
    **Method 1: Enhanced Launch Script (Recommended)**
-   ```r
-   # From R console or RStudio
-   source("launch_shiny_app.R")
    ```
-
-   **Method 2: Basic Launch Script**
-   ```r
-   # From R console or RStudio
-   source("run_app.R")
-   ```
-
-   **Method 3: Direct Launch**
-   ```r
-   # From R console or RStudio
-   library(shiny)
-   runApp("shiny_app", host = "127.0.0.1", launch.browser = TRUE)
+   Rscript run_app.R
    ```
 
 3. **Access the application**:
@@ -150,7 +136,7 @@ pip install -r requirements.txt
 1. **Configure parameters** using the Shiny app's "Graph Configuration" tab
 2. **Run the graph creation**:
    ```bash
-   # Using the launch script (recommended)
+   # Using the launch script 
    python run_graph_creation.py
 
    # Or directly
