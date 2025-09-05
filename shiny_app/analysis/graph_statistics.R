@@ -98,12 +98,10 @@ create_distribution_plot_data <- function(nodes_df) {
     
     # Define colors for different node types
     color_palette <- c(
-        "Exposure" = "#FF6B6B",
-        "Outcome" = "#4ECDC4", 
-        "Other" = "#95A5A6",
-        "Unknown" = "#BDC3C7",
-        "Confounder" = "#F39C12",
-        "Mediator" = "#9B59B6"
+        "Exposure" = "#FF4500",
+        "Outcome" = "#0066CC",
+        "Other" = "#808080",
+        "Unknown" = "#BDC3C7"
     )
     
     colors <- sapply(distribution$group, function(group) {

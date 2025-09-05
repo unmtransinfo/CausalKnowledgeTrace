@@ -35,13 +35,13 @@ generate_legend_html <- function(nodes_df) {
         # Fallback if neither column exists
         return("<div style='margin: 10px;'>No category information available</div>")
     }
-    
+
     # Build HTML legend
     legend_html <- "<div style='margin: 10px;'>"
     for (i in 1:nrow(group_info)) {
         legend_html <- paste0(legend_html,
             "<div style='margin-bottom: 10px;'>",
-            "<span style='background-color: ", group_info$color[i], 
+            "<span style='background-color: ", group_info$color[i],
             "; padding: 5px 10px; border-radius: 3px; color: white; margin-right: 10px;'>",
             group_info$group[i], "</span>",
             "(", group_info$count[i], " nodes)",

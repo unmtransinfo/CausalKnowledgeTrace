@@ -259,7 +259,7 @@ To use the large graph you provided:
    ```
 
 2. **The application will automatically**:
-   - Process all nodes and edges
+   - Process all nodes and edges with optimized performance
    - Categorize nodes into three simple categories:
      - **Exposure**: Variables marked as [exposure] in the DAG
      - **Outcome**: Variables marked as [outcome] in the DAG
@@ -273,13 +273,13 @@ To use the large graph you provided:
 
 ### Node Categories and Colors
 
-The application uses a simplified three-category system:
+The application uses an optimized three-category system:
 
 - **Exposure** (Bright Orange-Red): Variables marked as [exposure] in the DAG
 - **Outcome** (Bright Blue): Variables marked as [outcome] in the DAG
 - **Other** (Gray): All other variables in the DAG
 
-This simplified system focuses on the causal structure rather than detailed medical categorization. You can customize the categorization logic by modifying the `categorize_node` function in `shiny_app/modules/node_information.R`.
+This system uses vectorized operations for fast processing of large graphs while maintaining the original color scheme.
 
 ## Installation and Running
 
@@ -364,13 +364,13 @@ This simplified system focuses on the causal structure rather than detailed medi
 
 #### Node Categories and Colors
 
-The application uses a simplified three-category system:
+The application uses an optimized three-category system:
 
 - **Exposure** (Bright Orange-Red): Variables marked as [exposure] in the DAG
 - **Outcome** (Bright Blue): Variables marked as [outcome] in the DAG
 - **Other** (Gray): All other variables in the DAG
 
-You can customize the categorization logic by modifying the `categorize_node` function in `shiny_app/modules/node_information.R`.
+The categorization uses vectorized operations for optimal performance with large graphs.
 
 ## Advanced Usage
 
@@ -397,29 +397,15 @@ dag_edges <- network_data$edges
 dag_object <- g
 ```
 
-### Custom Node Categorization
+### Performance Optimization
 
-The simplified categorization system focuses on DAG structure. To customize, modify the `categorize_node` function in `shiny_app/modules/node_information.R`:
+Node categorization has been optimized using vectorized operations instead of individual node processing. This provides the same visual categorization (Exposure/Outcome/Other) with dramatically improved performance for large graphs.
 
-```r
-categorize_node <- function(node_name, dag_object = NULL) {
-    # Extract exposure and outcome from dagitty object if available
-    exposures <- character(0)
-    outcomes <- character(0)
+The key optimization:
+- **Before**: Individual processing of each node using `sapply(nodes, categorize_node)`
+- **After**: Vectorized operations using `nodes$group[nodes$id %in% exposures] <- "Exposure"`
 
-    if (!is.null(dag_object)) {
-        exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
-        outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
-    }
-
-    # Check if node is marked as exposure or outcome in the DAG
-    if (length(exposures) > 0 && node_name %in% exposures) return("Exposure")
-    if (length(outcomes) > 0 && node_name %in% outcomes) return("Outcome")
-
-    # All other nodes are categorized as "Other"
-    return("Other")
-}
-```
+This maintains the original color scheme while providing near-instant processing even for graphs with thousands of nodes.
 
 ## Troubleshooting
 

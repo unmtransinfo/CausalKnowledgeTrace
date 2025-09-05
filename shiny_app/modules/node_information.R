@@ -8,32 +8,6 @@ if (!require(dplyr)) stop("dplyr package is required")
 if (!require(dagitty)) stop("dagitty package is required")
 if (!require(igraph)) stop("igraph package is required")
 
-#' Simplified Node Categorization Function
-#'
-#' Categorizes nodes based on DAG properties (exposure/outcome) or as "Other"
-#'
-#' @param node_name Name of the node to categorize
-#' @param dag_object dagitty object containing the DAG
-#' @return String representing the node category ("Exposure", "Outcome", or "Other")
-#' @export
-categorize_node <- function(node_name, dag_object = NULL) {
-    # Extract exposure and outcome from dagitty object if available
-    exposures <- character(0)
-    outcomes <- character(0)
-
-    if (!is.null(dag_object)) {
-        exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
-        outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
-    }
-
-    # Check if node is marked as exposure or outcome in the DAG
-    if (length(exposures) > 0 && node_name %in% exposures) return("Exposure")
-    if (length(outcomes) > 0 && node_name %in% outcomes) return("Outcome")
-
-    # All other nodes are categorized as "Other"
-    return("Other")
-}
-
 #' Get Node Color Scheme
 #'
 #' Returns the color scheme mapping for different node categories
@@ -84,33 +58,46 @@ create_nodes_dataframe <- function(dag_object) {
         ))
     }
     
-    # Create nodes dataframe
+    # Create nodes dataframe with optimized categorization
     nodes <- data.frame(
         id = all_nodes,
         label = gsub("_", " ", all_nodes),
+        group = "Other",  # Default to Other
         stringsAsFactors = FALSE
     )
-    
-    # Apply categorization with progress indication for large graphs
-    if (nrow(nodes) > 100) {
-        cat("Processing", nrow(nodes), "nodes for categorization...\n")
+
+    # Extract exposure and outcome nodes efficiently (no individual node processing)
+    exposures <- character(0)
+    outcomes <- character(0)
+
+    if (!is.null(dag_object)) {
+        exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
+        outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
     }
-    
-    nodes$group <- sapply(nodes$id, function(x) categorize_node(x, dag_object))
-    
+
+    # Apply categorization using vectorized operations (much faster)
+    if (length(exposures) > 0) {
+        nodes$group[nodes$id %in% exposures] <- "Exposure"
+    }
+    if (length(outcomes) > 0) {
+        nodes$group[nodes$id %in% outcomes] <- "Outcome"
+    }
+
     # Add node properties
-    nodes$font.size <- 14  # Smaller font for large graphs
+    nodes$font.size <- 14
     nodes$font.color <- "black"
-    
-    # Get color scheme and assign colors
+
+    # Get color scheme and assign colors using vectorized operations
     color_scheme <- get_node_color_scheme()
-    nodes$color <- sapply(nodes$group, function(g) {
-        if (g %in% names(color_scheme)) {
-            return(color_scheme[[g]])
-        } else {
-            return("#808080")  # Default gray
-        }
-    })
+    nodes$color <- color_scheme[["Other"]]  # Default color
+
+    # Apply colors efficiently
+    if (length(exposures) > 0) {
+        nodes$color[nodes$group == "Exposure"] <- color_scheme[["Exposure"]]
+    }
+    if (length(outcomes) > 0) {
+        nodes$color[nodes$group == "Outcome"] <- color_scheme[["Outcome"]]
+    }
     
     return(nodes)
 }
@@ -199,9 +186,9 @@ create_nodes_display_table <- function(nodes_df) {
 }
 
 #' Get Available Node Categories
-#' 
+#'
 #' Returns all available node categories with descriptions
-#' 
+#'
 #' @return Data frame with category names and descriptions
 #' @export
 get_node_categories_info <- function() {
