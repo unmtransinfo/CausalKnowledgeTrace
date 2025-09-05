@@ -171,7 +171,7 @@ dfs_find_cycle <- function(g, current, target, visited, path, vertex_names) {
 filter_exposure_outcome_cycles <- function(all_cycles, nodes_df) {
     if (length(all_cycles) == 0) return(list())
 
-    # Get exposure and outcome nodes
+    # Get exposure and outcome nodes using vectorized operations
     exposure_nodes <- character(0)
     outcome_nodes <- character(0)
 
@@ -183,6 +183,20 @@ filter_exposure_outcome_cycles <- function(all_cycles, nodes_df) {
     if (length(exposure_nodes) == 0 || length(outcome_nodes) == 0) {
         return(list())
     }
+
+    exposure_outcome_cycles <- list()
+
+    for (cycle in all_cycles) {
+        has_exposure <- any(cycle %in% exposure_nodes)
+        has_outcome <- any(cycle %in% outcome_nodes)
+
+        if (has_exposure && has_outcome) {
+            exposure_outcome_cycles <- c(exposure_outcome_cycles, list(cycle))
+        }
+    }
+
+    return(exposure_outcome_cycles)
+}
 
     # Filter cycles that contain both exposure and outcome nodes
     exposure_outcome_cycles <- list()
@@ -267,7 +281,7 @@ format_cycle_path <- function(cycle, nodes_df) {
     # Get node categories
     node_categories <- setNames(nodes_df$group, nodes_df$id)
 
-    # Format each node in the cycle
+    # Format each node in the cycle with category information
     formatted_nodes <- sapply(cycle, function(node) {
         category <- node_categories[node]
         if (is.na(category)) category <- "Unknown"

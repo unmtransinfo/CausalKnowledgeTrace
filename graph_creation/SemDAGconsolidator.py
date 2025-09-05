@@ -89,27 +89,25 @@ nodes <- data.frame(
     stringsAsFactors = FALSE
 )
 
-# Categorize nodes based on DAG properties (exposure/outcome) or as "Other"
-categorize_node <- function(node_name, dag_object) {
-    # Extract exposure and outcome from dagitty object if available
-    exposures <- character(0)
-    outcomes <- character(0)
+# Optimized categorization using vectorized operations (no individual node processing)
+nodes$group <- "Other"  # Default to Other
 
-    if (!is.null(dag_object)) {
-        exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
-        outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
-    }
+# Extract exposure and outcome nodes efficiently
+exposures <- character(0)
+outcomes <- character(0)
 
-    # Check if node is marked as exposure or outcome in the DAG
-    if (length(exposures) > 0 && node_name %in% exposures) return("Exposure")
-    if (length(outcomes) > 0 && node_name %in% outcomes) return("Outcome")
-
-    # All other nodes are categorized as "Other"
-    return("Other")
+if (!is.null(g)) {
+    exposures <- tryCatch(exposures(g), error = function(e) character(0))
+    outcomes <- tryCatch(outcomes(g), error = function(e) character(0))
 }
 
-# Apply categorization
-nodes$group <- sapply(nodes$id, function(x) categorize_node(x, g))
+# Apply categorization using vectorized operations (much faster)
+if (length(exposures) > 0) {
+    nodes$group[nodes$id %in% exposures] <- "Exposure"
+}
+if (length(outcomes) > 0) {
+    nodes$group[nodes$id %in% outcomes] <- "Outcome"
+}
 
 # Define standardized three-category color scheme
 color_scheme <- list(
@@ -118,14 +116,15 @@ color_scheme <- list(
     Other = "#808080"        # Gray for all other nodes
 )
 
-# Apply colors based on group
-nodes$color <- sapply(nodes$group, function(g) {
-    if (g %in% names(color_scheme)) {
-        return(color_scheme[[g]])
-    } else {
-        return("#808080")  # Default gray
-    }
-})
+# Apply colors using vectorized operations
+nodes$color <- color_scheme[["Other"]]  # Default color
+
+if (length(exposures) > 0) {
+    nodes$color[nodes$group == "Exposure"] <- color_scheme[["Exposure"]]
+}
+if (length(outcomes) > 0) {
+    nodes$color[nodes$group == "Outcome"] <- color_scheme[["Outcome"]]
+}
 
 # Create edges dataframe
 edges <- data.frame(

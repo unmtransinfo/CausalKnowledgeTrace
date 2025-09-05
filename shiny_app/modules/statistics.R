@@ -446,9 +446,13 @@ dfs_find_cycle <- function(g, current, target, visited, path, vertex_names) {
 filter_exposure_outcome_cycles <- function(all_cycles, nodes_df) {
     if (length(all_cycles) == 0) return(list())
 
-    # Get exposure and outcome nodes
+    # Get exposure and outcome nodes using vectorized operations
     exposure_nodes <- nodes_df$id[nodes_df$group == "Exposure"]
     outcome_nodes <- nodes_df$id[nodes_df$group == "Outcome"]
+
+    if (length(exposure_nodes) == 0 || length(outcome_nodes) == 0) {
+        return(list())
+    }
 
     exposure_outcome_cycles <- list()
 
@@ -533,12 +537,12 @@ format_cycle_path <- function(cycle, nodes_df) {
     # Get node categories
     node_categories <- setNames(nodes_df$group, nodes_df$id)
 
-    # Format each node in the cycle
+    # Format each node in the cycle with category information
     formatted_nodes <- sapply(cycle, function(node) {
         category <- node_categories[node]
         if (is.na(category)) category <- "Unknown"
 
-        # Add category indicators
+        # Add category indicators for important nodes
         if (category == "Exposure") {
             return(paste0(node, " [EXPOSURE]"))
         } else if (category == "Outcome") {

@@ -98,26 +98,26 @@ create_network_data <- function(dag_object) {
             stringsAsFactors = FALSE
         )
         
-        # Assign groups and colors
+        # Assign groups and colors using optimized approach
         nodes_df$group <- "Other"
-        nodes_df$color <- "#95A5A6"  # Gray for other nodes
-        nodes_df$font.color <- "#2C3E50"
+        nodes_df$color <- "#808080"  # Gray for other nodes
+        nodes_df$font.color <- "black"
         nodes_df$font.size <- 14
-        
-        # Set exposure nodes
+
+        # Set exposure nodes using vectorized operations
         if (length(exposures) > 0) {
             exposure_mask <- nodes_df$id %in% exposures
             nodes_df$group[exposure_mask] <- "Exposure"
-            nodes_df$color[exposure_mask] <- "#E74C3C"  # Red for exposure
+            nodes_df$color[exposure_mask] <- "#FF4500"  # Orange-red for exposure
             nodes_df$font.color[exposure_mask] <- "white"
             nodes_df$font.size[exposure_mask] <- 16
         }
-        
-        # Set outcome nodes
+
+        # Set outcome nodes using vectorized operations
         if (length(outcomes) > 0) {
             outcome_mask <- nodes_df$id %in% outcomes
             nodes_df$group[outcome_mask] <- "Outcome"
-            nodes_df$color[outcome_mask] <- "#3498DB"  # Blue for outcome
+            nodes_df$color[outcome_mask] <- "#0066CC"  # Blue for outcome
             nodes_df$font.color[outcome_mask] <- "white"
             nodes_df$font.size[outcome_mask] <- 16
         }
