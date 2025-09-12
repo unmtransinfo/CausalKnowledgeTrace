@@ -409,7 +409,7 @@ class DatabaseOperations:
         return self._process_hop_results(cursor, results, 1), links
 
     def _fetch_second_hop(self, cursor, previous_hop_cuis: Set[str]) -> Tuple[List, List]:
-        """Fetch second-hop relationships."""
+        """Fetch second-hop relationships using first hop CUIs directly."""
         # Convert set to list for SQL IN clause
         previous_hop_list = list(previous_hop_cuis)
 
@@ -421,21 +421,25 @@ class DatabaseOperations:
         predication_condition = self._create_predication_condition()
         blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
+        # Find extended network using first hop CUIs directly
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-               cp.subject_cui, cp.object_cui, cp.predicate,
-               STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
-               STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+            cp.subject_cui, cp.object_cui, cp.predicate,
+            STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+            STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM causalpredication cp
         WHERE {predication_condition}
-          AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
+        AND (cp.subject_cui IN ({cui_placeholders}) 
+            OR cp.object_cui IN ({cui_placeholders}))
+        {blacklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
-        ORDER BY cp.subject_name ASC;
+        ORDER BY cp.subject_name ASC
         """
 
-        # Parameters: predication_types + previous_hop_list (twice) + blacklist params
-        params = self.predication_types + previous_hop_list + previous_hop_list + blacklist_params
+        # Parameters: predication_types + previous_hop_list (twice) + blacklist_params + threshold
+        params = self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold]
+
         execute_query_with_logging(cursor, query, params, f"Fetch Hop 2 Relationships")
 
         results = cursor.fetchall()
@@ -456,23 +460,23 @@ class DatabaseOperations:
         predication_condition = self._create_predication_condition()
         blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
-        # Use CTE pattern for higher hops (similar to third-degree logic)
+        # Use CTE pattern for higher hops - fixed to use CUIs consistently
         query = f"""
         WITH previous_hop_nodes AS (
-            SELECT DISTINCT cp.subject_name AS node_name
+            SELECT DISTINCT cp.subject_cui AS node_cui
             FROM causalpredication cp
             WHERE {predication_condition}
-              AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
-            GROUP BY cp.subject_name
+              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blacklist_condition}
+            GROUP BY cp.subject_cui
             HAVING COUNT(DISTINCT cp.pmid) >= %s
 
             UNION
 
-            SELECT DISTINCT cp.object_name AS node_name
+            SELECT DISTINCT cp.object_cui AS node_cui
             FROM causalpredication cp
             WHERE {predication_condition}
-              AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
-            GROUP BY cp.object_name
+              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blacklist_condition}
+            GROUP BY cp.object_cui
             HAVING COUNT(DISTINCT cp.pmid) >= %s
         )
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
@@ -481,17 +485,18 @@ class DatabaseOperations:
                STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM causalpredication cp
         WHERE {predication_condition}
-          AND (cp.subject_name IN (SELECT node_name FROM previous_hop_nodes)
-               OR cp.object_name IN (SELECT node_name FROM previous_hop_nodes)){blacklist_condition}
+          AND (cp.subject_cui IN (SELECT node_cui FROM previous_hop_nodes)
+               OR cp.object_cui IN (SELECT node_cui FROM previous_hop_nodes)){blacklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blacklist_params (3 times)
-        params = (self.predication_types + previous_hop_list + previous_hop_list + blacklist_params +
-                 self.predication_types + previous_hop_list + previous_hop_list + blacklist_params +
-                 self.predication_types + blacklist_params)
+        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blacklist_params (3 times) + threshold (3 times)
+        params = (self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
+                 self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
+                 self.predication_types + blacklist_params + [self.threshold])
+        
         execute_query_with_logging(cursor, query, params, f"Fetch Hop {hop_level} Relationships")
 
         results = cursor.fetchall()
@@ -523,9 +528,9 @@ class DatabaseOperations:
 
             # For hop 1, collect the CUIs for use in subsequent hops
             if hop_level == 1:
-                for link in links:
-                    current_hop_cuis.add(link[0])  # subject_name
-                    current_hop_cuis.add(link[1])  # object_name
+                for assertion in detailed_assertions:
+                    current_hop_cuis.add(assertion['subject_cui'])
+                    current_hop_cuis.add(assertion['object_cui'])
                 print(f"Collected {len(current_hop_cuis)} unique CUIs from hop 1 for subsequent hops")
 
         print(f"Found {len(all_links)} total relationships across {self.k_hops} hops")

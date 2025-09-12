@@ -65,9 +65,9 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
     return(valid_dag_files)
 }
 
-#' Load DAG from Specified File
+#' Load DAG from Specified File (with Binary Optimization)
 #'
-#' Loads a DAG definition from an R file
+#' Loads a DAG definition from an R file, with automatic binary compilation and loading
 #'
 #' @param filename Name of the file to load
 #' @return List containing success status, message, DAG object, and k_hops if successful
@@ -84,7 +84,80 @@ load_dag_from_file <- function(filename) {
         }
     }
 
+    # Load binary storage module if not already loaded
+    if (!exists("load_dag_from_binary")) {
+        source("modules/dag_binary_storage.R")
+    }
+
+    # Try binary loading first (much faster)
+    base_name <- tools::file_path_sans_ext(basename(filename))
+    binary_path <- file.path(dirname(filename), paste0(base_name, "_dag.rds"))
+
+    if (file.exists(binary_path)) {
+        # Check if binary is newer than source
+        r_mtime <- file.mtime(filename)
+        binary_mtime <- file.mtime(binary_path)
+
+        if (binary_mtime >= r_mtime) {
+            cat("Loading from binary DAG file (fastest mode)...\n")
+            binary_result <- load_dag_from_binary(binary_path)
+
+            if (binary_result$success) {
+                return(list(
+                    success = TRUE,
+                    message = paste("Successfully loaded DAG from binary file -", binary_result$variable_count, "variables"),
+                    dag = binary_result$dag,
+                    k_hops = binary_result$k_hops,
+                    filename = filename,
+                    load_method = "binary",
+                    load_time_seconds = binary_result$load_time_seconds
+                ))
+            } else {
+                cat("Binary loading failed, falling back to R script:", binary_result$message, "\n")
+            }
+        } else {
+            cat("Binary file is older than source, recompiling...\n")
+            compile_result <- compile_dag_to_binary(filename, force_regenerate = TRUE)
+            if (compile_result$success) {
+                binary_result <- load_dag_from_binary(binary_path)
+                if (binary_result$success) {
+                    return(list(
+                        success = TRUE,
+                        message = paste("Recompiled and loaded DAG -", binary_result$variable_count, "variables"),
+                        dag = binary_result$dag,
+                        k_hops = binary_result$k_hops,
+                        filename = filename,
+                        load_method = "binary_recompiled",
+                        load_time_seconds = binary_result$load_time_seconds
+                    ))
+                }
+            }
+        }
+    } else {
+        # No binary file exists, try to create one
+        cat("No binary file found, compiling for future use...\n")
+        compile_result <- compile_dag_to_binary(filename)
+        if (compile_result$success) {
+            binary_result <- load_dag_from_binary(binary_path)
+            if (binary_result$success) {
+                return(list(
+                    success = TRUE,
+                    message = paste("Compiled and loaded DAG -", binary_result$variable_count, "variables"),
+                    dag = binary_result$dag,
+                    k_hops = binary_result$k_hops,
+                    filename = filename,
+                    load_method = "binary_first_time",
+                    load_time_seconds = binary_result$load_time_seconds
+                ))
+            }
+        }
+    }
+
+    # Fallback to traditional R script loading
+    cat("Loading from R script (traditional mode)...\n")
     tryCatch({
+        start_time <- Sys.time()
+
         # Create a new environment to source the file
         file_env <- new.env()
 
@@ -95,13 +168,16 @@ load_dag_from_file <- function(filename) {
         if (exists("g", envir = file_env) && !is.null(file_env$g)) {
             # Extract k_hops from filename
             k_hops <- extract_k_hops_from_filename(filename)
+            load_time <- as.numeric(Sys.time() - start_time, units = "secs")
 
             return(list(
                 success = TRUE,
-                message = paste("Successfully loaded DAG from", filename),
+                message = paste("Successfully loaded DAG from R script -", length(names(file_env$g)), "variables"),
                 dag = file_env$g,
                 k_hops = k_hops,
-                filename = filename
+                filename = filename,
+                load_method = "r_script",
+                load_time_seconds = round(load_time, 3)
             ))
         } else {
             return(list(success = FALSE, message = paste("No 'g' variable found in", filename)))
@@ -203,28 +279,50 @@ create_network_data <- function(dag_object) {
         cat("dagitty2graph function not available, trying alternative method\n")
     }
 
-    # Fallback: try to extract edges directly from dagitty object
+    # Fallback: try to extract edges by parsing DAG string
     if (!conversion_success) {
         tryCatch({
-            # Extract edges directly from dagitty object
-            edge_matrix <- edges(dag_object)
-            if (!is.null(edge_matrix) && nrow(edge_matrix) > 0) {
-                # Create a simple igraph from edge list
-                ig <- graph_from_edgelist(as.matrix(edge_matrix[, c("from", "to")]), directed = TRUE)
-                conversion_success <- TRUE
-                cat("Successfully created graph using direct edge extraction\n")
+            # Parse the DAG string to extract edges
+            dag_str <- as.character(dag_object)
+            # Find all edge patterns like "node1 -> node2"
+            edge_matches <- regmatches(dag_str, gregexpr('[A-Za-z0-9_]+ -> [A-Za-z0-9_]+', dag_str))
+
+            if (length(edge_matches[[1]]) > 0) {
+                # Parse each edge pattern
+                edges_raw <- edge_matches[[1]]
+                edge_list <- matrix(nrow = length(edges_raw), ncol = 2)
+
+                for (i in seq_along(edges_raw)) {
+                    parts <- strsplit(edges_raw[i], " -> ")[[1]]
+                    if (length(parts) == 2) {
+                        edge_list[i, 1] <- parts[1]
+                        edge_list[i, 2] <- parts[2]
+                    }
+                }
+
+                # Remove any NA rows
+                edge_list <- edge_list[complete.cases(edge_list), , drop = FALSE]
+
+                if (nrow(edge_list) > 0) {
+                    # Create igraph from edge list
+                    ig <- graph_from_edgelist(edge_list, directed = TRUE)
+                    conversion_success <- TRUE
+                    cat("Successfully created graph using DAG string parsing -", nrow(edge_list), "edges found\n")
+                } else {
+                    cat("No valid edges found after parsing\n")
+                }
             } else {
-                cat("No edges found in DAG object\n")
+                cat("No edge patterns found in DAG string\n")
             }
         }, error = function(e) {
-            cat("Error with direct edge extraction:", e$message, "\n")
+            cat("Error with DAG string parsing:", e$message, "\n")
         })
     }
 
     # Final fallback: create empty graph
     if (!conversion_success || is.null(ig)) {
         cat("Using empty graph fallback\n")
-        ig <- graph.empty(n = 0, directed = TRUE)
+        ig <- make_empty_graph(n = 0, directed = TRUE)
     }
     
     # Create nodes dataframe using the node_information module
@@ -258,7 +356,7 @@ create_network_data <- function(dag_object) {
     # Try to extract edges
     tryCatch({
         if (length(E(ig)) > 0) {
-            edge_list <- get.edgelist(ig)
+            edge_list <- as_edgelist(ig)
             if (nrow(edge_list) > 0) {
                 edges <- data.frame(
                     from = edge_list[,1],
