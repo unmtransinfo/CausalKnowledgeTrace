@@ -18,7 +18,7 @@ from datetime import datetime
 
 # Import configuration and database operations from separate modules
 from config_models import EXPOSURE_OUTCOME_CONFIGS, TimingContext
-from database_operations import DatabaseOperations
+from database_operations import DatabaseOperations, format_sql_query_for_logging
 
 # Add import for the new Markov blanket module
 from markov_blanket import MarkovBlanketComputer
@@ -219,6 +219,62 @@ class GraphAnalyzer:
         with open(output_path / "run_configuration.json", "w") as f:
             json.dump(run_config, f, indent=2)
 
+    def check_evidence_exists(self, cursor) -> bool:
+        """
+        Check if there is sufficient evidence in the database before proceeding with graph creation.
+        Uses the same CUIs and threshold from user_input.yaml configuration.
+
+        Returns:
+            bool: True if evidence exists, False otherwise
+        """
+        print("\nChecking if sufficient evidence exists in database...")
+
+        # Get predication types from database operations
+        predication_types = self.db_ops.predication_types
+
+        # Create conditions for multiple CUIs and predication types
+        exposure_condition = self.db_ops._create_cui_conditions(self.config.exposure_cui_list, "cp.subject_cui")
+        outcome_condition = self.db_ops._create_cui_conditions(self.config.outcome_cui_list, "cp.object_cui")
+        predication_condition = self.db_ops._create_predication_condition()
+
+        # Build the evidence check query
+        query = f"""
+        SELECT EXISTS (
+            SELECT 1
+            FROM causalpredication cp
+            WHERE {predication_condition}
+              AND {exposure_condition}
+              AND {outcome_condition}
+            GROUP BY cp.subject_cui, cp.object_cui, cp.predicate
+            HAVING COUNT(DISTINCT cp.pmid) >= %s
+        ) AS has_evidence;
+        """
+
+        # Parameters: predication types + exposure CUIs + outcome CUIs + threshold
+        params = predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + [self.threshold]
+
+        print("Evidence check query:")
+        print("-" * 40)
+        formatted_query = format_sql_query_for_logging(query, params)
+        print(formatted_query)
+        print("-" * 40)
+
+        cursor.execute(query, params)
+        result = cursor.fetchone()
+        has_evidence = result[0] if result else False
+
+        if has_evidence:
+            print("✓ Evidence found: Sufficient causal relationships exist in database")
+            print(f"  At least one relationship meets the threshold of {self.threshold} PMIDs")
+        else:
+            print("✗ No evidence found: No causal relationships meet the threshold")
+            print(f"  No relationships found with >= {self.threshold} PMIDs between:")
+            print(f"    Exposure CUIs: {', '.join(self.config.exposure_cui_list)}")
+            print(f"    Outcome CUIs: {', '.join(self.config.outcome_cui_list)}")
+            print(f"    Predication types: {', '.join(predication_types)}")
+
+        return has_evidence
+
     def run_analysis(self) -> Dict:
         """Execute the complete general graph analysis pipeline and return timing data."""
         with TimingContext("total_execution", self.timing_data):
@@ -232,6 +288,19 @@ class GraphAnalyzer:
             # Connect to database
             with psycopg2.connect(**self.db_params) as conn:
                 with conn.cursor() as cursor:
+                    # Check if evidence exists before proceeding
+                    if not self.check_evidence_exists(cursor):
+                        print("\n" + "="*60)
+                        print("GRAPH CREATION ABORTED")
+                        print("="*60)
+                        print("Reason: No sufficient evidence found in database")
+                        print("Recommendation: Try adjusting the following parameters:")
+                        print(f"  - Lower the threshold (currently {self.threshold})")
+                        print("  - Add more exposure or outcome CUIs")
+                        print("  - Check if the CUIs exist in the database")
+                        print("  - Verify predication types are correct")
+                        return {"error": "No evidence found", "total_execution": {"duration": 0}}
+
                     print("\nFetching causal relationships from database...")
                     print("Note: Queries now support multiple CUIs per exposure/outcome")
                     print(f"Using k-hop parameter: {self.k_hops} (maximum relationship depth)")
@@ -549,6 +618,19 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
             # Connect to database
             with psycopg2.connect(**self.db_params) as conn:
                 with conn.cursor() as cursor:
+                    # Check if evidence exists before proceeding
+                    if not self.check_evidence_exists(cursor):
+                        print("\n" + "="*60)
+                        print("MARKOV BLANKET ANALYSIS ABORTED")
+                        print("="*60)
+                        print("Reason: No sufficient evidence found in database")
+                        print("Recommendation: Try adjusting the following parameters:")
+                        print(f"  - Lower the threshold (currently {self.threshold})")
+                        print("  - Add more exposure or outcome CUIs")
+                        print("  - Check if the CUIs exist in the database")
+                        print("  - Verify predication types are correct")
+                        return {"error": "No evidence found", "total_execution": {"duration": 0}}
+
                     print("\nFetching causal relationships from database...")
                     print("Note: Queries now support multiple CUIs per exposure/outcome")
                     print(f"Using k-hop parameter: {self.k_hops} (maximum relationship depth)")
