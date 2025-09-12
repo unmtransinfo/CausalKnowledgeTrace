@@ -353,9 +353,7 @@ class DatabaseOperations:
             FROM causalpredication cp
             WHERE {predication_condition}
               AND ({exposure_condition})
-              AND ({outcome_condition})
-              AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
+              AND ({outcome_condition}){blacklist_condition}
             GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
@@ -439,9 +437,7 @@ class DatabaseOperations:
                    STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
             FROM causalpredication cp
             WHERE {predication_condition}
-              AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
-              AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
+              AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
             GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
@@ -520,9 +516,7 @@ class DatabaseOperations:
                 SELECT DISTINCT cp.subject_name AS node_name
                 FROM causalpredication cp
                 WHERE {predication_condition}
-                  AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
-                  AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
+                  AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
                 GROUP BY cp.subject_name
                 HAVING COUNT(DISTINCT cp.pmid) >= %s
 
@@ -531,9 +525,7 @@ class DatabaseOperations:
                 SELECT DISTINCT cp.object_name AS node_name
                 FROM causalpredication cp
                 WHERE {predication_condition}
-                  AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders}))
-                  AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-                  AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
+                  AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
                 GROUP BY cp.object_name
                 HAVING COUNT(DISTINCT cp.pmid) >= %s
             )
@@ -544,9 +536,7 @@ class DatabaseOperations:
             FROM causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_name IN (SELECT node_name FROM second_degree_nodes)
-                   OR cp.object_name IN (SELECT node_name FROM second_degree_nodes))
-              AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac'){blacklist_condition}
+                   OR cp.object_name IN (SELECT node_name FROM second_degree_nodes)){blacklist_condition}
             GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
             HAVING COUNT(DISTINCT cp.pmid) >= %s
             ORDER BY cp.subject_name ASC;
