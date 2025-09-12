@@ -13,8 +13,38 @@ library(digest)
 .lazy_cache$config <- list(
     enabled = TRUE,
     stream_threshold_mb = 10,  # Use streaming for files larger than 10MB
-    lazy_threshold_mb = 5      # Use lazy loading for files larger than 5MB
+    lazy_threshold_mb = 5,     # Use lazy loading for files larger than 5MB
+    max_memory_mb = 500,       # Maximum memory usage for cache (500MB)
+    cleanup_interval = 300     # Cleanup old cache entries every 5 minutes
 )
+
+# Memory management functions
+manage_cache_memory <- function() {
+    if (!.lazy_cache$config$enabled) return()
+
+    # Calculate current memory usage
+    current_size <- sum(sapply(.lazy_cache$full_data, function(x) {
+        tryCatch(object.size(x), error = function(e) 0)
+    })) / (1024^2)  # Convert to MB
+
+    if (current_size > .lazy_cache$config$max_memory_mb) {
+        cat("Cache memory usage:", round(current_size, 1), "MB - cleaning up...\n")
+
+        # Remove oldest entries until under limit
+        cache_keys <- names(.lazy_cache$full_data)
+        if (length(cache_keys) > 1) {
+            # Keep only the most recent entry
+            latest_key <- cache_keys[length(cache_keys)]
+            for (key in cache_keys[-length(cache_keys)]) {
+                rm(list = key, envir = .lazy_cache$full_data)
+                if (key %in% names(.lazy_cache$metadata)) {
+                    rm(list = key, envir = .lazy_cache$metadata)
+                }
+            }
+            cat("Cleaned cache, kept only latest entry:", latest_key, "\n")
+        }
+    }
+}
 
 #' Load Causal Assertions with Optimization
 #'
@@ -180,6 +210,9 @@ load_full_assertions <- function(filename, cache_key) {
             file_mtime = file.mtime(filename),
             cached_time = Sys.time()
         )
+
+        # Manage memory usage
+        manage_cache_memory()
         
         load_time <- as.numeric(Sys.time() - start_time, units = "secs")
         cat("Loaded", length(assertions_data), "assertions in", round(load_time, 2), "seconds\n")
@@ -243,7 +276,10 @@ load_lazy_assertions <- function(filename, cache_key) {
             cached_time = Sys.time()
         )
         .lazy_cache$full_data[[cache_key]] <- assertions_data
-        
+
+        # Manage memory usage
+        manage_cache_memory()
+
         load_time <- as.numeric(Sys.time() - start_time, units = "secs")
         cat("Loaded metadata for", length(metadata), "assertions in", round(load_time, 2), "seconds\n")
 

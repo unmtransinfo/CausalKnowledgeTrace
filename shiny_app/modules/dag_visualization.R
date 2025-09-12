@@ -80,6 +80,53 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
         edges_df <- empty_edges
     }
 
+    # Check for very large graphs and apply optimizations
+    node_count <- nrow(nodes_df)
+    edge_count <- if (!is.null(edges_df)) nrow(edges_df) else 0
+    is_large_graph <- node_count > 5000 || edge_count > 15000
+
+    if (is_large_graph) {
+        cat("Large graph detected (", node_count, "nodes,", edge_count, "edges) - applying optimizations\n")
+
+        # For very large graphs, create a simplified version for initial rendering
+        if (node_count > 8000) {
+            # Sample nodes to create a manageable subset
+            sample_size <- min(3000, node_count)
+            sampled_indices <- sample(nrow(nodes_df), sample_size)
+            nodes_subset <- nodes_df[sampled_indices, ]
+
+            # Keep only edges between sampled nodes
+            if (!is.null(edges_df) && nrow(edges_df) > 0) {
+                edges_subset <- edges_df[
+                    edges_df$from %in% nodes_subset$id & edges_df$to %in% nodes_subset$id,
+                ]
+            } else {
+                edges_subset <- edges_df
+            }
+
+            # Create a warning node with the same structure as existing nodes
+            warning_node <- nodes_subset[1, ]  # Copy structure from first node
+            warning_node$id <- "LARGE_GRAPH_WARNING"
+            warning_node$label <- paste("⚠️ Large Graph:", node_count, "nodes,", edge_count, "edges\nShowing", nrow(nodes_subset), "node subset for performance")
+            warning_node$color <- "#FFA500"
+            if ("font.size" %in% names(warning_node)) {
+                warning_node$font.size <- 16
+            }
+            if ("font.color" %in% names(warning_node)) {
+                warning_node$font.color <- "black"
+            }
+            if ("shape" %in% names(warning_node)) {
+                warning_node$shape <- "box"
+            }
+
+            # Combine warning node with subset
+            nodes_df <- rbind(warning_node, nodes_subset)
+            edges_df <- edges_subset
+
+            cat("Showing optimized subset:", nrow(nodes_subset), "nodes,", nrow(edges_subset), "edges (+ warning node)\n")
+        }
+    }
+
     # Ensure visNetwork uses explicit colors by renaming 'group' to avoid automatic coloring
     if ("group" %in% names(nodes_df)) {
         names(nodes_df)[names(nodes_df) == "group"] <- "category"
@@ -92,47 +139,110 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
         }
     }
 
-    # Create the network visualization
-    network <- visNetwork(nodes_df, edges_df, width = "100%", height = "100%") %>%
-        visPhysics(
-            solver = "forceAtlas2Based",
-            forceAtlas2Based = list(
-                gravitationalConstant = physics_strength,
-                centralGravity = 0.01,
-                springLength = spring_length,
-                springConstant = 0.08,
-                damping = 0.4,
-                avoidOverlap = 1
-            )
-        ) %>%
-        visOptions(
-            highlightNearest = list(enabled = TRUE, degree = 1),
-            nodesIdSelection = TRUE
-        ) %>%
-        visInteraction(
-            navigationButtons = TRUE,
-            keyboard = list(
+    # Create the network visualization with optimizations for large graphs
+    network <- visNetwork(nodes_df, edges_df, width = "100%", height = "100%")
+
+    # Apply different configurations based on graph size
+    if (is_large_graph) {
+        # Optimized configuration for large graphs
+        network <- network %>%
+            visPhysics(
                 enabled = TRUE,
-                speed = list(x = 10, y = 10, zoom = 0.02),
-                bindToWindow = FALSE
-            ),
-            dragView = TRUE,
-            zoomView = TRUE,
-            selectConnectedEdges = TRUE,
-            hover = TRUE,
-            hoverConnectedEdges = TRUE,
-            tooltipDelay = 300
-        ) %>%
-        visLayout(randomSeed = 123) %>%
-        visNodes(
-            shadow = TRUE,
-            font = list(size = 20, strokeWidth = 2),
-            borderWidth = 2
-        ) %>%
-        visEdges(
-            smooth = list(enabled = TRUE, type = "curvedCW"),
-            arrows = list(to = list(enabled = TRUE, scaleFactor = 1))
-        ) %>%
+                solver = "barnesHut",  # More efficient for large graphs
+                barnesHut = list(
+                    gravitationalConstant = physics_strength * 2,  # Stronger gravity
+                    centralGravity = 0.3,  # Higher central gravity
+                    springLength = spring_length * 0.5,  # Shorter springs
+                    springConstant = 0.05,  # Weaker springs
+                    damping = 0.6,  # Higher damping
+                    avoidOverlap = 0.1  # Less overlap avoidance for performance
+                ),
+                stabilization = list(
+                    enabled = TRUE,
+                    iterations = 100,  # Fewer iterations for faster rendering
+                    updateInterval = 25
+                )
+            ) %>%
+            visOptions(
+                highlightNearest = list(enabled = FALSE),  # Disable for performance
+                nodesIdSelection = FALSE  # Disable for performance
+            ) %>%
+            visInteraction(
+                navigationButtons = TRUE,
+                dragView = TRUE,
+                zoomView = TRUE,
+                selectConnectedEdges = FALSE,  # Disable for performance
+                hover = FALSE,  # Disable hover for performance
+                tooltipDelay = 0
+            ) %>%
+            visNodes(
+                shadow = FALSE,  # Disable shadows for performance
+                font = list(size = 12, strokeWidth = 1),  # Smaller fonts
+                borderWidth = 1,  # Thinner borders
+                scaling = list(min = 5, max = 15)  # Smaller node scaling
+            )
+    } else {
+        # Standard configuration for smaller graphs
+        network <- network %>%
+            visPhysics(
+                solver = "forceAtlas2Based",
+                forceAtlas2Based = list(
+                    gravitationalConstant = physics_strength,
+                    centralGravity = 0.01,
+                    springLength = spring_length,
+                    springConstant = 0.08,
+                    damping = 0.4,
+                    avoidOverlap = 1
+                )
+            ) %>%
+            visOptions(
+                highlightNearest = list(enabled = TRUE, degree = 1),
+                nodesIdSelection = TRUE
+            ) %>%
+            visInteraction(
+                navigationButtons = TRUE,
+                keyboard = list(
+                    enabled = TRUE,
+                    speed = list(x = 10, y = 10, zoom = 0.02),
+                    bindToWindow = FALSE
+                ),
+                dragView = TRUE,
+                zoomView = TRUE,
+                selectConnectedEdges = TRUE,
+                hover = TRUE,
+                hoverConnectedEdges = TRUE,
+                tooltipDelay = 300
+            ) %>%
+            visNodes(
+                shadow = TRUE,
+                font = list(size = 20, strokeWidth = 2),
+                borderWidth = 2
+        )
+    }
+
+    # Configure edges based on graph size
+    if (is_large_graph) {
+        network <- network %>%
+            visEdges(
+                smooth = list(enabled = FALSE),  # Disable smooth edges for performance
+                arrows = list(to = list(enabled = TRUE, scaleFactor = 0.8)),
+                width = 1,  # Thinner edges
+                color = list(color = "#666666", opacity = 0.6)  # More transparent
+            )
+    } else {
+        network <- network %>%
+            visEdges(
+                smooth = list(enabled = TRUE, type = "curvedCW"),
+                arrows = list(to = list(enabled = TRUE, scaleFactor = 1))
+            )
+    }
+
+    # Add layout configuration
+    network <- network %>%
+        visLayout(randomSeed = 123)
+
+    # Continue with events configuration
+    network <- network %>%
         visEvents(
             type = "once",
             afterDrawing = "function() {
