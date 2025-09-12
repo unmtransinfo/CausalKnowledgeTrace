@@ -368,29 +368,39 @@ class DatabaseOperations:
 
     def _fetch_first_hop(self, cursor) -> Tuple[List, List]:
         """Fetch first-hop relationships (direct exposure -> outcome)."""
-        # Create conditions for multiple CUIs and predication types
-        exposure_condition = self._create_cui_conditions(self.config.exposure_cui_list, "cp.subject_cui")
-        outcome_condition = self._create_cui_conditions(self.config.outcome_cui_list, "cp.object_cui")
-        predication_condition = self._create_predication_condition()
+        # Create blacklist conditions for filtering
         blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
-        # Enhanced query to include CUIs, predicate, and individual PMIDs with sentence_id
+        # Create placeholders for exposure and outcome CUIs from YAML config
+        exposure_placeholders = ', '.join(['%s'] * len(self.config.exposure_cui_list))
+        outcome_placeholders = ', '.join(['%s'] * len(self.config.outcome_cui_list))
+
+        # Query structure exactly matching the user's requested format with placeholders from input_user.yaml
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-               cp.subject_cui, cp.object_cui, cp.predicate,
-               STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
-               STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+        cp.subject_cui, cp.object_cui, cp.predicate,
+        STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+        STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM causalpredication cp
-        WHERE {predication_condition}
-          AND ({exposure_condition})
-          AND ({outcome_condition}){blacklist_condition}
+        WHERE cp.predicate = %s
+        AND (
+            (cp.subject_cui IN ({exposure_placeholders})
+             OR cp.object_cui IN ({exposure_placeholders}))
+            OR
+            (cp.subject_cui IN ({outcome_placeholders})
+             OR cp.object_cui IN ({outcome_placeholders}))
+        ){blacklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Execute with predication types + CUIs + blacklist params + threshold as parameters
-        params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + blacklist_params + [self.threshold]
+        # Build parameters: predicate + exposure CUIs (twice) + outcome CUIs (twice) + min_pmids threshold + blacklist params
+        params = ([self.predication_types[0]] +  # Use first predication type (typically 'CAUSES')
+                 self.config.exposure_cui_list + self.config.exposure_cui_list +
+                 self.config.outcome_cui_list + self.config.outcome_cui_list +
+                 [self.threshold] + blacklist_params)
+
         execute_query_with_logging(cursor, query, params, f"Fetch Hop 1 Relationships")
 
         results = cursor.fetchall()
@@ -424,8 +434,8 @@ class DatabaseOperations:
         ORDER BY cp.subject_name ASC;
         """
 
-        # Parameters: predication_types + previous_hop_list (twice) + blacklist params + threshold
-        params = self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold]
+        # Parameters: predication_types + previous_hop_list (twice) + blacklist params
+        params = self.predication_types + previous_hop_list + previous_hop_list + blacklist_params
         execute_query_with_logging(cursor, query, params, f"Fetch Hop 2 Relationships")
 
         results = cursor.fetchall()
@@ -478,10 +488,10 @@ class DatabaseOperations:
         ORDER BY cp.subject_name ASC;
         """
 
-        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blacklist_params (3 times) + threshold (3 times)
-        params = (self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
-                 self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
-                 self.predication_types + blacklist_params + [self.threshold])
+        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blacklist_params (3 times)
+        params = (self.predication_types + previous_hop_list + previous_hop_list + blacklist_params +
+                 self.predication_types + previous_hop_list + previous_hop_list + blacklist_params +
+                 self.predication_types + blacklist_params)
         execute_query_with_logging(cursor, query, params, f"Fetch Hop {hop_level} Relationships")
 
         results = cursor.fetchall()

@@ -1,10 +1,18 @@
 # Data Validation Module
-# 
+#
 # This module contains data validation and processing functions for DAG objects
 # and network data structures in the Causal Web Shiny application.
 #
 # Author: Refactored from data_upload.R
 # Date: February 2025
+
+# Load required packages for DAG processing
+if (!require(SEMgraph, quietly = TRUE)) {
+    cat("Warning: SEMgraph package not available, dagitty2graph function may not work\n")
+}
+if (!require(igraph, quietly = TRUE)) {
+    cat("Warning: igraph package not available\n")
+}
 
 #' Validate DAG Object
 #'
@@ -122,37 +130,54 @@ create_network_data <- function(dag_object) {
             nodes_df$font.size[outcome_mask] <- 16
         }
         
-        # Extract edges using dagitty2graph
-        conversion_success <- TRUE
+        # Initialize edge_list variable
+        edge_list <- NULL
+
+        # Method 1: Try direct edge extraction from dagitty object (most reliable)
         tryCatch({
-            ig <- dagitty2graph(dag_object)
-            edge_list <- igraph::as_edgelist(ig)
-            cat("Successfully converted DAG to igraph using dagitty2graph\n")
+            edge_matrix <- edges(dag_object)
+            if (!is.null(edge_matrix) && nrow(edge_matrix) > 0) {
+                edge_list <- as.matrix(edge_matrix[, c("from", "to")])
+                cat("Successfully extracted", nrow(edge_list), "edges using direct dagitty edges() function\n")
+            } else {
+                cat("No edges found using dagitty edges() function\n")
+            }
         }, error = function(e) {
-            cat("Error converting DAG to igraph with dagitty2graph:", e$message, "\n")
-            conversion_success <- FALSE
+            cat("Error with direct dagitty edge extraction:", e$message, "\n")
         })
-        
-        # If dagitty2graph failed, try direct edge extraction
-        if (!conversion_success) {
+
+        # Method 2: If direct extraction failed, try dagitty2graph
+        if (is.null(edge_list)) {
+            tryCatch({
+                ig <- dagitty2graph(dag_object)
+                edge_list <- igraph::as_edgelist(ig)
+                cat("Successfully extracted", nrow(edge_list), "edges using dagitty2graph\n")
+            }, error = function(e) {
+                cat("Error converting DAG to igraph with dagitty2graph:", e$message, "\n")
+            })
+        }
+
+        # Method 3: Final fallback - direct string parsing
+        if (is.null(edge_list)) {
             tryCatch({
                 # Try to extract edges directly from DAG string representation
                 dag_str <- as.character(dag_object)
-                
+
                 # Parse edges from DAG string (simple approach)
                 edge_pattern <- "([A-Za-z0-9_]+)\\s*->\\s*([A-Za-z0-9_]+)"
                 matches <- gregexpr(edge_pattern, dag_str)
-                
+
                 if (length(matches[[1]]) > 0 && matches[[1]][1] != -1) {
                     edge_strings <- regmatches(dag_str, matches)[[1]]
                     edge_list <- matrix(nrow = 0, ncol = 2)
-                    
+
                     for (edge_str in edge_strings) {
                         parts <- strsplit(edge_str, "\\s*->\\s*")[[1]]
                         if (length(parts) == 2) {
                             edge_list <- rbind(edge_list, c(parts[1], parts[2]))
                         }
                     }
+                    cat("Extracted", nrow(edge_list), "edges using direct string parsing\n")
                 }
             }, error = function(e) {
                 cat("Error with direct edge extraction:", e$message, "\n")
@@ -160,7 +185,7 @@ create_network_data <- function(dag_object) {
         }
         
         # Create edges data frame
-        if (exists("edge_list") && nrow(edge_list) > 0) {
+        if (!is.null(edge_list) && is.matrix(edge_list) && nrow(edge_list) > 0) {
             edges_df <- data.frame(
                 from = edge_list[, 1],
                 to = edge_list[, 2],
@@ -170,14 +195,18 @@ create_network_data <- function(dag_object) {
                 color = "#2F4F4F80",
                 stringsAsFactors = FALSE
             )
-            
+
             # Filter edges to only include nodes that exist in nodes_df
             valid_edges <- edges_df$from %in% nodes_df$id & edges_df$to %in% nodes_df$id
             edges_df <- edges_df[valid_edges, ]
-            
-            cat("Created", nrow(edges_df), "edges\n")
+
+            cat("Created", nrow(edges_df), "edges after filtering\n")
+            cat("Original edge_list had", nrow(edge_list), "edges\n")
         } else {
-            cat("No edges found or extracted\n")
+            cat("No edges found or extracted - edge_list is NULL or empty\n")
+            if (!is.null(edge_list)) {
+                cat("edge_list type:", class(edge_list), "dimensions:", dim(edge_list), "\n")
+            }
         }
         
         cat("Created network data with", nrow(nodes_df), "nodes and", nrow(edges_df), "edges\n")
