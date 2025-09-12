@@ -167,7 +167,6 @@ class MarkovBlanketComputer:
             FROM causalpredication cp
             WHERE {predication_condition}
               AND {outcome_condition}
-              AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
                   SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
                   WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
@@ -180,7 +179,6 @@ class MarkovBlanketComputer:
             FROM causalpredication cp
             WHERE {predication_condition}
               AND {outcome_condition_subj}
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
                   SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
                   WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
@@ -197,11 +195,9 @@ class MarkovBlanketComputer:
                   FROM causalpredication cp2
                   WHERE {predication_condition}
                     AND {outcome_condition_subj}
-                    AND cp2.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                   GROUP BY cp2.object_cui
                   HAVING COUNT(DISTINCT cp2.pmid) >= %s
               )
-              AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
                   SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
                   WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
@@ -232,7 +228,6 @@ class MarkovBlanketComputer:
             FROM causalpredication cp
             WHERE {predication_condition}
               AND {exposure_condition}
-              AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
                   SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
                   WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
@@ -245,7 +240,6 @@ class MarkovBlanketComputer:
             FROM causalpredication cp
             WHERE {predication_condition}
               AND {exposure_condition_subj}
-              AND cp.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
                   SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
                   WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
@@ -262,12 +256,10 @@ class MarkovBlanketComputer:
                   FROM causalpredication cp2
                   WHERE {predication_condition}
                     AND {exposure_condition_subj}
-                    AND cp2.object_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
                     AND cp2.object_cui NOT IN %s
                   GROUP BY cp2.object_cui
                   HAVING COUNT(DISTINCT cp2.pmid) >= %s
               )
-              AND cp.subject_semtype NOT IN ('acty','bhvr','evnt','gora','mcha','ocac')
               AND NOT EXISTS (
                   SELECT 1 FROM (VALUES {self.excluded_values}) AS excluded(cui)
                   WHERE cp.subject_cui = excluded.cui OR cp.object_cui = excluded.cui
