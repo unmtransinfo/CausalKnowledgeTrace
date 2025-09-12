@@ -335,285 +335,245 @@ class DatabaseOperations:
             print(f"Warning: Error fetching causal sentences by sentence_id: {e}")
             return {}
 
-    def fetch_first_degree_relationships(self, cursor):
-        """Fetch first-degree causal relationships with detailed assertions including PMIDs."""
-        with TimingContext("first_degree_fetch", self.timing_data):
-            # Create conditions for multiple CUIs and predication types
-            exposure_condition = self._create_cui_conditions(self.config.exposure_cui_list, "cp.subject_cui")
-            outcome_condition = self._create_cui_conditions(self.config.outcome_cui_list, "cp.object_cui")
-            predication_condition = self._create_predication_condition()
-            blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
-            # Enhanced query to include CUIs, predicate, and individual PMIDs with sentence_id
-            query_first_degree = f"""
-            SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-                   cp.subject_cui, cp.object_cui, cp.predicate,
-                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
-                   STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
-            FROM causalpredication cp
-            WHERE {predication_condition}
-              AND ({exposure_condition})
-              AND ({outcome_condition}){blacklist_condition}
-            GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
-            HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ORDER BY cp.subject_name ASC;
-            """
 
-            # Execute with predication types + CUIs + blacklist params + threshold as parameters
-            params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + blacklist_params + [self.threshold]
-            execute_query_with_logging(cursor, query_first_degree, params, "Fetch First Degree Relationships")
 
-            first_degree_results = cursor.fetchall()
-            first_degree_links = [(row[0], row[1]) for row in first_degree_results]
-            first_degree_cuis = set()
-            detailed_assertions = []
 
-            # Collect all PMID-sentence_id pairs for sentence fetching
-            all_pmid_sentence_pairs = []
-            for row in first_degree_results:
-                _, _, _, _, _, _, pmid_list, pmid_sentence_id_list = row
-                if pmid_sentence_id_list:
-                    all_pmid_sentence_pairs.extend(pmid_sentence_id_list.split(','))
 
-            # Fetch sentences for all PMID-sentence_id pairs
-            pmid_sentences = self.fetch_causal_sentences_by_sentence_id(cursor, all_pmid_sentence_pairs) if all_pmid_sentence_pairs else {}
 
-            for row in first_degree_results:
-                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list, pmid_sentence_id_list = row
+    def fetch_n_hop_relationships(self, cursor, hop_level: int, previous_hop_cuis: Set[str] = None) -> Tuple[List, List]:
+        """
+        Fetch causal relationships for a specific hop level using dynamic SQL generation.
 
-                # Add to CUI set for further degree processing
-                first_degree_cuis.add(subject_name)
-                first_degree_cuis.add(object_name)
+        Args:
+            cursor: Database cursor
+            hop_level: The hop level to fetch (1, 2, 3, ...)
+            previous_hop_cuis: Set of CUIs from previous hop (None for hop 1)
 
-                # Process PMID list and add sentence data
-                pmids = pmid_list.split(',') if pmid_list else []
-                pmid_data = {}
+        Returns:
+            Tuple of (detailed_assertions, links)
+        """
+        with TimingContext(f"hop_{hop_level}_fetch", self.timing_data):
+            if hop_level == 1:
+                return self._fetch_first_hop(cursor)
+            elif hop_level == 2:
+                return self._fetch_second_hop(cursor, previous_hop_cuis)
+            else:
+                return self._fetch_higher_hop(cursor, hop_level, previous_hop_cuis)
 
-                # Use the updated pmid_sentences structure (PMID -> list of sentences)
-                for pmid in pmids:
-                    pmid = pmid.strip()
-                    if pmid in pmid_sentences:
-                        pmid_data[pmid] = {
-                            "sentences": pmid_sentences[pmid]
-                        }
-                    else:
-                        pmid_data[pmid] = {
-                            "sentences": []
-                        }
+    def _get_hop_name(self, hop_level: int) -> str:
+        """Convert hop level to ordinal name for consistency with existing code."""
+        ordinals = {1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth"}
+        return ordinals.get(hop_level, f"hop_{hop_level}")
 
-                # Create detailed assertion with optimized PMID structure (no duplication)
-                # pmid_data keys already contain the PMIDs, so pmid_list is redundant
-                detailed_assertions.append({
-                    "subject_name": subject_name,
-                    "subject_cui": subject_cui,
-                    "predicate": predicate,
-                    "object_name": object_name,
-                    "object_cui": object_cui,
-                    "evidence_count": evidence,
-                    "relationship_degree": "first",
-                    "pmid_data": pmid_data
-                })
+    def _fetch_first_hop(self, cursor) -> Tuple[List, List]:
+        """Fetch first-hop relationships (direct exposure -> outcome)."""
+        # Create conditions for multiple CUIs and predication types
+        exposure_condition = self._create_cui_conditions(self.config.exposure_cui_list, "cp.subject_cui")
+        outcome_condition = self._create_cui_conditions(self.config.outcome_cui_list, "cp.object_cui")
+        predication_condition = self._create_predication_condition()
+        blacklist_condition, blacklist_params = self._create_blacklist_conditions()
 
-            return first_degree_cuis, first_degree_links, detailed_assertions
+        # Enhanced query to include CUIs, predicate, and individual PMIDs with sentence_id
+        query = f"""
+        SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
+               cp.subject_cui, cp.object_cui, cp.predicate,
+               STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+               STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+        FROM causalpredication cp
+        WHERE {predication_condition}
+          AND ({exposure_condition})
+          AND ({outcome_condition}){blacklist_condition}
+        GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
+        HAVING COUNT(DISTINCT cp.pmid) >= %s
+        ORDER BY cp.subject_name ASC;
+        """
 
-    def fetch_second_degree_relationships(self, cursor, first_degree_cuis):
-        """Fetch second-degree causal relationships."""
-        with TimingContext("second_degree_fetch", self.timing_data):
-            # Convert set to list for SQL IN clause
-            first_degree_list = list(first_degree_cuis)
+        # Execute with predication types + CUIs + blacklist params + threshold as parameters
+        params = self.predication_types + self.config.exposure_cui_list + self.config.outcome_cui_list + blacklist_params + [self.threshold]
+        execute_query_with_logging(cursor, query, params, f"Fetch Hop 1 Relationships")
 
-            if not first_degree_list:
-                return [], []
+        results = cursor.fetchall()
+        links = [(row[0], row[1]) for row in results]
 
-            # Create placeholders for the CUI list and predication condition
-            cui_placeholders = self._create_cui_placeholders(first_degree_list)
-            predication_condition = self._create_predication_condition()
-            blacklist_condition, blacklist_params = self._create_blacklist_conditions()
+        return self._process_hop_results(cursor, results, 1), links
 
-            query_second_degree = f"""
-            SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-                   cp.subject_cui, cp.object_cui, cp.predicate,
-                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
-                   STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+    def _fetch_second_hop(self, cursor, previous_hop_cuis: Set[str]) -> Tuple[List, List]:
+        """Fetch second-hop relationships."""
+        # Convert set to list for SQL IN clause
+        previous_hop_list = list(previous_hop_cuis)
+
+        if not previous_hop_list:
+            return [], []
+
+        # Create placeholders for the CUI list and predication condition
+        cui_placeholders = self._create_cui_placeholders(previous_hop_list)
+        predication_condition = self._create_predication_condition()
+        blacklist_condition, blacklist_params = self._create_blacklist_conditions()
+
+        query = f"""
+        SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
+               cp.subject_cui, cp.object_cui, cp.predicate,
+               STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+               STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+        FROM causalpredication cp
+        WHERE {predication_condition}
+          AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
+        GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
+        HAVING COUNT(DISTINCT cp.pmid) >= %s
+        ORDER BY cp.subject_name ASC;
+        """
+
+        # Parameters: predication_types + previous_hop_list (twice) + blacklist params + threshold
+        params = self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold]
+        execute_query_with_logging(cursor, query, params, f"Fetch Hop 2 Relationships")
+
+        results = cursor.fetchall()
+        links = [(row[0], row[1]) for row in results]
+
+        return self._process_hop_results(cursor, results, 2), links
+
+    def _fetch_higher_hop(self, cursor, hop_level: int, previous_hop_cuis: Set[str]) -> Tuple[List, List]:
+        """Fetch relationships for hop level 3 and above using CTE pattern."""
+        # Convert set to list for SQL IN clause
+        previous_hop_list = list(previous_hop_cuis)
+
+        if not previous_hop_list:
+            return [], []
+
+        # Create placeholders for the CUI list and predication condition
+        cui_placeholders = self._create_cui_placeholders(previous_hop_list)
+        predication_condition = self._create_predication_condition()
+        blacklist_condition, blacklist_params = self._create_blacklist_conditions()
+
+        # Use CTE pattern for higher hops (similar to third-degree logic)
+        query = f"""
+        WITH previous_hop_nodes AS (
+            SELECT DISTINCT cp.subject_name AS node_name
             FROM causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
-            GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
+            GROUP BY cp.subject_name
             HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ORDER BY cp.subject_name ASC;
-            """
 
-            # Parameters: predication_types + first_degree_list (twice) + blacklist params + threshold
-            params = self.predication_types + first_degree_list + first_degree_list + blacklist_params + [self.threshold]
-            execute_query_with_logging(cursor, query_second_degree, params, "Fetch Second Degree Relationships")
+            UNION
 
-            second_degree_results = cursor.fetchall()
-
-            # Create detailed assertions
-            detailed_assertions = []
-            second_degree_links = []
-
-            # Collect all PMID-sentence_id pairs for sentence fetching
-            all_pmid_sentence_pairs = []
-            for row in second_degree_results:
-                _, _, _, _, _, _, pmid_list, pmid_sentence_id_list = row
-                if pmid_sentence_id_list:
-                    all_pmid_sentence_pairs.extend(pmid_sentence_id_list.split(','))
-
-            # Fetch sentences for all PMID-sentence_id pairs
-            pmid_sentences = self.fetch_causal_sentences_by_sentence_id(cursor, all_pmid_sentence_pairs) if all_pmid_sentence_pairs else {}
-
-            for row in second_degree_results:
-                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list, pmid_sentence_id_list = row
-
-                # Process PMID list and add sentence data
-                pmids = pmid_list.split(',') if pmid_list else []
-                pmid_data = {}
-
-                # Use the updated pmid_sentences structure (PMID -> list of sentences)
-                for pmid in pmids:
-                    pmid = pmid.strip()
-                    if pmid in pmid_sentences:
-                        pmid_data[pmid] = {
-                            "sentences": pmid_sentences[pmid]
-                        }
-                    else:
-                        pmid_data[pmid] = {
-                            "sentences": []
-                        }
-
-                detailed_assertions.append({
-                    "subject_name": subject_name,
-                    "subject_cui": subject_cui,
-                    "predicate": predicate,
-                    "object_name": object_name,
-                    "object_cui": object_cui,
-                    "evidence_count": evidence,
-                    "relationship_degree": "second",
-                    "pmid_data": pmid_data
-                })
-
-                second_degree_links.append((subject_name, object_name))
-
-            return detailed_assertions, second_degree_links
-
-    def fetch_third_degree_relationships(self, cursor, first_degree_cuis):
-        """Fetch third-degree causal relationships with detailed assertions including PMIDs."""
-        with TimingContext("third_degree_fetch", self.timing_data):
-            # Convert set to list for SQL IN clause
-            first_degree_list = list(first_degree_cuis)
-
-            if not first_degree_list:
-                return [], []
-
-            # Create placeholders for the CUI list and predication condition
-            cui_placeholders = self._create_cui_placeholders(first_degree_list)
-            predication_condition = self._create_predication_condition()
-            blacklist_condition, blacklist_params = self._create_blacklist_conditions()
-
-            query_third_degree = f"""
-            WITH second_degree_nodes AS (
-                SELECT DISTINCT cp.subject_name AS node_name
-                FROM causalpredication cp
-                WHERE {predication_condition}
-                  AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
-                GROUP BY cp.subject_name
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-
-                UNION
-
-                SELECT DISTINCT cp.object_name AS node_name
-                FROM causalpredication cp
-                WHERE {predication_condition}
-                  AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
-                GROUP BY cp.object_name
-                HAVING COUNT(DISTINCT cp.pmid) >= %s
-            )
-            SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-                   cp.subject_cui, cp.object_cui, cp.predicate,
-                   STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
-                   STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+            SELECT DISTINCT cp.object_name AS node_name
             FROM causalpredication cp
             WHERE {predication_condition}
-              AND (cp.subject_name IN (SELECT node_name FROM second_degree_nodes)
-                   OR cp.object_name IN (SELECT node_name FROM second_degree_nodes)){blacklist_condition}
-            GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
+              AND (cp.subject_name IN ({cui_placeholders}) OR cp.object_name IN ({cui_placeholders})){blacklist_condition}
+            GROUP BY cp.object_name
             HAVING COUNT(DISTINCT cp.pmid) >= %s
-            ORDER BY cp.subject_name ASC;
-            """
+        )
+        SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
+               cp.subject_cui, cp.object_cui, cp.predicate,
+               STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+               STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+        FROM causalpredication cp
+        WHERE {predication_condition}
+          AND (cp.subject_name IN (SELECT node_name FROM previous_hop_nodes)
+               OR cp.object_name IN (SELECT node_name FROM previous_hop_nodes)){blacklist_condition}
+        GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
+        HAVING COUNT(DISTINCT cp.pmid) >= %s
+        ORDER BY cp.subject_name ASC;
+        """
 
-            # Parameters: predication_types (3 times) + first_degree_list (4 times) + blacklist_params (3 times) + threshold (3 times)
-            params = (self.predication_types + first_degree_list + first_degree_list + blacklist_params + [self.threshold] +
-                     self.predication_types + first_degree_list + first_degree_list + blacklist_params + [self.threshold] +
-                     self.predication_types + blacklist_params + [self.threshold])
-            execute_query_with_logging(cursor, query_third_degree, params, "Fetch Third Degree Relationships")
+        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blacklist_params (3 times) + threshold (3 times)
+        params = (self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
+                 self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
+                 self.predication_types + blacklist_params + [self.threshold])
+        execute_query_with_logging(cursor, query, params, f"Fetch Hop {hop_level} Relationships")
 
-            third_degree_results = cursor.fetchall()
-            third_degree_links = [(row[0], row[1]) for row in third_degree_results]
-            detailed_assertions = []
+        results = cursor.fetchall()
+        links = [(row[0], row[1]) for row in results]
 
-            # Collect all PMID-sentence_id pairs for sentence fetching
-            all_pmid_sentence_pairs = []
-            for row in third_degree_results:
-                _, _, _, _, _, _, pmid_list, pmid_sentence_id_list = row
-                if pmid_sentence_id_list:
-                    all_pmid_sentence_pairs.extend(pmid_sentence_id_list.split(','))
-
-            # Fetch sentences for all PMID-sentence_id pairs
-            pmid_sentences = self.fetch_causal_sentences_by_sentence_id(cursor, all_pmid_sentence_pairs) if all_pmid_sentence_pairs else {}
-
-            for row in third_degree_results:
-                subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list, pmid_sentence_id_list = row
-
-                # Process PMID list and add sentence data
-                pmids = pmid_list.split(',') if pmid_list else []
-                pmid_data = {}
-
-                # Use the updated pmid_sentences structure (PMID -> list of sentences)
-                for pmid in pmids:
-                    pmid = pmid.strip()
-                    if pmid in pmid_sentences:
-                        pmid_data[pmid] = {
-                            "sentences": pmid_sentences[pmid]
-                        }
-                    else:
-                        pmid_data[pmid] = {
-                            "sentences": []
-                        }
-
-                detailed_assertions.append({
-                    "subject_name": subject_name,
-                    "subject_cui": subject_cui,
-                    "predicate": predicate,
-                    "object_name": object_name,
-                    "object_cui": object_cui,
-                    "evidence_count": evidence,
-                    "relationship_degree": "third",
-                    "pmid_data": pmid_data
-                })
-
-            return third_degree_links, detailed_assertions
+        return self._process_hop_results(cursor, results, hop_level), links
 
     def fetch_k_hop_relationships(self, cursor):
-        """Fetch causal relationships up to k hops based on the k_hops parameter."""
-        print(f"Fetching relationships up to {self.k_hops} hops...")
+        """Fetch causal relationships up to k hops using dynamic loop-based approach."""
+        print(f"Fetching relationships up to {self.k_hops} hops using dynamic approach...")
 
-        # Always fetch first-degree relationships as the starting point
-        first_degree_cuis, first_degree_links, first_degree_assertions = self.fetch_first_degree_relationships(cursor)
+        all_links = []
+        all_detailed_assertions = []
+        current_hop_cuis = set()
 
-        all_links = first_degree_links.copy()
-        all_detailed_assertions = first_degree_assertions.copy()
+        # Iterate through each hop level dynamically
+        for hop_level in range(1, self.k_hops + 1):
+            print(f"Processing hop {hop_level}...")
 
-        if self.k_hops >= 2:
-            # Fetch second-degree relationships
-            detailed_assertions, second_degree_links = self.fetch_second_degree_relationships(cursor, first_degree_cuis)
-            all_links.extend(second_degree_links)
+            # For hop 1, we don't need previous CUIs; for others, we use the first hop CUIs
+            previous_cuis = None if hop_level == 1 else current_hop_cuis
+
+            # Fetch relationships for this hop level
+            detailed_assertions, links = self.fetch_n_hop_relationships(cursor, hop_level, previous_cuis)
+
+            # Add results to overall collections
+            all_links.extend(links)
             all_detailed_assertions.extend(detailed_assertions)
 
-        if self.k_hops >= 3:
-            # Fetch third-degree relationships
-            third_degree_links, third_degree_assertions = self.fetch_third_degree_relationships(cursor, first_degree_cuis)
-            all_links.extend(third_degree_links)
-            all_detailed_assertions.extend(third_degree_assertions)
+            # For hop 1, collect the CUIs for use in subsequent hops
+            if hop_level == 1:
+                for link in links:
+                    current_hop_cuis.add(link[0])  # subject_name
+                    current_hop_cuis.add(link[1])  # object_name
+                print(f"Collected {len(current_hop_cuis)} unique CUIs from hop 1 for subsequent hops")
 
-        return first_degree_cuis, all_links, all_detailed_assertions
+        print(f"Found {len(all_links)} total relationships across {self.k_hops} hops")
+        return current_hop_cuis, all_links, all_detailed_assertions
+
+    def _process_hop_results(self, cursor, results: List, hop_level: int) -> List:
+        """
+        Process database results into detailed assertions with PMID data.
+
+        Args:
+            results: Raw database query results
+            hop_level: The hop level for labeling (1, 2, 3, ...)
+
+        Returns:
+            List of detailed assertion dictionaries
+        """
+        detailed_assertions = []
+
+        # Collect all PMID-sentence_id pairs for sentence fetching
+        all_pmid_sentence_pairs = []
+        for row in results:
+            _, _, _, _, _, _, pmid_list, pmid_sentence_id_list = row
+            if pmid_sentence_id_list:
+                all_pmid_sentence_pairs.extend(pmid_sentence_id_list.split(','))
+
+        # Fetch sentences for all PMID-sentence_id pairs
+        pmid_sentences = self.fetch_causal_sentences_by_sentence_id(cursor, all_pmid_sentence_pairs) if all_pmid_sentence_pairs else {}
+
+        for row in results:
+            subject_name, object_name, evidence, subject_cui, object_cui, predicate, pmid_list, pmid_sentence_id_list = row
+
+            # Process PMID list and add sentence data
+            pmids = pmid_list.split(',') if pmid_list else []
+            pmid_data = {}
+
+            # Use the updated pmid_sentences structure (PMID -> list of sentences)
+            for pmid in pmids:
+                pmid = pmid.strip()
+                if pmid in pmid_sentences:
+                    pmid_data[pmid] = {
+                        "sentences": pmid_sentences[pmid]
+                    }
+                else:
+                    pmid_data[pmid] = {
+                        "sentences": []
+                    }
+
+            # Create detailed assertion with hop level name
+            hop_name = self._get_hop_name(hop_level)
+            detailed_assertions.append({
+                "subject_name": subject_name,
+                "subject_cui": subject_cui,
+                "predicate": predicate,
+                "object_name": object_name,
+                "object_cui": object_cui,
+                "evidence_count": evidence,
+                "relationship_degree": hop_name,
+                "pmid_data": pmid_data
+            })
+
+        return detailed_assertions

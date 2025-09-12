@@ -53,14 +53,14 @@ class GraphAnalyzer:
             threshold: Minimum evidence threshold for relationships
             output_dir: Directory for output files
             yaml_config_data: Optional YAML configuration data
-            k_hops: Number of hops for graph traversal (1-3, default: 3)
+            k_hops: Number of hops for graph traversal (1+, default: 3)
         """
         if config_name not in EXPOSURE_OUTCOME_CONFIGS:
             raise ValueError(f"Unknown config: {config_name}. Available: {list(EXPOSURE_OUTCOME_CONFIGS.keys())}")
 
-        # Validate k_hops parameter
-        if not isinstance(k_hops, int) or k_hops < 1 or k_hops > 3:
-            raise ValueError(f"k_hops must be an integer between 1 and 3, got: {k_hops}")
+        # Validate k_hops parameter - now supports any positive integer
+        if not isinstance(k_hops, int) or k_hops < 1:
+            raise ValueError(f"k_hops must be a positive integer, got: {k_hops}")
 
         self.k_hops = k_hops
 
@@ -383,7 +383,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
             threshold: Minimum evidence threshold for relationships
             output_dir: Directory for output files
             yaml_config_data: Optional YAML configuration data
-            k_hops: Number of hops for graph traversal (1-3, default: 3)
+            k_hops: Number of hops for graph traversal (1+, default: 3)
         """
         # Initialize the base GraphAnalyzer
         super().__init__(config_name, db_params, threshold, output_dir, yaml_config_data, k_hops)
