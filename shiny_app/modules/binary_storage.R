@@ -16,6 +16,12 @@ library(jsonlite)
 #' @return List with conversion results
 #' @export
 convert_json_to_binary <- function(json_file, output_dir = NULL, compression = "gzip", k_hops = NULL) {
+    # Binary file creation disabled to speed up process
+    return(list(
+        success = FALSE,
+        message = "Binary file creation has been disabled to speed up the graph creation process"
+    ))
+
     if (!file.exists(json_file)) {
         return(list(
             success = FALSE,

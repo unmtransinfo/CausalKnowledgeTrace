@@ -14,7 +14,7 @@ import networkx as nx
 import json
 from pathlib import Path
 from typing import Dict, Set, Tuple, List, Optional
-from datetime import datetime
+
 
 # Import configuration and database operations from separate modules
 from config_models import EXPOSURE_OUTCOME_CONFIGS, TimingContext
@@ -178,46 +178,7 @@ class GraphAnalyzer:
         with open(output_path / causal_assertions_filename, "w") as f:
             json.dump(detailed_assertions, f, indent=2)
 
-        # Save run configuration with multiple CUIs support
-        run_config = {
-            "config_name": self.config.name,
-            "config_description": self.config.description,
-            "exposure_cuis": self.config.exposure_cui_list,
-            "exposure_name": self.config.exposure_name,
-            "outcome_cuis": self.config.outcome_cui_list,
-            "outcome_name": self.config.outcome_name,
-            "all_target_cuis": self.config.all_target_cuis,
-            "blacklist_cuis": self.db_ops.blacklist_cuis,
-            "blacklist_enabled": len(self.db_ops.blacklist_cuis) > 0,
-            "threshold": self.threshold,
-            "threshold_source": "yaml_min_pmids" if self.yaml_config_data else "command_line",
-            "predication_types": self.db_ops.predication_types,
-            "predication_type_source": "yaml_config" if self.yaml_config_data else "default",
-            "database": {
-                "host": self.db_params.get("host"),
-                "port": self.db_params.get("port"),
-                "dbname": self.db_params.get("dbname"),
-                "user": self.db_params.get("user"),
-                "schema": self.db_params.get("options", "").replace("-c search_path=", "") if "options" in self.db_params else None
-            },
-            "run_timestamp": datetime.now().isoformat(),
-            "output_directory": str(output_path.absolute()),
-            "multiple_cuis_used": {
-                "exposure_count": len(self.config.exposure_cui_list),
-                "outcome_count": len(self.config.outcome_cui_list),
-                "total_target_cuis": len(self.config.all_target_cuis)
-            }
-        }
 
-        # Add YAML configuration data if available
-        if self.yaml_config_data:
-            run_config["yaml_configuration"] = self.yaml_config_data
-            run_config["config_source"] = "yaml_file"
-        else:
-            run_config["config_source"] = "predefined"
-
-        with open(output_path / "run_configuration.json", "w") as f:
-            json.dump(run_config, f, indent=2)
 
     def check_evidence_exists(self, cursor) -> bool:
         """
@@ -400,7 +361,6 @@ class GraphAnalyzer:
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for DAG visualization (k_hops={self.k_hops})")
         print(f"  - performance_metrics.json: Timing information")
-        print(f"  - run_configuration.json: Complete run parameters")
 
         print("\nTiming Results:")
         total_time = timing_results.get("total_execution", {}).get("duration", 0)
@@ -584,7 +544,6 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
         print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (k_hops={self.k_hops})")
         print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
         print(f"  - performance_metrics.json: Timing information")
-        print(f"  - run_configuration.json: Complete run parameters")
 
         print("\nTiming Results:")
         total_time = timing_results.get("total_execution", {}).get("duration", 0)
