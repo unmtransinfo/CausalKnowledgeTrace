@@ -504,6 +504,46 @@ class DatabaseOperations:
 
         return self._process_hop_results(cursor, results, hop_level), links
 
+    def build_cui_to_name_mapping(self, detailed_assertions: List[Dict]) -> Dict[str, str]:
+        """
+        Build a mapping from CUI to canonical name based on detailed assertions.
+        Uses the most frequently occurring name for each CUI as the canonical name.
+
+        Args:
+            detailed_assertions: List of assertion dictionaries with subject_cui, object_cui, subject_name, object_name
+
+        Returns:
+            Dictionary mapping CUI to canonical name
+        """
+        cui_name_counts = {}
+
+        # Count occurrences of each name for each CUI
+        for assertion in detailed_assertions:
+            subject_cui = assertion.get('subject_cui')
+            object_cui = assertion.get('object_cui')
+            subject_name = assertion.get('subject_name')
+            object_name = assertion.get('object_name')
+
+            if subject_cui and subject_name:
+                if subject_cui not in cui_name_counts:
+                    cui_name_counts[subject_cui] = {}
+                cui_name_counts[subject_cui][subject_name] = cui_name_counts[subject_cui].get(subject_name, 0) + 1
+
+            if object_cui and object_name:
+                if object_cui not in cui_name_counts:
+                    cui_name_counts[object_cui] = {}
+                cui_name_counts[object_cui][object_name] = cui_name_counts[object_cui].get(object_name, 0) + 1
+
+        # Select the most frequent name for each CUI as canonical
+        cui_to_canonical_name = {}
+        for cui, name_counts in cui_name_counts.items():
+            # Get the name with highest count (most frequent)
+            canonical_name = max(name_counts.items(), key=lambda x: x[1])[0]
+            cui_to_canonical_name[cui] = canonical_name
+
+        print(f"Built CUI-to-name mapping for {len(cui_to_canonical_name)} unique CUIs")
+        return cui_to_canonical_name
+
     def fetch_k_hop_relationships(self, cursor):
         """Fetch causal relationships up to k hops using dynamic loop-based approach."""
         print(f"Fetching relationships up to {self.k_hops} hops using dynamic approach...")
@@ -533,8 +573,23 @@ class DatabaseOperations:
                     current_hop_cuis.add(assertion['object_cui'])
                 print(f"Collected {len(current_hop_cuis)} unique CUIs from hop 1 for subsequent hops")
 
+        # Build CUI-to-canonical-name mapping from all assertions
+        cui_to_name_mapping = self.build_cui_to_name_mapping(all_detailed_assertions)
+
+        # Create CUI-based links with canonical names
+        cui_based_links = []
+        for assertion in all_detailed_assertions:
+            subject_cui = assertion.get('subject_cui')
+            object_cui = assertion.get('object_cui')
+
+            if subject_cui and object_cui and subject_cui in cui_to_name_mapping and object_cui in cui_to_name_mapping:
+                canonical_subject_name = cui_to_name_mapping[subject_cui]
+                canonical_object_name = cui_to_name_mapping[object_cui]
+                cui_based_links.append((canonical_subject_name, canonical_object_name))
+
         print(f"Found {len(all_links)} total relationships across {self.k_hops} hops")
-        return current_hop_cuis, all_links, all_detailed_assertions
+        print(f"Created {len(cui_based_links)} CUI-based relationships with canonical names")
+        return current_hop_cuis, cui_based_links, all_detailed_assertions
 
     def _process_hop_results(self, cursor, results: List, hop_level: int) -> List:
         """

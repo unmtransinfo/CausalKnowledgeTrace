@@ -305,9 +305,9 @@ class GraphAnalyzer:
                     print("Note: Queries now support multiple CUIs per exposure/outcome")
                     print(f"Using k-hop parameter: {self.k_hops} (maximum relationship depth)")
 
-                    # Fetch relationships using k-hop functionality
-                    _, all_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
-                    print(f"Found {len(all_links)} total relationships up to {self.k_hops} hops")
+                    # Fetch relationships using k-hop functionality with CUI-based node identification
+                    _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
+                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.k_hops} hops")
 
                     print("\nConstructing causal graph...")
                     # Build graph with cleaned node names and consolidated mapping
@@ -317,9 +317,9 @@ class GraphAnalyzer:
                         # Create consolidated node mapping
                         consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
 
-                        # Add edges with cleaned node names from all k-hop relationships
+                        # Add edges with cleaned node names from CUI-based relationships
                         consolidated_edges = set()
-                        for src, dst in all_links:
+                        for src, dst in cui_based_links:
                             clean_src = self.db_ops.clean_output_name(src)
                             clean_dst = self.db_ops.clean_output_name(dst)
 
@@ -333,7 +333,7 @@ class GraphAnalyzer:
                                 G.add_edge(consolidated_src, consolidated_dst)
 
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (k_hops={self.k_hops})")
-                        print(f"Consolidated {len(all_links)} original relationships into {len(consolidated_edges)} consolidated relationships")
+                        print(f"Consolidated {len(cui_based_links)} CUI-based relationships into {len(consolidated_edges)} consolidated relationships")
 
                     print("\nGenerating DAGitty visualization script...")
                     # Generate basic DAG script
@@ -635,9 +635,9 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                     print("Note: Queries now support multiple CUIs per exposure/outcome")
                     print(f"Using k-hop parameter: {self.k_hops} (maximum relationship depth)")
 
-                    # Fetch relationships using k-hop functionality
-                    _, all_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
-                    print(f"Found {len(all_links)} total relationships up to {self.k_hops} hops")
+                    # Fetch relationships using k-hop functionality with CUI-based node identification
+                    _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
+                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.k_hops} hops")
 
                     # Compute Markov blankets
                     mb_union = self.mb_computer.compute_markov_blankets(cursor)
@@ -650,9 +650,9 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                         # Create consolidated node mapping
                         consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
 
-                        # Add edges with cleaned node names from all k-hop relationships
+                        # Add edges with cleaned node names from CUI-based relationships
                         consolidated_edges = set()
-                        for src, dst in all_links:
+                        for src, dst in cui_based_links:
                             clean_src = self.db_ops.clean_output_name(src)
                             clean_dst = self.db_ops.clean_output_name(dst)
 
@@ -666,7 +666,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                                 G.add_edge(consolidated_src, consolidated_dst)
 
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (k_hops={self.k_hops})")
-                        print(f"Consolidated {len(all_links)} original relationships into {len(consolidated_edges)} consolidated relationships")
+                        print(f"Consolidated {len(cui_based_links)} CUI-based relationships into {len(consolidated_edges)} consolidated relationships")
 
                     print("\nGenerating DAGitty visualization scripts...")
                     # Generate basic DAG script using parent class method
