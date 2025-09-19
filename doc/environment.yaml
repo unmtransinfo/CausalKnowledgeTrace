@@ -1,0 +1,26 @@
+name: causalknowledgetrace
+channels:
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  # Core dependencies
+  - python>=3.11
+  
+  # R integration packages
+  - r-base
+  - rpy2
+  
+
+  # Pip dependencies (if needed)
+  - pip
+  - pip:
+    - psycopg2
+    - pyyaml
+    - pandas
+    - networkx
+    - scipy
+    - numpy
+    - matplotlib
+    - jupyter
+    
