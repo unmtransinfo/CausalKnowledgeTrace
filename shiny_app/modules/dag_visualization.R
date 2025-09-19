@@ -62,7 +62,7 @@ generate_legend_html <- function(nodes_df) {
 #' @param spring_length Spring length for physics simulation (default: 200)
 #' @return visNetwork object
 #' @export
-create_interactive_network <- function(nodes_df, edges_df, physics_strength = -150, spring_length = 200) {
+create_interactive_network <- function(nodes_df, edges_df, physics_strength = -150, spring_length = 200, force_full_display = FALSE) {
     if (is.null(nodes_df) || nrow(nodes_df) == 0) {
         # Create empty network for error cases
         empty_nodes <- data.frame(
@@ -83,15 +83,27 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
     # Check for very large graphs and apply optimizations
     node_count <- nrow(nodes_df)
     edge_count <- if (!is.null(edges_df)) nrow(edges_df) else 0
+    # Optimized thresholds for 3-hop graphs (8.8k nodes, 30k edges)
+    # Use performance optimizations for graphs with >5k nodes or >15k edges
     is_large_graph <- node_count > 5000 || edge_count > 15000
 
-    if (is_large_graph) {
-        cat("Large graph detected (", node_count, "nodes,", edge_count, "edges) - applying optimizations\n")
+    # Override large graph optimizations if user forces full display
+    if (force_full_display) {
+        cat("Force full display enabled - showing all", node_count, "nodes and", edge_count, "edges\n")
+        is_large_graph <- FALSE  # Disable optimizations
+    } else if (is_large_graph) {
+        cat("Large graph detected (", node_count, "nodes,", edge_count, "edges) - applying performance optimizations\n")
+
+        # Special handling for 3-hop graphs (around 8-9k nodes, 30k edges)
+        if (node_count >= 8000 && node_count <= 10000 && edge_count >= 25000 && edge_count <= 35000) {
+            cat("Detected 3-hop graph - using optimized 3-hop rendering settings\n")
+        }
 
         # For very large graphs, create a simplified version for initial rendering
-        if (node_count > 8000) {
-            # Sample nodes to create a manageable subset
-            sample_size <- min(3000, node_count)
+        # Allow 3-hop graphs to display fully, only sample for extremely large graphs
+        if (node_count > 15000) {
+            # Sample nodes to create a manageable subset - optimized for 3-hop graphs
+            sample_size <- min(12000, node_count)
             sampled_indices <- sample(nrow(nodes_df), sample_size)
             nodes_subset <- nodes_df[sampled_indices, ]
 
@@ -144,42 +156,47 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
 
     # Apply different configurations based on graph size
     if (is_large_graph) {
-        # Optimized configuration for large graphs
+        # Optimized configuration for large graphs (including 3-hop graphs)
         network <- network %>%
             visPhysics(
                 enabled = TRUE,
                 solver = "barnesHut",  # More efficient for large graphs
                 barnesHut = list(
-                    gravitationalConstant = physics_strength * 2,  # Stronger gravity
-                    centralGravity = 0.3,  # Higher central gravity
-                    springLength = spring_length * 0.5,  # Shorter springs
-                    springConstant = 0.05,  # Weaker springs
-                    damping = 0.6,  # Higher damping
-                    avoidOverlap = 0.1  # Less overlap avoidance for performance
+                    gravitationalConstant = physics_strength * 1.5,  # Moderate gravity
+                    centralGravity = 0.2,  # Moderate central gravity
+                    springLength = spring_length * 0.7,  # Slightly shorter springs
+                    springConstant = 0.08,  # Moderate spring strength
+                    damping = 0.5,  # Moderate damping
+                    avoidOverlap = 0.2  # Some overlap avoidance
                 ),
                 stabilization = list(
                     enabled = TRUE,
-                    iterations = 100,  # Fewer iterations for faster rendering
-                    updateInterval = 25
+                    iterations = 150,  # More iterations for better layout
+                    updateInterval = 50,  # Smoother updates
+                    fit = TRUE  # Fit to screen after stabilization
                 )
             ) %>%
             visOptions(
-                highlightNearest = list(enabled = FALSE),  # Disable for performance
-                nodesIdSelection = FALSE  # Disable for performance
+                highlightNearest = list(enabled = TRUE, degree = 1),  # Enable but limit to 1 degree
+                nodesIdSelection = TRUE,  # Keep node selection enabled
+                collapse = list(enabled = FALSE)  # Disable clustering for clarity
             ) %>%
             visInteraction(
                 navigationButtons = TRUE,
                 dragView = TRUE,
                 zoomView = TRUE,
-                selectConnectedEdges = FALSE,  # Disable for performance
-                hover = FALSE,  # Disable hover for performance
-                tooltipDelay = 0
+                selectConnectedEdges = TRUE,  # Keep edge selection
+                hover = TRUE,  # Keep hover for usability
+                hoverConnectedEdges = FALSE,  # Disable connected edge hover for performance
+                tooltipDelay = 200,  # Faster tooltip
+                keyboard = list(enabled = TRUE, speed = list(x = 10, y = 10, zoom = 0.02))
             ) %>%
             visNodes(
                 shadow = FALSE,  # Disable shadows for performance
-                font = list(size = 12, strokeWidth = 1),  # Smaller fonts
-                borderWidth = 1,  # Thinner borders
-                scaling = list(min = 5, max = 15)  # Smaller node scaling
+                font = list(size = 14, strokeWidth = 1),  # Readable font size
+                borderWidth = 1,  # Thin borders
+                scaling = list(min = 8, max = 20),  # Reasonable node scaling
+                chosen = list(node = "function(values, id, selected, hovering) { values.shadow = false; }")
             )
     } else {
         # Standard configuration for smaller graphs
@@ -225,9 +242,10 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
         network <- network %>%
             visEdges(
                 smooth = list(enabled = FALSE),  # Disable smooth edges for performance
-                arrows = list(to = list(enabled = TRUE, scaleFactor = 0.8)),
-                width = 1,  # Thinner edges
-                color = list(color = "#666666", opacity = 0.6)  # More transparent
+                arrows = list(to = list(enabled = TRUE, scaleFactor = 0.9)),  # Slightly larger arrows
+                width = 1.5,  # Slightly thicker edges for visibility
+                color = list(color = "#666666", opacity = 0.7),  # Less transparent
+                chosen = list(edge = "function(values, id, selected, hovering) { values.width = 3; }")
             )
     } else {
         network <- network %>%
@@ -403,12 +421,12 @@ get_default_physics_settings <- function() {
 #' @param max_nodes_for_full_styling Maximum nodes before applying simplified styling (default: 100)
 #' @return List containing styled nodes and edges data frames
 #' @export
-apply_network_styling <- function(nodes_df, edges_df, max_nodes_for_full_styling = 100) {
+apply_network_styling <- function(nodes_df, edges_df, max_nodes_for_full_styling = 12000) {
     if (is.null(nodes_df) || nrow(nodes_df) == 0) {
         return(list(nodes = nodes_df, edges = edges_df))
     }
     
-    # Adjust styling based on graph size
+    # Adjust styling based on graph size - increased threshold for hop 3 graphs
     if (nrow(nodes_df) > max_nodes_for_full_styling) {
         # Simplified styling for large graphs
         nodes_df$font.size <- 12
@@ -442,11 +460,17 @@ apply_network_styling <- function(nodes_df, edges_df, max_nodes_for_full_styling
 #' @export
 create_network_controls_ui <- function() {
     default_settings <- get_default_physics_settings()
-    
+
     return(list(
-        sliderInput("physics_strength", "Physics Strength:", 
+        # Display mode control for large graphs
+        checkboxInput("force_full_display",
+                     "Force Full Display (Show All Nodes/Edges)",
+                     value = FALSE),
+        helpText("⚠️ For large graphs (>10k nodes), enabling this may cause slow performance"),
+        br(),
+        sliderInput("physics_strength", "Physics Strength:",
                    min = -500, max = 0, value = default_settings$physics_strength, step = 25),
-        sliderInput("spring_length", "Spring Length:", 
+        sliderInput("spring_length", "Spring Length:",
                    min = 0, max = 400, value = default_settings$spring_length, step = 25),
         actionButton("reset_physics", "Reset Physics", class = "btn-warning"),
         br(), br(),
