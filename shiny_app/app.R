@@ -736,28 +736,7 @@ ui <- dashboardPage(
                             )
                         ),
 
-                        # Loading Strategy Selection
-                        div(
-                            style = "background-color: #f8f9fa; padding: 15px; margin: 15px 0; border-radius: 5px; border-left: 4px solid #28a745;",
-                            h5(icon("tachometer-alt"), " Loading Strategy"),
-                            p("Choose how to load the graph data based on your needs:"),
-                            radioButtons("loading_strategy",
-                                       label = NULL,
-                                       choices = list(
-                                           "⚡ Fast Preview (Lightweight data only - recommended for large graphs)" = "lightweight",
-                                           "🚀 Balanced (Binary format - good performance with full data)" = "binary",
-                                           "📊 Complete (Full JSON - slowest but most compatible)" = "full"
-                                       ),
-                                       selected = "lightweight",
-                                       width = "100%"),
-                            tags$small(class = "text-muted",
-                                      HTML("• <strong>Fast Preview:</strong> Loads in seconds, shows graph structure and basic edge info<br/>
-                                           • <strong>Balanced:</strong> 3-4x faster than full loading with complete data<br/>
-                                           • <strong>Complete:</strong> Traditional loading method (may take minutes for large graphs)")),
-                            br(),
-                            div(id = "performance_hint", style = "font-size: 12px; color: #28a745;",
-                                HTML("💡 <strong>Tip:</strong> For the 527MB k_hops=3 file, Fast Preview loads in ~5 seconds vs ~2+ minutes for Complete!"))
-                        ),
+
 
                         # Progress indication section
                         conditionalPanel(
@@ -948,16 +927,7 @@ server <- function(input, output, session) {
             )
         } else {
             loading_strategy_info <- if (!is.null(current_data$loading_strategy)) {
-                strategy_desc <- switch(current_data$loading_strategy,
-                    "separated" = "Ultra-fast (Lightweight files)",
-                    "binary" = "Fast (Binary format)",
-                    "binary_indexed" = "Lightning-fast (Indexed binary)",
-                    "cached_lazy" = "Instant (Cached)",
-                    "cached_full" = "Instant (Cached)",
-                    "full" = "Standard (Full JSON)",
-                    "Optimized"
-                )
-                paste0("LOADING: ", strategy_desc, "\n")
+                paste0("LOADING: Optimized\n")
             } else {
                 ""
             }
@@ -1004,8 +974,8 @@ server <- function(input, output, session) {
             return()
         }
 
-        # Get selected loading strategy
-        loading_strategy <- input$loading_strategy %||% "lightweight"
+        # Use optimized loading (binary if available, otherwise full JSON)
+        loading_strategy <- "auto"
 
         tryCatch({
             # Update progress: File validation
@@ -1040,29 +1010,16 @@ server <- function(input, output, session) {
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_selector
 
-                # Load causal assertions based on selected strategy
+                # Load causal assertions using optimized loading
                 tryCatch({
-                    if (loading_strategy == "lightweight") {
-                        # Try lightweight files first, then binary, then full
-                        assertions_result <- load_causal_assertions_optimized(
-                            k_hops = result$k_hops,
-                            force_full_load = FALSE
-                        )
-                    } else if (loading_strategy == "binary") {
-                        # Force binary loading if available, otherwise full
-                        assertions_result <- load_causal_assertions_optimized(
-                            k_hops = result$k_hops,
-                            force_full_load = FALSE
-                        )
-                        # If no binary files available, fall back to full
-                        if (!assertions_result$success || !grepl("binary", assertions_result$loading_strategy %||% "")) {
-                            assertions_result <- load_causal_assertions_optimized(
-                                k_hops = result$k_hops,
-                                force_full_load = TRUE
-                            )
-                        }
-                    } else {
-                        # Full loading
+                    # Try optimized loading first (binary if available), then fall back to full JSON
+                    assertions_result <- load_causal_assertions_optimized(
+                        k_hops = result$k_hops,
+                        force_full_load = FALSE
+                    )
+
+                    # If optimized loading fails, try full loading as fallback
+                    if (!assertions_result$success) {
                         assertions_result <- load_causal_assertions_optimized(
                             k_hops = result$k_hops,
                             force_full_load = TRUE
@@ -1079,19 +1036,15 @@ server <- function(input, output, session) {
                         cat("Strategy used:", assertions_result$loading_strategy, "\n")
                         cat("Load time:", round(assertions_result$load_time_seconds %||% 0, 2), "seconds\n")
 
-                        # Show strategy-specific notification
-                        strategy_msg <- switch(assertions_result$loading_strategy,
-                            "separated" = "Ultra-fast loading with lightweight files!",
-                            "binary" = "Fast loading with binary format!",
-                            "binary_indexed" = "Lightning-fast loading with indexed binary!",
-                            "cached_lazy" = "Instant loading from cache!",
-                            "cached_full" = "Instant loading from cache!",
-                            "full" = "Complete data loaded.",
-                            "Optimized loading completed!"
-                        )
+                        # Show simple success notification
+                        load_time_msg <- if (!is.null(assertions_result$load_time_seconds)) {
+                            paste0(" (", round(assertions_result$load_time_seconds, 1), "s)")
+                        } else {
+                            ""
+                        }
 
                         showNotification(
-                            HTML(paste0("Graph loaded successfully! <br/>", strategy_msg)),
+                            HTML(paste0("Graph loaded successfully!", load_time_msg)),
                             type = "message",
                             duration = 4
                         )
