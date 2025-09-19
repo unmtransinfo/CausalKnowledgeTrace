@@ -1,24 +1,57 @@
-# CausalKnowledgeTrace: Interactive DAG Visualization and Knowledge Graph Generation
+# CausalKnowledgeTrace: Interactive DAG Visualization and Causal Knowledge Graph Generation
 
-This project provides a comprehensive system for interactive visualization of Directed Acyclic Graphs (DAGs) and automated knowledge graph generation from biomedical literature. The system consists of two main components: a Shiny web application for visualization and configuration, and a Python-based graph creation engine.
+CausalKnowledgeTrace is a comprehensive system for interactive visualization of Directed Acyclic Graphs (DAGs) and automated causal knowledge graph generation from biomedical literature. The system integrates a Shiny web application for visualization and configuration with a Python-based graph creation engine that queries SemMedDB for causal relationships.
 
-## Features
+## 🚀 Quick Start
 
-### Shiny Web Application
+```bash
+# 1. Setup environment configuration
+cp doc/smaple.env .env
+# Edit .env with your database credentials
+
+# 2. Setup environment (one-time)
+./setup.sh
+conda activate causalknowledgetrace
+
+# 3. Launch Shiny application
+Rscript run_app.R
+
+# 4. (Optional) Test graph creation manually without web app
+cd graph_creation
+python pushkin.py --yaml-config ../user_input.yaml --host localhost --dbname causalehr --user username --password password
+```
+
+**Note**: Step 4 is optional and allows you to test the graph creation engine independently. You can also generate graphs directly through the Shiny web application's "Graph Configuration" tab, which is the recommended workflow for most users.
+
+## 📋 What This Project Does
+
+- **🌐 Interactive Visualization**: Web-based DAG exploration with zoom, pan, and node interaction
+- **🔍 Causal Discovery**: Automated extraction of causal relationships from biomedical literature
+- **📊 Evidence Analysis**: PMID-based evidence tracking and strength assessment
+- **⚡ Performance Optimized**: Binary formats, caching, and vectorized operations for large graphs
+- **🎯 Configurable Analysis**: Multiple CUIs, k-hop analysis, Markov blanket computation
+- **📁 Multiple Formats**: R DAG files, JSON assertions, optimized binary formats
+
+## Key Features
+
+### 🌐 Shiny Web Application
 - **Interactive Network Visualization**: Explore DAGs with zoom, pan, and node selection capabilities
-- **Dynamic Node Information**: Click on nodes to see detailed information
+- **Dynamic Node Information**: Click on nodes to see detailed information and evidence
 - **Physics Controls**: Adjust network layout parameters in real-time
 - **Statistics Dashboard**: View network statistics and node distributions
-- **Color-coded Categories**: Automatically categorize and color nodes
-- **Flexible Data Loading**: Load any DAG structure from external R files
+- **Color-coded Categories**: Three-category system (Exposure/Outcome/Other) with optimized performance
+- **Flexible Data Loading**: Load DAG structures from generated files or upload custom R files
 - **Graph Configuration Interface**: Configure parameters for knowledge graph generation
+- **Performance Optimizations**: Optimized loading for large graphs with caching and binary formats
 
-### Graph Creation Engine
-- **Automated Knowledge Graph Generation**: Create causal graphs from biomedical literature
-- **SemMedDB Integration**: Query and process semantic predications from SemMedDB
-- **Configurable Parameters**: Customize exposure/outcome CUIs, thresholds, and filters
-- **Multiple Output Formats**: Generate R DAG objects and JSON assertion files
-- **Performance Monitoring**: Track execution times and generate performance metrics
+### 🐍 Graph Creation Engine
+- **Automated Knowledge Graph Generation**: Create causal graphs from SemMedDB biomedical literature
+- **Multiple CUI Support**: Handle multiple Concept Unique Identifiers for exposures and outcomes
+- **K-hop Analysis**: Configurable relationship depth (1-3 hops) for comprehensive graph traversal
+- **Markov Blanket Analysis**: Advanced causal inference with Markov blanket computation
+- **Blacklist Filtering**: Filter out generic or unwanted concepts during graph creation
+- **Multiple Output Formats**: Generate R DAG objects, JSON assertion files, and optimized binary formats
+- **Performance Monitoring**: Detailed timing analysis and execution metrics
 
 ## Project Structure
 
@@ -27,10 +60,18 @@ The project is organized into two main components with clear separation of conce
 ```
 CausalKnowledgeTrace/
 ├── README.md                    # This documentation file
-├── run_app.R                    # Launch script for Shiny application
-├── run_graph_creation.py        # Launch script for graph creation
+├── setup.sh                    # Automated setup script using conda environment
+├── run_app.R                    # Enhanced launch script for Shiny application
 ├── user_input.yaml              # Configuration file (generated by Shiny app)
-├── nohup.out                    # Log file
+├── packages.R                   # R package installation script
+├── .env                         # Database credentials (create from doc/smaple.env)
+│
+├── doc/                         # Setup and configuration files
+│   ├── environment.yaml         # Conda environment specification
+│   ├── requirements.txt         # Python dependencies
+│   ├── packages.R               # R package installation script
+│   ├── smaple.env               # Sample environment variables template
+│   └── filter.sql               # Database filtering queries for generic CUIs
 │
 ├── shiny_app/                   # Shiny Web Application Component
 │   ├── app.R                    # Main Shiny application file
@@ -40,455 +81,717 @@ CausalKnowledgeTrace/
 │   │   ├── node_information.R   # Node information display module
 │   │   ├── statistics.R         # Statistics and analytics module
 │   │   ├── data_upload.R        # Data loading and file management
-│   │   ├── graph_config_module.R # Graph configuration interface
-│   │   ├── validate_modules.R   # Input validation functions
-│   │   └── test_graph_config_module.R # Testing utilities
-│   └── www/                     # Static web assets (CSS, JS, images)
+│   │   ├── causal_analysis.R    # Causal analysis functionality
+│   │   ├── optimized_loading.R  # Performance-optimized loading
+│   │   └── graph_cache.R        # Graph caching system
+│   ├── server/                  # Server-side logic modules
+│   ├── ui/                      # UI component modules
+│   └── utils/                   # Utility functions and optimization
 │
 └── graph_creation/              # Graph Creation Engine Component
-    ├── config.py                # Configuration and database operations
-    ├── pushkin.py               # Main graph generation script
+    ├── pushkin.py               # Main entry point (delegates to cli_interface.py)
+    ├── cli_interface.py         # Command line interface and argument parsing
+    ├── analysis_core.py         # Core analysis classes (GraphAnalyzer, MarkovBlanketAnalyzer)
+    ├── config_models.py         # Configuration models and validation
+    ├── database_operations.py   # Database connection and query operations
+    ├── graph_operations.py      # Graph construction and manipulation
+    ├── markov_blanket.py        # Markov blanket computation algorithms
+    ├── post_process_optimization.py # File optimization for performance
+    ├── config.py                # Backward compatibility wrapper
     ├── consolidation.py         # Graph consolidation utilities
     ├── SemDAGconsolidator.py    # SemMedDB DAG consolidation
     ├── example/                 # Example scripts and configurations
-    │   ├── run_consolidation.sh
-    │   └── run_pushkin.sh
-    └── result/                  # Generated output files
-        ├── MarkovBlanket_Union.R
-        ├── degree_X.R               # X = K-hops value (1, 2, or 3)
-        ├── causal_assertions.json
-        ├── performance_metrics.json
-        └── run_configuration.json
+    │   ├── run_pushkin.sh       # Complete pipeline execution script
+    │   └── run_consolidation.sh # Consolidation-only script
+    ├── result/                  # Generated output files
+    │   ├── MarkovBlanket_Union.R
+    │   ├── degree_X.R           # X = K-hops value (1, 2, or 3)
+    │   ├── causal_assertions_X.json
+    │   ├── causal_assertions_X_lightweight.json  # Optimized versions
+    │   ├── causal_assertions_X_binary.rds        # Binary R format
+    │   ├── performance_metrics.json
+    │   └── run_configuration.json
+    └── output/                  # Alternative output directory
 ```
 
 ## Prerequisites
 
-### For Shiny Application
+### System Requirements
+- **Conda/Miniconda**: For environment management (recommended)
 - **R** (version 4.0 or higher): Download from [https://cran.r-project.org/](https://cran.r-project.org/)
-- **RStudio** (recommended): Download from [https://www.rstudio.com/](https://www.rstudio.com/)
+- **Python** (version 3.11 or higher)
+- **PostgreSQL** database with SemMedDB data (for graph creation)
 
-### For Graph Creation Engine
-- **Python** (version 3.8 or higher)
-- **PostgreSQL** database with SemMedDB data
-- Required Python packages (see requirements below)
+### Database Requirements (Graph Creation Only)
+- PostgreSQL database with SemMedDB schema
+- Database connection parameters (host, port, username, password, database name)
+- Properly configured `causalehr` schema with causalpredication table
 
 ## Installation
 
-### R Package Installation
+### Automated Setup (Recommended)
 
-Install the required R packages by running the following commands in your R console:
-
-```r
-# Install required packages
-install.packages(c(
-    "shiny",
-    "shinydashboard",
-    "visNetwork",
-    "dplyr",
-    "DT"
-))
-
-# Optional packages for advanced DAG processing
-install.packages(c(
-    "SEMgraph",
-    "dagitty",
-    "igraph"
-))
-```
-
-**Note**: The application will work with basic functionality even if `SEMgraph`, `dagitty`, and `igraph` are not installed, but these packages provide enhanced DAG processing capabilities.
-
-### Python Package Installation
-
-For the graph creation engine, install the required Python packages:
+The project includes an automated setup script that creates a conda environment and installs all dependencies:
 
 ```bash
-# Install required packages
-pip install psycopg2-binary pyyaml pandas numpy
+# Clone or download the project
+cd CausalKnowledgeTrace
 
-# Or if you have a requirements.txt file:
-pip install -r requirements.txt
+# 1. Create environment configuration file
+cp doc/smaple.env .env
+# Edit .env with your database credentials (see Database Configuration below)
+
+# 2. Run the automated setup script
+chmod +x setup.sh
+./setup.sh
+```
+
+This script will:
+1. Create a conda environment named `causalknowledgetrace` using `doc/environment.yaml`
+2. Install Python dependencies (psycopg2, PyYAML, pandas, networkx, scipy, numpy, matplotlib, jupyter, rpy2)
+3. Install R packages using `doc/packages.R`
+
+### Database Configuration
+
+Before running graph creation, you need to configure your database connection:
+
+```bash
+# Copy the sample environment file
+cp doc/smaple.env .env
+
+# Edit the .env file with your database credentials
+nano .env  # or use your preferred editor
+```
+
+The `.env` file should contain:
+```bash
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=your_database_name
+DB_SCHEMA=causalehr
+```
+
+**Important**:
+- Replace the placeholder values with your actual database credentials
+- The `.env` file is ignored by git for security (contains sensitive information)
+- Make sure your database contains the SemMedDB schema with causalpredication table
+
+### Manual Installation
+
+If you prefer manual installation or the automated setup fails:
+
+#### 1. Setup Environment Configuration
+
+```bash
+# Copy the sample environment file
+cp doc/smaple.env .env
+
+# Edit with your database credentials
+nano .env  # or use your preferred editor
+```
+
+#### 2. Create Conda Environment
+
+```bash
+# Create environment from YAML file
+conda env create -f doc/environment.yaml
+
+# Activate the environment
+conda activate causalknowledgetrace
+```
+
+#### 3. Install Python Dependencies
+
+```bash
+# Using pip with requirements file
+pip install -r doc/requirements.txt
+
+# Or install individually
+pip install psycopg2-binary PyYAML pandas networkx scipy rpy2
+```
+
+#### 4. Install R Packages
+
+```r
+# Run the R package installation script
+source("doc/packages.R")
+
+# Or install core packages manually
+install.packages(c(
+    "shiny", "shinydashboard", "visNetwork", "dplyr", "DT",
+    "dagitty", "igraph", "yaml", "shinyjs", "SEMgraph",
+    "ggplot2", "testthat", "knitr", "rmarkdown"
+))
 ```
 
 ## Quick Start
 
-### Running the Shiny Application
+### 1. Environment Setup
 
-1. **Navigate to the project directory**:
+```bash
+# Activate the conda environment (if using conda setup)
+conda activate causalknowledgetrace
+
+# Or ensure you're in the project directory
+cd /path/to/CausalKnowledgeTrace
+```
+
+### 2. Running the Shiny Application
+
+```bash
+# Launch the enhanced Shiny application
+Rscript run_app.R
+
+# Optional: Run with optimization
+Rscript run_app.R --optimize
+
+# Optional: Skip optimization
+Rscript run_app.R --no-optimize
+```
+
+**Features of the enhanced launcher:**
+- Automatic port detection and conflict resolution
+- Performance optimization detection and execution
+- Graph cache initialization
+- Detailed startup information and troubleshooting
+
+**Access the application:**
+- The app will automatically open in your browser
+- Look for the complete URL in the console output (e.g., `http://127.0.0.1:3838`)
+- If port 3838 is in use, the launcher will automatically find an available port
+
+### 3. Running the Graph Creation Engine
+
+The graph creation engine can be used in multiple ways depending on your workflow:
+
+#### Method 1: Through Shiny Web App (Recommended)
+1. **Launch Shiny app**: `Rscript run_app.R`
+2. **Configure parameters** using the "Graph Configuration" tab
+3. **Generate graphs** directly through the web interface
+4. **Visualize results** automatically in the same application
+
+#### Method 2: Manual Testing (Optional - for development/testing)
+This method allows you to test the graph creation engine independently without the web app:
+
+1. **Configure parameters** using the Shiny app's "Graph Configuration" tab OR manually edit `user_input.yaml`
+2. **Run graph creation manually**:
    ```bash
-   cd /path/to/CausalKnowledgeTrace
-   ```
-
-2. **Launch the Shiny application** (choose one method):
-
-   **Method 1: Enhanced Launch Script (Recommended)**
-   ```
-   Rscript run_app.R
-   ```
-
-3. **Access the application**:
-   - The app will automatically open in your browser
-   - Look for the complete URL in the console output (e.g., `http://127.0.0.1:3838`)
-   - If the browser doesn't open automatically, copy and paste the URL manually
-
-### Running the Graph Creation Engine
-
-1. **Configure parameters** using the Shiny app's "Graph Configuration" tab
-2. **Run the graph creation**:
-   ```bash
-   # Using the launch script 
-   python run_graph_creation.py
-
-   # Or directly
    cd graph_creation
-   python pushkin.py --yaml-config ../user_input.yaml
+   python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user your_username --password your_password --schema causalehr
    ```
+3. **Load results** in Shiny app using "Data Upload" tab
 
-### Configuration Flow
+#### Method 3: Using Example Script (Uses .env file)
+```bash
+# Ensure .env file is configured with database credentials
+cp doc/smaple.env .env
+nano .env  # Edit with your credentials
+
+# Run the complete pipeline with optimization
+./graph_creation/example/run_pushkin.sh
+```
+
+#### Method 4: Direct Command Line with Predefined Configs
+```bash
+cd graph_creation
+python pushkin.py --config hypertension_alzheimers --host localhost --port 5432 --dbname causalehr --user your_username --password your_password --schema causalehr --markov-blanket
+```
+
+**When to use each method:**
+- **Method 1**: Best for regular use, integrated workflow
+- **Method 2**: Useful for testing, debugging, or batch processing
+- **Method 3**: Convenient for automated pipelines
+- **Method 4**: Quick testing with predefined configurations
+
+## Configuration and Workflow
+
+### Typical User Workflow (Recommended)
+
+For most users, the integrated web application provides the complete workflow:
+
+1. **Launch Application**: `Rscript run_app.R`
+2. **Configure Analysis**: Use "Graph Configuration" tab to set parameters
+3. **Generate Graphs**: Click "Create Graph" to generate directly in the app
+4. **Visualize Results**: Automatically load and explore generated graphs
+5. **Interactive Analysis**: Use all visualization and analysis features
+
+### Developer/Testing Workflow (Optional)
+
+For development, testing, or batch processing, you can use the command-line interface:
+
+1. **Configure Parameters**: Edit `user_input.yaml` or use Shiny app
+2. **Test Graph Creation**: Run Python engine manually to test configurations
+3. **Verify Results**: Check generated files before loading in web app
+4. **Load in App**: Use "Data Upload" tab to load manually generated graphs
+
+### Complete Workflow Details
 
 1. **Configure Parameters**: Use the Shiny app's "Graph Configuration" tab to set:
-   - Exposure and Outcome CUIs
-   - Squelch Threshold (minimum unique pmids)
-   - Publication year cutoff
-
-   - K-hops parameter
-   - SemMedDB version
+   - **Exposure CUIs**: Multiple Concept Unique Identifiers for exposure variables
+   - **Outcome CUIs**: Multiple Concept Unique Identifiers for outcome variables
+   - **Blacklist CUIs**: CUIs to exclude from analysis (optional)
+   - **Minimum PMIDs**: Threshold for minimum unique publications (evidence strength)
+   - **Publication Year Cutoff**: Exclude publications before this year
+   - **K-hops Parameter**: Relationship depth (1-3 hops)
+   - **Predication Types**: Types of causal relationships to include
+   - **SemMedDB Version**: Database version to use
 
 2. **Save Configuration**: Click "Create Graph" to save parameters to `user_input.yaml`
 
-3. **Generate Graph**: Run the graph creation engine to process the configuration and generate graphs
+3. **Generate Graph**: Run the graph creation engine with database credentials
 
-4. **Automatic Integration**: Generated graphs are automatically saved to `graph_creation/result/` directory
+4. **Automatic Integration**: Generated graphs are saved to `graph_creation/result/` directory with multiple formats:
+   - Original JSON files (`causal_assertions_X.json`)
+   - Lightweight JSON files (`causal_assertions_X_lightweight.json`) - 94% size reduction
+   - Binary RDS files (`causal_assertions_X_binary.rds`) - 75% compression
+   - R DAG files (`degree_X.R`, `MarkovBlanket_Union.R`)
 
-5. **Visualize Results**: Use the Shiny app's "Data Upload" tab to load and visualize the generated graphs
+5. **Visualize Results**: Use the Shiny app's "Data Upload" tab to load and visualize generated graphs
 
 ### YAML Configuration Format
 
-The `user_input.yaml` file uses the following structure:
+The `user_input.yaml` file supports the following structure:
 
 ```yaml
+# Multiple CUIs supported for both exposure and outcome
 exposure_cuis:
-  - C0011849
-  - C0020538
+  - C0020538  # Hypertension
+  - C4013784  # Hypertensive disease
+  - C0221155  # High blood pressure
 outcome_cuis:
-  - C0027051
-  - C0038454
-exposure_name: ~  # Optional: custom name for exposure
-outcome_name: ~   # Optional: custom name for outcome
-min_pmids: 50
-pub_year_cutoff: 2010
-k_hops: 1
-predication_type:  # List format (recommended)
-  - CAUSES
-  - INTERACTS_WITH
-SemMedDBD_version: heuristic
+  - C2677888  # Alzheimer's disease
+  - C0750901  # Dementia
+  - C0494463  # Cognitive impairment
+
+# Optional blacklist to exclude generic concepts
+blacklist_cuis:
+  - C0001687  # Generic concept to exclude
+  - C0002526  # Another generic concept
+
+# Custom names (optional)
+exposure_name: "Hypertension"
+outcome_name: "Alzheimers"
+
+# Analysis parameters
+min_pmids: 10                    # Minimum publications required
+pub_year_cutoff: 2010           # Exclude publications before 2010
+k_hops: 1                       # Relationship depth (1-3)
+predication_type: "CAUSES"      # Single type or list
+SemMedDBD_version: "heuristic"  # Database version
 ```
 
-**Predication Types**: The system supports both list format (recommended) and comma-separated string format for backward compatibility:
-- **List format** (recommended): `predication_type: [CAUSES, TREATS, PREVENTS]`
-- **String format** (legacy): `predication_type: "CAUSES,TREATS,PREVENTS"`
+### Predication Types
 
-Common predication types include: CAUSES, TREATS, PREVENTS, INTERACTS_WITH, AFFECTS, ASSOCIATED_WITH, PREDISPOSES, COMPLICATES, and others.
+The system supports multiple predication types:
+- **Single type**: `predication_type: "CAUSES"`
+- **Multiple types**: `predication_type: ["CAUSES", "TREATS", "PREVENTS"]`
 
-## Data Configuration
+Common types: `CAUSES`, `TREATS`, `PREVENTS`, `INTERACTS_WITH`, `AFFECTS`, `ASSOCIATED_WITH`, `PREDISPOSES`, `COMPLICATES`
 
-### Using Your Own DAG Files
+## Data Loading and Visualization
 
-The application now provides a flexible file loading system through the user interface:
+### Loading Generated Graphs (Recommended Workflow)
 
-#### Method 1: Use Generated Graph Files (Recommended)
+The application provides optimized loading for graphs generated by the Python engine:
 
-1. **Generate graphs** using the graph creation engine (Python component)
-2. **Generated files** are automatically saved to `graph_creation/result/` directory
-3. **Go to the "Data Upload" tab** in the Shiny app
-4. **Click "Refresh File List"** to scan for available files
-5. **Select your generated file** (e.g., `degree_1.R`, `degree_2.R`, `degree_3.R`, `MarkovBlanket_Union.R`) from the dropdown
-6. **Click "Load Selected DAG"**
+#### Method 1: Generated Graph Files
+1. **Generate graphs** using the graph creation engine
+2. **Files are saved** to `graph_creation/result/` directory in multiple formats:
+   - `degree_X.R` - Standard DAG files (X = k-hops value)
+   - `MarkovBlanket_Union.R` - Markov blanket analysis results
+   - `causal_assertions_X_lightweight.json` - Optimized evidence data
+   - `causal_assertions_X_binary.rds` - Binary format for fast loading
 
-#### Method 2: Upload Through the Interface
+3. **Load in Shiny app**:
+   - Go to "Data Upload" tab
+   - Click "Refresh File List" to scan for available files
+   - Select your generated file from the dropdown
+   - Click "Load Selected DAG"
 
-1. **Go to the "Data Upload" tab** in the app
-2. **Use the file upload interface** to select your R file
+#### Method 2: Upload Custom DAG Files
+1. **Go to "Data Upload" tab** in the Shiny app
+2. **Use file upload interface** to select your R file
 3. **Click "Upload & Load"** to upload and immediately load the DAG
 
-#### DAG File Format
+### DAG File Format
 
-Your R file should contain a dagitty graph definition with the variable name `g`:
+DAG files should contain a dagitty graph definition with variable name `g`:
 
 ```r
-# Your DAG file (e.g., graph.R)
+# Example DAG file format
 g <- dagitty('dag {
-    Variable1 [exposure]
-    Variable2 [outcome]
-    Variable3
-    Variable4
-    # ... as many variables as needed
-    
-    Variable1 -> Variable2
-    Variable2 -> Variable3
-    Variable3 -> Variable4
-    # ... as many relationships as needed
+    Hypertension [exposure]
+    Alzheimers_Disease [outcome]
+    Age
+    BMI
+    Diabetes
+
+    Age -> Hypertension
+    BMI -> Diabetes
+    Hypertension -> Alzheimers_Disease
+    Diabetes -> Alzheimers_Disease
+    Age -> Alzheimers_Disease
 }')
 ```
 
-#### Auto-Detection Features
+### Performance Features
 
-The application automatically:
-- **Scans for DAG files** in the app directory
-- **Validates file contents** for dagitty syntax
-- **Loads default files** (graph.R, my_dag.R, dag.R) if available
-- **Provides status updates** on the Data Upload tab
+The application includes several performance optimizations:
+- **Automatic file detection** and validation
+- **Binary format support** for 75% faster loading
+- **Graph caching system** for repeated access
+- **Optimized node categorization** using vectorized operations
+- **Progressive loading** with status indicators
 
-### Using the Large Graph Example
+### Node Categories and Visualization
 
-To use the large graph you provided:
+The application uses an optimized three-category system for node classification:
 
-1. **Replace the DAG definition** in `dag_data.R`:
-   ```r
-   g <- dagitty('dag {
-   Hypertension [exposure]
-   Alzheimers_Disease [outcome]
-   Surgical_margins
-   PeptidylDipeptidase_A
-   # ... paste all your nodes here
-   
-   Triglycerides -> Hypertensive_disease
-   Mutation -> Neurodegenerative_Disorders
-   # ... paste all your edges here
-   }')
-   ```
+- **🔴 Exposure** (Red #FF4500): Variables marked as `[exposure]` in the DAG
+- **🔵 Outcome** (Blue #0066CC): Variables marked as `[outcome]` in the DAG
+- **⚫ Other** (Gray #808080): All other variables in the DAG
 
-2. **The application will automatically**:
-   - Process all nodes and edges with optimized performance
-   - Categorize nodes into three simple categories:
-     - **Exposure**: Variables marked as [exposure] in the DAG
-     - **Outcome**: Variables marked as [outcome] in the DAG
-     - **Other**: All other variables in the DAG
+**Performance optimizations:**
+- Vectorized operations for instant categorization of large graphs
+- Optimized color assignment using batch processing
+- Efficient font sizing and edge styling for better visibility
+- Progress indicators during processing
 
-3. **Performance optimizations for large graphs**:
-   - Smaller font sizes for better visibility
-   - Thinner edge lines
-   - Efficient color assignment
-   - Progress indicators during processing
+### Large Graph Support
 
-### Node Categories and Colors
+The application is optimized for large graphs with thousands of nodes:
 
-The application uses an optimized three-category system:
+1. **Automatic performance scaling**:
+   - Smaller font sizes for dense graphs
+   - Thinner edge lines to reduce visual clutter
+   - Efficient memory management
+   - Progressive rendering with status updates
 
-- **Exposure** (Bright Orange-Red): Variables marked as [exposure] in the DAG
-- **Outcome** (Bright Blue): Variables marked as [outcome] in the DAG
-- **Other** (Gray): All other variables in the DAG
-
-This system uses vectorized operations for fast processing of large graphs while maintaining the original color scheme.
-
-## Installation and Running
-
-1. **Download the files** to your local machine:
-   - `app.R` (main application)
-   - `dag_data.R` (data configuration)
-
-2. **Set working directory** to the folder containing both files
-
-3. **Run the application** using one of these methods:
-
-   **Method 1: Using RStudio**
-   ```r
-   # Open app.R in RStudio
-   # Click the "Run App" button
-   ```
-
-   **Method 2: Using R Console**
-   ```r
-   # Set working directory to the app folder
-   setwd("path/to/your/app/folder")
-   
-   # Run the app
-   shiny::runApp("app.R")
-   ```
-
-   **Method 3: Direct execution**
-   ```r
-   # If you're in the correct directory
-   source("app.R")
-   ```
-
-4. **Access the application** - The app will open in your browser at `http://127.0.0.1:XXXX`
-
-## Usage Instructions
-
-### Main Features
-
-1. **DAG Visualization Tab**
-   - Interactive network diagram with your DAG structure
-   - Drag nodes to reposition them
-   - Zoom with mouse wheel
-   - Click nodes to select and view details
-   - Adjust physics parameters with sliders
-   - **Reload DAG Data** button to refresh from dag_data.R
-   - **Create Graph** button to navigate to graph configuration
-
-2. **Node Information Tab**
-   - Detailed information about selected nodes
-   - Searchable table of all nodes
-   - Node metadata and properties
-
-3. **Statistics Tab**
-   - Network statistics (nodes, edges, groups)
-   - Node distribution charts
-   - DAG structure information
-
-4. **Data Upload Tab**
-   - Instructions for modifying DAG data
-   - Example data structure
-   - Guidelines for creating custom DAGs
-
-5. **Graph Configuration Tab**
-   - Configure parameters for knowledge graph generation
-   - Set exposure and outcome CUIs (Concept Unique Identifiers)
-   - Adjust minimum PMIDs, publication year cutoff, and other parameters
-   - Save configuration to user_input.yaml file
-   - Validate input parameters with real-time feedback
-
-### Controls
-
-- **Physics Strength**: Adjust gravitational force between nodes (-500 to -50)
-- **Spring Length**: Control preferred distance between connected nodes (100 to 400)
-- **Reset Physics**: Return to default layout settings
-- **Reload DAG Data**: Refresh data from dag_data.R file
-
-### Customizing Your DAG
-
-1. **Edit dag_data.R** with your own data structure
-2. **Click "Reload DAG Data"** in the application
-3. **No need to restart** the application
-
-#### Node Categories and Colors
-
-The application uses an optimized three-category system:
-
-- **Exposure** (Bright Orange-Red): Variables marked as [exposure] in the DAG
-- **Outcome** (Bright Blue): Variables marked as [outcome] in the DAG
-- **Other** (Gray): All other variables in the DAG
-
-The categorization uses vectorized operations for optimal performance with large graphs.
+2. **Interactive features maintained**:
+   - Zoom and pan functionality
+   - Node selection and information display
+   - Physics controls for layout adjustment
+   - Real-time statistics updates
 
 ## Advanced Usage
 
-### Creating DAGs from dagitty
+### Graph Creation Options
 
-If you have a dagitty object, you can use the provided helper function:
+#### Standard Graph Analysis
+```bash
+cd graph_creation
+python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr
+```
 
-```r
-# In your dag_data.R file
-library(dagitty)
+#### Markov Blanket Analysis
+```bash
+cd graph_creation
+python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr --markov-blanket
+```
 
-# Define your DAG
-g <- dagitty('dag {
-    X [exposure]
-    Y [outcome]
-    Z
-    X -> Z -> Y
-}')
-
-# Use the helper function
-network_data <- create_network_data(g)
-dag_nodes <- network_data$nodes
-dag_edges <- network_data$edges
-dag_object <- g
+#### Using Predefined Configurations
+```bash
+cd graph_creation
+python pushkin.py --config hypertension_alzheimers --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr
 ```
 
 ### Performance Optimization
 
-Node categorization has been optimized using vectorized operations instead of individual node processing. This provides the same visual categorization (Exposure/Outcome/Other) with dramatically improved performance for large graphs.
+#### Automatic Optimization
+The system automatically creates optimized file formats during graph generation:
+- **Lightweight JSON**: 94% size reduction, faster parsing
+- **Binary RDS**: 75% compression, instant R loading
+- **Graph caching**: Persistent cache for repeated access
 
-The key optimization:
-- **Before**: Individual processing of each node using `sapply(nodes, categorize_node)`
-- **After**: Vectorized operations using `nodes$group[nodes$id %in% exposures] <- "Exposure"`
+#### Manual Optimization
+```bash
+# Run post-processing optimization on existing files
+cd graph_creation
+python post_process_optimization.py result/
+```
 
-This maintains the original color scheme while providing near-instant processing even for graphs with thousands of nodes.
+### Database Filtering
+
+The project includes SQL filters to exclude generic concepts:
+- **Generic CUI filtering**: Removes overly broad medical concepts
+- **Semantic type filtering**: Excludes non-specific semantic types
+- **Custom blacklists**: User-defined CUI exclusions
+
+Filter file: `doc/filter.sql` contains predefined exclusion lists.
+
+## Shiny Application Usage
+
+### Application Tabs
+
+#### 1. 📊 DAG Visualization Tab (Default)
+- **Interactive network diagram** with full DAG structure
+- **Node interaction**: Drag to reposition, click to select and view details
+- **Zoom and pan**: Mouse wheel zoom, drag to pan
+- **Physics controls**: Real-time adjustment of layout parameters
+- **Node removal**: Interactive removal of nodes and edges with graph updates
+- **Reload DAG Data**: Refresh from current data files
+- **Create Graph**: Navigate to graph configuration
+
+#### 2. 📋 Node Information Tab
+- **Selected node details**: Comprehensive information about clicked nodes
+- **Searchable node table**: All nodes with metadata and properties
+- **Evidence information**: PMID lists and evidence counts (for generated graphs)
+- **Instrumental variables**: Displayed as comma-separated lists
+
+#### 3. 📈 Statistics Tab
+- **Network metrics**: Node count, edge count, group distributions
+- **Visual charts**: Node distribution and category breakdowns
+- **DAG structure**: Connectivity and topology information
+- **Performance metrics**: Loading times and optimization status
+
+#### 4. 📁 Data Upload Tab (Second Tab)
+- **File management**: Upload and load custom DAG files
+- **Generated file loading**: Access graphs created by Python engine
+- **File format validation**: Automatic dagitty syntax checking
+- **Status indicators**: Real-time feedback on loading progress
+
+#### 5. ⚙️ Graph Configuration Tab (First Tab)
+- **Parameter configuration**: Set exposure/outcome CUIs, thresholds, filters
+- **Multiple CUI support**: Handle complex exposure-outcome relationships
+- **Blacklist management**: Exclude unwanted concepts
+- **Real-time validation**: Input validation with immediate feedback
+- **YAML export**: Save configuration for Python engine
+
+### Interactive Controls
+
+#### Physics and Layout
+- **Physics Strength**: Gravitational force between nodes (-500 to -50)
+- **Spring Length**: Preferred distance between connected nodes (100-400)
+- **Stabilization**: Automatic layout stabilization
+- **Reset Physics**: Return to default layout settings
+
+#### Node and Edge Management
+- **Node selection**: Click nodes to view detailed information
+- **Node removal**: Remove nodes with automatic graph updates
+- **Edge information**: Detailed evidence panels with PMID lists
+- **Category filtering**: Filter by Exposure/Outcome/Other categories
+
+## Technical Details
+
+### Graph Creation Engine Architecture
+
+#### Core Components
+- **`pushkin.py`**: Main entry point that delegates to CLI interface
+- **`cli_interface.py`**: Command-line argument parsing and validation
+- **`analysis_core.py`**: Core analyzer classes:
+  - `GraphAnalyzer`: General graph analysis and DAG generation
+  - `MarkovBlanketAnalyzer`: Specialized Markov blanket computation
+- **`config_models.py`**: Configuration validation and data models
+- **`database_operations.py`**: PostgreSQL database operations and k-hop queries
+- **`markov_blanket.py`**: Markov blanket algorithms for causal inference
+
+#### Analysis Modes
+1. **Standard Graph Analysis**: Basic causal graph construction from SemMedDB
+2. **Markov Blanket Analysis**: Advanced causal inference with confounder identification
+3. **K-hop Analysis**: Configurable relationship depth (1-3 hops) for comprehensive traversal
+
+#### Output Formats
+- **R DAG files**: `degree_X.R`, `MarkovBlanket_Union.R` (dagitty format)
+- **JSON assertions**: `causal_assertions_X.json` (detailed evidence)
+- **Optimized formats**: Lightweight JSON (94% smaller), Binary RDS (75% compression)
+- **Metadata**: Performance metrics, configuration logs, timing analysis
+
+### Shiny Application Architecture
+
+#### Modular Design
+- **`modules/dag_visualization.R`**: Network visualization with visNetwork
+- **`modules/node_information.R`**: Node details and evidence display
+- **`modules/statistics.R`**: Network analytics and metrics
+- **`modules/data_upload.R`**: File management and loading
+- **`modules/causal_analysis.R`**: Causal analysis functionality
+- **`modules/optimized_loading.R`**: Performance-optimized data loading
+- **`modules/graph_cache.R`**: Persistent caching system
+
+#### Performance Features
+- **Vectorized node categorization**: O(1) complexity for large graphs
+- **Binary format support**: 75% faster loading with RDS files
+- **Progressive loading**: Status indicators and chunked processing
+- **Graph caching**: Persistent cache for repeated access
+- **Automatic optimization**: Detection and execution of performance improvements
 
 ## Troubleshooting
 
-### Common Issues
+### Setup Issues
 
-1. **"Could not load dag_data.R"**
-   - Ensure `dag_data.R` is in the same directory as `app.R`
-   - Check that the file contains `dag_nodes` and `dag_edges` variables
-   - Verify the data frame structures match the requirements
+#### Environment Setup
+```bash
+# If conda environment creation fails
+conda clean --all
+conda env create -f doc/environment.yaml --force
 
-2. **"Missing node/edge columns"**
-   - Check that your data frames have the required columns
-   - The application will attempt to add missing optional columns with defaults
+# If R package installation fails
+Rscript -e "install.packages('devtools'); devtools::install_deps()"
+```
 
-3. **Network not displaying**
-   - Ensure `dag_edges` has 'from' and 'to' columns
-   - Check that node IDs in edges match those in nodes
-   - Verify there are no circular references
+#### Database Connection
+```bash
+# Test PostgreSQL connection
+psql -h localhost -p 5432 -U username -d causalehr -c "SELECT COUNT(*) FROM causalehr.causalpredication;"
 
-4. **Package installation errors**
-   - Install packages one by one to identify issues
-   - SEMgraph, dagitty, and igraph are optional for basic functionality
+# Check schema exists
+psql -h localhost -p 5432 -U username -d causalehr -c "\dt causalehr.*"
+```
+
+### Application Issues
+
+#### Shiny Application
+1. **Port conflicts**: The launcher automatically finds available ports
+2. **Package loading errors**: Check console output for missing dependencies
+3. **File loading failures**: Verify DAG file format and dagitty syntax
+4. **Performance issues**: Enable optimization with `--optimize` flag
+
+#### Graph Creation Engine
+1. **Database connection errors**: Verify credentials and network connectivity
+2. **Environment variable issues**: Check that `.env` file is properly formatted and loaded
+3. **Memory issues**: Reduce k-hops parameter or increase system memory
+4. **No results returned**: Check CUI validity and database content
+5. **Timeout errors**: Increase query timeout or optimize database indexes
+
+**Environment Variable Debugging**:
+```bash
+# Check if environment variables are loaded correctly
+echo "DB_HOST: $DB_HOST"
+echo "DB_PORT: $DB_PORT"
+echo "DB_USER: $DB_USER"
+echo "DB_NAME: $DB_NAME"
+```
+
+**Note**: The Python code automatically handles string-to-integer conversion for the port parameter, so both `DB_PORT=5432` and `DB_PORT="5432"` work correctly.
+
+### Performance Optimization
+
+#### Automatic Optimization
+- Run `Rscript run_app.R --optimize` to enable automatic optimization
+- Check for optimized files in `graph_creation/result/` directory
+- Monitor console output for optimization status
+
+#### Manual Optimization
+```bash
+# Create optimized file formats
+cd graph_creation
+python post_process_optimization.py result/
+
+# Clear cache if needed
+rm -rf shiny_app/.cache/
+```
 
 ### Data Validation
 
-The application includes built-in data validation that will:
-- Check for required columns
-- Add missing optional columns with defaults
-- Display warnings for data issues
-- Provide fallback data if loading fails
+The system includes comprehensive validation:
+- **YAML configuration**: Real-time validation with error messages
+- **DAG file format**: Automatic dagitty syntax checking
+- **Database queries**: Parameter validation and SQL injection prevention
+- **File integrity**: Checksum validation for optimized files
 
 ## Examples
 
-### Simple Three-Node DAG
+### Complete Workflow Example
 
-```r
-# Example using dagitty format (recommended)
-g <- dagitty('dag {
-    Variable_A [exposure]
-    Variable_B
-    Variable_C [outcome]
+#### 1. Setup Environment
+```bash
+# Clone and setup
+git clone <repository-url>
+cd CausalKnowledgeTrace
 
-    Variable_A -> Variable_B
-    Variable_B -> Variable_C
-}')
+# Configure database credentials
+cp doc/smaple.env .env
+nano .env  # Edit with your database credentials
 
-# The application will automatically categorize and color nodes:
-# - Variable_A: Exposure (Orange-Red #FF4500)
-# - Variable_C: Outcome (Blue #0066CC)
-# - Variable_B: Other (Gray #808080)
+# Setup environment
+./setup.sh
+conda activate causalknowledgetrace
 ```
 
-### Complex Medical DAG
+#### 2. Configure Analysis
+```yaml
+# user_input.yaml
+exposure_cuis:
+  - C0020538  # Hypertension
+  - C4013784  # Hypertensive disease
+outcome_cuis:
+  - C2677888  # Alzheimer's disease
+  - C0750901  # Dementia
+min_pmids: 10
+pub_year_cutoff: 2010
+k_hops: 2
+predication_type: "CAUSES"
+```
 
+#### 3. Launch Shiny Application
+```bash
+# Launch Shiny app with optimization
+Rscript run_app.R --optimize
+```
+
+#### 4. (Optional) Test Graph Generation Manually
+This step is optional - you can generate graphs through the web app instead:
+```bash
+cd graph_creation
+python pushkin.py --yaml-config ../user_input.yaml \
+  --host localhost --port 5432 --dbname causalehr \
+  --user username --password password --schema causalehr \
+  --markov-blanket --verbose
+```
+
+**Recommended workflow**: Use the Shiny app's "Graph Configuration" tab to generate graphs interactively rather than running the command line manually.
+
+### DAG File Examples
+
+#### Simple Three-Node DAG
 ```r
-# Example medical DAG using dagitty format
+g <- dagitty('dag {
+    Hypertension [exposure]
+    Age
+    Stroke [outcome]
+
+    Age -> Hypertension
+    Hypertension -> Stroke
+    Age -> Stroke
+}')
+```
+
+#### Complex Medical DAG
+```r
 g <- dagitty('dag {
     Hypertension [exposure]
     Diabetes
-    Stroke [outcome]
+    Alzheimers_Disease [outcome]
     Age
     BMI
+    Education
 
     Age -> Hypertension
+    Age -> Diabetes
+    Age -> Alzheimers_Disease
+    BMI -> Hypertension
     BMI -> Diabetes
-    Hypertension -> Stroke
-    Diabetes -> Stroke
+    Education -> Alzheimers_Disease
+    Hypertension -> Alzheimers_Disease
+    Diabetes -> Alzheimers_Disease
 }')
-
-# The application will automatically categorize and color nodes:
-# - Hypertension: Exposure (Orange-Red #FF4500)
-# - Stroke: Outcome (Blue #0066CC)
-# - Diabetes, Age, BMI: Other (Gray #808080)
 ```
 
-## Support
+## Support and Contributing
 
-For issues or questions:
-1. Check that all required files are in the correct directory
-2. Verify your dag_data.R file structure matches the requirements
-3. Check the R console for detailed error messages
-4. Use the "Reload DAG Data" button after making changes
+### Getting Help
+1. **Check documentation**: Review this README and inline help
+2. **Console output**: Monitor R console and terminal for detailed error messages
+3. **Validation feedback**: Use real-time validation in the Shiny app
+4. **Performance monitoring**: Check optimization status and timing metrics
+
+### System Requirements
+- **Minimum**: 8GB RAM, 2GB disk space
+- **Recommended**: 16GB RAM, 5GB disk space, SSD storage
+- **Database**: PostgreSQL with SemMedDB (several GB)
 
 ## License
 
-This application is provided as-is for educational and research purposes.
+This project is provided for educational and research purposes. Please cite appropriately if used in academic work.

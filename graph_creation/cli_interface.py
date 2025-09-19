@@ -70,7 +70,7 @@ Example usage:
     # Database connection parameters
     db_group = parser.add_argument_group("Database Connection")
     db_group.add_argument("--host", default="localhost", help="Database host (default: localhost)")
-    db_group.add_argument("--port", type=int, default=5432, help="Database port (default: 5432)")
+    db_group.add_argument("--port", default="5432", help="Database port (default: 5432)")
     db_group.add_argument("--dbname", required=True, help="Database name")
     db_group.add_argument("--user", required=True, help="Database user")
     db_group.add_argument("--password", required=True, help="Database password")
@@ -116,10 +116,16 @@ Example usage:
 
 def create_analysis_configuration(args):
     """Create analysis configuration from command line arguments."""
+    # Convert port to integer if it's a string
+    try:
+        port = int(args.port)
+    except (ValueError, TypeError):
+        raise ValueError(f"Invalid port value: {args.port}. Port must be a valid integer.")
+
     # Create database configuration
     db_config = create_db_config(
         host=args.host,
-        port=args.port,
+        port=port,
         dbname=args.dbname,
         user=args.user,
         password=args.password,
