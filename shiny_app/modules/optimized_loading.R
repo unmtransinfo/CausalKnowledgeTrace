@@ -12,10 +12,10 @@ library(digest)
 .lazy_cache$full_data <- list()
 .lazy_cache$config <- list(
     enabled = TRUE,
-    stream_threshold_mb = 10,  # Use streaming for files larger than 10MB
-    lazy_threshold_mb = 5,     # Use lazy loading for files larger than 5MB
-    max_memory_mb = 500,       # Maximum memory usage for cache (500MB)
-    cleanup_interval = 300     # Cleanup old cache entries every 5 minutes
+    stream_threshold_mb = 100,  # Use streaming for files larger than 100MB (3-hop is 527MB)
+    lazy_threshold_mb = 50,     # Use lazy loading for files larger than 50MB
+    max_memory_mb = 1000,       # Maximum memory usage for cache (1GB for large graphs)
+    cleanup_interval = 300      # Cleanup old cache entries every 5 minutes
 )
 
 # Memory management functions
@@ -168,6 +168,8 @@ load_causal_assertions_optimized <- function(filename = NULL, k_hops = NULL,
     } else if (file_size_mb <= .lazy_cache$config$stream_threshold_mb) {
         return(load_lazy_assertions(filename, cache_key))
     } else {
+        # For very large files (like 3-hop causal assertions), use streaming
+        cat("Very large file detected (", round(file_size_mb, 1), "MB) - using streaming strategy\n")
         return(load_streaming_assertions(filename, cache_key))
     }
 }

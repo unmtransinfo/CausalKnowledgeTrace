@@ -989,14 +989,28 @@ server <- function(input, output, session) {
 
             if (result$success) {
                 # Update progress: Processing graph
+                node_count <- length(names(result$dag))
+                progress_text <- if (node_count > 8000) {
+                    "Processing large graph structure (this may take a moment)..."
+                } else {
+                    "Processing graph..."
+                }
+
                 session$sendCustomMessage("updateProgress", list(
                     percent = 40,
-                    text = "Processing graph...",
-                    status = "Converting graph data structure"
+                    text = progress_text,
+                    status = paste("Converting", node_count, "nodes to network format")
                 ))
 
                 # Process the loaded DAG
                 network_data <- create_network_data(result$dag)
+
+                # Update progress: Network created
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 50,
+                    text = "Network structure created successfully",
+                    status = paste("Generated", nrow(network_data$nodes), "nodes and", nrow(network_data$edges), "edges")
+                ))
 
                 # Update progress: Loading assertions
                 session$sendCustomMessage("updateProgress", list(
@@ -1043,10 +1057,18 @@ server <- function(input, output, session) {
                             ""
                         }
 
+                        # Special message for large graphs
+                        success_msg <- if (node_count > 8000) {
+                            paste0("Large graph (", node_count, " nodes) loaded successfully!", load_time_msg,
+                                  "<br/>The interactive visualization may take a moment to render.")
+                        } else {
+                            paste0("Graph loaded successfully!", load_time_msg)
+                        }
+
                         showNotification(
-                            HTML(paste0("Graph loaded successfully!", load_time_msg)),
+                            HTML(success_msg),
                             type = "message",
-                            duration = 4
+                            duration = if (node_count > 8000) 6 else 4
                         )
                     } else {
                         current_data$causal_assertions <- list()
@@ -1261,8 +1283,20 @@ server <- function(input, output, session) {
     output$network <- renderVisNetwork({
         # Include force_refresh to trigger re-rendering for undo functionality
         current_data$force_refresh
+
+        # Show loading message for large graphs
+        if (!is.null(current_data$nodes) && nrow(current_data$nodes) > 8000) {
+            showNotification(
+                "Rendering large graph visualization... Please wait.",
+                type = "message",
+                duration = 3,
+                id = "large_graph_render"
+            )
+        }
+
         create_interactive_network(current_data$nodes, current_data$edges,
-                                 input$physics_strength, input$spring_length)
+                                 input$physics_strength, input$spring_length,
+                                 input$force_full_display)
     })
 
     # Fit network to container after rendering
