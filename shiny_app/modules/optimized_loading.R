@@ -154,19 +154,11 @@ load_causal_assertions_optimized <- function(filename = NULL, k_hops = NULL,
         }
     }
     
-    # Phase 3: Check for binary files first (fastest loading)
+    # Phase 2: Check for binary files first (fastest loading)
     if (!is.null(k_hops) && !force_full_load) {
         binary_result <- try_load_binary_files(k_hops, dirname(filename))
         if (binary_result$success) {
             return(binary_result)
-        }
-    }
-
-    # Phase 2: Check for separated files (second fastest)
-    if (!is.null(k_hops) && !force_full_load) {
-        separated_result <- try_load_separated_files(k_hops, dirname(filename))
-        if (separated_result$success) {
-            return(separated_result)
         }
     }
 
@@ -445,89 +437,97 @@ get_cache_stats <- function() {
     )
 }
 
-#' Try Load Separated Files
-#'
-#' Attempts to load separated lightweight and sentence files
-#'
-#' @param k_hops K-hops parameter
-#' @param search_dir Directory to search in
-#' @return List with loading result
+# DISABLED: Fast Preview / Separated Files Loading
+# This function has been disabled as the Fast Preview loading strategy has been removed
+#
+# #' Try Load Separated Files
+# #'
+# #' Attempts to load separated lightweight and sentence files
+# #'
+# #' @param k_hops K-hops parameter
+# #' @param search_dir Directory to search in
+# #' @return List with loading result
+# try_load_separated_files <- function(k_hops, search_dir) {
+#     # Source sentence storage module if not loaded
+#     if (!exists("check_for_separated_files")) {
+#         tryCatch({
+#             source("modules/sentence_storage.R")
+#         }, error = function(e) {
+#             return(list(success = FALSE, message = "Could not load sentence storage module"))
+#         })
+#     }
+#
+#     # Check for separated files
+#     separated_files <- check_for_separated_files(k_hops, c(search_dir))
+#
+#     if (!separated_files$found) {
+#         return(list(success = FALSE, message = "Separated files not found"))
+#     }
+#
+#     tryCatch({
+#         cat("Loading separated files (optimized mode)...\n")
+#         start_time <- Sys.time()
+#
+#         # Load lightweight assertions
+#         lightweight_result <- load_lightweight_assertions(separated_files$lightweight_file)
+#
+#         if (!lightweight_result$success) {
+#             return(lightweight_result)
+#         }
+#
+#         # Create sentence loader
+#         sentence_loader <- create_sentence_loader(separated_files$sentences_file)
+#
+#         # Create enhanced lazy loader that uses sentence loader
+#         enhanced_lazy_loader <- function(subject_name = NULL, object_name = NULL, pmid = NULL) {
+#             if (!is.null(subject_name) && !is.null(object_name)) {
+#                 # Find the lightweight assertion
+#                 for (assertion in lightweight_result$assertions) {
+#                     if (assertion$subject_name == subject_name && assertion$object_name == object_name) {
+#                         # Add sentence data
+#                         pmid_data <- sentence_loader(subject_name, object_name)
+#                         assertion$pmid_data <- pmid_data
+#                         return(assertion)
+#                     }
+#                 }
+#                 return(NULL)
+#             } else {
+#                 # Return all lightweight data
+#                 return(lightweight_result$assertions)
+#             }
+#         }
+#
+#         load_time <- as.numeric(Sys.time() - start_time, units = "secs")
+#
+#         # Get file size statistics
+#         lightweight_size <- file.size(separated_files$lightweight_file) / (1024 * 1024)
+#
+#         cat("Loaded separated files in", round(load_time, 2), "seconds\n")
+#         cat("Lightweight file size:", round(lightweight_size, 2), "MB\n")
+#
+#         return(list(
+#             success = TRUE,
+#             message = paste("Loaded", length(lightweight_result$assertions), "assertions from separated files"),
+#             assertions = lightweight_result$assertions,
+#             loading_strategy = "separated",
+#             load_time_seconds = load_time,
+#             lazy_loader = enhanced_lazy_loader,
+#             sentence_loader = sentence_loader,
+#             lightweight_file = separated_files$lightweight_file,
+#             sentences_file = separated_files$sentences_file
+#         ))
+#
+#     }, error = function(e) {
+#         return(list(
+#             success = FALSE,
+#             message = paste("Error loading separated files:", e$message)
+#         ))
+#     })
+# }
+
+# Function disabled - Fast Preview loading strategy has been removed
 try_load_separated_files <- function(k_hops, search_dir) {
-    # Source sentence storage module if not loaded
-    if (!exists("check_for_separated_files")) {
-        tryCatch({
-            source("modules/sentence_storage.R")
-        }, error = function(e) {
-            return(list(success = FALSE, message = "Could not load sentence storage module"))
-        })
-    }
-
-    # Check for separated files
-    separated_files <- check_for_separated_files(k_hops, c(search_dir))
-
-    if (!separated_files$found) {
-        return(list(success = FALSE, message = "Separated files not found"))
-    }
-
-    tryCatch({
-        cat("Loading separated files (optimized mode)...\n")
-        start_time <- Sys.time()
-
-        # Load lightweight assertions
-        lightweight_result <- load_lightweight_assertions(separated_files$lightweight_file)
-
-        if (!lightweight_result$success) {
-            return(lightweight_result)
-        }
-
-        # Create sentence loader
-        sentence_loader <- create_sentence_loader(separated_files$sentences_file)
-
-        # Create enhanced lazy loader that uses sentence loader
-        enhanced_lazy_loader <- function(subject_name = NULL, object_name = NULL, pmid = NULL) {
-            if (!is.null(subject_name) && !is.null(object_name)) {
-                # Find the lightweight assertion
-                for (assertion in lightweight_result$assertions) {
-                    if (assertion$subject_name == subject_name && assertion$object_name == object_name) {
-                        # Add sentence data
-                        pmid_data <- sentence_loader(subject_name, object_name)
-                        assertion$pmid_data <- pmid_data
-                        return(assertion)
-                    }
-                }
-                return(NULL)
-            } else {
-                # Return all lightweight data
-                return(lightweight_result$assertions)
-            }
-        }
-
-        load_time <- as.numeric(Sys.time() - start_time, units = "secs")
-
-        # Get file size statistics
-        lightweight_size <- file.size(separated_files$lightweight_file) / (1024 * 1024)
-
-        cat("Loaded separated files in", round(load_time, 2), "seconds\n")
-        cat("Lightweight file size:", round(lightweight_size, 2), "MB\n")
-
-        return(list(
-            success = TRUE,
-            message = paste("Loaded", length(lightweight_result$assertions), "assertions from separated files"),
-            assertions = lightweight_result$assertions,
-            loading_strategy = "separated",
-            load_time_seconds = load_time,
-            lazy_loader = enhanced_lazy_loader,
-            sentence_loader = sentence_loader,
-            lightweight_file = separated_files$lightweight_file,
-            sentences_file = separated_files$sentences_file
-        ))
-
-    }, error = function(e) {
-        return(list(
-            success = FALSE,
-            message = paste("Error loading separated files:", e$message)
-        ))
-    })
+    return(list(success = FALSE, message = "Separated files loading has been disabled"))
 }
 
 #' Try Load Binary Files
