@@ -1,0 +1,10 @@
+# Core dependencies
+psycopg2-binary
+PyYAML
+pandas
+networkx
+scipy
+
+# R integration packages
+rpy2
+
