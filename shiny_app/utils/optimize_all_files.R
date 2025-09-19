@@ -29,9 +29,17 @@ optimize_all_files <- function(search_dirs = c("../../graph_creation/result", ".
                               output_dir = NULL,
                               force_regenerate = FALSE,
                               skip_existing = TRUE) {
-    
-    cat("=== COMPREHENSIVE FILE OPTIMIZATION ===\n")
-    cat("This will create optimized versions of all causal assertions files.\n\n")
+
+    cat("=== FILE OPTIMIZATION DISABLED ===\n")
+    cat("Optimization has been disabled to speed up the graph creation process.\n")
+    cat("Only the original JSON files will be used.\n\n")
+
+    return(list(
+        summary = list(
+            overall_success = TRUE,
+            message = "Optimization disabled"
+        )
+    ))
     
     results <- list(
         separated = list(),

@@ -192,8 +192,12 @@ if (success_count == total_files) {{
 
 def main():
     """Main optimization process"""
-    print("🚀 POST-PROCESSING OPTIMIZATION STARTED")
+    print("🚀 POST-PROCESSING OPTIMIZATION DISABLED")
     print("=" * 50)
+    print("⚠️  Optimization has been disabled to speed up the graph creation process.")
+    print("    Only the original JSON files will be created.")
+    print("=" * 50)
+    return
     
     # Determine result directory
     if len(sys.argv) > 1:
