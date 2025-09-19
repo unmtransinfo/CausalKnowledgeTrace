@@ -1,4 +1,5 @@
-add code to run R package using form packages.R file whith this code 
+# CausalKnowledgeTrace R Package Installation Script
+# This script installs all required R packages for the application
 # Set CRAN mirror
 options(repos = c(CRAN = "https://cran.rstudio.com/"))
 

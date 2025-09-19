@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source .env
+
 echo "🚀 Starting Graph Creation Pipeline..."
 echo "======================================"
 
@@ -8,12 +10,12 @@ echo "📊 Step 1: Running graph analysis..."
 python graph_creation/pushkin.py \
   --yaml-config user_input.yaml \
   --output-dir graph_creation/result \
-  --host localhost \
-  --port 5432 \
-  --dbname causalehr \
-  --user rajesh \
-  --password Usps@6855 \
-  --schema causalehr \
+  --host "$DB_HOST" \
+  --port "$DB_PORT"  \
+  --user "$DB_USER" \
+  --password "$DB_PASSWORD" \
+  --dbname "$DB_NAME" \
+  --schema "$DB_SCHEMA" \
   --verbose
   # --markov-blanket  # Uncomment this line to enable Markov blanket analysis
 
