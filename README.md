@@ -93,7 +93,7 @@ CausalKnowledgeTrace/
 
 ### System Requirements
 - **PostgreSQL** database with modified SemMEDdb data (for graph creation) in postgres
-- **Conda/Miniconda**: For environment management (recommended)
+- **Conda/Miniconda**: For environment management (required)
 - **Python** (version 3.11 or higher)
 - **R** (version 4.0 or higher): Download from [https://cran.r-project.org/](https://cran.r-project.org/)
 
@@ -104,11 +104,9 @@ CausalKnowledgeTrace/
 
 ## Installation
 
-# PostgreSQL Database Setup for SemMedDB
+### Step 1: PostgreSQL Database Setup for SemMedDB
 
-This document provides step-by-step instructions for setting up a modified version of SemMedDB in PostgreSQL format.
-
-## Database Download
+#### Database Download
 
 We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) that is available in PostgreSQL format.
 
@@ -116,21 +114,56 @@ We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) 
 
 **Note**: The database file is approximately 25GB in size, so the download may take several minutes depending on your internet connection.
 
-## Prerequisites
+#### Database Setup Instructions
 
-* PostgreSQL must be installed on your system
-* Sufficient disk space (at least 50GB recommended for extraction and setup)
+**Prerequisites:**
+- PostgreSQL must be installed on your system
+- Sufficient disk space (at least 50GB recommended for extraction and setup)
 
-## Database Setup Instructions
-
-### Step 1: Create the Database
-
+**Create the Database:**
 Replace `<username>` with your actual PostgreSQL username.
 ```bash
 createdb -U <username> -h localhost causalehr
 ```
 
-### Environment Setup 
+### Step 2: Install Miniconda 
+
+This project requires Conda for environment management. If you don't have Conda/Miniconda installed:
+
+#### Download Miniconda
+- **Windows**: [Miniconda3 Windows 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe)
+- **macOS**: [Miniconda3 macOS 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh)
+- **macOS (Apple Silicon)**: [Miniconda3 macOS ARM64](https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh)
+- **Linux**: [Miniconda3 Linux 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh)
+
+#### Install Miniconda
+
+**Windows:**
+1. Download the Windows installer from the link above
+2. Run the `.exe` file as administrator
+3. Follow the installation wizard
+4. Check "Add Anaconda to my PATH environment variable" (optional but recommended)
+5. Complete installation and restart your command prompt
+
+**macOS/Linux:**
+1. Download the appropriate `.sh` file for your system
+2. Open Terminal and navigate to the download location
+3. Run the installer:
+   ```bash
+   bash Miniconda3-latest-[YourSystem].sh
+   ```
+4. Follow the prompts and accept the license
+5. Allow the installer to initialize conda
+6. Restart your terminal or run: `source ~/.bashrc`
+
+#### Verify Conda Installation
+Check if conda is installed correctly:
+```bash
+conda --version
+conda info
+```
+
+### Step 3: Project Setup
 
 The project includes an automated setup script that creates a conda environment and installs all dependencies:
 
@@ -180,7 +213,7 @@ DB_SCHEMA=causalehr
 - The `.env` file is ignored by git for security (contains sensitive information)
 - Make sure your database contains the SemMedDB schema with causalpredication table
 
-### Manual Installation
+### Manual Installation (Alternative)
 
 If you prefer manual installation or the automated setup fails:
 
@@ -228,79 +261,6 @@ install.packages(c(
 ))
 ```
 
-## Quick Start
-
-### 1. Environment Setup
-
-```bash
-# Activate the conda environment (if using conda setup)
-conda activate causalknowledgetrace
-
-# Or ensure you're in the project directory
-cd /path/to/CausalKnowledgeTrace
-```
-
-### 2. Running the Shiny Application
-
-```bash
-# Launch the enhanced Shiny application
-Rscript run_app.R
-
-
-```
-
-**Features of the enhanced launcher:**
-- Automatic port detection and conflict resolution
-- Graph cache initialization
-- Detailed startup information and troubleshooting
-
-**Access the application:**
-- The app will automatically open in your browser
-- Look for the complete URL in the console output (e.g., `http://127.0.0.1:3838`)
-- If port 3838 is in use, the launcher will automatically find an available port
-
-### 3. Running the Graph Creation Engine
-
-The graph creation engine can be used in multiple ways depending on your workflow:
-
-#### Method 1: Through Shiny Web App (Recommended)
-1. **Launch Shiny app**: `Rscript run_app.R`
-2. **Configure parameters** using the "Graph Configuration" tab
-3. **Generate graphs** directly through the web interface
-4. **Visualize results** automatically in the same application
-
-#### Method 2: Manual Testing (Optional - for development/testing)
-This method allows you to test the graph creation engine independently without the web app:
-
-1. **Configure parameters** using the Shiny app's "Graph Configuration" tab OR manually edit `user_input.yaml`
-2. **Run graph creation manually**:
-   ```bash
-   cd graph_creation
-   python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user your_username --password your_password --schema causalehr
-   ```
-3. **Load results** in Shiny app using "Data Upload" tab
-
-#### Method 3: Using Example Script (Uses .env file)
-```bash
-# Ensure .env file is configured with database credentials
-cp doc/smaple.env .env
-nano .env  # Edit with your credentials
-
-# Run the complete pipeline
-./graph_creation/example/run_pushkin.sh
-```
-
-#### Method 4: Direct Command Line with Predefined Configs
-```bash
-cd graph_creation
-python pushkin.py --config hypertension_alzheimers --host localhost --port 5432 --dbname causalehr --user your_username --password your_password --schema causalehr --markov-blanket
-```
-
-**When to use each method:**
-- **Method 1**: Best for regular use, integrated workflow
-- **Method 2**: Useful for testing, debugging, or batch processing
-- **Method 3**: Convenient for automated pipelines
-- **Method 4**: Quick testing with predefined configurations
 
 ## Configuration and Workflow
 
@@ -387,7 +347,7 @@ Common types: `CAUSES`, `TREATS`, `PREVENTS`, `INTERACTS_WITH`, `AFFECTS`, `ASSO
 
 ## Data Loading and Visualization
 
-### Loading Generated Graphs (Recommended Workflow)
+### Loading Generated Graphs
 
 The application provides optimized loading for graphs generated by the Python engine:
 
@@ -452,22 +412,6 @@ The application uses an optimized three-category system for node classification:
 - Font sizing and edge styling for better visibility
 - Progress indicators during processing
 
-### Large Graph Support
-
-The application is optimized for large graphs with thousands of nodes:
-
-1. **Automatic performance scaling**:
-   - Smaller font sizes for dense graphs
-   - Thinner edge lines to reduce visual clutter
-   - Efficient memory management
-   - Progressive rendering with status updates
-
-2. **Interactive features maintained**:
-   - Zoom and pan functionality
-   - Node selection and information display
-   - Physics controls for layout adjustment
-   - Real-time statistics updates
-
 ## Advanced Usage
 
 ### Graph Creation Options
@@ -477,19 +421,6 @@ The application is optimized for large graphs with thousands of nodes:
 cd graph_creation
 python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr
 ```
-
-#### Markov Blanket Analysis
-```bash
-cd graph_creation
-python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr --markov-blanket
-```
-
-#### Using Predefined Configurations
-```bash
-cd graph_creation
-python pushkin.py --config hypertension_alzheimers --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr
-```
-
 
 
 ### Database Filtering
@@ -575,7 +506,6 @@ Filter file: `doc/filter.sql` contains predefined exclusion lists.
 #### Output Formats
 - **R DAG files**: `degree_X.R`, `MarkovBlanket_Union.R` (dagitty format)
 - **JSON assertions**: `causal_assertions_X.json` (detailed evidence)
-
 - **Metadata**: Performance metrics, configuration logs, timing analysis
 
 ### Shiny Application Architecture
@@ -597,8 +527,13 @@ Filter file: `doc/filter.sql` contains predefined exclusion lists.
 
 ### Setup Issues
 
-#### Environment Setup
+#### Conda Environment Setup
 ```bash
+# If conda command not found (Linux/macOS)
+export PATH="/path/to/miniconda3/bin:$PATH"
+# Or reinitialize
+conda init bash  # or zsh, fish, etc.
+
 # If conda environment creation fails
 conda clean --all
 conda env create -f doc/environment.yaml --force
@@ -666,6 +601,9 @@ The system includes comprehensive validation:
 git clone <repository-url>
 cd CausalKnowledgeTrace
 
+# Install Miniconda (if not already installed)
+# See Step 1: Install Miniconda section above
+
 # Configure database credentials
 cp doc/smaple.env .env
 nano .env  # Edit with your database credentials
@@ -692,6 +630,9 @@ predication_type: "CAUSES"
 
 #### 3. Launch Shiny Application
 ```bash
+# Activate conda environment (required)
+conda activate causalknowledgetrace
+
 # Launch Shiny app
 Rscript run_app.R
 ```
@@ -707,56 +648,3 @@ python pushkin.py --yaml-config ../user_input.yaml \
 ```
 
 **Recommended workflow**: Use the Shiny app's "Graph Configuration" tab to generate graphs interactively rather than running the command line manually.
-
-### DAG File Examples
-
-#### Simple Three-Node DAG
-```r
-g <- dagitty('dag {
-    Hypertension [exposure]
-    Age
-    Stroke [outcome]
-
-    Age -> Hypertension
-    Hypertension -> Stroke
-    Age -> Stroke
-}')
-```
-
-#### Complex Medical DAG
-```r
-g <- dagitty('dag {
-    Hypertension [exposure]
-    Diabetes
-    Alzheimers_Disease [outcome]
-    Age
-    BMI
-    Education
-
-    Age -> Hypertension
-    Age -> Diabetes
-    Age -> Alzheimers_Disease
-    BMI -> Hypertension
-    BMI -> Diabetes
-    Education -> Alzheimers_Disease
-    Hypertension -> Alzheimers_Disease
-    Diabetes -> Alzheimers_Disease
-}')
-```
-
-## Support and Contributing
-
-### Getting Help
-1. **Check documentation**: Review this README and inline help
-2. **Console output**: Monitor R console and terminal for detailed error messages
-3. **Validation feedback**: Use real-time validation in the Shiny app
-4. **Performance monitoring**: Check processing status and timing metrics
-
-### System Requirements
-- **Minimum**: 8GB RAM, 2GB disk space
-- **Recommended**: 16GB RAM, 5GB disk space, SSD storage
-- **Database**: PostgreSQL with SemMedDB (several GB)
-
-## License
-
-This project is provided for educational and research purposes. Please cite appropriately if used in academic work.
