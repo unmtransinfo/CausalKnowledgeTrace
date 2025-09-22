@@ -2,27 +2,6 @@
 
 CausalKnowledgeTrace is a comprehensive system for interactive visualization of Directed Acyclic Graphs (DAGs) and automated causal knowledge graph generation from biomedical literature. The system integrates a Shiny web application for visualization and configuration with a Python-based graph creation engine that queries SemMedDB for causal relationships.
 
-## 🚀 Quick Start
-
-```bash
-# 1. Setup environment configuration
-cp doc/smaple.env .env
-# Edit .env with your database credentials
-
-# 2. Setup environment (one-time)
-./setup.sh
-conda activate causalknowledgetrace
-
-# 3. Launch Shiny application
-Rscript run_app.R
-
-# 4. (Optional) Test graph creation manually without web app
-cd graph_creation
-python pushkin.py --yaml-config ../user_input.yaml --host localhost --dbname causalehr --user username --password password
-```
-
-**Note**: Step 4 is optional and allows you to test the graph creation engine independently. You can also generate graphs directly through the Shiny web application's "Graph Configuration" tab, which is the recommended workflow for most users.
-
 ## 📋 What This Project Does
 
 - **🌐 Interactive Visualization**: Web-based DAG exploration with zoom, pan, and node interaction
@@ -113,19 +92,45 @@ CausalKnowledgeTrace/
 ## Prerequisites
 
 ### System Requirements
+- **PostgreSQL** database with modified SemMEDdb data (for graph creation) in postgres
 - **Conda/Miniconda**: For environment management (recommended)
-- **R** (version 4.0 or higher): Download from [https://cran.r-project.org/](https://cran.r-project.org/)
 - **Python** (version 3.11 or higher)
-- **PostgreSQL** database with SemMedDB data (for graph creation)
+- **R** (version 4.0 or higher): Download from [https://cran.r-project.org/](https://cran.r-project.org/)
 
-### Database Requirements (Graph Creation Only)
+### Database Requirements
 - PostgreSQL database with SemMedDB schema
 - Database connection parameters (host, port, username, password, database name)
 - Properly configured `causalehr` schema with causalpredication table
 
 ## Installation
 
-### Automated Setup (Recommended)
+# PostgreSQL Database Setup for SemMedDB
+
+This document provides step-by-step instructions for setting up a modified version of SemMedDB in PostgreSQL format.
+
+## Database Download
+
+We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) that is available in PostgreSQL format.
+
+**Download Link**: https://drive.google.com/file/d/1842FzR1viGkKU3IdqMpBlD2GnupuGF1n/view?usp=drive_link
+
+**Note**: The database file is approximately 25GB in size, so download may take several minutes depending on your internet connection.
+
+## Prerequisites
+
+* PostgreSQL must be installed on your system
+* Sufficient disk space (at least 50GB recommended for extraction and setup)
+
+## Database Setup Instructions
+
+### Step 1: Create the Database
+
+Replace `<username>` with your actual PostgreSQL username.
+```bash
+createdb -U <username> -h localhost causalehr
+```
+
+### Automated Setup 
 
 The project includes an automated setup script that creates a conda environment and installs all dependencies:
 
