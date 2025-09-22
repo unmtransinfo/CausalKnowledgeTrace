@@ -114,7 +114,7 @@ We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) 
 
 **Download Link**: https://drive.google.com/file/d/1842FzR1viGkKU3IdqMpBlD2GnupuGF1n/view?usp=drive_link
 
-**Note**: The database file is approximately 25GB in size, so download may take several minutes depending on your internet connection.
+**Note**: The database file is approximately 25GB in size, so the download may take several minutes depending on your internet connection.
 
 ## Prerequisites
 
@@ -130,7 +130,7 @@ Replace `<username>` with your actual PostgreSQL username.
 createdb -U <username> -h localhost causalehr
 ```
 
-### Automated Setup 
+### Environment Setup 
 
 The project includes an automated setup script that creates a conda environment and installs all dependencies:
 
