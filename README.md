@@ -26,10 +26,10 @@ python pushkin.py --yaml-config ../user_input.yaml --host localhost --dbname cau
 ## 📋 What This Project Does
 
 - **🌐 Interactive Visualization**: Web-based DAG exploration with zoom, pan, and node interaction
-- **🔍 Causal Discovery**: Automated extraction of causal relationships from biomedical literature
+- **🔍 Graphical Causal Modeling**: Automated assembly of causal relationships from biomedical literature given Concept Unique Identifiers in the UMLS for the Exposure and Outcome
 - **📊 Evidence Analysis**: PMID-based evidence tracking and strength assessment
 - **⚡ Performance Optimized**: Binary formats, caching, and vectorized operations for large graphs
-- **🎯 Configurable Analysis**: Multiple CUIs, k-hop analysis, Markov blanket computation
+- **🎯 Configurable Analysis**: Enter multiple CUIs for the exposure and/or outcome; Examine 1st, 2nd, or 3rd degree relationships
 - **📁 Multiple Formats**: R DAG files, JSON assertions, optimized binary formats
 
 ## Key Features
