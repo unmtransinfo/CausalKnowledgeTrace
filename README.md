@@ -14,6 +14,7 @@ CausalKnowledgeTrace is a comprehensive system for interactive visualization of 
 ## Key Features
 
 ### 🌐 Shiny Web Application
+
 - **Interactive Network Visualization**: Explore DAGs with zoom, pan, and node selection capabilities
 - **Dynamic Node Information**: Click on nodes to see detailed information and evidence
 - **Physics Controls**: Adjust network layout parameters in real-time
@@ -24,6 +25,7 @@ CausalKnowledgeTrace is a comprehensive system for interactive visualization of 
 - **Efficient Loading**: Fast loading for large graphs
 
 ### 🐍 Graph Creation Engine
+
 - **Automated Knowledge Graph Generation**: Create causal graphs from SemMedDB biomedical literature
 - **Multiple CUI Support**: Handle multiple Concept Unique Identifiers for exposures and outcomes
 - **K-hop Analysis**: Configurable relationship depth (1-3 hops) for comprehensive graph traversal
@@ -92,12 +94,14 @@ CausalKnowledgeTrace/
 ## Prerequisites
 
 ### System Requirements
+
 - **PostgreSQL** database with modified SemMEDdb data (for graph creation) in postgres
 - **Conda/Miniconda**: For environment management (required)
 - **Python** (version 3.11 or higher)
 - **R** (version 4.0 or higher): Download from [https://cran.r-project.org/](https://cran.r-project.org/)
 
 ### Database Requirements
+
 - PostgreSQL database with SemMedDB schema
 - Database connection parameters (host, port, username, password, database name)
 - Properly configured `causalehr` schema with causalpredication table
@@ -117,20 +121,23 @@ We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) 
 #### Database Setup Instructions
 
 **Prerequisites:**
+
 - PostgreSQL must be installed on your system
 - Sufficient disk space (at least 50GB recommended for extraction and setup)
 
 **Create the Database:**
 Replace `<username>` with your actual PostgreSQL username.
+
 ```bash
 createdb -U <username> -h localhost causalehr
 ```
 
-### Step 2: Install Miniconda 
+### Step 2: Install Miniconda
 
 This project requires Conda for environment management. If you don't have Conda/Miniconda installed:
 
 #### Download Miniconda
+
 - **Windows**: [Miniconda3 Windows 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe)
 - **macOS**: [Miniconda3 macOS 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh)
 - **macOS (Apple Silicon)**: [Miniconda3 macOS ARM64](https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh)
@@ -139,6 +146,7 @@ This project requires Conda for environment management. If you don't have Conda/
 #### Install Miniconda
 
 **Windows:**
+
 1. Download the Windows installer from the link above
 2. Run the `.exe` file as administrator
 3. Follow the installation wizard
@@ -146,6 +154,7 @@ This project requires Conda for environment management. If you don't have Conda/
 5. Complete installation and restart your command prompt
 
 **macOS/Linux:**
+
 1. Download the appropriate `.sh` file for your system
 2. Open Terminal and navigate to the download location
 3. Run the installer:
@@ -157,7 +166,9 @@ This project requires Conda for environment management. If you don't have Conda/
 6. Restart your terminal or run: `source ~/.bashrc`
 
 #### Verify Conda Installation
+
 Check if conda is installed correctly:
+
 ```bash
 conda --version
 conda info
@@ -181,6 +192,7 @@ chmod +x setup.sh
 ```
 
 This script will:
+
 1. Create a conda environment named `causalknowledgetrace` using `doc/environment.yaml`
 2. Install Python dependencies (psycopg2, PyYAML, pandas, networkx, scipy, numpy, matplotlib, jupyter, rpy2)
 3. Install R packages using `doc/packages.R`
@@ -198,6 +210,7 @@ nano .env  # or use your preferred editor
 ```
 
 The `.env` file should contain:
+
 ```bash
 # Database Configuration
 DB_HOST=localhost
@@ -209,6 +222,7 @@ DB_SCHEMA=causalehr
 ```
 
 **Important**:
+
 - Replace the placeholder values with your actual database credentials
 - The `.env` file is ignored by git for security (contains sensitive information)
 - Make sure your database contains the SemMedDB schema with causalpredication table
@@ -261,7 +275,6 @@ install.packages(c(
 ))
 ```
 
-
 ## Configuration and Workflow
 
 ### Typical User Workflow (Recommended)
@@ -273,37 +286,6 @@ For most users, the integrated web application provides the complete workflow:
 3. **Generate Graphs**: Click "Create Graph" to generate directly in the app
 4. **Visualize Results**: Automatically load and explore generated graphs
 5. **Interactive Analysis**: Use all visualization and analysis features
-
-### Developer/Testing Workflow (Optional)
-
-For development, testing, or batch processing, you can use the command-line interface:
-
-1. **Configure Parameters**: Edit `user_input.yaml` or use Shiny app
-2. **Test Graph Creation**: Run Python engine manually to test configurations
-3. **Verify Results**: Check generated files before loading in web app
-4. **Load in App**: Use "Data Upload" tab to load manually generated graphs
-
-### Complete Workflow Details
-
-1. **Configure Parameters**: Use the Shiny app's "Graph Configuration" tab to set:
-   - **Exposure CUIs**: Multiple Concept Unique Identifiers for exposure variables
-   - **Outcome CUIs**: Multiple Concept Unique Identifiers for outcome variables
-   - **Blacklist CUIs**: CUIs to exclude from analysis (optional)
-   - **Minimum PMIDs**: Threshold for minimum unique publications (evidence strength)
-   - **Publication Year Cutoff**: Exclude publications before this year
-   - **K-hops Parameter**: Relationship depth (1-3 hops)
-   - **Predication Types**: Types of causal relationships to include
-   - **SemMedDB Version**: Database version to use
-
-2. **Save Configuration**: Click "Create Graph" to save parameters to `user_input.yaml`
-
-3. **Generate Graph**: Run the graph creation engine with database credentials
-
-4. **Automatic Integration**: Generated graphs are saved to `graph_creation/result/` directory:
-   - JSON files (`causal_assertions_X.json`)
-   - R DAG files (`degree_X.R`, `MarkovBlanket_Union.R`)
-
-5. **Visualize Results**: Use the Shiny app's "Data Upload" tab to load and visualize generated graphs
 
 ### YAML Configuration Format
 
@@ -340,6 +322,7 @@ SemMedDBD_version: "heuristic"  # Database version
 ### Predication Types
 
 The system supports multiple predication types:
+
 - **Single type**: `predication_type: "CAUSES"`
 - **Multiple types**: `predication_type: ["CAUSES", "TREATS", "PREVENTS"]`
 
@@ -352,19 +335,22 @@ Common types: `CAUSES`, `TREATS`, `PREVENTS`, `INTERACTS_WITH`, `AFFECTS`, `ASSO
 The application provides optimized loading for graphs generated by the Python engine:
 
 #### Method 1: Generated Graph Files
+
 1. **Generate graphs** using the graph creation engine
 2. **Files are saved** to `graph_creation/result/` directory:
+
    - `degree_X.R` - Standard DAG files (X = k-hops value)
    - `MarkovBlanket_Union.R` - Markov blanket analysis results
    - `causal_assertions_X.json` - Evidence data
-
 3. **Load in Shiny app**:
+
    - Go to "Data Upload" tab
    - Click "Refresh File List" to scan for available files
    - Select your generated file from the dropdown
    - Click "Load Selected DAG"
 
 #### Method 2: Upload Custom DAG Files
+
 1. **Go to "Data Upload" tab** in the Shiny app
 2. **Use file upload interface** to select your R file
 3. **Click "Upload & Load"** to upload and immediately load the DAG
@@ -393,6 +379,7 @@ g <- dagitty('dag {
 ### Performance Features
 
 The application includes several performance features:
+
 - **Automatic file detection** and validation
 - **Graph caching system** for repeated access
 - **Node categorization** using vectorized operations
@@ -407,6 +394,7 @@ The application uses an optimized three-category system for node classification:
 - **⚫ Other** (Gray #808080): All other variables in the DAG
 
 **Performance features:**
+
 - Vectorized operations for categorization of large graphs
 - Color assignment using batch processing
 - Font sizing and edge styling for better visibility
@@ -417,26 +405,43 @@ The application uses an optimized three-category system for node classification:
 ### Graph Creation Options
 
 #### Standard Graph Analysis
+
 ```bash
 cd graph_creation
 python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr
 ```
 
-
 ### Database Filtering
 
 The project includes SQL filters to exclude generic concepts:
+
 - **Generic CUI filtering**: Removes overly broad medical concepts
 - **Semantic type filtering**: Excludes non-specific semantic types
 - **Custom blacklists**: User-defined CUI exclusions
 
-Filter file: `doc/filter.sql` contains predefined exclusion lists.
+Filter file: `doc/filter.sql` contains predefined exclusion lists
 
 ## Shiny Application Usage
 
 ### Application Tabs
 
-#### 1. 📊 DAG Visualization Tab (Default)
+#### 1. ⚙️ Graph Configuration Tab
+
+- **Parameter configuration**: Set exposure/outcome CUIs, thresholds, filters
+- **Multiple CUI support**: Handle complex exposure-outcome relationships
+- **Blacklist management**: Exclude unwanted concepts
+- **Real-time validation**: Input validation with immediate feedback
+- **YAML export**: Save configuration for Python engine
+
+#### 2. 📁 Data Upload Tab
+
+- **File management**: Upload and load custom DAG files
+- **Generated file loading**: Access graphs created by Python engine
+- **File format validation**: Automatic dagitty syntax checking
+- **Status indicators**: Real-time feedback on loading progress
+
+#### 3. 📊 DAG Visualization Tab
+
 - **Interactive network diagram** with full DAG structure
 - **Node interaction**: Drag to reposition, click to select and view details
 - **Zoom and pan**: Mouse wheel zoom, drag to pan
@@ -445,50 +450,33 @@ Filter file: `doc/filter.sql` contains predefined exclusion lists.
 - **Reload DAG Data**: Refresh from current data files
 - **Create Graph**: Navigate to graph configuration
 
-#### 2. 📋 Node Information Tab
+#### 4. 🔍 Causal Analysis Tab
+
+- **Adjustment set identification**: Find minimal sufficient adjustment sets
+- **Instrumental variable detection**: Identify valid instruments
+- **Causal path analysis**: Explore all paths between exposure and outcome
+- **Interactive causal inference**: Real-time analysis with DAG updates
+
+#### 5. 📋 Node Information Tab
+
 - **Selected node details**: Comprehensive information about clicked nodes
 - **Searchable node table**: All nodes with metadata and properties
 - **Evidence information**: PMID lists and evidence counts (for generated graphs)
 - **Instrumental variables**: Displayed as comma-separated lists
 
-#### 3. 📈 Statistics Tab
+#### 6. 📈 Statistics Tab
+
 - **Network metrics**: Node count, edge count, group distributions
 - **Visual charts**: Node distribution and category breakdowns
 - **DAG structure**: Connectivity and topology information
 - **Performance metrics**: Loading times and processing status
-
-#### 4. 📁 Data Upload Tab (Second Tab)
-- **File management**: Upload and load custom DAG files
-- **Generated file loading**: Access graphs created by Python engine
-- **File format validation**: Automatic dagitty syntax checking
-- **Status indicators**: Real-time feedback on loading progress
-
-#### 5. ⚙️ Graph Configuration Tab (First Tab)
-- **Parameter configuration**: Set exposure/outcome CUIs, thresholds, filters
-- **Multiple CUI support**: Handle complex exposure-outcome relationships
-- **Blacklist management**: Exclude unwanted concepts
-- **Real-time validation**: Input validation with immediate feedback
-- **YAML export**: Save configuration for Python engine
-
-### Interactive Controls
-
-#### Physics and Layout
-- **Physics Strength**: Gravitational force between nodes (-500 to -50)
-- **Spring Length**: Preferred distance between connected nodes (100-400)
-- **Stabilization**: Automatic layout stabilization
-- **Reset Physics**: Return to default layout settings
-
-#### Node and Edge Management
-- **Node selection**: Click nodes to view detailed information
-- **Node removal**: Remove nodes with automatic graph updates
-- **Edge information**: Detailed evidence panels with PMID lists
-- **Category filtering**: Filter by Exposure/Outcome/Other categories
 
 ## Technical Details
 
 ### Graph Creation Engine Architecture
 
 #### Core Components
+
 - **`pushkin.py`**: Main entry point that delegates to CLI interface
 - **`cli_interface.py`**: Command-line argument parsing and validation
 - **`analysis_core.py`**: Core analyzer classes:
@@ -499,35 +487,23 @@ Filter file: `doc/filter.sql` contains predefined exclusion lists.
 - **`markov_blanket.py`**: Markov blanket algorithms for causal inference
 
 #### Analysis Modes
+
 1. **Standard Graph Analysis**: Basic causal graph construction from SemMedDB
 2. **Markov Blanket Analysis**: Advanced causal inference with confounder identification
 3. **K-hop Analysis**: Configurable relationship depth (1-3 hops) for comprehensive traversal
 
 #### Output Formats
+
 - **R DAG files**: `degree_X.R`, `MarkovBlanket_Union.R` (dagitty format)
 - **JSON assertions**: `causal_assertions_X.json` (detailed evidence)
 - **Metadata**: Performance metrics, configuration logs, timing analysis
 
-### Shiny Application Architecture
-
-#### Modular Design
-- **`modules/dag_visualization.R`**: Network visualization with visNetwork
-- **`modules/node_information.R`**: Node details and evidence display
-- **`modules/statistics.R`**: Network analytics and metrics
-- **`modules/data_upload.R`**: File management and loading
-- **`modules/causal_analysis.R`**: Causal analysis functionality
-- **`modules/graph_cache.R`**: Persistent caching system
-
-#### Performance Features
-- **Vectorized node categorization**: O(1) complexity for large graphs
-- **Progressive loading**: Status indicators and chunked processing
-- **Graph caching**: Persistent cache for repeated access
-
-## Troubleshooting
+### Troubleshooting
 
 ### Setup Issues
 
 #### Conda Environment Setup
+
 ```bash
 # If conda command not found (Linux/macOS)
 export PATH="/path/to/miniconda3/bin:$PATH"
@@ -543,6 +519,7 @@ Rscript -e "install.packages('devtools'); devtools::install_deps()"
 ```
 
 #### Database Connection
+
 ```bash
 # Test PostgreSQL connection
 psql -h localhost -p 5432 -U username -d causalehr -c "SELECT COUNT(*) FROM causalehr.causalpredication;"
@@ -551,22 +528,8 @@ psql -h localhost -p 5432 -U username -d causalehr -c "SELECT COUNT(*) FROM caus
 psql -h localhost -p 5432 -U username -d causalehr -c "\dt causalehr.*"
 ```
 
-### Application Issues
+### **Environment Variable Debugging**:
 
-#### Shiny Application
-1. **Port conflicts**: The launcher automatically finds available ports
-2. **Package loading errors**: Check console output for missing dependencies
-3. **File loading failures**: Verify DAG file format and dagitty syntax
-4. **Performance issues**: Check system resources and reduce k-hops if needed
-
-#### Graph Creation Engine
-1. **Database connection errors**: Verify credentials and network connectivity
-2. **Environment variable issues**: Check that `.env` file is properly formatted and loaded
-3. **Memory issues**: Reduce k-hops parameter or increase system memory
-4. **No results returned**: Check CUI validity and database content
-5. **Timeout errors**: Increase query timeout or optimize database indexes
-
-**Environment Variable Debugging**:
 ```bash
 # Check if environment variables are loaded correctly
 echo "DB_HOST: $DB_HOST"
@@ -586,65 +549,8 @@ echo "DB_NAME: $DB_NAME"
 ### Data Validation
 
 The system includes comprehensive validation:
+
 - **YAML configuration**: Real-time validation with error messages
 - **DAG file format**: Automatic dagitty syntax checking
 - **Database queries**: Parameter validation and SQL injection prevention
 - **File integrity**: Checksum validation for optimized files
-
-## Examples
-
-### Complete Workflow Example
-
-#### 1. Setup Environment
-```bash
-# Clone and setup
-git clone <repository-url>
-cd CausalKnowledgeTrace
-
-# Install Miniconda (if not already installed)
-# See Step 1: Install Miniconda section above
-
-# Configure database credentials
-cp doc/smaple.env .env
-nano .env  # Edit with your database credentials
-
-# Setup environment
-./setup.sh
-conda activate causalknowledgetrace
-```
-
-#### 2. Configure Analysis
-```yaml
-# user_input.yaml
-exposure_cuis:
-  - C0020538  # Hypertension
-  - C4013784  # Hypertensive disease
-outcome_cuis:
-  - C2677888  # Alzheimer's disease
-  - C0750901  # Dementia
-min_pmids: 10
-pub_year_cutoff: 2010
-k_hops: 2
-predication_type: "CAUSES"
-```
-
-#### 3. Launch Shiny Application
-```bash
-# Activate conda environment (required)
-conda activate causalknowledgetrace
-
-# Launch Shiny app
-Rscript run_app.R
-```
-
-#### 4. (Optional) Test Graph Generation Manually
-This step is optional - you can generate graphs through the web app instead:
-```bash
-cd graph_creation
-python pushkin.py --yaml-config ../user_input.yaml \
-  --host localhost --port 5432 --dbname causalehr \
-  --user username --password password --schema causalehr \
-  --markov-blanket --verbose
-```
-
-**Recommended workflow**: Use the Shiny app's "Graph Configuration" tab to generate graphs interactively rather than running the command line manually.
