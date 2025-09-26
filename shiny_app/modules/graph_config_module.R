@@ -12,6 +12,17 @@ if (!require(yaml)) {
     library(yaml)
 }
 
+# Source CUI search module
+tryCatch({
+    source("modules/cui_search.R", local = TRUE)
+    cui_search_available <- TRUE
+    cat("CUI search module loaded successfully\n")
+}, error = function(e) {
+    cui_search_available <- FALSE
+    cat("CUI search module not available:", e$message, "\n")
+    cat("Falling back to manual CUI entry only\n")
+})
+
 # Try to load shinyjs for better UI updates
 tryCatch({
     if (!require(shinyjs)) {
@@ -91,19 +102,32 @@ graphConfigUI <- function(id) {
                 # Row 1: Exposure CUIs and Consolidated Exposure Name
                 fluidRow(
                     column(6,
-                        # Exposure CUIs
+                        # Exposure CUIs - Enhanced with search functionality
                         div(
                             class = "form-group",
-                            tags$label("Exposure CUIs *", class = "control-label"),
-                            textAreaInput(
-                                ns("exposure_cuis"),
-                                label = NULL,
-                                value = "C0020538, C4013784, C0221155, C0745114, C0745135",
-                                placeholder = "C0020538, C4013784, C0221155, C0745114, C0745135",
-                                rows = 3,
-                                width = "100%"
-                            ),
-                            helpText("One or more CUIs representing exposure concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
+                            if (exists("cui_search_available") && cui_search_available) {
+                                # Use searchable CUI interface
+                                cuiSearchUI(
+                                    ns("exposure_cui_search"),
+                                    label = "Exposure CUIs *",
+                                    placeholder = "Search for exposure concepts (e.g., hypertension, diabetes)...",
+                                    height = "250px"
+                                )
+                            } else {
+                                # Fallback to manual entry
+                                tagList(
+                                    tags$label("Exposure CUIs *", class = "control-label"),
+                                    textAreaInput(
+                                        ns("exposure_cuis"),
+                                        label = NULL,
+                                        value = "C0020538, C4013784, C0221155, C0745114, C0745135",
+                                        placeholder = "C0020538, C4013784, C0221155, C0745114, C0745135",
+                                        rows = 3,
+                                        width = "100%"
+                                    ),
+                                    helpText("One or more CUIs representing exposure concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
+                                )
+                            }
                         )
                     ),
                     column(6,
@@ -126,19 +150,32 @@ graphConfigUI <- function(id) {
                 # Row 2: Outcome CUIs and Consolidated Outcome Name
                 fluidRow(
                     column(6,
-                        # Outcome CUIs
+                        # Outcome CUIs - Enhanced with search functionality
                         div(
                             class = "form-group",
-                            tags$label("Outcome CUIs *", class = "control-label"),
-                            textAreaInput(
-                                ns("outcome_cuis"),
-                                label = NULL,
-                                value = "C2677888, C0750901, C0494463, C0002395",
-                                placeholder = "C2677888, C0750901, C0494463, C0002395",
-                                rows = 3,
-                                width = "100%"
-                            ),
-                            helpText("One or more CUIs representing outcome concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
+                            if (exists("cui_search_available") && cui_search_available) {
+                                # Use searchable CUI interface
+                                cuiSearchUI(
+                                    ns("outcome_cui_search"),
+                                    label = "Outcome CUIs *",
+                                    placeholder = "Search for outcome concepts (e.g., alzheimer, stroke)...",
+                                    height = "250px"
+                                )
+                            } else {
+                                # Fallback to manual entry
+                                tagList(
+                                    tags$label("Outcome CUIs *", class = "control-label"),
+                                    textAreaInput(
+                                        ns("outcome_cuis"),
+                                        label = NULL,
+                                        value = "C2677888, C0750901, C0494463, C0002395",
+                                        placeholder = "C2677888, C0750901, C0494463, C0002395",
+                                        rows = 3,
+                                        width = "100%"
+                                    ),
+                                    helpText("One or more CUIs representing outcome concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
+                                )
+                            }
                         )
                     ),
                     column(6,
@@ -242,12 +279,12 @@ graphConfigUI <- function(id) {
                         helpText("SemMedDB version by filtering method.")
                     ),
                     column(6,
-                        # Blacklist CUIs
+                        # Blocklist CUIs
                         div(
                             class = "form-group",
-                            tags$label("Blacklist CUIs", class = "control-label"),
+                            tags$label("Blocklist CUIs", class = "control-label"),
                             textAreaInput(
-                                ns("blacklist_cuis"),
+                                ns("blocklist_cuis"),
                                 label = NULL,
                                 value = "",
                                 placeholder = "C0000000, C1111111, C2222222",
@@ -313,7 +350,25 @@ graphConfigUI <- function(id) {
 #' @export
 graphConfigServer <- function(id) {
     moduleServer(id, function(input, output, session) {
-        
+
+        # Initialize database connection for CUI search
+        if (exists("cui_search_available") && cui_search_available) {
+            # Initialize database connection pool
+            db_init_result <- init_database_pool()
+            if (!db_init_result$success) {
+                cat("Warning: Database connection failed:", db_init_result$message, "\n")
+                cat("CUI search functionality will be limited\n")
+            } else {
+                cat("Database connection initialized for CUI search\n")
+            }
+
+            # Initialize CUI search servers
+            exposure_cui_search <- cuiSearchServer("exposure_cui_search",
+                                                 initial_cuis = c("C0020538", "C4013784", "C0221155", "C0745114", "C0745135"))
+            outcome_cui_search <- cuiSearchServer("outcome_cui_search",
+                                                initial_cuis = c("C2677888", "C0750901", "C0494463", "C0002395"))
+        }
+
         # Reactive values to store validated parameters and progress
         validated_params <- reactiveVal(NULL)
         progress_state <- reactiveVal("idle")  # idle, validating, saving, executing, complete, error
@@ -475,14 +530,29 @@ graphConfigServer <- function(id) {
         validate_inputs <- function() {
             errors <- c()
 
+            # Get CUI values from search modules or manual input
+            exposure_cui_string <- if (exists("cui_search_available") && cui_search_available && exists("exposure_cui_search")) {
+                exposure_search_data <- exposure_cui_search()
+                exposure_search_data$cui_string
+            } else {
+                input$exposure_cuis
+            }
+
+            outcome_cui_string <- if (exists("cui_search_available") && cui_search_available && exists("outcome_cui_search")) {
+                outcome_search_data <- outcome_cui_search()
+                outcome_search_data$cui_string
+            } else {
+                input$outcome_cuis
+            }
+
             # Validate exposure CUIs
-            exposure_validation <- validate_cui(input$exposure_cuis)
+            exposure_validation <- validate_cui(exposure_cui_string)
             if (!exposure_validation$valid) {
                 errors <- c(errors, paste("Exposure CUIs:", exposure_validation$message))
             }
 
             # Validate outcome CUIs
-            outcome_validation <- validate_cui(input$outcome_cuis)
+            outcome_validation <- validate_cui(outcome_cui_string)
             if (!outcome_validation$valid) {
                 errors <- c(errors, paste("Outcome CUIs:", outcome_validation$message))
             }
@@ -777,7 +847,14 @@ graphConfigServer <- function(id) {
                 )
             })
         })
-        
+
+        # Cleanup database connection when session ends
+        session$onSessionEnded(function() {
+            if (exists("cui_search_available") && cui_search_available) {
+                close_database_pool()
+            }
+        })
+
         # Return reactive value with validated parameters
         return(validated_params)
     })

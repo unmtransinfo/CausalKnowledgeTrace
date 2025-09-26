@@ -5,6 +5,7 @@ library(visNetwork)
 library(dplyr)
 library(DT)
 library(jsonlite)
+library(htmltools)
 
 # Load shinyjs for UI interactions (with error handling)
 tryCatch({
