@@ -160,16 +160,29 @@ graphConfigUI <- function(id) {
                         # Blocklist CUIs
                         div(
                             class = "form-group",
-                            tags$label("Blocklist CUIs", class = "control-label"),
-                            textAreaInput(
-                                ns("blocklist_cuis"),
-                                label = NULL,
-                                value = "",
-                                placeholder = "C0000000, C1111111, C2222222",
-                                rows = 2,
-                                width = "100%"
-                            ),
-                            helpText("Optional: CUIs to exclude from the graph analysis. Enter comma-delimited CUI codes (format: C followed by 7 digits). These concepts will be filtered out during graph creation.")
+                            if (exists("cui_search_available") && cui_search_available) {
+                                # Use searchable CUI interface
+                                cuiSearchUI(
+                                    ns("blocklist_cui_search"),
+                                    label = "Blocklist CUIs",
+                                    placeholder = "Search for concepts to exclude from analysis (e.g., demographics, age)...",
+                                    height = "200px"
+                                )
+                            } else {
+                                # Fallback to manual entry
+                                tagList(
+                                    tags$label("Blocklist CUIs", class = "control-label"),
+                                    textAreaInput(
+                                        ns("blocklist_cuis"),
+                                        label = NULL,
+                                        value = "",
+                                        placeholder = "C0000000, C1111111, C2222222 (Press Enter to search)",
+                                        rows = 2,
+                                        width = "100%"
+                                    ),
+                                    helpText("Optional: CUIs to exclude from the graph analysis. Enter comma-delimited CUI codes (format: C followed by 7 digits). These concepts will be filtered out during graph creation. Press Enter to search for concepts.")
+                                )
+                            }
                         )
                     ),
 
@@ -357,6 +370,8 @@ graphConfigServer <- function(id) {
                                                  initial_cuis = c("C0020538", "C4013784", "C0221155", "C0745114", "C0745135"))
             outcome_cui_search <- cuiSearchServer("outcome_cui_search",
                                                 initial_cuis = c("C2677888", "C0750901", "C0494463", "C0002395"))
+            blocklist_cui_search <- cuiSearchServer("blocklist_cui_search",
+                                                   initial_cuis = NULL)
         }
 
         # Reactive values to store validated parameters and progress
@@ -535,6 +550,14 @@ graphConfigServer <- function(id) {
                 input$outcome_cuis
             }
 
+            # Get blocklist CUI string from search interface or manual input
+            blocklist_cui_string <- if (exists("cui_search_available") && cui_search_available && exists("blocklist_cui_search")) {
+                blocklist_search_data <- blocklist_cui_search()
+                blocklist_search_data$cui_string
+            } else {
+                input$blocklist_cuis
+            }
+
             # Validate exposure CUIs
             exposure_validation <- validate_cui(exposure_cui_string)
             if (!exposure_validation$valid) {
@@ -549,8 +572,8 @@ graphConfigServer <- function(id) {
 
             # Validate blacklist CUIs if provided
             blacklist_validation <- list(valid = TRUE, cuis = c())
-            if (!is.null(input$blacklist_cuis) && input$blacklist_cuis != "") {
-                blacklist_validation <- validate_cui(input$blacklist_cuis)
+            if (!is.null(blocklist_cui_string) && blocklist_cui_string != "") {
+                blacklist_validation <- validate_cui(blocklist_cui_string)
                 if (!blacklist_validation$valid) {
                     errors <- c(errors, paste("Blacklist CUIs:", blacklist_validation$message))
                 }

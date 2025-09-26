@@ -59,7 +59,7 @@ cuiSearchUI <- function(id, label = "Search Medical Concepts",
                         }
                     });
                 "))),
-                helpText("Type at least 3 characters to search. Click on results to select CUIs.")
+                helpText("Type at least 3 characters and press Enter to search. Click on results to select CUIs.")
             ),
             
             # Search results container
