@@ -97,12 +97,11 @@ graphConfigUI <- function(id) {
                     "All fields marked with * are required."
                 ),
                 
-                # Configuration Form - Structured Layout
-
-                # Row 1: Exposure CUIs and Consolidated Exposure Name
+                # Configuration Form - Two Column Layout
                 fluidRow(
+                    # Left Column: CUI-related components
                     column(6,
-                        # Exposure CUIs - Enhanced with search functionality
+                        # Exposure CUIs
                         div(
                             class = "form-group",
                             if (exists("cui_search_available") && cui_search_available) {
@@ -128,29 +127,9 @@ graphConfigUI <- function(id) {
                                     helpText("One or more CUIs representing exposure concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
                                 )
                             }
-                        )
-                    ),
-                    column(6,
-                        # Consolidated Exposure Name
-                        div(
-                            class = "form-group",
-                            tags$label("Consolidated Exposure Name *", class = "control-label"),
-                            textInput(
-                                ns("exposure_name"),
-                                label = NULL,
-                                value = "Hypertension",
-                                placeholder = "Hypertension",
-                                width = "100%"
-                            ),
-                            helpText("Required: Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
-                        )
-                    )
-                ),
+                        ),
 
-                # Row 2: Outcome CUIs and Consolidated Outcome Name
-                fluidRow(
-                    column(6,
-                        # Outcome CUIs - Enhanced with search functionality
+                        # Outcome CUIs
                         div(
                             class = "form-group",
                             if (exists("cui_search_available") && cui_search_available) {
@@ -176,109 +155,8 @@ graphConfigUI <- function(id) {
                                     helpText("One or more CUIs representing outcome concepts. Enter comma-delimited CUI codes (format: C followed by 7 digits).")
                                 )
                             }
-                        )
-                    ),
-                    column(6,
-                        # Consolidated Outcome Name
-                        div(
-                            class = "form-group",
-                            tags$label("Consolidated Outcome Name *", class = "control-label"),
-                            textInput(
-                                ns("outcome_name"),
-                                label = NULL,
-                                value = "Alzheimers",
-                                placeholder = "Alzheimers",
-                                width = "100%"
-                            ),
-                            helpText("Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
-                        )
-                    )
-                ),
-
-
-
-                # Row 3: Squelch Threshold and K-hops
-                fluidRow(
-                    column(6,
-                        # Squelch Threshold (minimum unique pmids)
-                        numericInput(
-                            ns("min_pmids"),
-                            "Squelch Threshold (minimum unique pmids) *",
-                            value = 10,
-                            min = 1,
-                            max = 1000,
-                            step = 1,
-                            width = "100%"
                         ),
-                        helpText("Minimum number of unique PMIDs required for inclusion (1-1000).")
-                    ),
-                    column(6,
-                        # K-hops
-                        selectInput(
-                            ns("k_hops"),
-                            "K-hops *",
-                            choices = list(
-                                "1" = 1,
-                                "2" = 2,
-                                "3" = 3
-                            ),
-                            selected = 1,
-                            width = "100%"
-                        ),
-                        helpText("Number of hops for graph traversal (1-3). Controls the depth of relationships included in the graph.")
-                    )
-                ),
 
-                # Row 4: Publication Year Cutoff and Predication Types
-                fluidRow(
-                    column(6,
-                        # Publication Year Cutoff
-                        selectInput(
-                            ns("pub_year_cutoff"),
-                            "Publication Year Cutoff *",
-                            choices = list(
-                                "2000" = 2000,
-                                "2005" = 2005,
-                                "2010" = 2010,
-                                "2015" = 2015,
-                                "2020" = 2020
-                            ),
-                            selected = 2010,
-                            width = "100%"
-                        ),
-                        helpText("Only include citations published on or after this year.")
-                    ),
-                    column(6,
-                        # Predication Type
-                        textInput(
-                            ns("PREDICATION_TYPE"),
-                            "Predication Types",
-                            value = "CAUSES",
-                            placeholder = "e.g., TREATS, CAUSES, PREVENTS",
-                            width = "100%"
-                        ),
-                        helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated). Will be saved as a list in YAML format.")
-                    )
-                ),
-
-                # Row 5: SemMedDB Version and Blacklist CUIs
-                fluidRow(
-                    column(6,
-                        # SemMedDB Version
-                        selectInput(
-                            ns("SemMedDBD_version"),
-                            "SemMedDB Version *",
-                            choices = list(
-                                "heuristic" = "heuristic",
-                                "LLM-based" = "LLM-based",
-                                "heuristic+LLM-based" = "heuristic+LLM-based"
-                            ),
-                            selected = "heuristic",
-                            width = "100%"
-                        ),
-                        helpText("SemMedDB version by filtering method.")
-                    ),
-                    column(6,
                         # Blocklist CUIs
                         div(
                             class = "form-group",
@@ -292,6 +170,118 @@ graphConfigUI <- function(id) {
                                 width = "100%"
                             ),
                             helpText("Optional: CUIs to exclude from the graph analysis. Enter comma-delimited CUI codes (format: C followed by 7 digits). These concepts will be filtered out during graph creation.")
+                        )
+                    ),
+
+                    # Right Column: Configuration parameters
+                    column(6,
+                        # Consolidated Exposure Name
+                        div(
+                            class = "form-group",
+                            tags$label("Consolidated Exposure Name *", class = "control-label"),
+                            textInput(
+                                ns("exposure_name"),
+                                label = NULL,
+                                value = "Hypertension",
+                                placeholder = "Hypertension",
+                                width = "100%"
+                            ),
+                            helpText("Required: Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
+                        ),
+
+                        # Consolidated Outcome Name
+                        div(
+                            class = "form-group",
+                            tags$label("Consolidated Outcome Name *", class = "control-label"),
+                            textInput(
+                                ns("outcome_name"),
+                                label = NULL,
+                                value = "Alzheimers",
+                                placeholder = "Alzheimers",
+                                width = "100%"
+                            ),
+                            helpText("Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
+                        ),
+
+                        # Squelch Threshold
+                        div(
+                            class = "form-group",
+                            numericInput(
+                                ns("min_pmids"),
+                                "Squelch Threshold (minimum unique pmids) *",
+                                value = 10,
+                                min = 1,
+                                max = 1000,
+                                step = 1,
+                                width = "100%"
+                            ),
+                            helpText("Minimum number of unique PMIDs required for inclusion (1-1000).")
+                        ),
+
+                        # K-hops
+                        div(
+                            class = "form-group",
+                            selectInput(
+                                ns("k_hops"),
+                                "K-hops *",
+                                choices = list(
+                                    "1" = 1,
+                                    "2" = 2,
+                                    "3" = 3
+                                ),
+                                selected = 1,
+                                width = "100%"
+                            ),
+                            helpText("Number of hops for graph traversal (1-3). Controls the depth of relationships included in the graph.")
+                        ),
+
+                        # Publication Year Cutoff
+                        div(
+                            class = "form-group",
+                            selectInput(
+                                ns("pub_year_cutoff"),
+                                "Publication Year Cutoff *",
+                                choices = list(
+                                    "2000" = 2000,
+                                    "2005" = 2005,
+                                    "2010" = 2010,
+                                    "2015" = 2015,
+                                    "2020" = 2020
+                                ),
+                                selected = 2010,
+                                width = "100%"
+                            ),
+                            helpText("Only include citations published on or after this year.")
+                        ),
+
+                        # Predication Types
+                        div(
+                            class = "form-group",
+                            textInput(
+                                ns("PREDICATION_TYPE"),
+                                "Predication Types",
+                                value = "CAUSES",
+                                placeholder = "e.g., TREATS, CAUSES, PREVENTS",
+                                width = "100%"
+                            ),
+                            helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated). Will be saved as a list in YAML format.")
+                        ),
+
+                        # SemMedDB Version
+                        div(
+                            class = "form-group",
+                            selectInput(
+                                ns("SemMedDBD_version"),
+                                "SemMedDB Version *",
+                                choices = list(
+                                    "heuristic" = "heuristic",
+                                    "LLM-based" = "LLM-based",
+                                    "heuristic+LLM-based" = "heuristic+LLM-based"
+                                ),
+                                selected = "heuristic",
+                                width = "100%"
+                            ),
+                            helpText("SemMedDB version by filtering method.")
                         )
                     )
                 ),

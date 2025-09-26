@@ -109,6 +109,23 @@ create_custom_styles <- function() {
             width: 100%;
             height: 100%;
         }
+
+        /* Form layout improvements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* Ensure consistent vertical alignment in two-column layouts */
+        .row .col-sm-6 {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .row .col-sm-6 .form-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
     "))
 }
 
