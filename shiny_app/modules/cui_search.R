@@ -138,7 +138,7 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
         
         # Reactive values for managing state
         values <- reactiveValues(
-            search_results = data.frame(),
+            search_results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0)),
             selected_cuis = character(0),
             last_search = ""
         )
@@ -170,7 +170,7 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
                 if (search_result$success) {
                     values$search_results <- search_result$results
                 } else {
-                    values$search_results <- data.frame()
+                    values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
                     showNotification(
                         paste("Search error:", search_result$message),
                         type = "error",
@@ -182,7 +182,7 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
                 shinyjs::hide("loading_indicator")
                 
             } else if (nchar(search_term) < 3) {
-                values$search_results <- data.frame()
+                values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
                 values$last_search <- ""
             }
         })
@@ -198,6 +198,7 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
             display_data$cui <- paste0('<code>', display_data$cui, '</code>')
             display_data$name <- htmltools::htmlEscape(display_data$name)
             display_data$semtype <- htmltools::htmlEscape(display_data$semtype)
+            display_data$semtype_definition <- htmltools::htmlEscape(display_data$semtype_definition)
             
             DT::datatable(
                 display_data,
@@ -209,12 +210,13 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
                     scrollCollapse = TRUE,
                     dom = 't',  # Only show table
                     columnDefs = list(
-                        list(width = '80px', targets = 0),   # CUI column (smaller)
-                        list(width = '250px', targets = 1),  # Name column (smaller)
-                        list(width = '120px', targets = 2)   # Semtype column (smaller)
+                        list(width = '80px', targets = 0),   # CUI column
+                        list(width = '200px', targets = 1),  # Name column
+                        list(width = '80px', targets = 2),   # Semtype column
+                        list(width = '200px', targets = 3)   # Semtype definition column
                     )
                 ),
-                colnames = c('CUI', 'Name', 'Semantic Type')
+                colnames = c('CUI', 'Name', 'Type', 'Definition')
             )
         })
         
