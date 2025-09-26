@@ -19,5 +19,13 @@ install.packages(c(
     "ggplot2",         # Enhanced plotting capabilities
     "testthat",        # Testing framework
     "knitr",           # Dynamic report generation
-    "rmarkdown"        # R Markdown support
+    "rmarkdown",       # R Markdown support
+
+    # Database connectivity packages (required for CUI search functionality)
+    "DBI",             # Database interface
+    "pool",            # Database connection pooling
+    "RPostgres",       # Modern PostgreSQL driver (preferred)
+    "RPostgreSQL",     # Alternative PostgreSQL driver (fallback)
+    "htmltools",       # HTML generation utilities
+    "jsonlite"         # JSON parsing and generation
 ))
