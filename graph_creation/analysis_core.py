@@ -76,13 +76,13 @@ class GraphAnalyzer:
         if yaml_config_data and 'predication_types' in yaml_config_data:
             predication_types = yaml_config_data['predication_types']
 
-        # Extract blacklist CUIs from YAML config if available
-        blacklist_cuis = []
-        if yaml_config_data and 'blacklist_cuis' in yaml_config_data:
-            blacklist_cuis = yaml_config_data['blacklist_cuis']
+        # Extract blocklist CUIs from YAML config if available
+        blocklist_cuis = []
+        if yaml_config_data and 'blocklist_cuis' in yaml_config_data:
+            blocklist_cuis = yaml_config_data['blocklist_cuis']
 
-        # Initialize database operations with predication types, k_hops, and blacklist_cuis
-        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, k_hops, blacklist_cuis)
+        # Initialize database operations with predication types, k_hops, and blocklist_cuis
+        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, k_hops, blocklist_cuis)
 
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)

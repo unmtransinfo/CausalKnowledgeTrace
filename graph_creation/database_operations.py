@@ -94,18 +94,18 @@ def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = 
 class DatabaseOperations:
     """Helper class for database operations and queries."""
 
-    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, k_hops: int = 3, blacklist_cuis: List[str] = None):
+    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, k_hops: int = 3, blocklist_cuis: List[str] = None):
         self.config = config
         self.threshold = threshold
         self.timing_data = timing_data
         self.predication_types = predication_types or ['CAUSES']
         self.k_hops = k_hops
-        self.blacklist_cuis = blacklist_cuis or []
+        self.blocklist_cuis = blocklist_cuis or []
 
-        # Log blacklist information if CUIs are provided
-        if self.blacklist_cuis:
-            print(f"Blacklist filtering enabled: {len(self.blacklist_cuis)} CUI(s) will be excluded from graph creation")
-            print(f"Blacklisted CUIs: {', '.join(self.blacklist_cuis)}")
+        # Log blocklist information if CUIs are provided
+        if self.blocklist_cuis:
+            print(f"Blocklist filtering enabled: {len(self.blocklist_cuis)} CUI(s) will be excluded from graph creation")
+            print(f"Blocklisted CUIs: {', '.join(self.blocklist_cuis)}")
     
     def _create_cui_placeholders(self, cui_list: List[str]) -> str:
         """Create placeholder string for multiple CUIs in SQL queries"""
@@ -116,22 +116,22 @@ class DatabaseOperations:
         placeholders = ', '.join(['%s'] * len(cui_list))
         return f"{field_name} IN ({placeholders})"
 
-    def _create_blacklist_conditions(self) -> Tuple[str, List[str]]:
-        """Create SQL conditions to exclude blacklisted CUIs"""
-        if not self.blacklist_cuis:
+    def _create_blocklist_conditions(self) -> Tuple[str, List[str]]:
+        """Create SQL conditions to exclude blocklisted CUIs"""
+        if not self.blocklist_cuis:
             return "", []
 
-        # Create conditions to exclude blacklisted CUIs from both subject and object
-        subject_placeholders = ', '.join(['%s'] * len(self.blacklist_cuis))
-        object_placeholders = ', '.join(['%s'] * len(self.blacklist_cuis))
+        # Create conditions to exclude blocklisted CUIs from both subject and object
+        subject_placeholders = ', '.join(['%s'] * len(self.blocklist_cuis))
+        object_placeholders = ', '.join(['%s'] * len(self.blocklist_cuis))
 
-        blacklist_condition = f"""
+        blocklist_condition = f"""
               AND cp.subject_cui NOT IN ({subject_placeholders})
               AND cp.object_cui NOT IN ({object_placeholders})"""
 
-        # Return condition and parameters (blacklist_cuis twice - once for subject, once for object)
-        blacklist_params = self.blacklist_cuis + self.blacklist_cuis
-        return blacklist_condition, blacklist_params
+        # Return condition and parameters (blocklist_cuis twice - once for subject, once for object)
+        blocklist_params = self.blocklist_cuis + self.blocklist_cuis
+        return blocklist_condition, blocklist_params
     
     def _create_predication_condition(self) -> str:
         """Create SQL condition for predication types"""
@@ -368,8 +368,8 @@ class DatabaseOperations:
 
     def _fetch_first_hop(self, cursor) -> Tuple[List, List]:
         """Fetch first-hop relationships (direct exposure -> outcome)."""
-        # Create blacklist conditions for filtering
-        blacklist_condition, blacklist_params = self._create_blacklist_conditions()
+        # Create blocklist conditions for filtering
+        blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
         # Create placeholders for exposure and outcome CUIs from YAML config
         exposure_placeholders = ', '.join(['%s'] * len(self.config.exposure_cui_list))
@@ -389,17 +389,17 @@ class DatabaseOperations:
             OR
             (cp.subject_cui IN ({outcome_placeholders})
              OR cp.object_cui IN ({outcome_placeholders}))
-        ){blacklist_condition}
+        ){blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Build parameters: predicate + exposure CUIs (twice) + outcome CUIs (twice) + min_pmids threshold + blacklist params
+        # Build parameters: predicate + exposure CUIs (twice) + outcome CUIs (twice) + min_pmids threshold + blocklist params
         params = ([self.predication_types[0]] +  # Use first predication type (typically 'CAUSES')
                  self.config.exposure_cui_list + self.config.exposure_cui_list +
                  self.config.outcome_cui_list + self.config.outcome_cui_list +
-                 [self.threshold] + blacklist_params)
+                 [self.threshold] + blocklist_params)
 
         execute_query_with_logging(cursor, query, params, f"Fetch Hop 1 Relationships")
 
@@ -419,7 +419,7 @@ class DatabaseOperations:
         # Create placeholders for the CUI list and predication condition
         cui_placeholders = self._create_cui_placeholders(previous_hop_list)
         predication_condition = self._create_predication_condition()
-        blacklist_condition, blacklist_params = self._create_blacklist_conditions()
+        blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
         # Find extended network using first hop CUIs directly
         query = f"""
@@ -429,16 +429,16 @@ class DatabaseOperations:
             STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM causalpredication cp
         WHERE {predication_condition}
-        AND (cp.subject_cui IN ({cui_placeholders}) 
+        AND (cp.subject_cui IN ({cui_placeholders})
             OR cp.object_cui IN ({cui_placeholders}))
-        {blacklist_condition}
+        {blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC
         """
 
-        # Parameters: predication_types + previous_hop_list (twice) + blacklist_params + threshold
-        params = self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold]
+        # Parameters: predication_types + previous_hop_list (twice) + blocklist_params + threshold
+        params = self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold]
 
         execute_query_with_logging(cursor, query, params, f"Fetch Hop 2 Relationships")
 
@@ -458,7 +458,7 @@ class DatabaseOperations:
         # Create placeholders for the CUI list and predication condition
         cui_placeholders = self._create_cui_placeholders(previous_hop_list)
         predication_condition = self._create_predication_condition()
-        blacklist_condition, blacklist_params = self._create_blacklist_conditions()
+        blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
         # Use CTE pattern for higher hops - fixed to use CUIs consistently
         query = f"""
@@ -466,7 +466,7 @@ class DatabaseOperations:
             SELECT DISTINCT cp.subject_cui AS node_cui
             FROM causalpredication cp
             WHERE {predication_condition}
-              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blacklist_condition}
+              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blocklist_condition}
             GROUP BY cp.subject_cui
             HAVING COUNT(DISTINCT cp.pmid) >= %s
 
@@ -475,7 +475,7 @@ class DatabaseOperations:
             SELECT DISTINCT cp.object_cui AS node_cui
             FROM causalpredication cp
             WHERE {predication_condition}
-              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blacklist_condition}
+              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blocklist_condition}
             GROUP BY cp.object_cui
             HAVING COUNT(DISTINCT cp.pmid) >= %s
         )
@@ -486,16 +486,16 @@ class DatabaseOperations:
         FROM causalpredication cp
         WHERE {predication_condition}
           AND (cp.subject_cui IN (SELECT node_cui FROM previous_hop_nodes)
-               OR cp.object_cui IN (SELECT node_cui FROM previous_hop_nodes)){blacklist_condition}
+               OR cp.object_cui IN (SELECT node_cui FROM previous_hop_nodes)){blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blacklist_params (3 times) + threshold (3 times)
-        params = (self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
-                 self.predication_types + previous_hop_list + previous_hop_list + blacklist_params + [self.threshold] +
-                 self.predication_types + blacklist_params + [self.threshold])
+        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blocklist_params (3 times) + threshold (3 times)
+        params = (self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold] +
+                 self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold] +
+                 self.predication_types + blocklist_params + [self.threshold])
         
         execute_query_with_logging(cursor, query, params, f"Fetch Hop {hop_level} Relationships")
 
