@@ -284,9 +284,56 @@ create_file_operations_server <- function(input, output, session, current_data) 
         current_data$dag_object <- NULL
         current_data$current_file <- NULL
         current_data$selected_node <- NULL
-        
+
         showNotification("DAG cleared", type = "message")
     })
+
+    # Helper function to extract causal assertions for modified DAG
+    extract_modified_dag_assertions <- function(edges_data, assertions_data) {
+        if (is.null(edges_data) || nrow(edges_data) == 0 || is.null(assertions_data) || length(assertions_data) == 0) {
+            return(list())
+        }
+
+        modified_assertions <- list()
+
+        for (i in seq_len(nrow(edges_data))) {
+            edge <- edges_data[i, ]
+            from_node <- edge$from
+            to_node <- edge$to
+
+            # Find matching assertion in original data
+            pmid_data <- find_edge_pmid_data(from_node, to_node, assertions_data, current_data$lazy_loader)
+
+            if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
+                # Create assertion entry in the same format as original
+                assertion_entry <- list(
+                    subject_name = pmid_data$original_subject %||% from_node,
+                    subject_cui = pmid_data$subject_cui %||% "",
+                    predicate = pmid_data$predicate %||% "CAUSES",
+                    object_name = pmid_data$original_object %||% to_node,
+                    object_cui = pmid_data$object_cui %||% "",
+                    evidence_count = pmid_data$evidence_count %||% length(pmid_data$pmid_list),
+                    relationship_degree = pmid_data$relationship_degree %||% "first",
+                    pmid_data = list()
+                )
+
+                # Add PMID data with sentences
+                for (pmid in pmid_data$pmid_list) {
+                    sentences <- if (!is.null(pmid_data$sentence_data[[pmid]])) {
+                        pmid_data$sentence_data[[pmid]]
+                    } else {
+                        list("Evidence sentence not available")
+                    }
+
+                    assertion_entry$pmid_data[[pmid]] <- list(sentences = sentences)
+                }
+
+                modified_assertions[[length(modified_assertions) + 1]] <- assertion_entry
+            }
+        }
+
+        return(modified_assertions)
+    }
     
     # Save updated DAG (handles both original and modified DAGs)
     output$save_dag_btn <- downloadHandler(
@@ -394,6 +441,122 @@ create_file_operations_server <- function(input, output, session, current_data) 
             })
         },
         contentType = "text/plain"
+    )
+
+    # Save updated causal assertions JSON file
+    output$save_json_btn <- downloadHandler(
+        filename = function() {
+            if (!is.null(current_data$current_file)) {
+                # Extract k_hops from current file or use default
+                k_hops <- current_data$k_hops %||% 1
+                paste0("modified_causal_assertions_", k_hops, "_", Sys.Date(), ".json")
+            } else {
+                paste0("modified_causal_assertions_", Sys.Date(), ".json")
+            }
+        },
+        content = function(file) {
+            tryCatch({
+                # Check if we have network data and assertions
+                if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
+                    stop("No graph data to save")
+                }
+
+                if (is.null(current_data$causal_assertions) || length(current_data$causal_assertions) == 0) {
+                    stop("No causal assertions data available")
+                }
+
+                # Extract assertions for the modified DAG
+                modified_assertions <- extract_modified_dag_assertions(
+                    current_data$edges,
+                    current_data$causal_assertions
+                )
+
+                if (length(modified_assertions) == 0) {
+                    stop("No causal assertions found for the current edges")
+                }
+
+                # Save as JSON with pretty formatting
+                jsonlite::write_json(
+                    modified_assertions,
+                    file,
+                    pretty = TRUE,
+                    auto_unbox = TRUE
+                )
+
+                showNotification(
+                    paste("Causal assertions JSON saved successfully with", length(modified_assertions), "entries"),
+                    type = "message",
+                    duration = 3
+                )
+
+            }, error = function(e) {
+                showNotification(
+                    paste("Error saving causal assertions JSON:", e$message),
+                    type = "error",
+                    duration = 5
+                )
+                stop(paste("Error saving causal assertions JSON:", e$message))
+            })
+        },
+        contentType = "application/json"
+    )
+
+    # Save updated causal assertions JSON file - Main button (same as save_json_btn)
+    output$save_json_main <- downloadHandler(
+        filename = function() {
+            if (!is.null(current_data$current_file)) {
+                # Extract k_hops from current file or use default
+                k_hops <- current_data$k_hops %||% 1
+                paste0("modified_causal_assertions_", k_hops, "_", Sys.Date(), ".json")
+            } else {
+                paste0("modified_causal_assertions_", Sys.Date(), ".json")
+            }
+        },
+        content = function(file) {
+            tryCatch({
+                # Check if we have network data and assertions
+                if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
+                    stop("No graph data to save")
+                }
+
+                if (is.null(current_data$causal_assertions) || length(current_data$causal_assertions) == 0) {
+                    stop("No causal assertions data available")
+                }
+
+                # Extract assertions for the modified DAG
+                modified_assertions <- extract_modified_dag_assertions(
+                    current_data$edges,
+                    current_data$causal_assertions
+                )
+
+                if (length(modified_assertions) == 0) {
+                    stop("No causal assertions found for the current edges")
+                }
+
+                # Save as JSON with pretty formatting
+                jsonlite::write_json(
+                    modified_assertions,
+                    file,
+                    pretty = TRUE,
+                    auto_unbox = TRUE
+                )
+
+                showNotification(
+                    paste("Causal assertions JSON saved successfully with", length(modified_assertions), "entries"),
+                    type = "message",
+                    duration = 3
+                )
+
+            }, error = function(e) {
+                showNotification(
+                    paste("Error saving causal assertions JSON:", e$message),
+                    type = "error",
+                    duration = 5
+                )
+                stop(paste("Error saving causal assertions JSON:", e$message))
+            })
+        },
+        contentType = "application/json"
     )
 
     # Export current DAG (legacy function - kept for compatibility)
