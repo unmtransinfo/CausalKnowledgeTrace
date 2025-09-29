@@ -192,14 +192,14 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
             if (nrow(values$search_results) == 0) {
                 return(data.frame())
             }
-            
-            # Format results for display
-            display_data <- values$search_results
+
+            # Format results for display and reorder columns: CUI, Name, Definition, Type
+            display_data <- values$search_results[, c("cui", "name", "semtype_definition", "semtype")]
             display_data$cui <- paste0('<code>', display_data$cui, '</code>')
             display_data$name <- htmltools::htmlEscape(display_data$name)
-            display_data$semtype <- htmltools::htmlEscape(display_data$semtype)
             display_data$semtype_definition <- htmltools::htmlEscape(display_data$semtype_definition)
-            
+            display_data$semtype <- htmltools::htmlEscape(display_data$semtype)
+
             DT::datatable(
                 display_data,
                 selection = 'single',
@@ -212,11 +212,11 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
                     columnDefs = list(
                         list(width = '80px', targets = 0),   # CUI column
                         list(width = '200px', targets = 1),  # Name column
-                        list(width = '80px', targets = 2),   # Semtype column
-                        list(width = '200px', targets = 3)   # Semtype definition column
+                        list(width = '200px', targets = 2),  # Definition column
+                        list(width = '80px', targets = 3)    # Type column (moved to last)
                     )
                 ),
-                colnames = c('CUI', 'Name', 'Type', 'Definition')
+                colnames = c('CUI', 'Name', 'Definition', 'Type')
             )
         })
         
