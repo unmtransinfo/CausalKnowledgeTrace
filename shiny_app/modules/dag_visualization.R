@@ -633,6 +633,114 @@ remove_edge_from_network <- function(session, network_id, edge_id, current_data)
     })
 }
 
+#' Create DAG Object from Current Network Data
+#'
+#' Reconstructs a dagitty DAG object from current nodes and edges data
+#'
+#' @param nodes_df Data frame containing node information
+#' @param edges_df Data frame containing edge information
+#' @return dagitty DAG object or NULL if reconstruction fails
+#' @export
+create_dag_from_network_data <- function(nodes_df, edges_df) {
+    if (is.null(nodes_df) || is.null(edges_df) || nrow(nodes_df) == 0) {
+        return(NULL)
+    }
+
+    tryCatch({
+        # Start building the DAG definition
+        dag_lines <- c("dag {")
+
+        # Add node definitions with their types
+        valid_nodes <- c()
+        for (i in 1:nrow(nodes_df)) {
+            node_id <- nodes_df$id[i]
+
+            # Skip special nodes (like warning nodes)
+            if (grepl("^(Warning|No Data|Error)", node_id)) {
+                next
+            }
+
+            # Determine node type based on group/category
+            node_type <- ""
+            if ("group" %in% names(nodes_df)) {
+                group <- nodes_df$group[i]
+            } else if ("category" %in% names(nodes_df)) {
+                group <- nodes_df$category[i]
+            } else {
+                group <- "Other"
+            }
+
+            # Map group to dagitty node types
+            if (group == "Exposure") {
+                node_type <- " [exposure]"
+            } else if (group == "Outcome") {
+                node_type <- " [outcome]"
+            }
+
+            # Clean node name for dagitty format (more conservative cleaning)
+            clean_node_id <- gsub("[^A-Za-z0-9_.]", "_", node_id)
+            # Remove leading numbers and ensure it starts with a letter or underscore
+            clean_node_id <- gsub("^[0-9]+", "", clean_node_id)
+            if (!grepl("^[A-Za-z_]", clean_node_id)) {
+                clean_node_id <- paste0("Node_", clean_node_id)
+            }
+
+            valid_nodes <- c(valid_nodes, clean_node_id)
+            dag_lines <- c(dag_lines, paste0("    ", clean_node_id, node_type))
+        }
+
+        # Add empty line before edges
+        dag_lines <- c(dag_lines, "")
+
+        # Add edge definitions
+        if (nrow(edges_df) > 0) {
+            for (i in 1:nrow(edges_df)) {
+                from_node_orig <- edges_df$from[i]
+                to_node_orig <- edges_df$to[i]
+
+                # Skip edges involving special nodes
+                if (grepl("^(Warning|No Data|Error)", from_node_orig) ||
+                    grepl("^(Warning|No Data|Error)", to_node_orig)) {
+                    next
+                }
+
+                # Apply same cleaning as for nodes
+                from_node <- gsub("[^A-Za-z0-9_.]", "_", from_node_orig)
+                from_node <- gsub("^[0-9]+", "", from_node)
+                if (!grepl("^[A-Za-z_]", from_node)) {
+                    from_node <- paste0("Node_", from_node)
+                }
+
+                to_node <- gsub("[^A-Za-z0-9_.]", "_", to_node_orig)
+                to_node <- gsub("^[0-9]+", "", to_node)
+                if (!grepl("^[A-Za-z_]", to_node)) {
+                    to_node <- paste0("Node_", to_node)
+                }
+
+                # Only add edge if both nodes are in our valid nodes list
+                if (from_node %in% valid_nodes && to_node %in% valid_nodes) {
+                    dag_lines <- c(dag_lines, paste0("    ", from_node, " -> ", to_node))
+                }
+            }
+        }
+
+        # Close the DAG definition
+        dag_lines <- c(dag_lines, "}")
+
+        # Create the full DAG string
+        dag_string <- paste(dag_lines, collapse = "\n")
+
+        # Create dagitty object
+        dag_object <- dagitty(dag_string)
+
+        return(dag_object)
+
+    }, error = function(e) {
+        warning(paste("Failed to create DAG from network data:", e$message))
+        return(NULL)
+    })
+}
+
 #' Undo Last Removal Operation
 #'
 #' Restores the last removed node or edge from the undo stack

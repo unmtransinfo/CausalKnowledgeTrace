@@ -397,6 +397,19 @@ ui <- dashboardPage(
                     .prop('type', 'text/css')
                     .html('.no-select { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }')
                     .appendTo('head');
+
+                // Function to update DAG status
+                window.updateDAGStatus = function(status, color) {
+                    var statusElement = $('#dag_status_text');
+                    if (statusElement.length) {
+                        statusElement.text(status).css('color', color);
+                    }
+                };
+
+                // Update status when DAG is modified
+                Shiny.addCustomMessageHandler('updateDAGStatus', function(message) {
+                    window.updateDAGStatus(message.status, message.color);
+                });
             "))
         ),
         
@@ -416,7 +429,7 @@ ui <- dashboardPage(
                             div(class = "dag-resize-handle")
                         ),
                         div(style = "margin-top: 10px;",
-                            helpText("Click on edges to view information below. Select nodes or edges and use removal buttons."),
+                            helpText("Click on edges to view information below. Select nodes or edges and use removal buttons. Use 'Save DAG' to download your modified graph."),
                             div(style = "margin-top: 5px;",
                                 actionButton("remove_node_btn", "Remove Selected Node",
                                            class = "btn-danger btn-sm",
@@ -430,6 +443,11 @@ ui <- dashboardPage(
                                            class = "btn-info btn-sm",
                                            style = "margin-right: 10px;",
                                            icon = icon("undo")),
+                                downloadButton("save_dag_btn", "Save DAG",
+                                             class = "btn-success btn-sm",
+                                             style = "margin-right: 10px; font-weight: bold;",
+                                             icon = icon("download"),
+                                             title = "Download your modified DAG as an R file"),
                                 span(id = "network_stats",
                                      style = "font-size: 12px; color: #666; margin-left: 10px;",
                                      textOutput("network_stats_text", inline = TRUE))
@@ -462,6 +480,23 @@ ui <- dashboardPage(
                         width = 4,
                         create_network_controls_ui(),
                         br(),
+
+                        # Save DAG Section
+                        h5(icon("save"), " Save Modified DAG"),
+                        div(id = "dag_status_indicator",
+                            p("Status: ",
+                              span(id = "dag_status_text", "Ready to save",
+                                   style = "color: #28a745; font-weight: bold;"),
+                              style = "font-size: 12px; margin-bottom: 5px;")),
+                        p("Download your current graph as an R file:", style = "font-size: 12px; margin-bottom: 10px;"),
+                        downloadButton("save_dag_main", "Download DAG File",
+                                     class = "btn-success btn-block",
+                                     icon = icon("download"),
+                                     style = "margin-bottom: 15px; font-weight: bold;",
+                                     title = "Save your modified DAG as an R file"),
+
+                        hr(),
+
                         # Add Graph Parameters button
                         actionButton("graph_params_btn",
                                    "Create Graph",
@@ -1102,6 +1137,12 @@ server <- function(input, output, session) {
                 # Hide loading section after a brief delay
                 session$sendCustomMessage("hideLoadingSection", list())
 
+                # Update DAG status to show it's ready to save
+                session$sendCustomMessage("updateDAGStatus", list(
+                    status = "Loaded - Ready to save",
+                    color = "#28a745"
+                ))
+
                 # Suggest causal analysis for newly loaded DAGs
                 if (!is.null(current_data$dag_object)) {
                     vars_info <- get_dag_variables(current_data$dag_object)
@@ -1232,6 +1273,12 @@ server <- function(input, output, session) {
 
                 # Hide loading section after a brief delay
                 session$sendCustomMessage("hideLoadingSection", list())
+
+                # Update DAG status to show it's ready to save
+                session$sendCustomMessage("updateDAGStatus", list(
+                    status = "Uploaded - Ready to save",
+                    color = "#28a745"
+                ))
 
                 showNotification(paste("Successfully uploaded and loaded graph from", new_filename), type = "message")
             } else {
@@ -1589,6 +1636,12 @@ server <- function(input, output, session) {
                 current_data$dag_object <- NULL
                 showNotification("DAG object cleared due to manual modifications", type = "message")
             }
+
+            # Update DAG status to show it's been modified
+            session$sendCustomMessage("updateDAGStatus", list(
+                status = "Modified - Ready to save",
+                color = "#ffc107"
+            ))
         } else {
             showNotification(result$message, type = "error")
         }
@@ -1622,6 +1675,12 @@ server <- function(input, output, session) {
                 current_data$dag_object <- NULL
                 showNotification("DAG object cleared due to manual modifications", type = "message")
             }
+
+            # Update DAG status to show it's been modified
+            session$sendCustomMessage("updateDAGStatus", list(
+                status = "Modified - Ready to save",
+                color = "#ffc107"
+            ))
         } else {
             showNotification(result$message, type = "error")
         }
@@ -2128,6 +2187,138 @@ server <- function(input, output, session) {
             )
         }
     })
+
+    # Save DAG functionality - Main save button
+    output$save_dag_main <- downloadHandler(
+        filename = function() {
+            if (!is.null(current_data$current_file)) {
+                # Extract base filename without extension
+                base_name <- tools::file_path_sans_ext(basename(current_data$current_file))
+                paste0("modified_", base_name, "_", Sys.Date(), ".R")
+            } else {
+                paste0("saved_dag_", Sys.Date(), ".R")
+            }
+        },
+        content = function(file) {
+            tryCatch({
+                # Check if we have network data
+                if (is.null(current_data$nodes) || nrow(current_data$nodes) == 0) {
+                    stop("No graph data to save")
+                }
+
+                # Try to use original DAG object if available and unmodified
+                if (!is.null(current_data$dag_object)) {
+                    # Use original DAG object
+                    dag_code <- as.character(current_data$dag_object)
+                    r_script <- paste0("# Exported DAG from ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown source",
+                                     "\n# Generated on ", Sys.time(), "\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                } else {
+                    # Reconstruct DAG from current network data (for modified graphs)
+                    reconstructed_dag <- create_dag_from_network_data(current_data$nodes, current_data$edges)
+
+                    if (is.null(reconstructed_dag)) {
+                        stop("Failed to reconstruct DAG from current network data")
+                    }
+
+                    dag_code <- as.character(reconstructed_dag)
+                    r_script <- paste0("# Modified DAG reconstructed from network visualization\n",
+                                     "# Original source: ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown",
+                                     "\n# Generated on ", Sys.time(), "\n",
+                                     "# Note: This DAG was modified through the web interface\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                }
+
+                writeLines(r_script, file)
+
+                # Show success notification
+                showNotification(
+                    paste("DAG saved successfully as", basename(file)),
+                    type = "message",
+                    duration = 3
+                )
+
+            }, error = function(e) {
+                showNotification(
+                    paste("Error saving DAG:", e$message),
+                    type = "error",
+                    duration = 5
+                )
+                stop(paste("Error saving DAG:", e$message))
+            })
+        },
+        contentType = "text/plain"
+    )
+
+    # Save DAG functionality - Small button (same as main)
+    output$save_dag_btn <- downloadHandler(
+        filename = function() {
+            if (!is.null(current_data$current_file)) {
+                # Extract base filename without extension
+                base_name <- tools::file_path_sans_ext(basename(current_data$current_file))
+                paste0("modified_", base_name, "_", Sys.Date(), ".R")
+            } else {
+                paste0("saved_dag_", Sys.Date(), ".R")
+            }
+        },
+        content = function(file) {
+            tryCatch({
+                # Check if we have network data
+                if (is.null(current_data$nodes) || nrow(current_data$nodes) == 0) {
+                    stop("No graph data to save")
+                }
+
+                # Try to use original DAG object if available and unmodified
+                if (!is.null(current_data$dag_object)) {
+                    # Use original DAG object
+                    dag_code <- as.character(current_data$dag_object)
+                    r_script <- paste0("# Exported DAG from ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown source",
+                                     "\n# Generated on ", Sys.time(), "\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                } else {
+                    # Reconstruct DAG from current network data (for modified graphs)
+                    reconstructed_dag <- create_dag_from_network_data(current_data$nodes, current_data$edges)
+
+                    if (is.null(reconstructed_dag)) {
+                        stop("Failed to reconstruct DAG from current network data")
+                    }
+
+                    dag_code <- as.character(reconstructed_dag)
+                    r_script <- paste0("# Modified DAG reconstructed from network visualization\n",
+                                     "# Original source: ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown",
+                                     "\n# Generated on ", Sys.time(), "\n",
+                                     "# Note: This DAG was modified through the web interface\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                }
+
+                writeLines(r_script, file)
+
+                # Show success notification
+                showNotification(
+                    paste("DAG saved successfully as", basename(file)),
+                    type = "message",
+                    duration = 3
+                )
+
+            }, error = function(e) {
+                showNotification(
+                    paste("Error saving DAG:", e$message),
+                    type = "error",
+                    duration = 5
+                )
+                stop(paste("Error saving DAG:", e$message))
+            })
+        },
+        contentType = "text/plain"
+    )
 
     # Remove the example_structure output since it's no longer needed
 }
