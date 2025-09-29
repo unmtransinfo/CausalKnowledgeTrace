@@ -677,12 +677,14 @@ create_dag_from_network_data <- function(nodes_df, edges_df) {
                 node_type <- " [outcome]"
             }
 
-            # Clean node name for dagitty format (more conservative cleaning)
-            clean_node_id <- gsub("[^A-Za-z0-9_.]", "_", node_id)
-            # Remove leading numbers and ensure it starts with a letter or underscore
-            clean_node_id <- gsub("^[0-9]+", "", clean_node_id)
-            if (!grepl("^[A-Za-z_]", clean_node_id)) {
-                clean_node_id <- paste0("Node_", clean_node_id)
+            # Preserve original node name as much as possible
+            # Only replace characters that dagitty absolutely cannot handle
+            clean_node_id <- gsub("[^A-Za-z0-9_.-]", "_", node_id)
+            # Remove any leading/trailing whitespace that might have been converted to underscores
+            clean_node_id <- gsub("^_+|_+$", "", clean_node_id)
+            # If somehow the name becomes empty, create a fallback
+            if (clean_node_id == "" || is.na(clean_node_id)) {
+                clean_node_id <- paste0("Node_", i)
             }
 
             valid_nodes <- c(valid_nodes, clean_node_id)
@@ -704,17 +706,17 @@ create_dag_from_network_data <- function(nodes_df, edges_df) {
                     next
                 }
 
-                # Apply same cleaning as for nodes
-                from_node <- gsub("[^A-Za-z0-9_.]", "_", from_node_orig)
-                from_node <- gsub("^[0-9]+", "", from_node)
-                if (!grepl("^[A-Za-z_]", from_node)) {
-                    from_node <- paste0("Node_", from_node)
+                # Apply same conservative cleaning as for nodes
+                from_node <- gsub("[^A-Za-z0-9_.-]", "_", from_node_orig)
+                from_node <- gsub("^_+|_+$", "", from_node)
+                if (from_node == "" || is.na(from_node)) {
+                    from_node <- paste0("Node_", from_node_orig)
                 }
 
-                to_node <- gsub("[^A-Za-z0-9_.]", "_", to_node_orig)
-                to_node <- gsub("^[0-9]+", "", to_node)
-                if (!grepl("^[A-Za-z_]", to_node)) {
-                    to_node <- paste0("Node_", to_node)
+                to_node <- gsub("[^A-Za-z0-9_.-]", "_", to_node_orig)
+                to_node <- gsub("^_+|_+$", "", to_node)
+                if (to_node == "" || is.na(to_node)) {
+                    to_node <- paste0("Node_", to_node_orig)
                 }
 
                 # Only add edge if both nodes are in our valid nodes list
