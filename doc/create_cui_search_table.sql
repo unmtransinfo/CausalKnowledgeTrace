@@ -1,26 +1,30 @@
--- Create optimized CUI search table with full-text search capabilities
--- Run this script to set up the search infrastructure
+-- Assuming causalentity table already exists with structure:
+-- causalentity (cui, name, semtype) where semtype contains comma-separated values
 
--- Enable required extensions
-CREATE EXTENSION IF NOT EXISTS pg_trgm;
-CREATE EXTENSION IF NOT EXISTS unaccent;
+-- Drop tables if they exist (for clean reinstall)
+DROP TABLE IF EXISTS cui_search;
+DROP TABLE IF EXISTS semantic_types;
 
--- Create optimized search table in causalehr schema
-CREATE TABLE IF NOT EXISTS causalehr.cui_search_index (
-    cui VARCHAR(20) NOT NULL,
-    name TEXT NOT NULL,
-    semtype VARCHAR(50),
-    semtype_definition TEXT
+-- Create the semantic types reference table
+CREATE TABLE semantic_types (
+    semtype_code VARCHAR(10) PRIMARY KEY,
+    semtype_definition VARCHAR(200) NOT NULL
 );
 
--- Create temporary table for semtype definitions
-CREATE TEMP TABLE semtype_definitions (
-    semtype_code VARCHAR(10),
-    semtype_name VARCHAR(200)
+-- Create the new table with CUI as primary key
+-- One row per CUI with semicolon-separated definitions
+CREATE TABLE cui_search (
+    cui VARCHAR(10) PRIMARY KEY,
+    name VARCHAR(500) NOT NULL,
+    semtype VARCHAR(500) NOT NULL,
+    semtype_defination TEXT NOT NULL
 );
 
--- Insert semtype definitions from clefSemTypes.txt
-INSERT INTO semtype_definitions (semtype_code, semtype_name) VALUES
+-- Create index after table creation
+CREATE INDEX idx_cui ON cui_search(cui);
+
+-- Insert semantic type definitions
+INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('aapp', 'Amino Acid, Peptide, or Protein'),
 ('acab', 'Acquired Abnormality'),
 ('acty', 'Activity'),
@@ -149,59 +153,23 @@ INSERT INTO semtype_definitions (semtype_code, semtype_name) VALUES
 ('vita', 'Vitamin'),
 ('vtbt', 'Vertebrate');
 
--- Populate the table from causalentity with semtype definitions
-INSERT INTO causalehr.cui_search_index (cui, name, semtype, semtype_definition)
-SELECT DISTINCT
-    ce.cui,
-    -- Normalize name: lowercase, remove special chars, standardize spaces
-    REGEXP_REPLACE(
-        REGEXP_REPLACE(
-            LOWER(TRIM(ce.name)), 
-            '[^a-z0-9\s]', ' ', 'g'
-        ), 
-        '\s+', ' ', 'g'
-    ) as name,
-    ce.semtype,
-    COALESCE(sd.semtype_name, 'Unknown Semantic Type') as semtype_definition
-FROM causalehr.causalentity ce
-LEFT JOIN semtype_definitions sd ON ce.semtype = sd.semtype_code
-WHERE ce.name IS NOT NULL 
-    AND TRIM(ce.name) != ''
-    AND ce.cui IS NOT NULL
-ON CONFLICT DO NOTHING;
 
--- Create indexes for maximum search performance
-CREATE INDEX IF NOT EXISTS cui_search_cui_idx ON causalehr.cui_search_index (cui);
-CREATE INDEX IF NOT EXISTS cui_search_name_idx ON causalehr.cui_search_index (name);
-CREATE INDEX IF NOT EXISTS cui_search_semtype_idx ON causalehr.cui_search_index (semtype);
-CREATE INDEX IF NOT EXISTS cui_search_semtype_def_idx ON causalehr.cui_search_index (semtype_definition);
 
--- Trigram indexes for fuzzy matching
-CREATE INDEX IF NOT EXISTS cui_search_name_trgm_idx ON causalehr.cui_search_index USING GIN (name gin_trgm_ops);
-
--- Composite indexes for common query patterns
-CREATE INDEX IF NOT EXISTS cui_search_name_semtype_idx ON causalehr.cui_search_index (name, semtype);
-
--- Update statistics for query planner
-ANALYZE causalehr.cui_search_index;
-
--- Show population results
-SELECT 
-    COUNT(*) as total_records,
-    COUNT(DISTINCT cui) as unique_cuis,
-    COUNT(DISTINCT semtype) as unique_semtypes,
-    COUNT(DISTINCT semtype_definition) as unique_definitions
-FROM causalehr.cui_search_index;
-
--- Example queries for testing performance
--- Exact match:
--- SELECT cui, name, semtype, semtype_definition FROM causalehr.cui_search_index WHERE name = 'diabetes';
-
--- Search by semantic type definition:
--- SELECT cui, name, semtype, semtype_definition FROM causalehr.cui_search_index WHERE semtype_definition LIKE '%Disease%';
-
--- Fuzzy search:
--- SELECT cui, name, semtype, semtype_definition, similarity(name, 'diabets') as sim 
--- FROM causalehr.cui_search_index 
--- WHERE similarity(name, 'diabets') > 0.3 
--- ORDER BY sim DESC LIMIT 10;
+WITH split_semtypes AS (
+    SELECT 
+        ce.cui,
+        ce.name,
+        ce.semtype,
+        trim(unnest(string_to_array(ce.semtype, ','))) AS semtype_code
+    FROM causalentity ce
+)
+INSERT INTO cui_search (cui, name, semtype, semtype_defination)
+SELECT
+    ss.cui,
+    ss.name,
+    ss.semtype,
+    string_agg(DISTINCT COALESCE(st.semtype_definition, ss.semtype_code), ' ; ' ORDER BY COALESCE(st.semtype_definition, ss.semtype_code)) AS semtype_defination
+FROM split_semtypes ss
+LEFT JOIN semantic_types st ON ss.semtype_code = st.semtype_code
+GROUP BY ss.cui, ss.name, ss.semtype
+ON CONFLICT (cui) DO NOTHING;
