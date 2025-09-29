@@ -288,7 +288,115 @@ create_file_operations_server <- function(input, output, session, current_data) 
         showNotification("DAG cleared", type = "message")
     })
     
-    # Export current DAG
+    # Save updated DAG (handles both original and modified DAGs)
+    output$save_dag_btn <- downloadHandler(
+        filename = function() {
+            if (!is.null(current_data$current_file)) {
+                # Extract base filename without extension
+                base_name <- tools::file_path_sans_ext(basename(current_data$current_file))
+                paste0("modified_", base_name, "_", Sys.Date(), ".R")
+            } else {
+                paste0("saved_dag_", Sys.Date(), ".R")
+            }
+        },
+        content = function(file) {
+            tryCatch({
+                # Check if we have network data
+                if (is.null(current_data$nodes) || nrow(current_data$nodes) == 0) {
+                    stop("No graph data to save")
+                }
+
+                # Try to use original DAG object if available and unmodified
+                if (!is.null(current_data$dag_object)) {
+                    # Use original DAG object
+                    dag_code <- as.character(current_data$dag_object)
+                    r_script <- paste0("# Exported DAG from ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown source",
+                                     "\n# Generated on ", Sys.time(), "\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                } else {
+                    # Reconstruct DAG from current network data (for modified graphs)
+                    reconstructed_dag <- create_dag_from_network_data(current_data$nodes, current_data$edges)
+
+                    if (is.null(reconstructed_dag)) {
+                        stop("Failed to reconstruct DAG from current network data")
+                    }
+
+                    dag_code <- as.character(reconstructed_dag)
+                    r_script <- paste0("# Modified DAG reconstructed from network visualization\n",
+                                     "# Original source: ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown",
+                                     "\n# Generated on ", Sys.time(), "\n",
+                                     "# Note: This DAG was modified through the web interface\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                }
+
+                writeLines(r_script, file)
+
+            }, error = function(e) {
+                stop(paste("Error saving DAG:", e$message))
+            })
+        },
+        contentType = "text/plain"
+    )
+
+    # Main save DAG button (same functionality as save_dag_btn but more prominent)
+    output$save_dag_main <- downloadHandler(
+        filename = function() {
+            if (!is.null(current_data$current_file)) {
+                # Extract base filename without extension
+                base_name <- tools::file_path_sans_ext(basename(current_data$current_file))
+                paste0("modified_", base_name, "_", Sys.Date(), ".R")
+            } else {
+                paste0("saved_dag_", Sys.Date(), ".R")
+            }
+        },
+        content = function(file) {
+            tryCatch({
+                # Check if we have network data
+                if (is.null(current_data$nodes) || nrow(current_data$nodes) == 0) {
+                    stop("No graph data to save")
+                }
+
+                # Try to use original DAG object if available and unmodified
+                if (!is.null(current_data$dag_object)) {
+                    # Use original DAG object
+                    dag_code <- as.character(current_data$dag_object)
+                    r_script <- paste0("# Exported DAG from ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown source",
+                                     "\n# Generated on ", Sys.time(), "\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                } else {
+                    # Reconstruct DAG from current network data (for modified graphs)
+                    reconstructed_dag <- create_dag_from_network_data(current_data$nodes, current_data$edges)
+
+                    if (is.null(reconstructed_dag)) {
+                        stop("Failed to reconstruct DAG from current network data")
+                    }
+
+                    dag_code <- as.character(reconstructed_dag)
+                    r_script <- paste0("# Modified DAG reconstructed from network visualization\n",
+                                     "# Original source: ",
+                                     if(!is.null(current_data$current_file)) current_data$current_file else "Unknown",
+                                     "\n# Generated on ", Sys.time(), "\n",
+                                     "# Note: This DAG was modified through the web interface\n\n",
+                                     "library(dagitty)\n\n",
+                                     "g <- dagitty('", dag_code, "')")
+                }
+
+                writeLines(r_script, file)
+
+            }, error = function(e) {
+                stop(paste("Error saving DAG:", e$message))
+            })
+        },
+        contentType = "text/plain"
+    )
+
+    # Export current DAG (legacy function - kept for compatibility)
     output$download_dag <- downloadHandler(
         filename = function() {
             if (!is.null(current_data$current_file)) {
@@ -301,7 +409,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
             if (is.null(current_data$dag_object)) {
                 stop("No DAG to export")
             }
-            
+
             tryCatch({
                 # Export DAG to R format
                 dag_code <- as.character(current_data$dag_object)
