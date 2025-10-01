@@ -138,7 +138,7 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
         
         # Reactive values for managing state
         values <- reactiveValues(
-            search_results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0)),
+            search_results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0)),
             selected_cuis = character(0),
             last_search = ""
         )
@@ -170,7 +170,7 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
                 if (search_result$success) {
                     values$search_results <- search_result$results
                 } else {
-                    values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+                    values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
                     showNotification(
                         paste("Search error:", search_result$message),
                         type = "error",
@@ -182,7 +182,7 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
                 shinyjs::hide("loading_indicator")
                 
             } else if (nchar(search_term) < 3) {
-                values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+                values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
                 values$last_search <- ""
             }
         })
@@ -194,10 +194,10 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
             }
 
             # Format results for display and reorder columns: CUI, Name, Definition, Type
-            display_data <- values$search_results[, c("cui", "name", "semtype_definition", "semtype")]
+            display_data <- values$search_results[, c("cui", "name", "semtype_defination", "semtype")]
             display_data$cui <- paste0('<code>', display_data$cui, '</code>')
             display_data$name <- htmltools::htmlEscape(display_data$name)
-            display_data$semtype_definition <- htmltools::htmlEscape(display_data$semtype_definition)
+            display_data$semtype_defination <- htmltools::htmlEscape(display_data$semtype_defination)
             display_data$semtype <- htmltools::htmlEscape(display_data$semtype)
 
             DT::datatable(

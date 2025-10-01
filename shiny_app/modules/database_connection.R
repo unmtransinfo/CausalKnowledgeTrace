@@ -1,7 +1,7 @@
 # Database Connection Module for CausalKnowledgeTrace
 #
 # This module provides database connectivity for the Shiny application
-# to query the cui_search_index table for CUI search functionality.
+# to query the cui_search table for CUI search functionality.
 #
 # Author: CausalKnowledgeTrace Application
 # Dependencies: DBI, RPostgreSQL, pool
@@ -141,8 +141,8 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
             DBI::dbExecute(test_conn, paste("SET search_path TO", schema))
         }
         
-        # Test query to verify cui_search_index table access
-        test_query <- "SELECT COUNT(*) FROM causalehr.cui_search_index LIMIT 1"
+        # Test query to verify cui_search table access
+        test_query <- "SELECT COUNT(*) FROM causalehr.cui_search LIMIT 1"
         result <- DBI::dbGetQuery(test_conn, test_query)
         
         pool::poolReturn(test_conn)
@@ -204,7 +204,7 @@ get_db_connection <- function() {
 
 #' Search CUI Entities
 #'
-#' Searches the cui_search_index table for medical concepts matching the search term
+#' Searches the cui_search table for medical concepts matching the search term
 #' Returns ALL matching results (no limit)
 #'
 #' @param search_term Character string to search for in concept names
@@ -212,12 +212,12 @@ get_db_connection <- function() {
 #' @return List with success status and search results
 #' @export
 search_cui_entities <- function(search_term, exact_match = FALSE) {
-    
+
     if (is.null(.db_pool)) {
         return(list(
             success = FALSE,
             message = "Database connection not initialized. Call init_database_pool() first.",
-            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
         ))
     }
     
@@ -225,7 +225,7 @@ search_cui_entities <- function(search_term, exact_match = FALSE) {
         return(list(
             success = TRUE,
             message = "Empty search term",
-            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
         ))
     }
     
@@ -234,19 +234,19 @@ search_cui_entities <- function(search_term, exact_match = FALSE) {
         clean_term <- trimws(search_term)
         
         # Build query based on match type - NO LIMIT to show all results
-        # Now using the optimized cui_search_index table for faster searches
+        # Now using the optimized cui_search table for faster searches
         if (exact_match) {
-            query <- "SELECT DISTINCT cui, name, semtype, semtype_definition FROM causalehr.cui_search_index WHERE LOWER(name) = LOWER($1) ORDER BY name"
+            query <- "SELECT DISTINCT cui, name, semtype, semtype_defination FROM causalehr.cui_search WHERE LOWER(name) = LOWER($1) ORDER BY name"
             params <- list(clean_term)
         } else {
             # Use DISTINCT for unique results and case-insensitive partial matching
             search_pattern <- paste0("%", clean_term, "%")
-            query <- "SELECT DISTINCT cui, name, semtype, semtype_definition FROM causalehr.cui_search_index WHERE LOWER(name) LIKE LOWER($1) ORDER BY name"
+            query <- "SELECT DISTINCT cui, name, semtype, semtype_defination FROM causalehr.cui_search WHERE LOWER(name) LIKE LOWER($1) ORDER BY name"
             params <- list(search_pattern)
         }
 
         # Log the SQL query being executed
-        cat("🔍 Executing SQL Query (using cui_search_index):\n")
+        cat("🔍 Executing SQL Query (using cui_search):\n")
         cat("Query:", query, "\n")
         cat("Parameters:", paste(params, collapse = ", "), "\n")
         cat("Search term:", search_term, "-> Pattern:", if(exact_match) clean_term else search_pattern, "\n")
@@ -260,13 +260,13 @@ search_cui_entities <- function(search_term, exact_match = FALSE) {
             results$cui <- as.character(results$cui)
             results$name <- as.character(results$name)
             results$semtype <- as.character(results$semtype)
-            results$semtype_definition <- as.character(results$semtype_definition)
+            results$semtype_defination <- as.character(results$semtype_defination)
         } else {
             results <- data.frame(
                 cui = character(0),
                 name = character(0),
                 semtype = character(0),
-                semtype_definition = character(0),
+                semtype_defination = character(0),
                 stringsAsFactors = FALSE
             )
         }
@@ -283,7 +283,7 @@ search_cui_entities <- function(search_term, exact_match = FALSE) {
         return(list(
             success = FALSE,
             message = paste("Database query error:", e$message),
-            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0)),
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0)),
             error = e
         ))
     })
@@ -302,7 +302,7 @@ get_cui_details <- function(cui_codes) {
         return(list(
             success = FALSE,
             message = "Database connection not initialized. Call init_database_pool() first.",
-            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
         ))
     }
 
@@ -310,7 +310,7 @@ get_cui_details <- function(cui_codes) {
         return(list(
             success = TRUE,
             message = "No CUI codes provided",
-            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
         ))
     }
 
@@ -323,13 +323,13 @@ get_cui_details <- function(cui_codes) {
             return(list(
                 success = TRUE,
                 message = "No valid CUI codes provided",
-                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
             ))
         }
 
         # Create placeholders for parameterized query
         placeholders <- paste(rep("$", length(clean_cuis)), 1:length(clean_cuis), sep = "", collapse = ",")
-        query <- paste("SELECT DISTINCT cui, name, semtype, semtype_definition FROM causalehr.cui_search_index WHERE cui IN (", placeholders, ") ORDER BY name")
+        query <- paste("SELECT DISTINCT cui, name, semtype, semtype_defination FROM causalehr.cui_search WHERE cui IN (", placeholders, ") ORDER BY name")
 
         # Execute query
         results <- pool::dbGetQuery(.db_pool, query, params = as.list(clean_cuis))
@@ -339,13 +339,13 @@ get_cui_details <- function(cui_codes) {
             results$cui <- as.character(results$cui)
             results$name <- as.character(results$name)
             results$semtype <- as.character(results$semtype)
-            results$semtype_definition <- as.character(results$semtype_definition)
+            results$semtype_defination <- as.character(results$semtype_defination)
         } else {
             results <- data.frame(
                 cui = character(0),
                 name = character(0),
                 semtype = character(0),
-                semtype_definition = character(0),
+                semtype_defination = character(0),
                 stringsAsFactors = FALSE
             )
         }
@@ -362,7 +362,7 @@ get_cui_details <- function(cui_codes) {
         return(list(
             success = FALSE,
             message = paste("Database query error:", e$message),
-            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0)),
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0)),
             error = e
         ))
     })
@@ -426,7 +426,7 @@ validate_cui_format <- function(cui_codes) {
 
 #' Test Database Connection
 #'
-#' Tests the database connection and cui_search_index table access
+#' Tests the database connection and cui_search table access
 #'
 #' @return List with test results
 #' @export
@@ -443,12 +443,12 @@ test_database_connection <- function() {
         # Test basic connection
         test_conn <- pool::poolCheckout(.db_pool)
 
-        # Test cui_search_index table access
-        count_query <- "SELECT COUNT(*) as total_entities FROM causalehr.cui_search_index"
+        # Test cui_search table access
+        count_query <- "SELECT COUNT(*) as total_entities FROM causalehr.cui_search"
         count_result <- DBI::dbGetQuery(test_conn, count_query)
 
         # Test sample query
-        sample_query <- "SELECT DISTINCT cui, name, semtype, semtype_definition FROM causalehr.cui_search_index LIMIT 5"
+        sample_query <- "SELECT DISTINCT cui, name, semtype, semtype_defination FROM causalehr.cui_search LIMIT 5"
         sample_result <- DBI::dbGetQuery(test_conn, sample_query)
 
         pool::poolReturn(test_conn)

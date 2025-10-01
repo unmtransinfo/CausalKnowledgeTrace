@@ -155,7 +155,7 @@ psql -U <username> -h localhost -d causalehr -f doc/create_cui_search_table.sql
 
 This script will:
 - Enable required PostgreSQL extensions (`pg_trgm`, `unaccent`)
-- Create the `causalehr.cui_search_index` table with optimized structure
+- Create the `causalehr.cui_search` table with optimized structure
 - Populate it with data from the existing `causalentity` table
 - Add comprehensive indexes for fast search performance
 - Include semantic type definitions for better user experience
@@ -352,7 +352,7 @@ The application includes an advanced CUI (Concept Unique Identifier) search syst
 
 #### Technical Implementation
 
-The search functionality uses the `causalehr.cui_search_index` table which:
+The search functionality uses the `causalehr.cui_search` table which:
 - Contains normalized concept names for better matching
 - Includes semantic type definitions for context
 - Uses PostgreSQL trigram indexes for fuzzy matching
@@ -592,14 +592,14 @@ Filter file: `doc/filter.sql` contains predefined exclusion lists
 
 #### Database Schema
 
-The `causalehr.cui_search_index` table provides optimized search capabilities:
+The `causalehr.cui_search` table provides optimized search capabilities:
 
 ```sql
-CREATE TABLE causalehr.cui_search_index (
+CREATE TABLE causalehr.cui_search (
     cui VARCHAR(20) NOT NULL,           -- UMLS Concept Unique Identifier
     name TEXT NOT NULL,                 -- Normalized concept name
     semtype VARCHAR(50),                -- Semantic type code
-    semtype_definition TEXT             -- Human-readable semantic type
+    semtype_defination TEXT             -- Human-readable semantic type
 );
 ```
 
@@ -666,14 +666,14 @@ echo "DB_NAME: $DB_NAME"
 If the CUI search functionality is not working:
 
 ```bash
-# Check if the cui_search_index table exists
-psql -h localhost -p 5432 -U username -d causalehr -c "\dt causalehr.cui_search_index"
+# Check if the cui_search table exists
+psql -h localhost -p 5432 -U username -d causalehr -c "\dt causalehr.cui_search"
 
 # Check table population
-psql -h localhost -p 5432 -U username -d causalehr -c "SELECT COUNT(*) FROM causalehr.cui_search_index;"
+psql -h localhost -p 5432 -U username -d causalehr -c "SELECT COUNT(*) FROM causalehr.cui_search;"
 
 # Test search functionality
-psql -h localhost -p 5432 -U username -d causalehr -c "SELECT cui, name, semtype FROM causalehr.cui_search_index WHERE name LIKE '%diabetes%' LIMIT 5;"
+psql -h localhost -p 5432 -U username -d causalehr -c "SELECT cui, name, semtype FROM causalehr.cui_search WHERE name LIKE '%diabetes%' LIMIT 5;"
 
 # Recreate the table if needed
 psql -h localhost -p 5432 -U username -d causalehr -f doc/create_cui_search_table.sql
