@@ -449,9 +449,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
             if (!is.null(current_data$current_file)) {
                 # Extract k_hops from current file or use default
                 k_hops <- current_data$k_hops %||% 1
-                paste0("modified_causal_assertions_", k_hops, "_", Sys.Date(), ".json")
+                paste0("evidence_from_graph_", k_hops, ".json")
             } else {
-                paste0("modified_causal_assertions_", Sys.Date(), ".json")
+                paste0("evidence_from_graph_1.json")
             }
         },
         content = function(file) {
@@ -507,9 +507,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
             if (!is.null(current_data$current_file)) {
                 # Extract k_hops from current file or use default
                 k_hops <- current_data$k_hops %||% 1
-                paste0("modified_causal_assertions_", k_hops, "_", Sys.Date(), ".json")
+                paste0("evidence_from_graph_", k_hops, ".json")
             } else {
-                paste0("modified_causal_assertions_", Sys.Date(), ".json")
+                paste0("evidence_from_graph_1.json")
             }
         },
         content = function(file) {
