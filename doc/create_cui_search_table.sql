@@ -29,6 +29,7 @@ INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('acab', 'Acquired Abnormality'),
 ('acty', 'Activity'),
 ('aggp', 'Age Group'),
+('alga', 'Algae'),
 ('amas', 'Amino Acid Sequence'),
 ('amph', 'Amphibian'),
 ('anab', 'Anatomical Abnormality'),
@@ -48,6 +49,7 @@ INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('bodm', 'Biomedical or Dental Material'),
 ('bpoc', 'Body Part, Organ, or Organ Component'),
 ('bsoj', 'Body Space or Junction'),
+('carb', 'Carbohydrates'),
 ('celc', 'Cell Component'),
 ('celf', 'Cell Function'),
 ('cell', 'Cell'),
@@ -67,6 +69,7 @@ INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('dsyn', 'Disease or Syndrome'),
 ('edac', 'Educational Activity'),
 ('eehu', 'Environmental Effect of Humans'),
+('eico', 'Eicosapentaenoic Compound'),
 ('elii', 'Element, Ion, or Isotope'),
 ('emod', 'Experimental Model of Disease'),
 ('emst', 'Embryonic Structure'),
@@ -99,10 +102,12 @@ INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('inch', 'Inorganic Chemical'),
 ('inpo', 'Injury or Poisoning'),
 ('inpr', 'Intellectual Product'),
+('invt', 'Invertebrate Vector Host'),
 ('irda', 'Indicator, Reagent, or Diagnostic Aid'),
 ('lang', 'Language'),
 ('lbpr', 'Laboratory Procedure'),
 ('lbtr', 'Laboratory or Test Result'),
+('lipd', 'Lipids'),
 ('mamm', 'Mammal'),
 ('mbrt', 'Molecular Biology Research Technique'),
 ('mcha', 'Machine Activity'),
@@ -115,9 +120,11 @@ INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('neop', 'Neoplastic Process'),
 ('nnon', 'Nucleic Acid, Nucleoside, or Nucleotide'),
 ('npop', 'Natural Phenomenon or Process'),
+('nsba', 'Non-specific Biogenic Amines'),
 ('nusq', 'Nucleotide Sequence'),
 ('ocac', 'Occupational Activity'),
 ('ocdi', 'Occupation or Discipline'),
+('opco', 'Organophosphoryl Compound'),
 ('orch', 'Organic Chemical'),
 ('orga', 'Organism Attribute'),
 ('orgf', 'Organism Function'),
@@ -140,12 +147,14 @@ INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('rept', 'Reptile'),
 ('resa', 'Research Activity'),
 ('resd', 'Research Device'),
+('rich', 'Rickettsia-like Coxiella Homologue'),
 ('rnlw', 'Regulation or Law'),
 ('sbst', 'Substance'),
 ('shro', 'Self-help or Relief Organization'),
 ('socb', 'Social Behavior'),
 ('sosy', 'Sign or Symptom'),
 ('spco', 'Spatial Concept'),
+('strd', 'Steroids'),
 ('tisu', 'Tissue'),
 ('tmco', 'Temporal Concept'),
 ('topp', 'Therapeutic or Preventive Procedure'),
@@ -153,15 +162,13 @@ INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
 ('vita', 'Vitamin'),
 ('vtbt', 'Vertebrate');
 
-
-
 WITH split_semtypes AS (
     SELECT 
         ce.cui,
         ce.name,
         ce.semtype,
         trim(unnest(string_to_array(ce.semtype, ','))) AS semtype_code
-    FROM causalentity ce
+    FROM causalehr.causalentity ce
 )
 INSERT INTO cui_search (cui, name, semtype, semtype_defination)
 SELECT
