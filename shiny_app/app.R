@@ -48,6 +48,7 @@ source("modules/statistics.R")
 source("modules/data_upload.R")
 source("modules/causal_analysis.R")
 source("modules/optimized_loading.R")  # For optimized causal assertions loading
+source("modules/json_to_html.R")      # For HTML export functionality
 
 # Try to source graph configuration module if it exists
 tryCatch({
@@ -450,9 +451,14 @@ ui <- dashboardPage(
                                              title = "Download your modified DAG as an R file"),
                                 downloadButton("save_json_btn", "Save JSON",
                                              class = "btn-info btn-sm",
-                                             style = "margin-right: 10px; font-weight: bold;",
+                                             style = "margin-right: 5px; font-weight: bold;",
                                              icon = icon("file-code"),
                                              title = "Save causal assertions JSON for modified DAG"),
+                                downloadButton("save_html_btn", "Save HTML",
+                                             class = "btn-warning btn-sm",
+                                             style = "margin-right: 10px; font-weight: bold;",
+                                             icon = icon("file-text"),
+                                             title = "Convert JSON to readable HTML report"),
                                 span(id = "network_stats",
                                      style = "font-size: 12px; color: #666; margin-left: 10px;",
                                      textOutput("network_stats_text", inline = TRUE))
@@ -502,8 +508,13 @@ ui <- dashboardPage(
                         downloadButton("save_json_main", "Download JSON File",
                                      class = "btn-info btn-block",
                                      icon = icon("file-code"),
-                                     style = "margin-bottom: 15px; font-weight: bold;",
+                                     style = "margin-bottom: 10px; font-weight: bold;",
                                      title = "Save causal assertions JSON for modified DAG"),
+                        downloadButton("save_html_main", "Download HTML Report",
+                                     class = "btn-warning btn-block",
+                                     icon = icon("file-text"),
+                                     style = "margin-bottom: 15px; font-weight: bold;",
+                                     title = "Convert JSON to readable HTML report"),
 
                         hr(),
 
@@ -2558,6 +2569,110 @@ server <- function(input, output, session) {
             })
         },
         contentType = "application/json"
+    )
+
+    # Save HTML functionality - Main button
+    output$save_html_main <- downloadHandler(
+        filename = function() {
+            "evidence_from_graph.html"
+        },
+        content = function(file) {
+            tryCatch({
+                # Show progress notification
+                showNotification("Converting JSON to HTML... This may take a moment for large datasets.",
+                               type = "message", duration = 5, id = "html_conversion")
+
+                # Check if we have network data and assertions
+                if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
+                    stop("No graph data to save")
+                }
+
+                if (is.null(current_data$causal_assertions) || length(current_data$causal_assertions) == 0) {
+                    stop("No causal assertions data available")
+                }
+
+                # Extract assertions for the modified DAG
+                modified_assertions <- extract_modified_dag_assertions(
+                    current_data$edges,
+                    current_data$causal_assertions
+                )
+
+                if (length(modified_assertions$assertions) == 0) {
+                    stop("No causal assertions found for the current edges")
+                }
+
+                # Convert to HTML using the simplified module
+                html_content <- convert_json_to_html(
+                    modified_assertions,
+                    title = "Causal Knowledge Trace - Evidence Report"
+                )
+
+                # Write HTML to file
+                writeLines(html_content, file, useBytes = TRUE)
+
+                # Remove progress notification
+                removeNotification("html_conversion")
+                showNotification("HTML report generated successfully!", type = "message")
+
+            }, error = function(e) {
+                removeNotification("html_conversion")
+                showNotification(paste("Error generating HTML report:", e$message), type = "error")
+                stop(paste("Error generating HTML report:", e$message))
+            })
+        },
+        contentType = "text/html"
+    )
+
+    # Save HTML functionality - Small button (same as main)
+    output$save_html_btn <- downloadHandler(
+        filename = function() {
+            "evidence_from_graph.html"
+        },
+        content = function(file) {
+            tryCatch({
+                # Show progress notification
+                showNotification("Converting JSON to HTML... This may take a moment for large datasets.",
+                               type = "message", duration = 5, id = "html_conversion_small")
+
+                # Check if we have network data and assertions
+                if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
+                    stop("No graph data to save")
+                }
+
+                if (is.null(current_data$causal_assertions) || length(current_data$causal_assertions) == 0) {
+                    stop("No causal assertions data available")
+                }
+
+                # Extract assertions for the modified DAG
+                modified_assertions <- extract_modified_dag_assertions(
+                    current_data$edges,
+                    current_data$causal_assertions
+                )
+
+                if (length(modified_assertions$assertions) == 0) {
+                    stop("No causal assertions found for the current edges")
+                }
+
+                # Convert to HTML using the simplified module
+                html_content <- convert_json_to_html(
+                    modified_assertions,
+                    title = "Causal Knowledge Trace - Evidence Report"
+                )
+
+                # Write HTML to file
+                writeLines(html_content, file, useBytes = TRUE)
+
+                # Remove progress notification
+                removeNotification("html_conversion_small")
+                showNotification("HTML report generated successfully!", type = "message")
+
+            }, error = function(e) {
+                removeNotification("html_conversion_small")
+                showNotification(paste("Error generating HTML report:", e$message), type = "error")
+                stop(paste("Error generating HTML report:", e$message))
+            })
+        },
+        contentType = "text/html"
     )
 
     # Remove the example_structure output since it's no longer needed

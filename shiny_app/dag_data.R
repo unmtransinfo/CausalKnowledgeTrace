@@ -13,6 +13,7 @@ source("modules/dag_visualization.R")
 source("modules/node_information.R")
 source("modules/statistics.R")
 source("modules/data_upload.R")
+# Note: json_to_html.R is sourced in app.R for global availability
 
 # DYNAMIC DAG LOADING SYSTEM
 # This system allows users to load DAG files through the UI
