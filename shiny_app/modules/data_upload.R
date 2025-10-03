@@ -550,24 +550,39 @@ load_causal_assertions <- function(filename = NULL, k_hops = NULL,
 
     # Use optimized loading if enabled
     if (use_optimization) {
-        # Source the optimized loading module if not already loaded
-        if (!exists("load_causal_assertions_optimized")) {
+        # Source the new optimized loader module if not already loaded
+        if (!exists("load_causal_assertions_unified")) {
             tryCatch({
-                source("modules/optimized_loading.R")
+                source("modules/optimized_loader.R")
             }, error = function(e) {
-                cat("Warning: Could not load optimized loading module:", e$message, "\n")
+                cat("Warning: Could not load optimized loader module:", e$message, "\n")
                 cat("Falling back to standard loading...\n")
                 use_optimization <- FALSE
             })
         }
 
-        if (use_optimization && exists("load_causal_assertions_optimized")) {
-            return(load_causal_assertions_optimized(
-                filename = filename,
-                k_hops = k_hops,
-                search_dirs = search_dirs,
-                force_full_load = force_full_load
-            ))
+        if (use_optimization && exists("load_causal_assertions_unified")) {
+            # Use the unified loader that handles both standard and optimized formats
+            result <- load_causal_assertions_unified(file_path)
+
+            if (result$success) {
+                cat("Loaded using optimized loader:", result$message, "\n")
+                cat("Loading strategy:", result$loading_strategy, "\n")
+                cat("Load time:", round(result$load_time_seconds, 3), "seconds\n")
+
+                return(list(
+                    success = TRUE,
+                    message = result$message,
+                    assertions = result$assertions,
+                    loading_strategy = result$loading_strategy,
+                    load_time_seconds = result$load_time_seconds,
+                    file_size_mb = result$file_size_mb
+                ))
+            } else {
+                cat("Optimized loader failed:", result$message, "\n")
+                cat("Falling back to standard loading...\n")
+                use_optimization <- FALSE
+            }
         }
     }
 
@@ -795,12 +810,22 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
                 sentence_data <- list()
                 if (!is.null(pmid_data) && is.list(pmid_data)) {
                     for (pmid in pmid_list) {
-                        if (!is.null(pmid_data[[pmid]]) && !is.null(pmid_data[[pmid]]$sentences)) {
-                            sentence_data[[pmid]] <- pmid_data[[pmid]]$sentences
-                        } else {
+                        tryCatch({
+                            if (!is.null(pmid_data[[pmid]]) && is.list(pmid_data[[pmid]]) && !is.null(pmid_data[[pmid]]$sentences)) {
+                                sentence_data[[pmid]] <- pmid_data[[pmid]]$sentences
+                            } else {
+                                sentence_data[[pmid]] <- character(0)
+                            }
+                        }, error = function(e) {
+                            cat("Warning: Error accessing sentence data for PMID", pmid, ":", e$message, "\n")
                             sentence_data[[pmid]] <- character(0)
-                        }
+                        })
                     }
+                }
+
+                # Ensure sentence_data is always a proper list
+                if (!is.list(sentence_data)) {
+                    sentence_data <- list()
                 }
 
                 return(list(

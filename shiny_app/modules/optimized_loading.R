@@ -170,7 +170,7 @@ load_causal_assertions_optimized <- function(filename = NULL, k_hops = NULL,
     } else {
         # For very large files (like 3-hop causal assertions), use streaming
         cat("Very large file detected (", round(file_size_mb, 1), "MB) - using streaming strategy\n")
-        return(load_streaming_assertions(filename, cache_key))
+        return(load_streaming_assertions_optimized(filename, cache_key))
     }
 }
 
@@ -632,6 +632,88 @@ try_load_binary_files <- function(k_hops, search_dir) {
         return(list(
             success = FALSE,
             message = paste("Error loading binary files:", e$message)
+        ))
+    })
+}
+
+#' Load Streaming Assertions (Optimized)
+#'
+#' Uses the new streaming JSON parser for very large files
+#'
+#' @param filename Path to the JSON file
+#' @param cache_key Cache key for the file
+#' @return List with loading result
+load_streaming_assertions_optimized <- function(filename, cache_key) {
+    tryCatch({
+        # Source streaming parser
+        if (!exists("StreamingJSONParser")) {
+            source("modules/streaming_json.R")
+        }
+
+        cat("Loading with optimized streaming parser...\n")
+        start_time <- Sys.time()
+
+        # Check if we should limit loading for very large files
+        file_size_mb <- file.size(filename) / (1024 * 1024)
+        max_assertions <- if (file_size_mb > 400) 5000 else NULL  # Limit 3-hop files to 5000 assertions initially
+
+        # Use streaming loader
+        result <- load_large_json_streaming(filename, max_assertions = max_assertions, chunk_size = 50)
+
+        if (!result$success) {
+            return(result)
+        }
+
+        # Create lazy loader for additional data if needed
+        lazy_loader <- function(subject_name = NULL, object_name = NULL, pmid = NULL) {
+            if (!is.null(max_assertions) && length(result$assertions) >= max_assertions) {
+                # For limited loads, provide option to load more
+                cat("Loading additional data on demand...\n")
+                full_result <- load_large_json_streaming(filename, max_assertions = NULL, chunk_size = 100)
+                if (full_result$success) {
+                    return(full_result$assertions)
+                }
+            }
+            return(result$assertions)
+        }
+
+        load_time <- as.numeric(Sys.time() - start_time, units = "secs")
+
+        # Cache metadata for future use
+        .lazy_cache$metadata[[cache_key]] <- list(
+            filename = filename,
+            file_size_mb = file_size_mb,
+            total_assertions = length(result$assertions),
+            cached_time = Sys.time(),
+            loading_strategy = "streaming_optimized"
+        )
+
+        message_text <- if (!is.null(max_assertions) && length(result$assertions) >= max_assertions) {
+            paste("Loaded", length(result$assertions), "assertions (limited for performance) using streaming parser")
+        } else {
+            paste("Loaded", length(result$assertions), "assertions using streaming parser")
+        }
+
+        cat("Streaming load completed in", round(load_time, 2), "seconds\n")
+        cat("Memory-efficient processing of", round(file_size_mb, 1), "MB file\n")
+
+        return(list(
+            success = TRUE,
+            message = message_text,
+            assertions = result$assertions,
+            filename = filename,
+            loading_strategy = "streaming_optimized",
+            load_time_seconds = load_time,
+            lazy_loader = lazy_loader,
+            file_size_mb = file_size_mb,
+            limited_load = !is.null(max_assertions)
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Error in streaming load:", e$message),
+            assertions = list()
         ))
     })
 }

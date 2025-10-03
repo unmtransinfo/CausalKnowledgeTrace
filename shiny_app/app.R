@@ -1070,19 +1070,48 @@ server <- function(input, output, session) {
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_selector
 
-                # Load causal assertions using optimized loading
+                # Load causal assertions using unified optimized loading
                 tryCatch({
-                    # Try optimized loading first (binary if available), then fall back to full JSON
-                    assertions_result <- load_causal_assertions_optimized(
-                        k_hops = result$k_hops,
-                        force_full_load = FALSE
-                    )
+                    # Source the new optimized loader
+                    if (!exists("load_causal_assertions_unified")) {
+                        source("modules/optimized_loader.R")
+                    }
 
-                    # If optimized loading fails, try full loading as fallback
-                    if (!assertions_result$success) {
-                        assertions_result <- load_causal_assertions_optimized(
-                            k_hops = result$k_hops,
-                            force_full_load = TRUE
+                    # Find the appropriate causal assertions file
+                    k_hops <- result$k_hops
+                    search_dirs <- c("../graph_creation/result", "../graph_creation/output")
+
+                    # Look for optimized file first, then standard file
+                    causal_file <- NULL
+                    for (dir in search_dirs) {
+                        # Try optimized file first
+                        optimized_file <- file.path(dir, paste0("causal_assertions_", k_hops, "_optimized_readable.json"))
+                        if (file.exists(optimized_file)) {
+                            causal_file <- optimized_file
+                            break
+                        }
+
+                        # Try standard optimized file
+                        optimized_file2 <- file.path(dir, paste0("causal_assertions_", k_hops, "_optimized.json"))
+                        if (file.exists(optimized_file2)) {
+                            causal_file <- optimized_file2
+                            break
+                        }
+
+                        # Try standard file
+                        standard_file <- file.path(dir, paste0("causal_assertions_", k_hops, ".json"))
+                        if (file.exists(standard_file)) {
+                            causal_file <- standard_file
+                            break
+                        }
+                    }
+
+                    if (!is.null(causal_file)) {
+                        assertions_result <- load_causal_assertions_unified(causal_file)
+                    } else {
+                        assertions_result <- list(
+                            success = FALSE,
+                            message = paste("No causal assertions file found for k_hops =", k_hops)
                         )
                     }
 
@@ -1423,12 +1452,26 @@ server <- function(input, output, session) {
     output$selection_info_table <- DT::renderDataTable({
         if (!is.null(selection_data$selected_edge)) {
             # Get PMID data for the selected edge
-            pmid_data <- find_edge_pmid_data(
-                selection_data$selected_edge$from,
-                selection_data$selected_edge$to,
-                current_data$causal_assertions,
-                current_data$lazy_loader
-            )
+            pmid_data <- tryCatch({
+                find_edge_pmid_data(
+                    selection_data$selected_edge$from,
+                    selection_data$selected_edge$to,
+                    current_data$causal_assertions,
+                    current_data$lazy_loader
+                )
+            }, error = function(e) {
+                cat("ERROR in find_edge_pmid_data:", e$message, "\n")
+                return(list(
+                    found = FALSE,
+                    message = paste("Error:", e$message),
+                    pmid_list = character(0),
+                    sentence_data = list(),
+                    evidence_count = 0,
+                    predicate = "CAUSES",
+                    subject_cui = "",
+                    object_cui = ""
+                ))
+            })
 
             # Create edge information with individual PMID rows
             if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
@@ -1455,8 +1498,19 @@ server <- function(input, output, session) {
                     }),
                     "Causal Sentences" = sapply(1:length(pmid_data$pmid_list), function(i) {
                         pmid <- pmid_data$pmid_list[i]
-                        # Fix: Access sentence_data directly (it's already a named list of PMID -> sentences)
-                        sentences <- pmid_data$sentence_data[[pmid]]
+                        # Fix: Access sentence_data safely with error handling
+                        sentences <- tryCatch({
+                            if (is.list(pmid_data$sentence_data) && !is.null(pmid_data$sentence_data[[pmid]])) {
+                                pmid_data$sentence_data[[pmid]]
+                            } else {
+                                character(0)
+                            }
+                        }, error = function(e) {
+                            cat("ERROR accessing sentence_data for PMID", pmid, ":", e$message, "\n")
+                            cat("sentence_data type:", class(pmid_data$sentence_data), "\n")
+                            cat("sentence_data length:", length(pmid_data$sentence_data), "\n")
+                            character(0)
+                        })
                         if (is.null(sentences) || length(sentences) == 0) {
                             return("No sentences available")
                         } else {

@@ -16,17 +16,23 @@ library(jsonlite)
 #' @return List with conversion results
 #' @export
 convert_json_to_binary <- function(json_file, output_dir = NULL, compression = "gzip", k_hops = NULL) {
-    # Binary file creation disabled to speed up process
-    return(list(
-        success = FALSE,
-        message = "Binary file creation has been disabled to speed up the graph creation process"
-    ))
+    # Re-enabled optimized binary storage system
+    cat("Creating optimized binary storage for", basename(json_file), "\n")
 
     if (!file.exists(json_file)) {
         return(list(
             success = FALSE,
             message = paste("JSON file not found:", json_file)
         ))
+    }
+
+    # Use streaming parser for large files (>100MB)
+    file_size_mb <- file.size(json_file) / (1024 * 1024)
+    use_streaming <- file_size_mb > 100
+
+    if (use_streaming) {
+        cat("Large file detected (", round(file_size_mb, 1), "MB) - using streaming conversion\n")
+        return(convert_large_json_to_binary_streaming(json_file, output_dir, compression, k_hops))
     }
     
     # Determine output directory
@@ -375,4 +381,95 @@ create_all_binary_files <- function(search_dirs = c("../graph_creation/result", 
             failed = total_count - successful_count
         )
     ))
+}
+
+#' Convert Large JSON to Binary using Streaming
+#'
+#' Converts large causal assertions JSON files to compressed RDS format
+#' using streaming to avoid memory issues
+#'
+#' @param json_file Path to the JSON file
+#' @param output_dir Directory to save binary file
+#' @param compression Compression method
+#' @param k_hops K-hops parameter for file naming
+#' @return List with conversion results
+convert_large_json_to_binary_streaming <- function(json_file, output_dir = NULL, compression = "gzip", k_hops = NULL) {
+    start_time <- Sys.time()
+
+    tryCatch({
+        # Source streaming parser
+        if (!exists("StreamingJSONParser")) {
+            source("modules/streaming_json.R")
+        }
+
+        # Set output directory
+        if (is.null(output_dir)) {
+            output_dir <- dirname(json_file)
+        }
+
+        # Extract k_hops from filename if not provided
+        if (is.null(k_hops)) {
+            k_hops <- extract_k_hops_from_filename(basename(json_file))
+        }
+
+        # Generate output filename
+        binary_file <- file.path(output_dir, paste0("causal_assertions_", k_hops, "_binary.rds"))
+
+        cat("Converting to binary with", compression, "compression...\n")
+
+        # Use streaming parser to load data in chunks
+        parser <- StreamingJSONParser$new(json_file, chunk_size = 50)  # Smaller chunks for memory efficiency
+
+        all_data <- list()
+        chunk_count <- 0
+
+        # Callback to collect data
+        collect_callback <- function(chunk_data, position) {
+            for (assertion in chunk_data) {
+                all_data[[length(all_data) + 1]] <<- assertion
+            }
+            chunk_count <<- chunk_count + 1
+            if (chunk_count %% 10 == 0) {
+                cat("Processed", length(all_data), "assertions...\n")
+            }
+        }
+
+        # Process file
+        parser$process_file(collect_callback)
+
+        cat("Saving binary data with", compression, "compression...\n")
+        saveRDS(all_data, binary_file, compress = compression)
+
+        # Calculate file sizes and compression ratio
+        json_size <- file.size(json_file)
+        binary_size <- file.size(binary_file)
+        compression_ratio <- round((1 - binary_size / json_size) * 100, 1)
+
+        load_time <- as.numeric(Sys.time() - start_time, units = "secs")
+
+        cat("Streaming binary conversion completed in", round(load_time, 2), "seconds\n")
+        cat("JSON file:", round(json_size / (1024^2), 2), "MB\n")
+        cat("Binary file:", round(binary_size / (1024^2), 2), "MB\n")
+        cat("Compression ratio:", compression_ratio, "%\n")
+
+        return(list(
+            success = TRUE,
+            message = paste("Successfully converted", length(all_data), "assertions to binary format"),
+            json_file = json_file,
+            binary_file = binary_file,
+            json_size_mb = round(json_size / (1024^2), 2),
+            binary_size_mb = round(binary_size / (1024^2), 2),
+            compression_ratio = compression_ratio,
+            conversion_time_seconds = load_time,
+            total_assertions = length(all_data),
+            compression_method = compression
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Error in streaming binary conversion:", e$message),
+            json_file = json_file
+        ))
+    })
 }
