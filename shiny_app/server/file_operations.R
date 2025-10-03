@@ -291,10 +291,15 @@ create_file_operations_server <- function(input, output, session, current_data) 
     # Helper function to extract causal assertions for modified DAG
     extract_modified_dag_assertions <- function(edges_data, assertions_data) {
         if (is.null(edges_data) || nrow(edges_data) == 0 || is.null(assertions_data) || length(assertions_data) == 0) {
-            return(list())
+            return(list(
+                pmid_sentences = list(),
+                assertions = list()
+            ))
         }
 
-        modified_assertions <- list()
+        # Initialize optimized structure
+        pmid_sentences <- list()
+        assertions <- list()
 
         for (i in seq_len(nrow(edges_data))) {
             edge <- edges_data[i, ]
@@ -305,19 +310,17 @@ create_file_operations_server <- function(input, output, session, current_data) 
             pmid_data <- find_edge_pmid_data(from_node, to_node, assertions_data, current_data$lazy_loader)
 
             if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
-                # Create assertion entry in the same format as original
+                # Create assertion entry in optimized format
                 assertion_entry <- list(
-                    subject_name = pmid_data$original_subject %||% from_node,
-                    subject_cui = pmid_data$subject_cui %||% "",
-                    predicate = pmid_data$predicate %||% "CAUSES",
-                    object_name = pmid_data$original_object %||% to_node,
-                    object_cui = pmid_data$object_cui %||% "",
-                    evidence_count = pmid_data$evidence_count %||% length(pmid_data$pmid_list),
-                    relationship_degree = pmid_data$relationship_degree %||% "first",
-                    pmid_data = list()
+                    subj = pmid_data$original_subject %||% from_node,
+                    subj_cui = pmid_data$subject_cui %||% "",
+                    obj = pmid_data$original_object %||% to_node,
+                    obj_cui = pmid_data$object_cui %||% "",
+                    ev_count = pmid_data$evidence_count %||% length(pmid_data$pmid_list),
+                    pmid_refs = pmid_data$pmid_list
                 )
 
-                # Add PMID data with sentences
+                # Add sentences to pmid_sentences mapping
                 for (pmid in pmid_data$pmid_list) {
                     sentences <- if (!is.null(pmid_data$sentence_data[[pmid]])) {
                         pmid_data$sentence_data[[pmid]]
@@ -325,14 +328,20 @@ create_file_operations_server <- function(input, output, session, current_data) 
                         list("Evidence sentence not available")
                     }
 
-                    assertion_entry$pmid_data[[pmid]] <- list(sentences = sentences)
+                    # Only add if not already present
+                    if (is.null(pmid_sentences[[pmid]])) {
+                        pmid_sentences[[pmid]] <- sentences
+                    }
                 }
 
-                modified_assertions[[length(modified_assertions) + 1]] <- assertion_entry
+                assertions[[length(assertions) + 1]] <- assertion_entry
             }
         }
 
-        return(modified_assertions)
+        return(list(
+            pmid_sentences = pmid_sentences,
+            assertions = assertions
+        ))
     }
     
     # Save updated DAG (handles both original and modified DAGs)
@@ -471,7 +480,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                     current_data$causal_assertions
                 )
 
-                if (length(modified_assertions) == 0) {
+                if (length(modified_assertions$assertions) == 0) {
                     stop("No causal assertions found for the current edges")
                 }
 
@@ -484,7 +493,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
                 )
 
                 showNotification(
-                    paste("Causal assertions JSON saved successfully with", length(modified_assertions), "entries"),
+                    paste("Causal assertions JSON saved successfully with",
+                          length(modified_assertions$assertions), "assertions and",
+                          length(modified_assertions$pmid_sentences), "unique PMIDs"),
                     type = "message",
                     duration = 3
                 )
@@ -529,7 +540,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                     current_data$causal_assertions
                 )
 
-                if (length(modified_assertions) == 0) {
+                if (length(modified_assertions$assertions) == 0) {
                     stop("No causal assertions found for the current edges")
                 }
 
@@ -542,7 +553,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
                 )
 
                 showNotification(
-                    paste("Causal assertions JSON saved successfully with", length(modified_assertions), "entries"),
+                    paste("Causal assertions JSON saved successfully with",
+                          length(modified_assertions$assertions), "assertions and",
+                          length(modified_assertions$pmid_sentences), "unique PMIDs"),
                     type = "message",
                     duration = 3
                 )
