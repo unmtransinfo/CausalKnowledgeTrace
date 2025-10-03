@@ -1,19 +1,19 @@
 -- Assuming causalentity table already exists with structure:
--- causalentity (cui, name, semtype) where semtype contains comma-separated values
+-- causalehr.causalentity (cui, name, semtype) where semtype contains comma-separated values
 
 -- Drop tables if they exist (for clean reinstall)
-DROP TABLE IF EXISTS cui_search;
-DROP TABLE IF EXISTS semantic_types;
+DROP TABLE IF EXISTS causalehr.cui_search;
+DROP TABLE IF EXISTS causalehr.semantic_types;
 
 -- Create the semantic types reference table
-CREATE TABLE semantic_types (
+CREATE TABLE causalehr.semantic_types (
     semtype_code VARCHAR(10) PRIMARY KEY,
     semtype_definition VARCHAR(200) NOT NULL
 );
 
 -- Create the new table with CUI as primary key
 -- One row per CUI with semicolon-separated definitions
-CREATE TABLE cui_search (
+CREATE TABLE causalehr.cui_search (
     cui VARCHAR(10) PRIMARY KEY,
     name VARCHAR(500) NOT NULL,
     semtype VARCHAR(500) NOT NULL,
@@ -21,10 +21,10 @@ CREATE TABLE cui_search (
 );
 
 -- Create index after table creation
-CREATE INDEX idx_cui ON cui_search(cui);
+CREATE INDEX idx_cui ON causalehr.cui_search(cui);
 
 -- Insert semantic type definitions
-INSERT INTO semantic_types (semtype_code, semtype_definition) VALUES
+INSERT INTO causalehr.semantic_types (semtype_code, semtype_definition) VALUES
 ('aapp', 'Amino Acid, Peptide, or Protein'),
 ('acab', 'Acquired Abnormality'),
 ('acty', 'Activity'),
@@ -170,13 +170,13 @@ WITH split_semtypes AS (
         trim(unnest(string_to_array(ce.semtype, ','))) AS semtype_code
     FROM causalehr.causalentity ce
 )
-INSERT INTO cui_search (cui, name, semtype, semtype_defination)
+INSERT INTO causalehr.cui_search (cui, name, semtype, semtype_defination)
 SELECT
     ss.cui,
     ss.name,
     ss.semtype,
     string_agg(DISTINCT COALESCE(st.semtype_definition, ss.semtype_code), ' ; ' ORDER BY COALESCE(st.semtype_definition, ss.semtype_code)) AS semtype_defination
 FROM split_semtypes ss
-LEFT JOIN semantic_types st ON ss.semtype_code = st.semtype_code
+LEFT JOIN causalehr.semantic_types st ON ss.semtype_code = st.semtype_code
 GROUP BY ss.cui, ss.name, ss.semtype
 ON CONFLICT (cui) DO NOTHING;
