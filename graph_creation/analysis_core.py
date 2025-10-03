@@ -166,19 +166,201 @@ class GraphAnalyzer:
                 f.write(dagitty_format)
 
     def save_results_and_metadata(self, timing_results: Dict, detailed_assertions: List[Dict]):
-        """Save analysis results, timing data, and configuration metadata."""
+        """Save analysis results, timing data, and configuration metadata with optimization."""
         output_path = self.output_dir
 
         # Save timing results
         with open(output_path / "performance_metrics.json", "w") as f:
             json.dump(timing_results, f, indent=2)
 
-        # Save detailed assertions with k_hops suffix
+        # Save detailed assertions with k_hops suffix using optimized serialization
         causal_assertions_filename = self.get_causal_assertions_filename()
-        with open(output_path / causal_assertions_filename, "w") as f:
-            json.dump(detailed_assertions, f, indent=2)
+        print(f"Saving {len(detailed_assertions)} assertions to {causal_assertions_filename}...")
 
+        # Use optimized JSON serialization for large files
+        self.save_optimized_json(detailed_assertions, output_path / causal_assertions_filename)
 
+        # Automatically create optimized formats for large files
+        file_size_mb = (output_path / causal_assertions_filename).stat().st_size / (1024 * 1024)
+        if file_size_mb > 50:  # For files larger than 50MB
+            print(f"Large file detected ({file_size_mb:.1f}MB) - creating optimized formats...")
+            self.create_optimized_formats(output_path / causal_assertions_filename)
+
+    def save_optimized_json(self, data: List[Dict], filepath: Path):
+        """Save JSON using the new single optimized format."""
+        print(f"Saving {len(data)} assertions in optimized format...")
+
+        # Create optimized structure
+        optimized_data = self.create_optimized_structure(data)
+
+        # Save with custom readable formatting
+        self._save_with_custom_formatting(optimized_data, filepath)
+
+        print(f"Saved optimized format with {len(optimized_data['pmid_sentences'])} unique PMIDs and {sum(len(sentences) for sentences in optimized_data['pmid_sentences'].values())} total sentences")
+
+    def create_optimized_structure(self, data: List[Dict]) -> Dict:
+        """Create optimized JSON structure with sentence deduplication."""
+        optimized = {
+            'pmid_sentences': {},      # pmid -> [sentences] mapping
+            'assertions': []           # assertions array (compact)
+        }
+
+        # First pass: collect PMID -> sentences mapping
+        for assertion in data:
+            pmid_data = assertion.get('pmid_data', {})
+            for pmid, pmid_info in pmid_data.items():
+                sentences = pmid_info.get('sentences', [])
+                if sentences:
+                    # Store sentences directly with PMID
+                    if pmid not in optimized['pmid_sentences']:
+                        optimized['pmid_sentences'][pmid] = sentences
+                    else:
+                        # Merge sentences if PMID appears multiple times
+                        existing_sentences = set(optimized['pmid_sentences'][pmid])
+                        for sentence in sentences:
+                            if sentence not in existing_sentences:
+                                optimized['pmid_sentences'][pmid].append(sentence)
+                                existing_sentences.add(sentence)
+
+        # Second pass: create compact assertions
+        for assertion in data:
+            # Create compact assertion with meaningful short field names
+            compact_assertion = {
+                'subj': assertion.get('subject_name', ''),      # subject_name -> subj
+                'subj_cui': assertion.get('subject_cui', ''),   # subject_cui -> subj_cui
+                'obj': assertion.get('object_name', ''),        # object_name -> obj
+                'obj_cui': assertion.get('object_cui', ''),     # object_cui -> obj_cui
+                'ev_count': assertion.get('evidence_count', 0), # evidence_count -> ev_count
+                'pmid_refs': []                                 # List of PMIDs for this assertion
+            }
+
+            # Build PMID references list
+            pmid_data = assertion.get('pmid_data', {})
+            for pmid, pmid_info in pmid_data.items():
+                sentences = pmid_info.get('sentences', [])
+                if sentences:
+                    # Just store the PMID - sentences are stored in pmid_sentences
+                    compact_assertion['pmid_refs'].append(pmid)
+
+            optimized['assertions'].append(compact_assertion)
+
+        return optimized
+
+    def _save_with_custom_formatting(self, data: Dict, filepath: Path):
+        """Save JSON with custom readable formatting."""
+        def format_json_custom(obj, indent_level=0):
+            """Custom JSON formatter with special handling for nested structures."""
+            indent = "  " * indent_level
+            next_indent = "  " * (indent_level + 1)
+
+            if isinstance(obj, dict):
+                if not obj:
+                    return "{}"
+
+                lines = ["{"]
+                items = list(obj.items())
+
+                for i, (key, value) in enumerate(items):
+                    comma = "," if i < len(items) - 1 else ""
+
+                    # Special formatting for pmid_sentences to put each PMID on separate line
+                    if key == "pmid_sentences" and isinstance(value, dict):
+                        lines.append(f'{next_indent}"{key}": {{')
+                        pmid_items = list(value.items())
+                        for j, (pmid_key, pmid_value) in enumerate(pmid_items):
+                            pmid_comma = "," if j < len(pmid_items) - 1 else ""
+                            formatted_value = format_json_custom(pmid_value, indent_level + 2)
+                            lines.append(f'{next_indent}  "{pmid_key}": {formatted_value}{pmid_comma}')
+                        lines.append(f'{next_indent}}}{comma}')
+                    else:
+                        formatted_value = format_json_custom(value, indent_level + 1)
+                        lines.append(f'{next_indent}"{key}": {formatted_value}{comma}')
+
+                lines.append(f"{indent}}}")
+                return "\n".join(lines)
+
+            elif isinstance(obj, list):
+                if not obj:
+                    return "[]"
+
+                # For short lists (like sentence indices), keep on one line
+                if all(isinstance(item, (int, str)) for item in obj) and len(obj) <= 10:
+                    formatted_items = [json.dumps(item, ensure_ascii=False) for item in obj]
+                    return f"[{', '.join(formatted_items)}]"
+
+                # For longer lists, use multi-line format
+                lines = ["["]
+                for i, item in enumerate(obj):
+                    comma = "," if i < len(obj) - 1 else ""
+                    formatted_item = format_json_custom(item, indent_level + 1)
+                    lines.append(f"{next_indent}{formatted_item}{comma}")
+                lines.append(f"{indent}]")
+                return "\n".join(lines)
+
+            else:
+                return json.dumps(obj, ensure_ascii=False)
+
+        # Save with custom formatting
+        with open(filepath, 'w', encoding='utf-8') as f:
+            f.write(format_json_custom(data))
+
+    def create_optimized_formats(self, json_filepath: Path):
+        """Create optimized formats (binary, lightweight) for large JSON files."""
+        import subprocess
+        import sys
+
+        try:
+            # Call R script to create optimized formats
+            r_script = f"""
+# Load required modules
+setwd("{Path(__file__).parent.parent / 'shiny_app'}")
+source("modules/binary_storage.R")
+source("modules/sentence_storage.R")
+
+# Convert to binary format
+cat("Creating binary format...\\n")
+binary_result <- convert_json_to_binary("{json_filepath}", compression = "gzip")
+
+if (binary_result$success) {{
+    cat("✓ Binary format created:", binary_result$compression_ratio, "% compression\\n")
+}} else {{
+    cat("✗ Binary format failed:", binary_result$message, "\\n")
+}}
+
+# Create lightweight format
+cat("Creating lightweight format...\\n")
+k_hops <- {self.k_hops}
+lightweight_result <- create_separated_files("{json_filepath}", k_hops = k_hops)
+
+if (lightweight_result$success) {{
+    cat("✓ Lightweight format created:", lightweight_result$size_reduction_percent, "% size reduction\\n")
+}} else {{
+    cat("✗ Lightweight format failed:", lightweight_result$message, "\\n")
+}}
+"""
+
+            # Write and execute R script
+            r_script_path = json_filepath.parent / "optimize_temp.R"
+            with open(r_script_path, "w") as f:
+                f.write(r_script)
+
+            print("Running optimization script...")
+            result = subprocess.run([
+                "Rscript", str(r_script_path)
+            ], capture_output=True, text=True, cwd=json_filepath.parent)
+
+            if result.returncode == 0:
+                print("✓ Optimization completed successfully")
+                print(result.stdout)
+            else:
+                print("⚠ Optimization had issues:")
+                print(result.stderr)
+
+            # Clean up temp script
+            r_script_path.unlink(missing_ok=True)
+
+        except Exception as e:
+            print(f"⚠ Could not create optimized formats: {e}")
 
     def check_evidence_exists(self, cursor) -> bool:
         """

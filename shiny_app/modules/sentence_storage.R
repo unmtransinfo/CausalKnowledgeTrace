@@ -15,11 +15,8 @@ library(jsonlite)
 #' @return List with success status and file paths
 #' @export
 separate_sentences_from_assertions <- function(assertions_file, output_dir = NULL, k_hops = NULL) {
-    # Lightweight file creation disabled to speed up process
-    return(list(
-        success = FALSE,
-        message = "Lightweight file creation has been disabled to speed up the graph creation process"
-    ))
+    # Re-enabled optimized lightweight file creation
+    cat("Creating lightweight format for", basename(assertions_file), "\n")
 
     if (!file.exists(assertions_file)) {
         return(list(
