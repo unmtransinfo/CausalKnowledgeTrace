@@ -228,6 +228,7 @@ class GraphAnalyzer:
             compact_assertion = {
                 'subj': assertion.get('subject_name', ''),      # subject_name -> subj
                 'subj_cui': assertion.get('subject_cui', ''),   # subject_cui -> subj_cui
+                'predicate': assertion.get('predicate', ''),    # predicate -> predicate
                 'obj': assertion.get('object_name', ''),        # object_name -> obj
                 'obj_cui': assertion.get('object_cui', ''),     # object_cui -> obj_cui
                 'ev_count': assertion.get('evidence_count', 0), # evidence_count -> ev_count

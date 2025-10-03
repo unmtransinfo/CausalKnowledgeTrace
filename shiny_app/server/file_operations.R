@@ -314,6 +314,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                 assertion_entry <- list(
                     subj = pmid_data$original_subject %||% from_node,
                     subj_cui = pmid_data$subject_cui %||% "",
+                    predicate = pmid_data$predicate %||% "CAUSES",
                     obj = pmid_data$original_object %||% to_node,
                     obj_cui = pmid_data$object_cui %||% "",
                     ev_count = pmid_data$evidence_count %||% length(pmid_data$pmid_list),
