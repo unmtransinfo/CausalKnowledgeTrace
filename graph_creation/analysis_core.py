@@ -248,7 +248,7 @@ class GraphAnalyzer:
 
     def _save_with_custom_formatting(self, data: Dict, filepath: Path):
         """Save JSON with custom readable formatting."""
-        def format_json_custom(obj, indent_level=0):
+        def format_json_custom(obj, indent_level=0, parent_key=None):
             """Custom JSON formatter with special handling for nested structures."""
             indent = "  " * indent_level
             next_indent = "  " * (indent_level + 1)
@@ -269,11 +269,11 @@ class GraphAnalyzer:
                         pmid_items = list(value.items())
                         for j, (pmid_key, pmid_value) in enumerate(pmid_items):
                             pmid_comma = "," if j < len(pmid_items) - 1 else ""
-                            formatted_value = format_json_custom(pmid_value, indent_level + 2)
+                            formatted_value = format_json_custom(pmid_value, indent_level + 2, key)
                             lines.append(f'{next_indent}  "{pmid_key}": {formatted_value}{pmid_comma}')
                         lines.append(f'{next_indent}}}{comma}')
                     else:
-                        formatted_value = format_json_custom(value, indent_level + 1)
+                        formatted_value = format_json_custom(value, indent_level + 1, key)
                         lines.append(f'{next_indent}"{key}": {formatted_value}{comma}')
 
                 lines.append(f"{indent}}}")
@@ -282,6 +282,11 @@ class GraphAnalyzer:
             elif isinstance(obj, list):
                 if not obj:
                     return "[]"
+
+                # Always keep pmid_refs arrays on one line regardless of length
+                if parent_key == "pmid_refs" and all(isinstance(item, (int, str)) for item in obj):
+                    formatted_items = [json.dumps(item, ensure_ascii=False) for item in obj]
+                    return f"[{', '.join(formatted_items)}]"
 
                 # For short lists (like sentence indices), keep on one line
                 if all(isinstance(item, (int, str)) for item in obj) and len(obj) <= 10:
@@ -292,7 +297,7 @@ class GraphAnalyzer:
                 lines = ["["]
                 for i, item in enumerate(obj):
                     comma = "," if i < len(obj) - 1 else ""
-                    formatted_item = format_json_custom(item, indent_level + 1)
+                    formatted_item = format_json_custom(item, indent_level + 1, parent_key)
                     lines.append(f"{next_indent}{formatted_item}{comma}")
                 lines.append(f"{indent}]")
                 return "\n".join(lines)
