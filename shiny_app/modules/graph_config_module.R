@@ -231,12 +231,12 @@ graphConfigUI <- function(id) {
                             helpText("Minimum number of unique PMIDs required for inclusion (1-1000).")
                         ),
 
-                        # K-hops
+                        # Degree
                         div(
                             class = "form-group",
                             selectInput(
-                                ns("k_hops"),
-                                "K-hops *",
+                                ns("degree"),
+                                "Degree *",
                                 choices = list(
                                     "1" = 1,
                                     "2" = 2,
@@ -245,7 +245,7 @@ graphConfigUI <- function(id) {
                                 selected = 1,
                                 width = "100%"
                             ),
-                            helpText("Number of hops for graph traversal (1-3). Controls the depth of relationships included in the graph.")
+                            helpText("Number of degrees for graph traversal (1-3). Controls the depth of relationships included in the graph.")
                         ),
 
                         # Publication Year Cutoff
@@ -254,14 +254,8 @@ graphConfigUI <- function(id) {
                             selectInput(
                                 ns("pub_year_cutoff"),
                                 "Publication Year Cutoff *",
-                                choices = list(
-                                    "2000" = 2000,
-                                    "2005" = 2005,
-                                    "2010" = 2010,
-                                    "2015" = 2015,
-                                    "2020" = 2020
-                                ),
-                                selected = 2010,
+                                choices = setNames(1980:2025, 1980:2025),
+                                selected = 2015,
                                 width = "100%"
                             ),
                             helpText("Only include citations published on or after this year.")
@@ -611,8 +605,8 @@ graphConfigServer <- function(id) {
             }
 
 
-            if (is.null(input$k_hops) || input$k_hops == "") {
-                errors <- c(errors, "K-Hops is required")
+            if (is.null(input$degree) || input$degree == "") {
+                errors <- c(errors, "Degree is required")
             }
             
             if (is.null(input$SemMedDBD_version) || input$SemMedDBD_version == "") {
@@ -705,7 +699,7 @@ graphConfigServer <- function(id) {
                     outcome_name = validation_result$outcome_name,
                     min_pmids = as.integer(input$min_pmids),
                     pub_year_cutoff = as.integer(input$pub_year_cutoff),
-                    k_hops = as.integer(input$k_hops),
+                    degree = as.integer(input$degree),
                     predication_type = predication_types,
                     SemMedDBD_version = input$SemMedDBD_version
                 )
@@ -895,7 +889,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
 
         # Validate loaded configuration
         required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
-                           "min_pmids", "pub_year_cutoff", "k_hops",
+                           "min_pmids", "pub_year_cutoff", "degree",
                            "SemMedDBD_version")
         # Note: blacklist_cuis is optional, so not included in required_fields
 
@@ -930,7 +924,7 @@ test_graph_config_module <- function() {
         blacklist_cuis = c("C0000001", "C0000002"),
         min_pmids = 100,
         pub_year_cutoff = 2010,
-        k_hops = 2,
+        degree = 2,
         PREDICATION_TYPE = "TREATS, CAUSES",
         SemMedDBD_version = "heuristic"
     )
@@ -1011,7 +1005,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
 
         # Validate loaded configuration
         required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
-                           "min_pmids", "pub_year_cutoff", "k_hops",
+                           "min_pmids", "pub_year_cutoff", "degree",
                            "SemMedDBD_version")
         # Note: blacklist_cuis is optional, so not included in required_fields
 
@@ -1046,7 +1040,7 @@ validate_graph_config <- function(config) {
 
     # Check required fields
     required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
-                        "min_pmids", "pub_year_cutoff", "k_hops",
+                        "min_pmids", "pub_year_cutoff", "degree",
                         "SemMedDBD_version")
 
     missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -1113,9 +1107,9 @@ validate_graph_config <- function(config) {
         }
     }
 
-    if ("k_hops" %in% names(config)) {
-        if (!is.numeric(config$k_hops) || config$k_hops < 1 || config$k_hops > 3) {
-            errors <- c(errors, "k_hops must be between 1 and 3")
+    if ("degree" %in% names(config)) {
+        if (!is.numeric(config$degree) || config$degree < 1 || config$degree > 3) {
+            errors <- c(errors, "degree must be between 1 and 3")
         }
     }
 
@@ -1152,7 +1146,7 @@ test_graph_config_module <- function() {
         outcome_name = "Test_Outcome",
         min_pmids = 100,
         pub_year_cutoff = 2010,
-        k_hops = 2,
+        degree = 2,
         PREDICATION_TYPE = "TREATS, CAUSES",
         SemMedDBD_version = "heuristic"
     )

@@ -195,21 +195,21 @@ create_all_edge_indexes <- function(search_dirs = c("../../graph_creation/result
         
         # Process binary files first (faster)
         for (binary_file in binary_files) {
-            k_hops_match <- regmatches(basename(binary_file), regexpr("\\d+", basename(binary_file)))
-            k_hops <- as.numeric(k_hops_match[1])
-            
-            cat("Creating index for binary file k_hops =", k_hops, "\n")
-            
+            degree_match <- regmatches(basename(binary_file), regexpr("\\d+", basename(binary_file)))
+            degree <- as.numeric(degree_match[1])
+
+            cat("Creating index for binary file degree =", degree, "\n")
+
             # Check if index already exists
             use_output_dir <- if (is.null(output_dir)) dir else output_dir
-            index_files <- check_for_index_files(k_hops, c(use_output_dir))
-            
+            index_files <- check_for_index_files(degree, c(use_output_dir))
+
             if (index_files$found && !force_regenerate) {
-                cat("Index already exists for k_hops =", k_hops, ". Skipping...\n")
-                results[[paste0("k_hops_", k_hops)]] <- list(
+                cat("Index already exists for degree =", degree, ". Skipping...\n")
+                results[[paste0("degree_", degree)]] <- list(
                     success = TRUE,
                     message = "Index already exists",
-                    k_hops = k_hops,
+                    degree = degree,
                     source_file = binary_file,
                     index_file = index_files$index_file,
                     skipped = TRUE
@@ -222,13 +222,13 @@ create_all_edge_indexes <- function(search_dirs = c("../../graph_creation/result
             if (binary_result$success) {
                 index_result <- create_edge_index(binary_result$assertions, include_variations = TRUE)
                 if (index_result$success) {
-                    save_result <- save_edge_index(index_result, k_hops = k_hops, output_dir = use_output_dir)
+                    save_result <- save_edge_index(index_result, degree = degree, output_dir = use_output_dir)
                     if (save_result$success) {
-                        cat("✓ Created index for k_hops =", k_hops, "\n")
-                        results[[paste0("k_hops_", k_hops)]] <- list(
+                        cat("✓ Created index for degree =", degree, "\n")
+                        results[[paste0("degree_", degree)]] <- list(
                             success = TRUE,
                             message = "Index created successfully",
-                            k_hops = k_hops,
+                            degree = degree,
                             source_file = binary_file,
                             index_file = save_result$index_file,
                             file_size_mb = save_result$file_size_mb,
@@ -236,21 +236,21 @@ create_all_edge_indexes <- function(search_dirs = c("../../graph_creation/result
                             skipped = FALSE
                         )
                     } else {
-                        cat("✗ Failed to save index for k_hops =", k_hops, "\n")
-                        results[[paste0("k_hops_", k_hops)]] <- list(
+                        cat("✗ Failed to save index for degree =", degree, "\n")
+                        results[[paste0("degree_", degree)]] <- list(
                             success = FALSE,
                             message = save_result$message,
-                            k_hops = k_hops,
+                            degree = degree,
                             source_file = binary_file,
                             skipped = FALSE
                         )
                     }
                 } else {
-                    cat("✗ Failed to create index for k_hops =", k_hops, "\n")
-                    results[[paste0("k_hops_", k_hops)]] <- list(
+                    cat("✗ Failed to create index for degree =", degree, "\n")
+                    results[[paste0("degree_", degree)]] <- list(
                         success = FALSE,
                         message = index_result$message,
-                        k_hops = k_hops,
+                        degree = degree,
                         source_file = binary_file,
                         skipped = FALSE
                     )
@@ -258,28 +258,28 @@ create_all_edge_indexes <- function(search_dirs = c("../../graph_creation/result
             }
         }
         
-        # Process JSON files for k_hops not covered by binary files
+        # Process JSON files for degree not covered by binary files
         for (json_file in json_files) {
-            k_hops_match <- regmatches(basename(json_file), regexpr("\\d+", basename(json_file)))
-            k_hops <- as.numeric(k_hops_match[1])
-            
-            # Skip if we already processed this k_hops from binary file
-            if (paste0("k_hops_", k_hops) %in% names(results)) {
+            degree_match <- regmatches(basename(json_file), regexpr("\\d+", basename(json_file)))
+            degree <- as.numeric(degree_match[1])
+
+            # Skip if we already processed this degree from binary file
+            if (paste0("degree_", degree) %in% names(results)) {
                 next
             }
-            
-            cat("Creating index for JSON file k_hops =", k_hops, "\n")
+
+            cat("Creating index for JSON file degree =", degree, "\n")
             
             # Check if index already exists
             use_output_dir <- if (is.null(output_dir)) dir else output_dir
-            index_files <- check_for_index_files(k_hops, c(use_output_dir))
-            
+            index_files <- check_for_index_files(degree, c(use_output_dir))
+
             if (index_files$found && !force_regenerate) {
-                cat("Index already exists for k_hops =", k_hops, ". Skipping...\n")
-                results[[paste0("k_hops_", k_hops)]] <- list(
+                cat("Index already exists for degree =", degree, ". Skipping...\n")
+                results[[paste0("degree_", degree)]] <- list(
                     success = TRUE,
                     message = "Index already exists",
-                    k_hops = k_hops,
+                    degree = degree,
                     source_file = json_file,
                     index_file = index_files$index_file,
                     skipped = TRUE
@@ -292,13 +292,13 @@ create_all_edge_indexes <- function(search_dirs = c("../../graph_creation/result
             if (is.list(json_data) && length(json_data) > 0) {
                 index_result <- create_edge_index(json_data, include_variations = TRUE)
                 if (index_result$success) {
-                    save_result <- save_edge_index(index_result, k_hops = k_hops, output_dir = use_output_dir)
+                    save_result <- save_edge_index(index_result, degree = degree, output_dir = use_output_dir)
                     if (save_result$success) {
-                        cat("✓ Created index for k_hops =", k_hops, "\n")
-                        results[[paste0("k_hops_", k_hops)]] <- list(
+                        cat("✓ Created index for degree =", degree, "\n")
+                        results[[paste0("degree_", degree)]] <- list(
                             success = TRUE,
                             message = "Index created successfully",
-                            k_hops = k_hops,
+                            degree = degree,
                             source_file = json_file,
                             index_file = save_result$index_file,
                             file_size_mb = save_result$file_size_mb,

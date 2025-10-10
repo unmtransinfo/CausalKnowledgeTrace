@@ -27,7 +27,7 @@ def create_graph_analyzer(config_name: str,
                          threshold: int,
                          output_dir: str = "output",
                          yaml_config_data: dict = None,
-                         k_hops: int = 3) -> GraphAnalyzer:
+                         degree: int = 3) -> GraphAnalyzer:
     """
     Factory function to create a GraphAnalyzer instance for general graph operations.
     
@@ -40,7 +40,7 @@ def create_graph_analyzer(config_name: str,
         threshold: Minimum evidence threshold for relationships
         output_dir: Directory for output files
         yaml_config_data: Optional YAML configuration data
-        k_hops: Number of hops for graph traversal (1-3, default: 3)
+        degree: Number of degrees for graph traversal (1-3, default: 3)
         
     Returns:
         GraphAnalyzer: Configured analyzer for general graph operations
@@ -50,7 +50,7 @@ def create_graph_analyzer(config_name: str,
         ...     config_name="smoking_lung_cancer",
         ...     db_params={"host": "localhost", "port": 5432, "dbname": "causal"},
         ...     threshold=5,
-        ...     k_hops=2
+        ...     degree=2
         ... )
         >>> results = analyzer.run_analysis()
     """
@@ -60,5 +60,5 @@ def create_graph_analyzer(config_name: str,
         threshold=threshold,
         output_dir=output_dir,
         yaml_config_data=yaml_config_data,
-        k_hops=k_hops
+        degree=degree
     )

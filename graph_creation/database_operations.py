@@ -94,12 +94,12 @@ def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = 
 class DatabaseOperations:
     """Helper class for database operations and queries."""
 
-    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, k_hops: int = 3, blocklist_cuis: List[str] = None):
+    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, degree: int = 3, blocklist_cuis: List[str] = None):
         self.config = config
         self.threshold = threshold
         self.timing_data = timing_data
         self.predication_types = predication_types or ['CAUSES']
-        self.k_hops = k_hops
+        self.degree = degree
         self.blocklist_cuis = blocklist_cuis or []
 
         # Log blocklist information if CUIs are provided
@@ -546,14 +546,14 @@ class DatabaseOperations:
 
     def fetch_k_hop_relationships(self, cursor):
         """Fetch causal relationships up to k hops using dynamic loop-based approach."""
-        print(f"Fetching relationships up to {self.k_hops} hops using dynamic approach...")
+        print(f"Fetching relationships up to {self.degree} hops using dynamic approach...")
 
         all_links = []
         all_detailed_assertions = []
         current_hop_cuis = set()
 
         # Iterate through each hop level dynamically
-        for hop_level in range(1, self.k_hops + 1):
+        for hop_level in range(1, self.degree + 1):
             print(f"Processing hop {hop_level}...")
 
             # For hop 1, we don't need previous CUIs; for others, we use the first hop CUIs
@@ -587,7 +587,7 @@ class DatabaseOperations:
                 canonical_object_name = cui_to_name_mapping[object_cui]
                 cui_based_links.append((canonical_subject_name, canonical_object_name))
 
-        print(f"Found {len(all_links)} total relationships across {self.k_hops} hops")
+        print(f"Found {len(all_links)} total relationships across {self.degree} hops")
         print(f"Created {len(cui_based_links)} CUI-based relationships with canonical names")
         return current_hop_cuis, cui_based_links, all_detailed_assertions
 

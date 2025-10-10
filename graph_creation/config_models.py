@@ -77,10 +77,10 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         # Extract threshold from min_pmids, default to 50 if not present
         threshold = yaml_config.get('min_pmids', 50)
 
-        # Extract k_hops with default and validation - now supports any positive integer
-        k_hops = yaml_config.get('k_hops', 3)
-        if not isinstance(k_hops, int) or k_hops < 1:
-            raise ValueError(f"k_hops must be a positive integer, got: {k_hops}")
+        # Extract degree with default and validation - now supports any positive integer
+        degree = yaml_config.get('degree', yaml_config.get('k_hops', 3))  # Support both new and old names for backward compatibility
+        if not isinstance(degree, int) or degree < 1:
+            raise ValueError(f"degree must be a positive integer, got: {degree}")
 
         # Handle predication_type with backward compatibility and multiple types
         predication_type = yaml_config.get('predication_type') or yaml_config.get('PREDICATION_TYPE', 'CAUSES')
@@ -109,7 +109,7 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
             'outcome_cuis': outcome_cuis,
             'blacklist_cuis': blacklist_cuis,
             'threshold': threshold,
-            'k_hops': k_hops,
+            'degree': degree,
             'predication_type': predication_type,
             'predication_types': predication_types,  # parsed list for SQL queries
             'full_config': yaml_config  # Store full config for future use

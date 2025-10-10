@@ -71,7 +71,7 @@ compile_dag_to_binary <- function(r_script_path, output_dir = NULL, force_regene
             dag_string = as.character(dag_object),
             compilation_time = Sys.time(),
             source_file = r_script_path,
-            k_hops = extract_k_hops_from_filename(r_script_path)
+            degree = extract_degree_from_filename(r_script_path)
         )
         
         # Save to binary RDS format with compression
@@ -97,7 +97,7 @@ compile_dag_to_binary <- function(r_script_path, output_dir = NULL, force_regene
             compression_ratio = compression_ratio,
             compile_time_seconds = round(compile_time, 2),
             variable_count = dag_data$variable_count,
-            k_hops = dag_data$k_hops,
+            degree = dag_data$degree,
             action = "compiled"
         ))
         
@@ -144,7 +144,7 @@ load_dag_from_binary <- function(binary_path) {
             success = TRUE,
             message = paste("Successfully loaded binary DAG with", dag_data$variable_count, "variables"),
             dag = dag_data$dag,
-            k_hops = dag_data$k_hops,
+            degree = dag_data$degree,
             variable_count = dag_data$variable_count,
             load_time_seconds = round(load_time, 3),
             file_size_mb = round(file_size_mb, 2),
@@ -157,17 +157,17 @@ load_dag_from_binary <- function(binary_path) {
     })
 }
 
-#' Extract k_hops from filename
+#' Extract degree from filename
 #'
-#' @param filename The filename to extract k_hops from
-#' @return Integer k_hops value or NULL if not found
-extract_k_hops_from_filename <- function(filename) {
+#' @param filename The filename to extract degree from
+#' @return Integer degree value or NULL if not found
+extract_degree_from_filename <- function(filename) {
     # Extract number from degree_X.R pattern
     match <- regexpr("degree_([0-9]+)", basename(filename))
     if (match > 0) {
-        k_hops_str <- regmatches(basename(filename), match)
-        k_hops <- as.integer(gsub("degree_", "", k_hops_str))
-        return(k_hops)
+        degree_str <- regmatches(basename(filename), match)
+        degree <- as.integer(gsub("degree_", "", degree_str))
+        return(degree)
     }
     return(NULL)
 }

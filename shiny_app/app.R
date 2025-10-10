@@ -899,7 +899,7 @@ ui <- dashboardPage(
                                     tags$li("Squelch Threshold (minimum unique pmids)"),
                                     tags$li("Publication year cutoff"),
 
-                                    tags$li("K-hops parameter"),
+                                    tags$li("Degree parameter"),
                                     tags$li("SemMedDB version selection")
                                 )
                             )
@@ -1089,28 +1089,28 @@ server <- function(input, output, session) {
                     }
 
                     # Find the appropriate causal assertions file
-                    k_hops <- result$k_hops
+                    degree <- result$degree
                     search_dirs <- c("../graph_creation/result", "../graph_creation/output")
 
                     # Look for optimized file first, then standard file
                     causal_file <- NULL
                     for (dir in search_dirs) {
                         # Try optimized file first
-                        optimized_file <- file.path(dir, paste0("causal_assertions_", k_hops, "_optimized_readable.json"))
+                        optimized_file <- file.path(dir, paste0("causal_assertions_", degree, "_optimized_readable.json"))
                         if (file.exists(optimized_file)) {
                             causal_file <- optimized_file
                             break
                         }
 
                         # Try standard optimized file
-                        optimized_file2 <- file.path(dir, paste0("causal_assertions_", k_hops, "_optimized.json"))
+                        optimized_file2 <- file.path(dir, paste0("causal_assertions_", degree, "_optimized.json"))
                         if (file.exists(optimized_file2)) {
                             causal_file <- optimized_file2
                             break
                         }
 
                         # Try standard file
-                        standard_file <- file.path(dir, paste0("causal_assertions_", k_hops, ".json"))
+                        standard_file <- file.path(dir, paste0("causal_assertions_", degree, ".json"))
                         if (file.exists(standard_file)) {
                             causal_file <- standard_file
                             break
@@ -1122,7 +1122,7 @@ server <- function(input, output, session) {
                     } else {
                         assertions_result <- list(
                             success = FALSE,
-                            message = paste("No causal assertions file found for k_hops =", k_hops)
+                            message = paste("No causal assertions file found for degree =", degree)
                         )
                     }
 
@@ -1132,7 +1132,7 @@ server <- function(input, output, session) {
                         current_data$assertions_loaded <- TRUE
                         current_data$loading_strategy <- assertions_result$loading_strategy
 
-                        cat("Loaded causal assertions for k_hops =", result$k_hops, "\n")
+                        cat("Loaded causal assertions for degree =", result$degree, "\n")
                         cat("Strategy used:", assertions_result$loading_strategy, "\n")
                         cat("Load time:", round(assertions_result$load_time_seconds %||% 0, 2), "seconds\n")
 
@@ -1161,7 +1161,7 @@ server <- function(input, output, session) {
                         current_data$lazy_loader <- NULL
                         current_data$assertions_loaded <- FALSE
                         current_data$loading_strategy <- "none"
-                        cat("Could not load causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                        cat("Could not load causal assertions for degree =", result$degree, ":", assertions_result$message, "\n")
 
                         showNotification(
                             "Graph loaded but causal assertions could not be loaded. Edge information may be limited.",
@@ -2456,9 +2456,9 @@ server <- function(input, output, session) {
     output$save_json_btn <- downloadHandler(
         filename = function() {
             if (!is.null(current_data$current_file)) {
-                # Extract k_hops from current file or use default
-                k_hops <- current_data$k_hops %||% 1
-                paste0("evidence_from_graph_", k_hops, ".json")
+                # Extract degree from current file or use default
+                degree <- current_data$degree %||% 1
+                paste0("evidence_from_graph_", degree, ".json")
             } else {
                 paste0("evidence_from_graph_1.json")
             }
@@ -2516,9 +2516,9 @@ server <- function(input, output, session) {
     output$save_json_main <- downloadHandler(
         filename = function() {
             if (!is.null(current_data$current_file)) {
-                # Extract k_hops from current file or use default
-                k_hops <- current_data$k_hops %||% 1
-                paste0("evidence_from_graph_", k_hops, ".json")
+                # Extract degree from current file or use default
+                degree <- current_data$degree %||% 1
+                paste0("evidence_from_graph_", degree, ".json")
             } else {
                 paste0("evidence_from_graph_1.json")
             }

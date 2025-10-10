@@ -11,10 +11,10 @@ library(jsonlite)
 #'
 #' @param assertions_file Path to the main causal assertions JSON file
 #' @param output_dir Directory to save the separated files
-#' @param k_hops K-hops parameter for file naming
+#' @param degree Degree parameter for file naming
 #' @return List with success status and file paths
 #' @export
-separate_sentences_from_assertions <- function(assertions_file, output_dir = NULL, k_hops = NULL) {
+separate_sentences_from_assertions <- function(assertions_file, output_dir = NULL, degree = NULL) {
     # Re-enabled optimized lightweight file creation
     cat("Creating lightweight format for", basename(assertions_file), "\n")
 
@@ -30,14 +30,14 @@ separate_sentences_from_assertions <- function(assertions_file, output_dir = NUL
         output_dir <- dirname(assertions_file)
     }
     
-    # Determine k_hops from filename if not provided
-    if (is.null(k_hops)) {
+    # Determine degree from filename if not provided
+    if (is.null(degree)) {
         filename <- basename(assertions_file)
-        k_hops_match <- regmatches(filename, regexpr("\\d+", filename))
-        if (length(k_hops_match) > 0) {
-            k_hops <- as.numeric(k_hops_match[1])
+        degree_match <- regmatches(filename, regexpr("\\d+", filename))
+        if (length(degree_match) > 0) {
+            degree <- as.numeric(degree_match[1])
         } else {
-            k_hops <- "unknown"
+            degree <- "unknown"
         }
     }
     
@@ -93,9 +93,9 @@ separate_sentences_from_assertions <- function(assertions_file, output_dir = NUL
         }
         
         # Generate output filenames
-        base_name <- paste0("causal_assertions_", k_hops)
+        base_name <- paste0("causal_assertions_", degree)
         lightweight_file <- file.path(output_dir, paste0(base_name, "_lightweight.json"))
-        sentences_file <- file.path(output_dir, paste0("sentences_", k_hops, ".json"))
+        sentences_file <- file.path(output_dir, paste0("sentences_", degree, ".json"))
         
         # Save lightweight assertions
         cat("Saving lightweight assertions...\n")
@@ -268,15 +268,15 @@ create_sentence_loader <- function(sentences_file) {
 
 #' Check for Separated Files
 #'
-#' Checks if separated files exist for a given k_hops value
+#' Checks if separated files exist for a given degree value
 #'
-#' @param k_hops K-hops parameter
+#' @param degree Degree parameter
 #' @param search_dirs Directories to search in
 #' @return List with file paths if they exist
 #' @export
-check_for_separated_files <- function(k_hops, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
-    lightweight_filename <- paste0("causal_assertions_", k_hops, "_lightweight.json")
-    sentences_filename <- paste0("sentences_", k_hops, ".json")
+check_for_separated_files <- function(degree, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
+    lightweight_filename <- paste0("causal_assertions_", degree, "_lightweight.json")
+    sentences_filename <- paste0("sentences_", degree, ".json")
     
     for (dir in search_dirs) {
         if (dir.exists(dir)) {
@@ -300,13 +300,13 @@ check_for_separated_files <- function(k_hops, search_dirs = c("../graph_creation
 #'
 #' Returns statistics about file separation benefits
 #'
-#' @param k_hops K-hops parameter
+#' @param degree Degree parameter
 #' @param search_dirs Directories to search in
 #' @return List with statistics
 #' @export
-get_separation_stats <- function(k_hops, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
-    original_filename <- paste0("causal_assertions_", k_hops, ".json")
-    separated_files <- check_for_separated_files(k_hops, search_dirs)
+get_separation_stats <- function(degree, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
+    original_filename <- paste0("causal_assertions_", degree, ".json")
+    separated_files <- check_for_separated_files(degree, search_dirs)
     
     if (!separated_files$found) {
         return(list(

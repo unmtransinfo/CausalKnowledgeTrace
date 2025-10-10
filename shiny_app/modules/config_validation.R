@@ -209,9 +209,9 @@ validate_all_inputs <- function(input) {
         errors <- c(errors, pub_year_validation$message)
     }
     
-    k_hops_validation <- validate_numeric_param(input$k_hops, "K-Hops", min_val = 1, max_val = 3)
-    if (!k_hops_validation$valid) {
-        errors <- c(errors, k_hops_validation$message)
+    degree_validation <- validate_numeric_param(input$degree, "Degree", min_val = 1, max_val = 3)
+    if (!degree_validation$valid) {
+        errors <- c(errors, degree_validation$message)
     }
     
     # Validate SemMedDB version
@@ -231,7 +231,7 @@ validate_all_inputs <- function(input) {
         predication_types = if (predication_validation$valid) predication_validation$types else c("CAUSES"),
         min_pmids = if (min_pmids_validation$valid) min_pmids_validation$value else NULL,
         pub_year_cutoff = if (pub_year_validation$valid) pub_year_validation$value else NULL,
-        k_hops = if (k_hops_validation$valid) k_hops_validation$value else NULL,
+        degree = if (degree_validation$valid) degree_validation$value else NULL,
         semmeddb_version = input$SemMedDBD_version
     ))
 }

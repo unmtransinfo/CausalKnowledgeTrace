@@ -54,7 +54,7 @@ def test_analysis_modes():
                 db_params=db_params,
                 threshold=5,
                 output_dir=temp_dir,
-                k_hops=2
+                degree=2
             )
             
             # Check expected methods
@@ -83,7 +83,7 @@ def test_analysis_modes():
                 db_params=db_params,
                 threshold=5,
                 output_dir=temp_dir,
-                k_hops=3
+                degree=3
             )
             
             # Check expected methods (inherited + new)
@@ -119,7 +119,7 @@ def test_analysis_modes():
         "outcome_cuis": ["C0006826"],
         "min_pmids": 10,
         "predication_types": ["CAUSES"],
-        "k_hops": 2
+        "degree": 2
     }
     
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -130,11 +130,11 @@ def test_analysis_modes():
                 threshold=5,
                 output_dir=temp_dir,
                 yaml_config_data=yaml_config,
-                k_hops=3
+                degree=3
             )
             
             assert analyzer.yaml_config_data == yaml_config, "YAML configuration not stored correctly"
-            assert analyzer.k_hops == 3, "k_hops parameter not set correctly"
+            assert analyzer.degree == 3, "degree parameter not set correctly"
             
             print("✅ Configuration handling works correctly")
             

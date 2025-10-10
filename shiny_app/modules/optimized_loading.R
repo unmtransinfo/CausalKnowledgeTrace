@@ -52,27 +52,27 @@ manage_cache_memory <- function() {
 #' based on file size and usage patterns.
 #'
 #' @param filename Path to the causal assertions JSON file
-#' @param k_hops K-hops parameter for file matching
+#' @param degree Degree parameter for file matching
 #' @param search_dirs Vector of directories to search
 #' @param force_full_load Force loading of complete data (default: FALSE)
 #' @return List containing success status, message, and assertions data
 #' @export
-load_causal_assertions_optimized <- function(filename = NULL, k_hops = NULL, 
+load_causal_assertions_optimized <- function(filename = NULL, degree = NULL,
                                            search_dirs = c("../graph_creation/result", "../graph_creation/output"),
                                            force_full_load = FALSE) {
     
     # Find the appropriate file
     if (is.null(filename)) {
-        if (is.null(k_hops)) {
+        if (is.null(degree)) {
             return(list(
                 success = FALSE,
-                message = "Either filename or k_hops must be provided",
+                message = "Either filename or degree must be provided",
                 assertions = list()
             ))
         }
-        
-        # Look for causal_assertions_{k_hops}.json
-        target_filename <- paste0("causal_assertions_", k_hops, ".json")
+
+        # Look for causal_assertions_{degree}.json
+        target_filename <- paste0("causal_assertions_", degree, ".json")
         
         for (dir in search_dirs) {
             potential_path <- file.path(dir, target_filename)
@@ -155,8 +155,8 @@ load_causal_assertions_optimized <- function(filename = NULL, k_hops = NULL,
     }
     
     # Phase 2: Check for binary files first (fastest loading)
-    if (!is.null(k_hops) && !force_full_load) {
-        binary_result <- try_load_binary_files(k_hops, dirname(filename))
+    if (!is.null(degree) && !force_full_load) {
+        binary_result <- try_load_binary_files(degree, dirname(filename))
         if (binary_result$success) {
             return(binary_result)
         }
@@ -446,10 +446,10 @@ get_cache_stats <- function() {
 # #'
 # #' Attempts to load separated lightweight and sentence files
 # #'
-# #' @param k_hops K-hops parameter
+# #' @param degree Degree parameter
 # #' @param search_dir Directory to search in
 # #' @return List with loading result
-# try_load_separated_files <- function(k_hops, search_dir) {
+# try_load_separated_files <- function(degree, search_dir) {
 #     # Source sentence storage module if not loaded
 #     if (!exists("check_for_separated_files")) {
 #         tryCatch({
@@ -460,7 +460,7 @@ get_cache_stats <- function() {
 #     }
 #
 #     # Check for separated files
-#     separated_files <- check_for_separated_files(k_hops, c(search_dir))
+#     separated_files <- check_for_separated_files(degree, c(search_dir))
 #
 #     if (!separated_files$found) {
 #         return(list(success = FALSE, message = "Separated files not found"))
@@ -528,7 +528,7 @@ get_cache_stats <- function() {
 # }
 
 # Function disabled - Fast Preview loading strategy has been removed
-try_load_separated_files <- function(k_hops, search_dir) {
+try_load_separated_files <- function(degree, search_dir) {
     return(list(success = FALSE, message = "Separated files loading has been disabled"))
 }
 
@@ -536,10 +536,10 @@ try_load_separated_files <- function(k_hops, search_dir) {
 #'
 #' Attempts to load binary RDS files for fastest performance
 #'
-#' @param k_hops K-hops parameter
+#' @param degree Degree parameter
 #' @param search_dir Directory to search in
 #' @return List with loading result
-try_load_binary_files <- function(k_hops, search_dir) {
+try_load_binary_files <- function(degree, search_dir) {
     # Source binary storage module if not loaded
     if (!exists("check_for_binary_files")) {
         tryCatch({
@@ -550,7 +550,7 @@ try_load_binary_files <- function(k_hops, search_dir) {
     }
 
     # Check for binary files
-    binary_files <- check_for_binary_files(k_hops, c(search_dir))
+    binary_files <- check_for_binary_files(degree, c(search_dir))
 
     if (!binary_files$found) {
         return(list(success = FALSE, message = "Binary files not found"))
@@ -570,7 +570,7 @@ try_load_binary_files <- function(k_hops, search_dir) {
         # Check for and load edge index
         edge_index <- NULL
         if (exists("check_for_index_files")) {
-            index_files <- check_for_index_files(k_hops, c(search_dir))
+            index_files <- check_for_index_files(degree, c(search_dir))
             if (index_files$found) {
                 index_result <- load_edge_index(index_files$index_file)
                 if (index_result$success) {
