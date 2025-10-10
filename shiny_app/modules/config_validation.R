@@ -70,9 +70,9 @@ validate_name <- function(name_string) {
 
 #' Validate Predication Types
 #'
-#' Validates predication type selections from dropdown
+#' Validates predication type selection from dropdown (single selection only)
 #'
-#' @param selected_types Character vector of selected predication types
+#' @param selected_types Character string of selected predication type
 #' @return List with validation results
 validate_predication_types <- function(selected_types) {
     # Define valid predication types (as specified by user)
@@ -82,24 +82,22 @@ validate_predication_types <- function(selected_types) {
 
     # Handle null or empty input - default to CAUSES
     if (is.null(selected_types) || length(selected_types) == 0) {
-        return(list(valid = TRUE, types = c("CAUSES"), count = 1))
+        return(list(valid = TRUE, types = "CAUSES", count = 1))
     }
 
-    # Remove duplicates and convert to uppercase
-    all_types <- unique(toupper(selected_types))
+    # Take only the first value if multiple are provided (for backward compatibility)
+    selected_type <- toupper(as.character(selected_types)[1])
 
-    # Validate that all selected types are in the valid list
-    invalid_types <- all_types[!all_types %in% valid_types]
-
-    if (length(invalid_types) > 0) {
+    # Validate that the selected type is in the valid list
+    if (!selected_type %in% valid_types) {
         return(list(
             valid = FALSE,
-            message = paste("Invalid predication types:", paste(invalid_types, collapse = ", "),
+            message = paste("Invalid predication type:", selected_type,
                           ". Valid types include:", paste(head(valid_types, 10), collapse = ", "), "...")
         ))
     }
 
-    return(list(valid = TRUE, types = all_types, count = length(all_types)))
+    return(list(valid = TRUE, types = selected_type, count = 1))
 }
 
 #' Validate Numeric Parameter
