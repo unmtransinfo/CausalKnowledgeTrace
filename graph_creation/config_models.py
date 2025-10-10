@@ -20,12 +20,11 @@ from pathlib import Path
 # YAML CONFIGURATION SUPPORT
 # -------------------------
 
-# Common predication types found in SemMedDB
+# Valid predication types (as specified by user)
 VALID_PREDICATION_TYPES = {
-    'CAUSES', 'TREATS', 'PREVENTS', 'INTERACTS_WITH', 'AFFECTS', 'ASSOCIATED_WITH',
-    'PREDISPOSES', 'COMPLICATES', 'AUGMENTS', 'DISRUPTS', 'INHIBITS', 'STIMULATES',
-    'PRODUCES', 'MANIFESTATION_OF', 'RESULT_OF', 'PROCESS_OF', 'PART_OF', 'ISA',
-    'LOCATION_OF', 'ADMINISTERED_TO', 'METHOD_OF', 'USES', 'DIAGNOSES'
+    'AFFECTS', 'ASSOCIATED_WITH', 'AUGMENTS', 'CAUSES', 'COEXISTS_WITH',
+    'COMPLICATES', 'DISRUPTS', 'INHIBITS', 'INTERACTS_WITH', 'MANIFESTATION_OF',
+    'PRECEDES', 'PREDISPOSES', 'PREVENTS', 'PRODUCES', 'STIMULATES', 'TREATS'
 }
 
 def validate_predication_types(predication_types: List[str]) -> Tuple[bool, List[str]]:

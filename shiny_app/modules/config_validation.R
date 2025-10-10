@@ -69,49 +69,36 @@ validate_name <- function(name_string) {
 }
 
 #' Validate Predication Types
-#' 
-#' Validates predication type selections and custom inputs
-#' 
+#'
+#' Validates predication type selections from dropdown
+#'
 #' @param selected_types Character vector of selected predication types
-#' @param custom_types Character string of custom predication types
 #' @return List with validation results
-validate_predication_types <- function(selected_types, custom_types) {
-    all_types <- character(0)
-    
-    # Add selected standard types
-    if (!is.null(selected_types) && length(selected_types) > 0) {
-        all_types <- c(all_types, selected_types)
+validate_predication_types <- function(selected_types) {
+    # Define valid predication types (as specified by user)
+    valid_types <- c("AFFECTS", "ASSOCIATED_WITH", "AUGMENTS", "CAUSES", "COEXISTS_WITH",
+                    "COMPLICATES", "DISRUPTS", "INHIBITS", "INTERACTS_WITH", "MANIFESTATION_OF",
+                    "PRECEDES", "PREDISPOSES", "PREVENTS", "PRODUCES", "STIMULATES", "TREATS")
+
+    # Handle null or empty input - default to CAUSES
+    if (is.null(selected_types) || length(selected_types) == 0) {
+        return(list(valid = TRUE, types = c("CAUSES"), count = 1))
     }
-    
-    # Add custom types if provided
-    if (!is.null(custom_types) && custom_types != "") {
-        custom_list <- unlist(strsplit(custom_types, "[,;]+"))
-        custom_list <- trimws(custom_list)
-        custom_list <- custom_list[custom_list != ""]
-        
-        if (length(custom_list) > 0) {
-            all_types <- c(all_types, custom_list)
-        }
-    }
-    
-    # Remove duplicates
-    all_types <- unique(all_types)
-    
-    if (length(all_types) == 0) {
-        return(list(valid = FALSE, message = "At least one predication type must be selected"))
-    }
-    
-    # Validate predication type format (should be uppercase letters and underscores)
-    invalid_types <- all_types[!grepl("^[A-Z_]+$", all_types)]
-    
+
+    # Remove duplicates and convert to uppercase
+    all_types <- unique(toupper(selected_types))
+
+    # Validate that all selected types are in the valid list
+    invalid_types <- all_types[!all_types %in% valid_types]
+
     if (length(invalid_types) > 0) {
         return(list(
             valid = FALSE,
-            message = paste("Invalid predication type format:", paste(invalid_types, collapse = ", "),
-                          "\nPredication types should contain only uppercase letters and underscores")
+            message = paste("Invalid predication types:", paste(invalid_types, collapse = ", "),
+                          ". Valid types include:", paste(head(valid_types, 10), collapse = ", "), "...")
         ))
     }
-    
+
     return(list(valid = TRUE, types = all_types, count = length(all_types)))
 }
 
@@ -192,7 +179,7 @@ validate_all_inputs <- function(input) {
     }
     
     # Validate predication types
-    predication_validation <- validate_predication_types(input$predication_types, input$custom_predication)
+    predication_validation <- validate_predication_types(input$predication_types)
     if (!predication_validation$valid) {
         errors <- c(errors, paste("Predication Types:", predication_validation$message))
     }

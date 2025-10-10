@@ -110,21 +110,30 @@ graphConfigModuleUI <- function(id) {
                     ),
                     column(4,
                         h4("Predication Types"),
-                        checkboxGroupInput(ns("predication_types"),
-                                         "Select Predication Types:",
-                                         choices = list(
-                                             "CAUSES" = "CAUSES",
-                                             "TREATS" = "TREATS", 
-                                             "PREVENTS" = "PREVENTS",
-                                             "AFFECTS" = "AFFECTS",
-                                             "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
-                                             "PREDISPOSES" = "PREDISPOSES"
-                                         ),
-                                         selected = "CAUSES"),
-                        
-                        textInput(ns("custom_predication"), 
-                                "Custom Predication Types:",
-                                placeholder = "INTERACTS_WITH,AUGMENTS")
+                        selectInput(ns("predication_types"),
+                                  "Select Predication Types:",
+                                  choices = list(
+                                      "AFFECTS" = "AFFECTS",
+                                      "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
+                                      "AUGMENTS" = "AUGMENTS",
+                                      "CAUSES" = "CAUSES",
+                                      "COEXISTS_WITH" = "COEXISTS_WITH",
+                                      "COMPLICATES" = "COMPLICATES",
+                                      "DISRUPTS" = "DISRUPTS",
+                                      "INHIBITS" = "INHIBITS",
+                                      "INTERACTS_WITH" = "INTERACTS_WITH",
+                                      "MANIFESTATION_OF" = "MANIFESTATION_OF",
+                                      "PRECEDES" = "PRECEDES",
+                                      "PREDISPOSES" = "PREDISPOSES",
+                                      "PREVENTS" = "PREVENTS",
+                                      "PRODUCES" = "PRODUCES",
+                                      "STIMULATES" = "STIMULATES",
+                                      "TREATS" = "TREATS"
+                                  ),
+                                  selected = "CAUSES",
+                                  multiple = TRUE),
+
+                        helpText("Select one or more predication types. CAUSES is selected by default.")
                     )
                 ),
                 

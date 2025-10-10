@@ -264,14 +264,32 @@ graphConfigUI <- function(id) {
                         # Predication Types
                         div(
                             class = "form-group",
-                            textInput(
+                            selectInput(
                                 ns("PREDICATION_TYPE"),
                                 "Predication Types",
-                                value = "CAUSES",
-                                placeholder = "e.g., TREATS, CAUSES, PREVENTS",
+                                choices = list(
+                                    "AFFECTS" = "AFFECTS",
+                                    "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
+                                    "AUGMENTS" = "AUGMENTS",
+                                    "CAUSES" = "CAUSES",
+                                    "COEXISTS_WITH" = "COEXISTS_WITH",
+                                    "COMPLICATES" = "COMPLICATES",
+                                    "DISRUPTS" = "DISRUPTS",
+                                    "INHIBITS" = "INHIBITS",
+                                    "INTERACTS_WITH" = "INTERACTS_WITH",
+                                    "MANIFESTATION_OF" = "MANIFESTATION_OF",
+                                    "PRECEDES" = "PRECEDES",
+                                    "PREDISPOSES" = "PREDISPOSES",
+                                    "PREVENTS" = "PREVENTS",
+                                    "PRODUCES" = "PRODUCES",
+                                    "STIMULATES" = "STIMULATES",
+                                    "TREATS" = "TREATS"
+                                ),
+                                selected = "CAUSES",
+                                multiple = TRUE,
                                 width = "100%"
                             ),
-                            helpText("One or more PREDICATION types. Leave as 'CAUSES' for default behavior, or specify custom types (comma-separated). Will be saved as a list in YAML format.")
+                            helpText("Select one or more predication types. CAUSES is selected by default. Will be saved as a list in YAML format.")
                         ),
 
                         # SemMedDB Version
@@ -471,21 +489,35 @@ graphConfigServer <- function(id) {
         }
 
         # Predication type validation function
-        validate_predication_types <- function(predication_string) {
-            # Define valid predication types (common ones from SemMedDB)
-            valid_types <- c("CAUSES", "TREATS", "PREVENTS", "INTERACTS_WITH", "AFFECTS",
-                           "ASSOCIATED_WITH", "PREDISPOSES", "COMPLICATES", "AUGMENTS",
-                           "DISRUPTS", "INHIBITS", "STIMULATES", "PRODUCES", "MANIFESTATION_OF",
-                           "RESULT_OF", "PROCESS_OF", "PART_OF", "ISA", "LOCATION_OF",
-                           "ADMINISTERED_TO", "METHOD_OF", "USES", "DIAGNOSES")
+        validate_predication_types <- function(predication_input) {
+            # Define valid predication types (as specified by user)
+            valid_types <- c("AFFECTS", "ASSOCIATED_WITH", "AUGMENTS", "CAUSES", "COEXISTS_WITH",
+                           "COMPLICATES", "DISRUPTS", "INHIBITS", "INTERACTS_WITH", "MANIFESTATION_OF",
+                           "PRECEDES", "PREDISPOSES", "PREVENTS", "PRODUCES", "STIMULATES", "TREATS")
 
-            if (is.null(predication_string) || trimws(predication_string) == "") {
+            # Handle both vector input (from selectInput) and string input (legacy)
+            if (is.null(predication_input) || length(predication_input) == 0) {
                 return(list(valid = TRUE, types = c("CAUSES")))  # Default to CAUSES
             }
 
-            # Split and clean predication types
-            types <- trimws(unlist(strsplit(predication_string, ",")))
-            types <- types[types != ""]  # Remove empty strings
+            # If it's a character vector (from selectInput), use directly
+            if (is.vector(predication_input) && length(predication_input) > 1) {
+                types <- predication_input
+            } else if (is.character(predication_input) && length(predication_input) == 1) {
+                # Handle single string input (could be comma-separated or single value)
+                if (grepl(",", predication_input)) {
+                    # Split and clean predication types (legacy comma-separated format)
+                    types <- trimws(unlist(strsplit(predication_input, ",")))
+                    types <- types[types != ""]  # Remove empty strings
+                } else {
+                    # Single value
+                    types <- trimws(predication_input)
+                }
+            } else {
+                # Handle vector input from selectInput
+                types <- as.character(predication_input)
+            }
+
             types <- toupper(types)  # Convert to uppercase for comparison
 
             if (length(types) == 0) {
