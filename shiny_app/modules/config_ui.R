@@ -85,17 +85,17 @@ graphConfigModuleUI <- function(id) {
                                    max = 1000,
                                    step = 1),
                         
-                        numericInput(ns("pub_year_cutoff"), 
+                        numericInput(ns("pub_year_cutoff"),
                                    "Publication Year Cutoff:",
-                                   value = 2000,
-                                   min = 1990,
+                                   value = 2015,
+                                   min = 1980,
                                    max = 2025,
                                    step = 1)
                     ),
                     column(4,
                         h4("Graph Parameters"),
-                        selectInput(ns("k_hops"), 
-                                  "K-Hops:",
+                        selectInput(ns("degree"),
+                                  "Degree:",
                                   choices = list("1" = 1, "2" = 2, "3" = 3),
                                   selected = 3),
                         
@@ -232,7 +232,7 @@ graphConfigModuleUI <- function(id) {
                     tags$li(strong("Outcome CUIs:"), "Concept Unique Identifiers for outcome variables (one per line)"),
                     tags$li(strong("Minimum PMIDs:"), "Minimum number of PubMed articles required for relationships"),
                     tags$li(strong("Publication Year Cutoff:"), "Only include articles published after this year"),
-                    tags$li(strong("K-Hops:"), "Maximum relationship depth to include in the graph (1-3)"),
+                    tags$li(strong("Degree:"), "Maximum relationship depth to include in the graph (1-3)"),
                     tags$li(strong("SemMedDB Version:"), "Version of the SemMedDB database to use"),
                     tags$li(strong("Predication Types:"), "Types of relationships to include in the graph")
                 ),

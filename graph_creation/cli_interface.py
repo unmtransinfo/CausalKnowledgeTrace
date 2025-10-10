@@ -45,7 +45,7 @@ YAML Configuration Support:
     outcome_cuis: [list of CUIs]
     min_pmids: threshold value (default: 50)
     predication_type: [list of predication types] or "comma,separated,string" (backward compatible)
-    k_hops: number of hops (1-3, default: 3)
+    degree: number of degrees (1-3, default: 3)
     # other parameters for future use
 
 Example usage:
@@ -91,11 +91,11 @@ Example usage:
         help="Enable Markov blanket computation and generate MarkovBlanket_Union.R (default: False)"
     )
     analysis_group.add_argument(
-        "--k-hops",
+        "--degree",
         type=int,
         default=3,
         choices=[1, 2, 3],
-        help="Number of hops for graph traversal (1-3, default: 3). Controls the depth of relationships included in the graph."
+        help="Number of degrees for graph traversal (1-3, default: 3). Controls the depth of relationships included in the graph."
     )
     
     # Output parameters
@@ -208,7 +208,7 @@ def main():
             print(f"Output directory: {args.output_dir}")
         
         # Initialize and run analysis based on whether Markov blanket is enabled
-        k_hops = yaml_config_data.get('k_hops') if yaml_config_data else getattr(args, 'k_hops', 3)
+        degree = yaml_config_data.get('degree') if yaml_config_data else getattr(args, 'degree', 3)
 
         if args.markov_blanket:
             # Use MarkovBlanketAnalyzer for Markov blanket analysis
@@ -218,7 +218,7 @@ def main():
                 threshold=threshold,
                 output_dir=args.output_dir,
                 yaml_config_data=yaml_config_data,
-                k_hops=k_hops
+                degree=degree
             )
 
             timing_results = analyzer.run_markov_blanket_analysis()
@@ -231,7 +231,7 @@ def main():
                 threshold=threshold,
                 output_dir=args.output_dir,
                 yaml_config_data=yaml_config_data,
-                k_hops=k_hops
+                degree=degree
             )
 
             timing_results = analyzer.run_analysis()

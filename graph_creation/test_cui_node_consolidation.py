@@ -32,7 +32,7 @@ def test_cui_to_name_mapping():
         threshold=5,
         timing_data={},
         predication_types=['CAUSES'],
-        k_hops=2
+        degree=2
     )
     
     # Test data simulating the issue: same CUI with different capitalizations
@@ -155,7 +155,7 @@ def test_edge_consolidation():
         threshold=5,
         timing_data={},
         predication_types=['CAUSES'],
-        k_hops=2
+        degree=2
     )
     
     # Build CUI mapping

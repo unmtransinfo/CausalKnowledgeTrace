@@ -28,7 +28,7 @@ create_yaml_config <- function(validated_params) {
         outcome_name = validated_params$outcome_name,
         min_pmids = validated_params$min_pmids,
         pub_year_cutoff = validated_params$pub_year_cutoff,
-        k_hops = validated_params$k_hops,
+        degree = validated_params$degree,
         predication_types = validated_params$predication_types,
         SemMedDBD_version = validated_params$semmeddb_version,
         created_timestamp = Sys.time(),
@@ -250,7 +250,7 @@ create_config_summary <- function(validated_params) {
         },
         "Minimum PMIDs: ", validated_params$min_pmids, "\n",
         "Publication Year Cutoff: ", validated_params$pub_year_cutoff, "\n",
-        "K-Hops: ", validated_params$k_hops, "\n",
+        "Degree: ", validated_params$degree, "\n",
         "SemMedDB Version: ", validated_params$semmeddb_version, "\n",
         "Predication Types: ", paste(validated_params$predication_types, collapse = ", "), 
         " (", length(validated_params$predication_types), " types)\n"
@@ -268,13 +268,13 @@ create_config_summary <- function(validated_params) {
 estimate_processing_time <- function(validated_params) {
     # Simple heuristic based on number of CUIs and k-hops
     total_cuis <- length(validated_params$exposure_cuis) + length(validated_params$outcome_cuis)
-    k_hops <- validated_params$k_hops
+    degree <- validated_params$degree
     min_pmids <- validated_params$min_pmids
     
     # Base time estimate (in minutes)
     base_time <- 2
     cui_factor <- total_cuis * 0.5
-    hop_factor <- k_hops * 1.5
+    hop_factor <- degree * 1.5
     pmid_factor <- max(0, (50 - min_pmids) / 10)  # Lower thresholds take longer
     
     estimated_minutes <- base_time + cui_factor + hop_factor + pmid_factor

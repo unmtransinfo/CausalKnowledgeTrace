@@ -287,11 +287,11 @@ fast_edge_lookup <- function(from_node, to_node, edge_index, assertions_data = N
 #'
 #' @param edge_index_result Result from create_edge_index
 #' @param output_file Path to save the index
-#' @param k_hops K-hops parameter for file naming
+#' @param degree Degree parameter for file naming
 #' @param output_dir Directory to save index (default: current directory)
 #' @return List with save results
 #' @export
-save_edge_index <- function(edge_index_result, output_file = NULL, k_hops = NULL, output_dir = ".") {
+save_edge_index <- function(edge_index_result, output_file = NULL, degree = NULL, output_dir = ".") {
     if (!edge_index_result$success) {
         return(list(
             success = FALSE,
@@ -301,8 +301,8 @@ save_edge_index <- function(edge_index_result, output_file = NULL, k_hops = NULL
     
     # Generate output filename if not provided
     if (is.null(output_file)) {
-        if (!is.null(k_hops)) {
-            output_file <- file.path(output_dir, paste0("edge_index_", k_hops, ".rds"))
+        if (!is.null(degree)) {
+            output_file <- file.path(output_dir, paste0("edge_index_", degree, ".rds"))
         } else {
             output_file <- file.path(output_dir, "edge_index.rds")
         }
@@ -377,14 +377,14 @@ load_edge_index <- function(index_file) {
 
 #' Check for Index Files
 #'
-#' Checks if index files exist for a given k_hops value
+#' Checks if index files exist for a given degree value
 #'
-#' @param k_hops K-hops parameter
+#' @param degree Degree parameter
 #' @param search_dirs Directories to search in
 #' @return List with file paths if they exist
 #' @export
-check_for_index_files <- function(k_hops, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
-    index_filename <- paste0("edge_index_", k_hops, ".rds")
+check_for_index_files <- function(degree, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
+    index_filename <- paste0("edge_index_", degree, ".rds")
     
     for (dir in search_dirs) {
         if (dir.exists(dir)) {

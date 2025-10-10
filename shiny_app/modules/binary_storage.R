@@ -12,10 +12,10 @@ library(jsonlite)
 #' @param json_file Path to the JSON file
 #' @param output_dir Directory to save binary file (default: same as input)
 #' @param compression Compression method ("gzip", "bzip2", "xz", or "none")
-#' @param k_hops K-hops parameter for file naming
+#' @param degree Degree parameter for file naming
 #' @return List with conversion results
 #' @export
-convert_json_to_binary <- function(json_file, output_dir = NULL, compression = "gzip", k_hops = NULL) {
+convert_json_to_binary <- function(json_file, output_dir = NULL, compression = "gzip", degree = NULL) {
     # Re-enabled optimized binary storage system
     cat("Creating optimized binary storage for", basename(json_file), "\n")
 
@@ -32,7 +32,7 @@ convert_json_to_binary <- function(json_file, output_dir = NULL, compression = "
 
     if (use_streaming) {
         cat("Large file detected (", round(file_size_mb, 1), "MB) - using streaming conversion\n")
-        return(convert_large_json_to_binary_streaming(json_file, output_dir, compression, k_hops))
+        return(convert_large_json_to_binary_streaming(json_file, output_dir, compression, degree))
     }
     
     # Determine output directory
@@ -40,14 +40,14 @@ convert_json_to_binary <- function(json_file, output_dir = NULL, compression = "
         output_dir <- dirname(json_file)
     }
     
-    # Determine k_hops from filename if not provided
-    if (is.null(k_hops)) {
+    # Determine degree from filename if not provided
+    if (is.null(degree)) {
         filename <- basename(json_file)
-        k_hops_match <- regmatches(filename, regexpr("\\d+", filename))
-        if (length(k_hops_match) > 0) {
-            k_hops <- as.numeric(k_hops_match[1])
+        degree_match <- regmatches(filename, regexpr("\\d+", filename))
+        if (length(degree_match) > 0) {
+            degree <- as.numeric(degree_match[1])
         } else {
-            k_hops <- "unknown"
+            degree <- "unknown"
         }
     }
     
@@ -67,7 +67,7 @@ convert_json_to_binary <- function(json_file, output_dir = NULL, compression = "
         }
         
         # Generate output filename
-        binary_file <- file.path(output_dir, paste0("causal_assertions_", k_hops, "_binary.rds"))
+        binary_file <- file.path(output_dir, paste0("causal_assertions_", degree, "_binary.rds"))
         
         # Save as RDS with compression
         cat("Saving binary data with", compression, "compression...\n")
@@ -161,14 +161,14 @@ load_binary_assertions <- function(binary_file) {
 
 #' Check for Binary Files
 #'
-#' Checks if binary files exist for a given k_hops value
+#' Checks if binary files exist for a given degree value
 #'
-#' @param k_hops K-hops parameter
+#' @param degree Degree parameter
 #' @param search_dirs Directories to search in
 #' @return List with file paths if they exist
 #' @export
-check_for_binary_files <- function(k_hops, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
-    binary_filename <- paste0("causal_assertions_", k_hops, "_binary.rds")
+check_for_binary_files <- function(degree, search_dirs = c("../graph_creation/result", "../graph_creation/output")) {
+    binary_filename <- paste0("causal_assertions_", degree, "_binary.rds")
     
     for (dir in search_dirs) {
         if (dir.exists(dir)) {
@@ -190,15 +190,15 @@ check_for_binary_files <- function(k_hops, search_dirs = c("../graph_creation/re
 #'
 #' Compares loading performance between JSON and binary formats
 #'
-#' @param k_hops K-hops parameter
+#' @param degree Degree parameter
 #' @param search_dirs Directories to search in
 #' @param iterations Number of loading iterations for benchmarking
 #' @return List with performance comparison
 #' @export
-compare_loading_performance <- function(k_hops, search_dirs = c("../graph_creation/result", "../graph_creation/output"), iterations = 3) {
+compare_loading_performance <- function(degree, search_dirs = c("../graph_creation/result", "../graph_creation/output"), iterations = 3) {
     # Find files
-    json_filename <- paste0("causal_assertions_", k_hops, ".json")
-    binary_files <- check_for_binary_files(k_hops, search_dirs)
+    json_filename <- paste0("causal_assertions_", degree, ".json")
+    binary_files <- check_for_binary_files(degree, search_dirs)
     
     json_file <- NULL
     for (dir in search_dirs) {
@@ -313,23 +313,23 @@ create_all_binary_files <- function(search_dirs = c("../graph_creation/result", 
         }
         
         for (json_file in json_files) {
-            # Extract k_hops
+            # Extract degree
             filename <- basename(json_file)
-            k_hops_match <- regmatches(filename, regexpr("\\d+", filename))
-            k_hops <- as.numeric(k_hops_match[1])
-            
-            cat("\nProcessing:", filename, "(k_hops =", k_hops, ")\n")
-            
+            degree_match <- regmatches(filename, regexpr("\\d+", filename))
+            degree <- as.numeric(degree_match[1])
+
+            cat("\nProcessing:", filename, "(degree =", degree, ")\n")
+
             # Check if binary file already exists
             use_output_dir <- if (is.null(output_dir)) dir else output_dir
-            binary_files <- check_for_binary_files(k_hops, c(use_output_dir))
-            
+            binary_files <- check_for_binary_files(degree, c(use_output_dir))
+
             if (binary_files$found && !force_regenerate) {
-                cat("Binary file already exists for k_hops =", k_hops, ". Skipping...\n")
-                results[[paste0("k_hops_", k_hops)]] <- list(
+                cat("Binary file already exists for degree =", degree, ". Skipping...\n")
+                results[[paste0("degree_", degree)]] <- list(
                     success = TRUE,
                     message = "Binary file already exists",
-                    k_hops = k_hops,
+                    degree = degree,
                     json_file = json_file,
                     binary_file = binary_files$binary_file,
                     skipped = TRUE
@@ -342,21 +342,21 @@ create_all_binary_files <- function(search_dirs = c("../graph_creation/result", 
                 json_file = json_file,
                 output_dir = use_output_dir,
                 compression = compression,
-                k_hops = k_hops
+                degree = degree
             )
-            
+
             if (result$success) {
                 cat("✓ Successfully created binary file for", filename, "\n")
-                results[[paste0("k_hops_", k_hops)]] <- c(result, list(
-                    k_hops = k_hops,
+                results[[paste0("degree_", degree)]] <- c(result, list(
+                    degree = degree,
                     skipped = FALSE
                 ))
             } else {
                 cat("✗ Failed to create binary file for", filename, ":", result$message, "\n")
-                results[[paste0("k_hops_", k_hops)]] <- list(
+                results[[paste0("degree_", degree)]] <- list(
                     success = FALSE,
                     message = result$message,
-                    k_hops = k_hops,
+                    degree = degree,
                     json_file = json_file,
                     skipped = FALSE
                 )
@@ -391,9 +391,9 @@ create_all_binary_files <- function(search_dirs = c("../graph_creation/result", 
 #' @param json_file Path to the JSON file
 #' @param output_dir Directory to save binary file
 #' @param compression Compression method
-#' @param k_hops K-hops parameter for file naming
+#' @param degree Degree parameter for file naming
 #' @return List with conversion results
-convert_large_json_to_binary_streaming <- function(json_file, output_dir = NULL, compression = "gzip", k_hops = NULL) {
+convert_large_json_to_binary_streaming <- function(json_file, output_dir = NULL, compression = "gzip", degree = NULL) {
     start_time <- Sys.time()
 
     tryCatch({
@@ -407,13 +407,13 @@ convert_large_json_to_binary_streaming <- function(json_file, output_dir = NULL,
             output_dir <- dirname(json_file)
         }
 
-        # Extract k_hops from filename if not provided
-        if (is.null(k_hops)) {
-            k_hops <- extract_k_hops_from_filename(basename(json_file))
+        # Extract degree from filename if not provided
+        if (is.null(degree)) {
+            degree <- extract_degree_from_filename(basename(json_file))
         }
 
         # Generate output filename
-        binary_file <- file.path(output_dir, paste0("causal_assertions_", k_hops, "_binary.rds"))
+        binary_file <- file.path(output_dir, paste0("causal_assertions_", degree, "_binary.rds"))
 
         cat("Converting to binary with", compression, "compression...\n")
 

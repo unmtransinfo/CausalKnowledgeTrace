@@ -44,7 +44,7 @@ class GraphAnalyzer:
                  threshold: int,
                  output_dir: str = "output",
                  yaml_config_data: Optional[Dict] = None,
-                 k_hops: int = 3):
+                 degree: int = 3):
         """Initialize the graph analyzer with configuration parameters.
 
         Args:
@@ -53,16 +53,16 @@ class GraphAnalyzer:
             threshold: Minimum evidence threshold for relationships
             output_dir: Directory for output files
             yaml_config_data: Optional YAML configuration data
-            k_hops: Number of hops for graph traversal (1+, default: 3)
+            degree: Number of degrees for graph traversal (1+, default: 3)
         """
         if config_name not in EXPOSURE_OUTCOME_CONFIGS:
             raise ValueError(f"Unknown config: {config_name}. Available: {list(EXPOSURE_OUTCOME_CONFIGS.keys())}")
 
-        # Validate k_hops parameter - now supports any positive integer
-        if not isinstance(k_hops, int) or k_hops < 1:
-            raise ValueError(f"k_hops must be a positive integer, got: {k_hops}")
+        # Validate degree parameter - now supports any positive integer
+        if not isinstance(degree, int) or degree < 1:
+            raise ValueError(f"degree must be a positive integer, got: {degree}")
 
-        self.k_hops = k_hops
+        self.degree = degree
 
         self.config = EXPOSURE_OUTCOME_CONFIGS[config_name]
         self.db_params = db_params
@@ -81,20 +81,20 @@ class GraphAnalyzer:
         if yaml_config_data and 'blocklist_cuis' in yaml_config_data:
             blocklist_cuis = yaml_config_data['blocklist_cuis']
 
-        # Initialize database operations with predication types, k_hops, and blocklist_cuis
-        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, k_hops, blocklist_cuis)
+        # Initialize database operations with predication types, degree, and blocklist_cuis
+        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, degree, blocklist_cuis)
 
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)
         print(f"Output directory created: {self.output_dir.absolute()}")
 
     def get_dag_filename(self) -> str:
-        """Generate the DAG filename based on k_hops parameter."""
-        return f"degree_{self.k_hops}.R"
+        """Generate the DAG filename based on degree parameter."""
+        return f"degree_{self.degree}.R"
 
     def get_causal_assertions_filename(self) -> str:
-        """Generate the causal assertions filename based on k_hops parameter."""
-        return f"causal_assertions_{self.k_hops}.json"
+        """Generate the causal assertions filename based on degree parameter."""
+        return f"causal_assertions_{self.degree}.json"
 
     def generate_basic_dagitty_script(self, nodes: Set[str], edges: Set[Tuple[str, str]]):
         """Create basic R script for DAGitty visualization."""
@@ -160,7 +160,7 @@ class GraphAnalyzer:
 
             dagitty_format = "\n".join(dagitty_lines)
 
-            # Save overall DAG script with dynamic filename based on k_hops
+            # Save overall DAG script with dynamic filename based on degree
             dag_filename = self.get_dag_filename()
             with open(self.output_dir / dag_filename, "w") as f:
                 f.write(dagitty_format)
@@ -173,7 +173,7 @@ class GraphAnalyzer:
         with open(output_path / "performance_metrics.json", "w") as f:
             json.dump(timing_results, f, indent=2)
 
-        # Save detailed assertions with k_hops suffix using optimized serialization
+        # Save detailed assertions with degree suffix using optimized serialization
         causal_assertions_filename = self.get_causal_assertions_filename()
         print(f"Saving {len(detailed_assertions)} assertions to {causal_assertions_filename}...")
 
@@ -335,8 +335,8 @@ if (binary_result$success) {{
 
 # Create lightweight format
 cat("Creating lightweight format...\\n")
-k_hops <- {self.k_hops}
-lightweight_result <- create_separated_files("{json_filepath}", k_hops = k_hops)
+degree <- {self.degree}
+lightweight_result <- create_separated_files("{json_filepath}", degree = degree)
 
 if (lightweight_result$success) {{
     cat("✓ Lightweight format created:", lightweight_result$size_reduction_percent, "% size reduction\\n")
@@ -452,11 +452,11 @@ if (lightweight_result$success) {{
 
                     print("\nFetching causal relationships from database...")
                     print("Note: Queries now support multiple CUIs per exposure/outcome")
-                    print(f"Using k-hop parameter: {self.k_hops} (maximum relationship depth)")
+                    print(f"Using degree parameter: {self.degree} (maximum relationship depth)")
 
-                    # Fetch relationships using k-hop functionality with CUI-based node identification
+                    # Fetch relationships using degree functionality with CUI-based node identification
                     _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
-                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.k_hops} hops")
+                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.degree} degrees")
 
                     print("\nConstructing causal graph...")
                     # Build graph with cleaned node names and consolidated mapping
@@ -481,7 +481,7 @@ if (lightweight_result$success) {{
                                 consolidated_edges.add((consolidated_src, consolidated_dst))
                                 G.add_edge(consolidated_src, consolidated_dst)
 
-                        print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (k_hops={self.k_hops})")
+                        print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (degree={self.degree})")
                         print(f"Consolidated {len(cui_based_links)} CUI-based relationships into {len(consolidated_edges)} consolidated relationships")
 
                     print("\nGenerating DAGitty visualization script...")
@@ -547,7 +547,7 @@ if (lightweight_result$success) {{
 
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
-        print(f"  - {self.get_dag_filename()}: R script for DAG visualization (k_hops={self.k_hops})")
+        print(f"  - {self.get_dag_filename()}: R script for DAG visualization (degree={self.degree})")
         print(f"  - performance_metrics.json: Timing information")
 
         print("\nTiming Results:")
@@ -591,7 +591,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                  threshold: int,
                  output_dir: str = "output",
                  yaml_config_data: Optional[Dict] = None,
-                 k_hops: int = 3):
+                 degree: int = 3):
         """Initialize the Markov blanket analyzer with configuration parameters.
 
         Args:
@@ -600,10 +600,10 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
             threshold: Minimum evidence threshold for relationships
             output_dir: Directory for output files
             yaml_config_data: Optional YAML configuration data
-            k_hops: Number of hops for graph traversal (1+, default: 3)
+            degree: Number of degrees for graph traversal (1+, default: 3)
         """
         # Initialize the base GraphAnalyzer
-        super().__init__(config_name, db_params, threshold, output_dir, yaml_config_data, k_hops)
+        super().__init__(config_name, db_params, threshold, output_dir, yaml_config_data, degree)
 
         # Extract predication types from YAML config if available
         predication_types = ['CAUSES']  # default
@@ -729,7 +729,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
 
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
-        print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (k_hops={self.k_hops})")
+        print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (degree={self.degree})")
         print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
         print(f"  - performance_metrics.json: Timing information")
 
@@ -780,11 +780,11 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
 
                     print("\nFetching causal relationships from database...")
                     print("Note: Queries now support multiple CUIs per exposure/outcome")
-                    print(f"Using k-hop parameter: {self.k_hops} (maximum relationship depth)")
+                    print(f"Using degree parameter: {self.degree} (maximum relationship depth)")
 
                     # Fetch relationships using k-hop functionality with CUI-based node identification
                     _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
-                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.k_hops} hops")
+                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.degree} degrees")
 
                     # Compute Markov blankets
                     mb_union = self.mb_computer.compute_markov_blankets(cursor)
@@ -812,7 +812,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                                 consolidated_edges.add((consolidated_src, consolidated_dst))
                                 G.add_edge(consolidated_src, consolidated_dst)
 
-                        print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (k_hops={self.k_hops})")
+                        print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (degree={self.degree})")
                         print(f"Consolidated {len(cui_based_links)} CUI-based relationships into {len(consolidated_edges)} consolidated relationships")
 
                     print("\nGenerating DAGitty visualization scripts...")

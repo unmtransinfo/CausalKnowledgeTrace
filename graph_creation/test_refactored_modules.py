@@ -151,7 +151,7 @@ def test_yaml_config_loading():
             'exposure_cuis': ['C0011849', 'C0020538'],
             'outcome_cuis': ['C0027051', 'C0038454'],
             'min_pmids': 100,
-            'k_hops': 2,
+            'degree': 2,
             'predication_type': 'CAUSES,TREATS'
         }
         
@@ -165,7 +165,7 @@ def test_yaml_config_loading():
             assert loaded_config['exposure_cuis'] == ['C0011849', 'C0020538']
             assert loaded_config['outcome_cuis'] == ['C0027051', 'C0038454']
             assert loaded_config['threshold'] == 100
-            assert loaded_config['k_hops'] == 2
+            assert loaded_config['degree'] == 2
             assert 'CAUSES' in loaded_config['predication_types']
             assert 'TREATS' in loaded_config['predication_types']
             
@@ -194,7 +194,7 @@ def test_database_operations_creation():
         assert db_ops.config == config
         assert db_ops.threshold == 50
         assert db_ops.predication_types == ['CAUSES']
-        assert db_ops.k_hops == 3
+        assert db_ops.degree == 3
         assert db_ops.blacklist_cuis == ['C1111111']
         
         print("✅ DatabaseOperations creation test passed")

@@ -73,9 +73,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_selector
 
-                # Try to load corresponding causal assertions data using k_hops
+                # Try to load corresponding causal assertions data using degree
                 tryCatch({
-                    assertions_result <- load_causal_assertions(k_hops = result$k_hops)
+                    assertions_result <- load_causal_assertions(degree = result$degree)
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
                         current_data$assertions_loaded <- TRUE
@@ -83,7 +83,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                         current_data$loading_strategy <- assertions_result$loading_strategy %||% "standard"
                         current_data$edge_index <- assertions_result$edge_index  # Store edge index if available
 
-                        cat("Loaded causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                        cat("Loaded causal assertions for degree =", result$degree, ":", assertions_result$message, "\n")
                         if (!is.null(assertions_result$loading_strategy)) {
                             cat("Loading strategy:", assertions_result$loading_strategy, "\n")
                         }
@@ -101,7 +101,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                     } else {
                         current_data$causal_assertions <- list()
                         current_data$assertions_loaded <- FALSE
-                        cat("Could not load causal assertions for k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                        cat("Could not load causal assertions for degree =", result$degree, ":", assertions_result$message, "\n")
                     }
                 }, error = function(e) {
                     current_data$causal_assertions <- list()
@@ -203,9 +203,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
                 current_data$dag_object <- result$dag
                 current_data$current_file <- input$dag_file_upload$name
 
-                # Try to load corresponding causal assertions data using k_hops
+                # Try to load corresponding causal assertions data using degree
                 tryCatch({
-                    assertions_result <- load_causal_assertions(k_hops = result$k_hops)
+                    assertions_result <- load_causal_assertions(degree = result$degree)
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
                         current_data$assertions_loaded <- TRUE
@@ -213,7 +213,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                         current_data$loading_strategy <- assertions_result$loading_strategy %||% "standard"
                         current_data$edge_index <- assertions_result$edge_index  # Store edge index if available
 
-                        cat("Loaded causal assertions for uploaded file k_hops =", result$k_hops, ":", assertions_result$message, "\n")
+                        cat("Loaded causal assertions for uploaded file degree =", result$degree, ":", assertions_result$message, "\n")
                         if (!is.null(assertions_result$loading_strategy)) {
                             cat("Loading strategy:", assertions_result$loading_strategy, "\n")
                         }
@@ -457,9 +457,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
     output$save_json_btn <- downloadHandler(
         filename = function() {
             if (!is.null(current_data$current_file)) {
-                # Extract k_hops from current file or use default
-                k_hops <- current_data$k_hops %||% 1
-                paste0("evidence_from_graph_", k_hops, ".json")
+                # Extract degree from current file or use default
+                degree <- current_data$degree %||% 1
+                paste0("evidence_from_graph_", degree, ".json")
             } else {
                 paste0("evidence_from_graph_1.json")
             }
@@ -517,9 +517,9 @@ create_file_operations_server <- function(input, output, session, current_data) 
     output$save_json_main <- downloadHandler(
         filename = function() {
             if (!is.null(current_data$current_file)) {
-                # Extract k_hops from current file or use default
-                k_hops <- current_data$k_hops %||% 1
-                paste0("evidence_from_graph_", k_hops, ".json")
+                # Extract degree from current file or use default
+                degree <- current_data$degree %||% 1
+                paste0("evidence_from_graph_", degree, ".json")
             } else {
                 paste0("evidence_from_graph_1.json")
             }

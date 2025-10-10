@@ -46,28 +46,28 @@ process_all_assertions_files <- function(search_dirs = c("../../graph_creation/r
         cat("Found", length(assertion_files), "files in", dir, "\n")
         
         for (file_path in assertion_files) {
-            # Extract k_hops from filename
+            # Extract degree from filename
             filename <- basename(file_path)
-            k_hops_match <- regmatches(filename, regexpr("\\d+", filename))
-            k_hops <- as.numeric(k_hops_match[1])
-            
-            cat("\nProcessing:", filename, "(k_hops =", k_hops, ")\n")
+            degree_match <- regmatches(filename, regexpr("\\d+", filename))
+            degree <- as.numeric(degree_match[1])
+
+            cat("\nProcessing:", filename, "(degree =", degree, ")\n")
             
             # Check if separated files already exist
             use_output_dir <- if (is.null(output_dir)) dir else output_dir
-            separated_files <- check_for_separated_files(k_hops, c(use_output_dir))
-            
+            separated_files <- check_for_separated_files(degree, c(use_output_dir))
+
             if (separated_files$found && !force_regenerate) {
-                cat("Separated files already exist for k_hops =", k_hops, ". Skipping...\n")
+                cat("Separated files already exist for degree =", degree, ". Skipping...\n")
                 cat("Use force_regenerate = TRUE to overwrite.\n")
                 
                 # Get statistics for existing files
-                stats <- get_separation_stats(k_hops, c(use_output_dir))
+                stats <- get_separation_stats(degree, c(use_output_dir))
                 if (stats$available) {
-                    results[[paste0("k_hops_", k_hops)]] <- list(
+                    results[[paste0("degree_", degree)]] <- list(
                         success = TRUE,
                         message = "Files already exist",
-                        k_hops = k_hops,
+                        degree = degree,
                         original_file = file_path,
                         lightweight_file = separated_files$lightweight_file,
                         sentences_file = separated_files$sentences_file,
@@ -89,7 +89,7 @@ process_all_assertions_files <- function(search_dirs = c("../../graph_creation/r
             result <- separate_sentences_from_assertions(
                 assertions_file = file_path,
                 output_dir = use_output_dir,
-                k_hops = k_hops
+                degree = degree
             )
             
             if (result$success) {
@@ -99,8 +99,8 @@ process_all_assertions_files <- function(search_dirs = c("../../graph_creation/r
                 cat("  Sentences:", result$sentences_size_mb, "MB\n")
                 cat("  Reduction:", result$reduction_percent, "%\n")
                 
-                results[[paste0("k_hops_", k_hops)]] <- c(result, list(
-                    k_hops = k_hops,
+                results[[paste0("degree_", degree)]] <- c(result, list(
+                    degree = degree,
                     original_file = file_path,
                     skipped = FALSE
                 ))
@@ -110,10 +110,10 @@ process_all_assertions_files <- function(search_dirs = c("../../graph_creation/r
                 total_sentences_size <- total_sentences_size + result$sentences_size_mb
             } else {
                 cat("✗ Failed to process", filename, ":", result$message, "\n")
-                results[[paste0("k_hops_", k_hops)]] <- list(
+                results[[paste0("degree_", degree)]] <- list(
                     success = FALSE,
                     message = result$message,
-                    k_hops = k_hops,
+                    degree = degree,
                     original_file = file_path,
                     skipped = FALSE
                 )
@@ -160,18 +160,18 @@ process_all_assertions_files <- function(search_dirs = c("../../graph_creation/r
 #' Removes old separated files to force regeneration
 #'
 #' @param search_dirs Directories to search in
-#' @param k_hops_list List of k_hops values to clean (default: c(1,2,3))
+#' @param degree_list List of degree values to clean (default: c(1,2,3))
 clean_separated_files <- function(search_dirs = c("../../graph_creation/result", "../../graph_creation/output"),
-                                 k_hops_list = c(1, 2, 3)) {
+                                 degree_list = c(1, 2, 3)) {
     
     cat("Cleaning up old separated files...\n")
     
     for (dir in search_dirs) {
         if (!dir.exists(dir)) next
         
-        for (k_hops in k_hops_list) {
-            lightweight_file <- file.path(dir, paste0("causal_assertions_", k_hops, "_lightweight.json"))
-            sentences_file <- file.path(dir, paste0("sentences_", k_hops, ".json"))
+        for (degree in degree_list) {
+            lightweight_file <- file.path(dir, paste0("causal_assertions_", degree, "_lightweight.json"))
+            sentences_file <- file.path(dir, paste0("sentences_", degree, ".json"))
             
             if (file.exists(lightweight_file)) {
                 unlink(lightweight_file)

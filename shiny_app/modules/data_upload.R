@@ -70,7 +70,7 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
 #' Loads a DAG definition from an R file, with automatic binary compilation and loading
 #'
 #' @param filename Name of the file to load
-#' @return List containing success status, message, DAG object, and k_hops if successful
+#' @return List containing success status, message, DAG object, and degree if successful
 #' @export
 load_dag_from_file <- function(filename) {
     # Check if filename is a full path or just a filename
@@ -107,7 +107,7 @@ load_dag_from_file <- function(filename) {
                     success = TRUE,
                     message = paste("Successfully loaded DAG from binary file -", binary_result$variable_count, "variables"),
                     dag = binary_result$dag,
-                    k_hops = binary_result$k_hops,
+                    degree = binary_result$degree,
                     filename = filename,
                     load_method = "binary",
                     load_time_seconds = binary_result$load_time_seconds
@@ -125,7 +125,7 @@ load_dag_from_file <- function(filename) {
                         success = TRUE,
                         message = paste("Recompiled and loaded DAG -", binary_result$variable_count, "variables"),
                         dag = binary_result$dag,
-                        k_hops = binary_result$k_hops,
+                        degree = binary_result$degree,
                         filename = filename,
                         load_method = "binary_recompiled",
                         load_time_seconds = binary_result$load_time_seconds
@@ -144,7 +144,7 @@ load_dag_from_file <- function(filename) {
                     success = TRUE,
                     message = paste("Compiled and loaded DAG -", binary_result$variable_count, "variables"),
                     dag = binary_result$dag,
-                    k_hops = binary_result$k_hops,
+                    degree = binary_result$degree,
                     filename = filename,
                     load_method = "binary_first_time",
                     load_time_seconds = binary_result$load_time_seconds
@@ -166,15 +166,15 @@ load_dag_from_file <- function(filename) {
 
         # Check if g variable was created
         if (exists("g", envir = file_env) && !is.null(file_env$g)) {
-            # Extract k_hops from filename
-            k_hops <- extract_k_hops_from_filename(filename)
+            # Extract degree from filename
+            degree <- extract_degree_from_filename(filename)
             load_time <- as.numeric(Sys.time() - start_time, units = "secs")
 
             return(list(
                 success = TRUE,
                 message = paste("Successfully loaded DAG from R script -", length(names(file_env$g)), "variables"),
                 dag = file_env$g,
-                k_hops = k_hops,
+                degree = degree,
                 filename = filename,
                 load_method = "r_script",
                 load_time_seconds = round(load_time, 3)
@@ -469,20 +469,20 @@ format_node_with_cuis <- function(node_name, single_cui = NULL, consolidated_map
 #' Uses optimized loading strategies based on file size
 #'
 #' @param filename Name of the causal assertions file (e.g., "causal_assertions_2.json")
-#' @param k_hops K-hops parameter to match with specific assertions file
+#' @param degree Degree parameter to match with specific assertions file
 #' @param search_dirs Vector of directories to search for the file
 #' @param force_full_load Force loading of complete data (default: FALSE)
 #' @param use_optimization Use optimized loading system (default: TRUE)
 #' @return List containing success status, message, and assertions data if successful
 #' @export
-load_causal_assertions <- function(filename = NULL, k_hops = NULL,
+load_causal_assertions <- function(filename = NULL, degree = NULL,
                                  search_dirs = c("../graph_creation/result", "../graph_creation/output"),
                                  force_full_load = FALSE, use_optimization = TRUE) {
     # If no filename provided, try to find the appropriate causal_assertions file
     if (is.null(filename)) {
-        # If k_hops is provided, look for the specific file first
-        if (!is.null(k_hops) && is.numeric(k_hops) && k_hops >= 1 && k_hops <= 3) {
-            target_filename <- paste0("causal_assertions_", k_hops, ".json")
+        # If degree is provided, look for the specific file first
+        if (!is.null(degree) && is.numeric(degree) && degree >= 1 && degree <= 3) {
+            target_filename <- paste0("causal_assertions_", degree, ".json")
             for (dir in search_dirs) {
                 if (dir.exists(dir)) {
                     target_path <- file.path(dir, target_filename)
@@ -498,7 +498,7 @@ load_causal_assertions <- function(filename = NULL, k_hops = NULL,
         if (is.null(filename)) {
             for (dir in search_dirs) {
                 if (dir.exists(dir)) {
-                    # Look for causal_assertions files with k_hops suffix
+                    # Look for causal_assertions files with degree suffix
                     assertion_files <- list.files(dir, pattern = "^causal_assertions_[123]\\.json$", full.names = TRUE)
                     if (length(assertion_files) > 0) {
                         # Use the most recently modified file
@@ -898,14 +898,14 @@ format_pmid_display <- function(pmid_list, max_display = 10, create_links = TRUE
     return(formatted_pmids)
 }
 
-#' Extract K-Hops from DAG Filename
+#' Extract Degree from DAG Filename
 #'
-#' Extracts the k_hops parameter from a DAG filename (e.g., "degree_2.R" -> 2)
+#' Extracts the degree parameter from a DAG filename (e.g., "degree_2.R" -> 2)
 #'
 #' @param filename Name of the DAG file
-#' @return Integer k_hops value, or NULL if not found
+#' @return Integer degree value, or NULL if not found
 #' @export
-extract_k_hops_from_filename <- function(filename) {
+extract_degree_from_filename <- function(filename) {
     if (is.null(filename) || !is.character(filename)) {
         return(NULL)
     }
@@ -916,11 +916,11 @@ extract_k_hops_from_filename <- function(filename) {
     # Check for degree_X.R pattern
     degree_match <- regexpr("degree_([123])\\.R$", basename_file, perl = TRUE)
     if (degree_match > 0) {
-        # Extract the k_hops number
-        k_hops_str <- regmatches(basename_file, degree_match)
-        k_hops_num <- as.numeric(gsub("degree_([123])\\.R$", "\\1", k_hops_str))
-        if (!is.na(k_hops_num) && k_hops_num >= 1 && k_hops_num <= 3) {
-            return(k_hops_num)
+        # Extract the degree number
+        degree_str <- regmatches(basename_file, degree_match)
+        degree_num <- as.numeric(gsub("degree_([123])\\.R$", "\\1", degree_str))
+        if (!is.na(degree_num) && degree_num >= 1 && degree_num <= 3) {
+            return(degree_num)
         }
     }
 
