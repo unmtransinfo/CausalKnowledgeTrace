@@ -157,16 +157,18 @@ create_fast_assertions_section <- function(assertions, pmid_sentences = NULL) {
         # Extract fields with correct names from JSON structure
         subject <- assertion$subj %||% "Unknown"
         object <- assertion$obj %||% "Unknown"
+        predicate <- assertion$predicate %||% "Unknown"
         subject_cui <- assertion$subj_cui %||% "Not available"
         object_cui <- assertion$obj_cui %||% "Not available"
         pmid_refs <- assertion$pmid_refs %||% c()
 
-        # Build streamlined assertion header with clear labels
+        # Build streamlined assertion header with clear labels including predicate
         assertion_header <- paste0(
             "<div class='streamlined-assertion'>",
-            "<div class='streamlined-header'>",
+            "<div class='streamlined-header sticky-relation-header'>",
             "<span class='label-text'>Subject:</span> <strong>", subject, "</strong> ",
             "<span class='label-text'>Subject CUI:</span> <strong>", subject_cui, "</strong> → ",
+            "<span class='label-text predicate-text'>", predicate, "</span> → ",
             "<span class='label-text'>Object:</span> <strong>", object, "</strong> ",
             "<span class='label-text'>Object CUI:</span> <strong>", object_cui, "</strong>",
             "</div>"
@@ -270,7 +272,27 @@ get_minimal_css_styles <- function() {
         .sentence { margin: 8px 0; padding: 8px; background-color: white; border-radius: 3px; border-left: 3px solid #28a745; }
         .streamlined-assertion { margin-bottom: 25px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #007bff; border-radius: 5px; }
         .streamlined-header { font-weight: normal; color: #495057; margin-bottom: 12px; font-size: 1.1em; line-height: 1.4; }
+        .sticky-relation-header {
+            position: sticky;
+            top: 0;
+            background-color: #e3f2fd;
+            border: 2px solid #1976d2;
+            border-radius: 5px;
+            padding: 12px;
+            margin-bottom: 15px;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
         .label-text { color: #6c757d; font-weight: normal; font-size: 0.9em; }
+        .predicate-text {
+            color: #495057;
+            font-weight: bold;
+            font-size: 1.0em;
+            background-color: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid #dee2e6;
+        }
         .pmid-sentence-line { margin: 8px 0; padding: 10px; background-color: white; border-radius: 3px; border-left: 3px solid #28a745; line-height: 1.5; word-wrap: break-word; overflow-wrap: break-word; }
         .pmid-part { font-weight: bold; }
         .sentence-part { color: #495057; }
@@ -543,6 +565,7 @@ create_simple_assertions_section <- function(assertions) {
         # Extract fields with correct names from JSON structure
         subject <- assertion$subj %||% "Unknown"
         object <- assertion$obj %||% "Unknown"
+        predicate <- assertion$predicate %||% "Unknown"
         subject_cui <- assertion$subj_cui %||% "Not available"
         object_cui <- assertion$obj_cui %||% "Not available"
         evidence_count <- assertion$ev_count %||% 0
@@ -550,13 +573,19 @@ create_simple_assertions_section <- function(assertions) {
 
         section_html <- paste0(section_html,
             "<div class='assertion'>",
-            "<div class='assertion-title'>",
-            "Assertion #", i, ": ", subject, " → ", object,
+            "<div class='assertion-title sticky-relation-header'>",
+            "Assertion #", i, ": <strong>", subject, "</strong> (", subject_cui, ") → ",
+            "<span class='predicate-text'>", predicate, "</span> → ",
+            "<strong>", object, "</strong> (", object_cui, ")",
             "</div>",
             "<div class='assertion-details'>",
             "<div class='detail-item'>",
             "<div class='detail-label'>Subject</div>",
             "<div class='detail-value'>", subject, "</div>",
+            "</div>",
+            "<div class='detail-item'>",
+            "<div class='detail-label'>Predicate</div>",
+            "<div class='detail-value'>", predicate, "</div>",
             "</div>",
             "<div class='detail-item'>",
             "<div class='detail-label'>Object</div>",
@@ -1043,16 +1072,20 @@ create_assertions_section <- function(assertions, pmid_sentences, chunk_size = 1
 #' @param index Assertion index for display
 #' @return HTML string for single assertion
 create_single_assertion_html <- function(assertion, pmid_sentences, index) {
-    # Extract assertion details
-    subject <- assertion$subject %||% "Unknown"
-    object <- assertion$object %||% "Unknown"
+    # Extract assertion details using correct field names from JSON
+    subject <- assertion$subj %||% "Unknown"
+    object <- assertion$obj %||% "Unknown"
     predicate <- assertion$predicate %||% "Unknown"
+    subject_cui <- assertion$subj_cui %||% "Not available"
+    object_cui <- assertion$obj_cui %||% "Not available"
 
-    # Create assertion header
+    # Create assertion header with sticky functionality and predicate
     assertion_html <- paste0(
         "<div class='assertion'>",
-        "<div class='assertion-header'>",
-        "Assertion #", index, ": ", subject, " → ", predicate, " → ", object,
+        "<div class='assertion-header sticky-relation-header'>",
+        "Assertion #", index, ": <strong>", subject, "</strong> (", subject_cui, ") → ",
+        "<span class='predicate-text'>", predicate, "</span> → ",
+        "<strong>", object, "</strong> (", object_cui, ")",
         "</div>",
         "<div class='assertion-content'>"
     )
@@ -1194,9 +1227,7 @@ fast_json_to_html <- function(json_file_path, output_file_path,
         # Convert to HTML
         html_content <- convert_json_to_html(
             json_data,
-            title = "Causal Assertions Report",
-            include_summary = TRUE,
-            chunk_size = 500  # Smaller chunks for better performance
+            title = "Causal Assertions Report"
         )
 
         if (!is.null(progress_callback)) {
@@ -1708,16 +1739,20 @@ create_table_of_contents <- function(predicates, counts) {
 #' @param index Assertion index for display
 #' @return Compact HTML string for single assertion
 create_compact_assertion_html <- function(assertion, pmid_sentences, index) {
-    # Extract assertion details
-    subject <- assertion$subject %||% "Unknown"
-    object <- assertion$object %||% "Unknown"
+    # Extract assertion details using correct field names from JSON
+    subject <- assertion$subj %||% "Unknown"
+    object <- assertion$obj %||% "Unknown"
     predicate <- assertion$predicate %||% "Unknown"
+    subject_cui <- assertion$subj_cui %||% "Not available"
+    object_cui <- assertion$obj_cui %||% "Not available"
 
-    # Create more compact assertion display
+    # Create more compact assertion display with sticky header and predicate
     assertion_html <- paste0(
         "<div class='assertion' style='margin-bottom: 15px;'>",
-        "<div class='assertion-header' style='padding: 10px;'>",
-        "<strong>", subject, "</strong> → ", predicate, " → <strong>", object, "</strong>",
+        "<div class='assertion-header sticky-relation-header' style='padding: 10px;'>",
+        "<strong>", subject, "</strong> (", subject_cui, ") → ",
+        "<span class='predicate-text'>", predicate, "</span> → ",
+        "<strong>", object, "</strong> (", object_cui, ")",
         "</div>"
     )
 
