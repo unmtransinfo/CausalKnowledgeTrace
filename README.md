@@ -398,7 +398,7 @@ outcome_name: "Alzheimers"
 # Analysis parameters
 min_pmids: 10                    # Minimum publications required
 pub_year_cutoff: 2010           # Exclude publications before 2010
-k_hops: 1                       # Relationship depth (1-3)
+degree: 1                       # Relationship depth (1-3)
 predication_type: "CAUSES"      # Single type or list
 SemMedDBD_version: "heuristic"  # Database version
 ```
