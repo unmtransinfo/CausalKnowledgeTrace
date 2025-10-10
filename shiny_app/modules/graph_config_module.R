@@ -266,7 +266,7 @@ graphConfigUI <- function(id) {
                             class = "form-group",
                             selectInput(
                                 ns("PREDICATION_TYPE"),
-                                "Predication Types",
+                                "Predication Type",
                                 choices = list(
                                     "AFFECTS" = "AFFECTS",
                                     "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
@@ -286,10 +286,10 @@ graphConfigUI <- function(id) {
                                     "TREATS" = "TREATS"
                                 ),
                                 selected = "CAUSES",
-                                multiple = TRUE,
+                                multiple = FALSE,
                                 width = "100%"
                             ),
-                            helpText("Select one or more predication types. CAUSES is selected by default. Will be saved as a list in YAML format.")
+                            helpText("Select a predication type. CAUSES is selected by default. Will be saved as a single value in YAML format.")
                         ),
 
                         # SemMedDB Version
@@ -495,42 +495,44 @@ graphConfigServer <- function(id) {
                            "COMPLICATES", "DISRUPTS", "INHIBITS", "INTERACTS_WITH", "MANIFESTATION_OF",
                            "PRECEDES", "PREDISPOSES", "PREVENTS", "PRODUCES", "STIMULATES", "TREATS")
 
-            # Handle both vector input (from selectInput) and string input (legacy)
+            # Handle null or empty input - default to CAUSES
             if (is.null(predication_input) || length(predication_input) == 0) {
-                return(list(valid = TRUE, types = c("CAUSES")))  # Default to CAUSES
+                return(list(valid = TRUE, types = "CAUSES"))  # Default to CAUSES as single value
             }
 
-            # If it's a character vector (from selectInput), use directly
-            if (is.vector(predication_input) && length(predication_input) > 1) {
-                types <- predication_input
-            } else if (is.character(predication_input) && length(predication_input) == 1) {
-                # Handle single string input (could be comma-separated or single value)
+            # Since we now only allow single selection, handle single string input
+            if (is.character(predication_input) && length(predication_input) == 1) {
+                # Handle single string input (legacy comma-separated format still supported for backward compatibility)
                 if (grepl(",", predication_input)) {
-                    # Split and clean predication types (legacy comma-separated format)
+                    # Split and take first value only (for backward compatibility)
                     types <- trimws(unlist(strsplit(predication_input, ",")))
                     types <- types[types != ""]  # Remove empty strings
+                    if (length(types) > 0) {
+                        types <- types[1]  # Take only the first value
+                        warning("Multiple predication types detected, using only the first one: ", types)
+                    } else {
+                        types <- "CAUSES"  # Default if empty after split
+                    }
                 } else {
                     # Single value
                     types <- trimws(predication_input)
                 }
             } else {
-                # Handle vector input from selectInput
-                types <- as.character(predication_input)
+                # Handle vector input from selectInput (should be single value now)
+                types <- as.character(predication_input)[1]  # Take only first value
             }
 
             types <- toupper(types)  # Convert to uppercase for comparison
 
-            if (length(types) == 0) {
-                return(list(valid = TRUE, types = c("CAUSES")))  # Default if empty
+            if (length(types) == 0 || types == "") {
+                return(list(valid = TRUE, types = "CAUSES"))  # Default if empty
             }
 
-            # Check for invalid types
-            invalid_types <- types[!types %in% valid_types]
-
-            if (length(invalid_types) > 0) {
+            # Check for invalid type
+            if (!types %in% valid_types) {
                 return(list(
                     valid = FALSE,
-                    message = paste("Invalid predication types:", paste(invalid_types, collapse = ", "),
+                    message = paste("Invalid predication type:", types,
                                   ". Valid types include:", paste(head(valid_types, 10), collapse = ", "), "...")
                 ))
             }

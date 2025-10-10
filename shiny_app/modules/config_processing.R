@@ -252,8 +252,11 @@ create_config_summary <- function(validated_params) {
         "Publication Year Cutoff: ", validated_params$pub_year_cutoff, "\n",
         "Degree: ", validated_params$degree, "\n",
         "SemMedDB Version: ", validated_params$semmeddb_version, "\n",
-        "Predication Types: ", paste(validated_params$predication_types, collapse = ", "), 
-        " (", length(validated_params$predication_types), " types)\n"
+        "Predication Type: ", if (is.character(validated_params$predication_types) && length(validated_params$predication_types) == 1) {
+            validated_params$predication_types
+        } else {
+            paste(validated_params$predication_types, collapse = ", ")
+        }, "\n"
     )
     
     return(summary_text)
