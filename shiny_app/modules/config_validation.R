@@ -70,9 +70,9 @@ validate_name <- function(name_string) {
 
 #' Validate Predication Types
 #'
-#' Validates predication type selection from dropdown (single selection only)
+#' Validates predication type selection from dropdown (supports multiple selection)
 #'
-#' @param selected_types Character string of selected predication type
+#' @param selected_types Character vector of selected predication types
 #' @return List with validation results
 validate_predication_types <- function(selected_types) {
     # Define valid predication types (as specified by user)
@@ -85,19 +85,45 @@ validate_predication_types <- function(selected_types) {
         return(list(valid = TRUE, types = "CAUSES", count = 1))
     }
 
-    # Take only the first value if multiple are provided (for backward compatibility)
-    selected_type <- toupper(as.character(selected_types)[1])
+    # Handle multiple selection from selectInput
+    if (is.character(selected_types) && length(selected_types) > 1) {
+        # Multiple values from selectInput
+        types <- trimws(selected_types)
+        types <- types[types != ""]  # Remove empty strings
+    } else if (is.character(selected_types) && length(selected_types) == 1) {
+        # Handle single string input (legacy comma-separated format still supported for backward compatibility)
+        if (grepl(",", selected_types)) {
+            # Split comma-separated values
+            types <- trimws(unlist(strsplit(selected_types, ",")))
+            types <- types[types != ""]  # Remove empty strings
+        } else {
+            # Single value
+            types <- trimws(selected_types)
+        }
+    } else {
+        # Handle vector input from selectInput
+        types <- as.character(selected_types)
+        types <- types[types != ""]  # Remove empty strings
+    }
 
-    # Validate that the selected type is in the valid list
-    if (!selected_type %in% valid_types) {
+    types <- toupper(types)  # Convert to uppercase for comparison
+
+    if (length(types) == 0) {
+        return(list(valid = TRUE, types = "CAUSES", count = 1))  # Default if empty
+    }
+
+    # Check for invalid types
+    invalid_types <- types[!types %in% valid_types]
+    if (length(invalid_types) > 0) {
         return(list(
             valid = FALSE,
-            message = paste("Invalid predication type:", selected_type,
+            message = paste("Invalid predication type(s):", paste(invalid_types, collapse = ", "),
                           ". Valid types include:", paste(head(valid_types, 10), collapse = ", "), "...")
         ))
     }
 
-    return(list(valid = TRUE, types = selected_type, count = 1))
+    # Return comma-separated string for compatibility
+    return(list(valid = TRUE, types = paste(types, collapse = ", "), count = length(types)))
 }
 
 #' Validate Numeric Parameter

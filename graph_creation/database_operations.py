@@ -371,6 +371,9 @@ class DatabaseOperations:
         # Create blocklist conditions for filtering
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
+        # Create predication condition for multiple predication types
+        predication_condition = self._create_predication_condition()
+
         # Create placeholders for exposure and outcome CUIs from YAML config
         exposure_placeholders = ', '.join(['%s'] * len(self.config.exposure_cui_list))
         outcome_placeholders = ', '.join(['%s'] * len(self.config.outcome_cui_list))
@@ -382,7 +385,7 @@ class DatabaseOperations:
         STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
         STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM causalpredication cp
-        WHERE cp.predicate = %s
+        WHERE {predication_condition}
         AND (
             (cp.subject_cui IN ({exposure_placeholders})
              OR cp.object_cui IN ({exposure_placeholders}))
@@ -395,8 +398,8 @@ class DatabaseOperations:
         ORDER BY cp.subject_name ASC;
         """
 
-        # Build parameters: predicate + exposure CUIs (twice) + outcome CUIs (twice) + min_pmids threshold + blocklist params
-        params = ([self.predication_types[0]] +  # Use first predication type (typically 'CAUSES')
+        # Build parameters: predication_types + exposure CUIs (twice) + outcome CUIs (twice) + min_pmids threshold + blocklist params
+        params = (self.predication_types +  # Use all predication types
                  self.config.exposure_cui_list + self.config.exposure_cui_list +
                  self.config.outcome_cui_list + self.config.outcome_cui_list +
                  [self.threshold] + blocklist_params)
