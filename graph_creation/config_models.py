@@ -82,7 +82,10 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
             raise ValueError(f"degree must be a positive integer, got: {degree}")
 
         # Handle predication_type with backward compatibility and multiple types
-        predication_type = yaml_config.get('predication_type') or yaml_config.get('PREDICATION_TYPE', 'CAUSES')
+        # Check for both singular and plural forms to support both legacy and new Shiny app formats
+        predication_type = (yaml_config.get('predication_type') or
+                           yaml_config.get('predication_types') or
+                           yaml_config.get('PREDICATION_TYPE', 'CAUSES'))
 
         # Parse predication types - handle both single and comma-separated values
         if isinstance(predication_type, str):
