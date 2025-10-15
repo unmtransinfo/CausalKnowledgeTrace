@@ -266,7 +266,7 @@ graphConfigUI <- function(id) {
                             class = "form-group",
                             selectInput(
                                 ns("PREDICATION_TYPE"),
-                                "Predication Type",
+                                "Predication Types",
                                 choices = list(
                                     "AFFECTS" = "AFFECTS",
                                     "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
@@ -286,10 +286,10 @@ graphConfigUI <- function(id) {
                                     "TREATS" = "TREATS"
                                 ),
                                 selected = "CAUSES",
-                                multiple = FALSE,
+                                multiple = TRUE,
                                 width = "100%"
                             ),
-                            helpText("Select a predication type. CAUSES is selected by default. Will be saved as a single value in YAML format.")
+                            helpText("Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Will be saved as comma-separated values in YAML format.")
                         ),
 
                         # SemMedDB Version
@@ -500,44 +500,45 @@ graphConfigServer <- function(id) {
                 return(list(valid = TRUE, types = "CAUSES"))  # Default to CAUSES as single value
             }
 
-            # Since we now only allow single selection, handle single string input
-            if (is.character(predication_input) && length(predication_input) == 1) {
+            # Handle multiple selection from selectInput
+            if (is.character(predication_input) && length(predication_input) > 1) {
+                # Multiple values from selectInput
+                types <- trimws(predication_input)
+                types <- types[types != ""]  # Remove empty strings
+            } else if (is.character(predication_input) && length(predication_input) == 1) {
                 # Handle single string input (legacy comma-separated format still supported for backward compatibility)
                 if (grepl(",", predication_input)) {
-                    # Split and take first value only (for backward compatibility)
+                    # Split comma-separated values
                     types <- trimws(unlist(strsplit(predication_input, ",")))
                     types <- types[types != ""]  # Remove empty strings
-                    if (length(types) > 0) {
-                        types <- types[1]  # Take only the first value
-                        warning("Multiple predication types detected, using only the first one: ", types)
-                    } else {
-                        types <- "CAUSES"  # Default if empty after split
-                    }
                 } else {
                     # Single value
                     types <- trimws(predication_input)
                 }
             } else {
-                # Handle vector input from selectInput (should be single value now)
-                types <- as.character(predication_input)[1]  # Take only first value
+                # Handle vector input from selectInput
+                types <- as.character(predication_input)
+                types <- types[types != ""]  # Remove empty strings
             }
 
             types <- toupper(types)  # Convert to uppercase for comparison
 
-            if (length(types) == 0 || types == "") {
+            if (length(types) == 0) {
                 return(list(valid = TRUE, types = "CAUSES"))  # Default if empty
             }
 
-            # Check for invalid type
-            if (!types %in% valid_types) {
+            # Check for invalid types
+            invalid_types <- types[!types %in% valid_types]
+            if (length(invalid_types) > 0) {
                 return(list(
                     valid = FALSE,
-                    message = paste("Invalid predication type:", types,
+                    message = paste("Invalid predication type(s):", paste(invalid_types, collapse = ", "),
                                   ". Valid types include:", paste(head(valid_types, 10), collapse = ", "), "...")
                 ))
             }
 
-            return(list(valid = TRUE, types = types))
+            # Return comma-separated string for YAML compatibility
+            return(list(valid = TRUE, types = paste(types, collapse = ", ")))
         }
 
         # Name validation function for single consolidated names

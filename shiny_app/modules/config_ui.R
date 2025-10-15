@@ -111,7 +111,7 @@ graphConfigModuleUI <- function(id) {
                     column(4,
                         h4("Predication Types"),
                         selectInput(ns("predication_types"),
-                                  "Select Predication Type:",
+                                  "Select Predication Types:",
                                   choices = list(
                                       "AFFECTS" = "AFFECTS",
                                       "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
@@ -131,9 +131,9 @@ graphConfigModuleUI <- function(id) {
                                       "TREATS" = "TREATS"
                                   ),
                                   selected = "CAUSES",
-                                  multiple = FALSE),
+                                  multiple = TRUE),
 
-                        helpText("Select a predication type. CAUSES is selected by default.")
+                        helpText("Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple.")
                     )
                 ),
                 
