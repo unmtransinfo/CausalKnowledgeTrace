@@ -29,7 +29,7 @@ create_yaml_config <- function(validated_params) {
         min_pmids = validated_params$min_pmids,
         pub_year_cutoff = validated_params$pub_year_cutoff,
         degree = validated_params$degree,
-        predication_types = validated_params$predication_types,
+        predication_type = validated_params$predication_types,
         SemMedDBD_version = validated_params$semmeddb_version,
         created_timestamp = Sys.time(),
         created_by = "Causal Web Shiny Application"

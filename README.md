@@ -399,18 +399,25 @@ outcome_name: "Alzheimers"
 min_pmids: 10                    # Minimum publications required
 pub_year_cutoff: 2010           # Exclude publications before 2010
 degree: 1                       # Relationship depth (1-3)
-predication_type: "CAUSES"      # Single type or list
+predication_type: "CAUSES, AFFECTS, PREDISPOSES"  # Single or multiple types (comma-separated)
 SemMedDBD_version: "heuristic"  # Database version
 ```
 
 ### Predication Types
 
-The system supports multiple predication types:
+The system supports multiple predication types for comprehensive causal relationship analysis:
 
 - **Single type**: `predication_type: "CAUSES"`
-- **Multiple types**: `predication_type: ["CAUSES", "TREATS", "PREVENTS"]`
+- **Multiple types**: `predication_type: "CAUSES, AFFECTS, PREDISPOSES"`
+- **Alternative format**: `predication_type: ["CAUSES", "TREATS", "PREVENTS"]` (also supported)
 
-Common types: `CAUSES`, `TREATS`, `PREVENTS`, `INTERACTS_WITH`, `AFFECTS`, `ASSOCIATED_WITH`, `PREDISPOSES`, `COMPLICATES`
+**Available predication types**: `AFFECTS`, `ASSOCIATED_WITH`, `AUGMENTS`, `CAUSES`, `COEXISTS_WITH`, `COMPLICATES`, `DISRUPTS`, `INHIBITS`, `INTERACTS_WITH`, `MANIFESTATION_OF`, `PRECEDES`, `PREDISPOSES`, `PREVENTS`, `PRODUCES`, `STIMULATES`, `TREATS`
+
+**Multi-prediction type benefits**:
+- Captures diverse causal relationships in a single analysis
+- Provides comprehensive evidence from different relationship types
+- Enables comparison of relationship strengths across predication types
+- Generates richer causal knowledge graphs with multiple edge types
 
 ## Data Loading and Visualization
 
@@ -519,6 +526,11 @@ Filter file: `doc/filter.sql` contains predefined exclusion lists
   - View semantic types and definitions
   - Manual CUI entry also supported
 - **Multiple CUI support**: Handle complex exposure-outcome relationships
+- **Multi-select Predication Types**: Choose multiple relationship types simultaneously
+  - Select from 16 available predication types (CAUSES, AFFECTS, PREDISPOSES, etc.)
+  - Hold Ctrl/Cmd to select multiple types
+  - Comprehensive causal relationship analysis in single run
+  - Default selection: CAUSES (can be changed to any combination)
 - **Blacklist management**: Exclude unwanted concepts with search interface
 - **Real-time validation**: Input validation with immediate feedback
 - **YAML export**: Save configuration for Python engine
