@@ -48,14 +48,9 @@ is_port_available <- function(port, host = "127.0.0.1") {
 
 # Function to find an available port starting from a given port
 find_available_port <- function(start_port = 3838, max_attempts = 100, host = "127.0.0.1") {
-    cat("🔍 Searching for available port starting from", start_port, "...\n")
     for (port in start_port:(start_port + max_attempts - 1)) {
-        cat("   Testing port", port, "... ")
         if (is_port_available(port, host)) {
-            cat("✅ Available!\n")
             return(port)
-        } else {
-            cat("❌ In use\n")
         }
     }
     stop("Could not find an available port after ", max_attempts, " attempts starting from port ", start_port)
@@ -71,39 +66,17 @@ if (!dir.exists(app_dir)) {
 # Parse command line arguments
 args <- commandArgs(trailingOnly = TRUE)
 
-# Print startup information
-cat("=== CausalKnowledgeTrace Application ===\n")
-cat("Project Structure: Reorganized with separate Shiny app and graph creation components\n")
-cat("Shiny App Directory:", app_dir, "\n")
-cat("Graph Creation Directory:", file.path(dirname(app_dir), "graph_creation"), "\n")
-cat("Configuration File: user_input.yaml (saved in project root)\n")
-cat("=========================================\n\n")
-
-
-
 # Configure application parameters
 host <- "127.0.0.1"
 default_port <- 3838
 
-# Find an available port
-cat("🔍 Checking port availability...\n")
-
-# Debug: Show what processes might be using the port
-if (Sys.info()["sysname"] == "Linux" || Sys.info()["sysname"] == "Darwin") {
-    cat("🔍 Checking what's using port", default_port, "...\n")
-    system(paste0("netstat -tuln | grep ':", default_port, " ' || echo 'No processes found using port ", default_port, "'"))
-}
-
+# Find an available port (silently)
 port_available <- is_port_available(default_port, host)
-cat("🔍 Port", default_port, "availability check result:", port_available, "\n")
 
 if (port_available) {
     port <- default_port
-    cat("✅ Port", port, "appears to be available\n")
 } else {
-    cat("⚠️  Port", default_port, "is in use, finding alternative...\n")
     port <- find_available_port(default_port + 1, host = host)
-    cat("✅ Found available port:", port, "\n")
 }
 
 # Display connection information
@@ -126,17 +99,13 @@ old_wd <- getwd()
 
 tryCatch({
     setwd(app_dir)
-    cat("Loading application...\n")
 
-
-
-    # Source and run the app
-    app <- source("app.R")$value
+    # Source and run the app (suppress library loading messages)
+    suppressPackageStartupMessages({
+        app <- source("app.R")$value
+    })
 
     if (inherits(app, "shiny.appobj")) {
-        cat("✅ Application loaded successfully\n")
-        cat("🌐 Starting server...\n\n")
-
         # Run the application
         runApp(app,
                host = host,
@@ -152,7 +121,6 @@ tryCatch({
     cat("   1. Ensure all required packages are installed\n")
     cat("   2. Check for syntax errors in app.R\n")
     cat("   3. Try: warnings() to see detailed warnings\n")
-    cat("   4. Try alternative: source('launch_shiny_app.R')\n")
 }, finally = {
     setwd(old_wd)
 })

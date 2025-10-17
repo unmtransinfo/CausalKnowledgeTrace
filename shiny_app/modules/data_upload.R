@@ -32,7 +32,9 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
     # Since we're running from shiny_app/, we need to go up one level to reach graph_creation/
     result_dir <- "../graph_creation/result"
     if (!dir.exists(result_dir)) {
-        cat("Warning: graph_creation/result directory does not exist. Creating it...\n")
+        if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+            cat("Warning: graph_creation/result directory does not exist. Creating it...\n")
+        }
         dir.create(result_dir, recursive = TRUE)
     }
     r_files <- list.files(path = result_dir, pattern = "\\.(R|r)$", full.names = FALSE)
@@ -99,7 +101,9 @@ load_dag_from_file <- function(filename) {
         binary_mtime <- file.mtime(binary_path)
 
         if (binary_mtime >= r_mtime) {
-            cat("Loading from binary DAG file (fastest mode)...\n")
+            if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                cat("Loading from binary DAG file (fastest mode)...\n")
+            }
             binary_result <- load_dag_from_binary(binary_path)
 
             if (binary_result$success) {
@@ -113,10 +117,14 @@ load_dag_from_file <- function(filename) {
                     load_time_seconds = binary_result$load_time_seconds
                 ))
             } else {
-                cat("Binary loading failed, falling back to R script:", binary_result$message, "\n")
+                if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                    cat("Binary loading failed, falling back to R script:", binary_result$message, "\n")
+                }
             }
         } else {
-            cat("Binary file is older than source, recompiling...\n")
+            if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                cat("Binary file is older than source, recompiling...\n")
+            }
             compile_result <- compile_dag_to_binary(filename, force_regenerate = TRUE)
             if (compile_result$success) {
                 binary_result <- load_dag_from_binary(binary_path)
@@ -135,7 +143,9 @@ load_dag_from_file <- function(filename) {
         }
     } else {
         # No binary file exists, try to create one
-        cat("No binary file found, compiling for future use...\n")
+        if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+            cat("No binary file found, compiling for future use...\n")
+        }
         compile_result <- compile_dag_to_binary(filename)
         if (compile_result$success) {
             binary_result <- load_dag_from_binary(binary_path)
@@ -154,7 +164,9 @@ load_dag_from_file <- function(filename) {
     }
 
     # Fallback to traditional R script loading
-    cat("Loading from R script (traditional mode)...\n")
+    if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+        cat("Loading from R script (traditional mode)...\n")
+    }
     tryCatch({
         start_time <- Sys.time()
 
@@ -270,13 +282,19 @@ create_network_data <- function(dag_object) {
         tryCatch({
             ig <- dagitty2graph(dag_object)
             conversion_success <- TRUE
-            cat("Successfully converted DAG to igraph using dagitty2graph\n")
+            if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                cat("Successfully converted DAG to igraph using dagitty2graph\n")
+            }
         }, error = function(e) {
-            cat("Error converting DAG to igraph with dagitty2graph:", e$message, "\n")
+            if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                cat("Error converting DAG to igraph with dagitty2graph:", e$message, "\n")
+            }
             conversion_success <- FALSE
         })
     } else {
-        cat("dagitty2graph function not available, trying alternative method\n")
+        if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+            cat("dagitty2graph function not available, trying alternative method\n")
+        }
     }
 
     # Fallback: try to extract edges by parsing DAG string
@@ -307,21 +325,31 @@ create_network_data <- function(dag_object) {
                     # Create igraph from edge list
                     ig <- graph_from_edgelist(edge_list, directed = TRUE)
                     conversion_success <- TRUE
-                    cat("Successfully created graph using DAG string parsing -", nrow(edge_list), "edges found\n")
+                    if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                        cat("Successfully created graph using DAG string parsing -", nrow(edge_list), "edges found\n")
+                    }
                 } else {
-                    cat("No valid edges found after parsing\n")
+                    if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                        cat("No valid edges found after parsing\n")
+                    }
                 }
             } else {
-                cat("No edge patterns found in DAG string\n")
+                if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                    cat("No edge patterns found in DAG string\n")
+                }
             }
         }, error = function(e) {
-            cat("Error with DAG string parsing:", e$message, "\n")
+            if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                cat("Error with DAG string parsing:", e$message, "\n")
+            }
         })
     }
 
     # Final fallback: create empty graph
     if (!conversion_success || is.null(ig)) {
-        cat("Using empty graph fallback\n")
+        if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+            cat("Using empty graph fallback\n")
+        }
         ig <- make_empty_graph(n = 0, directed = TRUE)
     }
     
@@ -370,11 +398,13 @@ create_network_data <- function(dag_object) {
             }
         }
     }, error = function(e) {
-        cat("Warning: Could not extract edges from graph:", e$message, "\n")
+        if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+            cat("Warning: Could not extract edges from graph:", e$message, "\n")
+        }
     })
-    
+
     # Print summary for large graphs
-    if (nrow(nodes) > 50) {
+    if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING && nrow(nodes) > 50) {
         cat("Graph summary:\n")
         cat("- Nodes:", nrow(nodes), "\n")
         cat("- Edges:", nrow(edges), "\n")
@@ -555,8 +585,10 @@ load_causal_assertions <- function(filename = NULL, degree = NULL,
             tryCatch({
                 source("modules/optimized_loader.R")
             }, error = function(e) {
-                cat("Warning: Could not load optimized loader module:", e$message, "\n")
-                cat("Falling back to standard loading...\n")
+                if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                    cat("Warning: Could not load optimized loader module:", e$message, "\n")
+                    cat("Falling back to standard loading...\n")
+                }
                 use_optimization <- FALSE
             })
         }
@@ -566,9 +598,11 @@ load_causal_assertions <- function(filename = NULL, degree = NULL,
             result <- load_causal_assertions_unified(file_path)
 
             if (result$success) {
-                cat("Loaded using optimized loader:", result$message, "\n")
-                cat("Loading strategy:", result$loading_strategy, "\n")
-                cat("Load time:", round(result$load_time_seconds, 3), "seconds\n")
+                if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                    cat("Loaded using optimized loader:", result$message, "\n")
+                    cat("Loading strategy:", result$loading_strategy, "\n")
+                    cat("Load time:", round(result$load_time_seconds, 3), "seconds\n")
+                }
 
                 return(list(
                     success = TRUE,
@@ -579,8 +613,10 @@ load_causal_assertions <- function(filename = NULL, degree = NULL,
                     file_size_mb = result$file_size_mb
                 ))
             } else {
-                cat("Optimized loader failed:", result$message, "\n")
-                cat("Falling back to standard loading...\n")
+                if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                    cat("Optimized loader failed:", result$message, "\n")
+                    cat("Falling back to standard loading...\n")
+                }
                 use_optimization <- FALSE
             }
         }
@@ -668,7 +704,9 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
         if (exists("fast_edge_lookup")) {
             indexed_result <- fast_edge_lookup(from_node, to_node, current_data$edge_index$edge_index, assertions_data)
             if (indexed_result$found) {
-                cat("Using indexed lookup for edge\n")
+                if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                    cat("Using indexed lookup for edge\n")
+                }
                 return(indexed_result)
             }
         }
@@ -845,7 +883,9 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
                             }
                         }
                     }, error = function(e) {
-                        cat("Warning: Error accessing sentence data for PMID", pmid, ":", e$message, "\n")
+                        if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                            cat("Warning: Error accessing sentence data for PMID", pmid, ":", e$message, "\n")
+                        }
                     })
                 }
             }
@@ -975,7 +1015,7 @@ process_large_dag <- function(dag_object, max_nodes = 1000) {
     all_nodes <- names(dag_object)
     
     # If graph is too large, provide warning
-    if (length(all_nodes) > max_nodes) {
+    if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING && length(all_nodes) > max_nodes) {
         cat("Warning: Graph has", length(all_nodes), "nodes, which is quite large.\n")
         cat("Consider filtering the graph or increasing max_nodes parameter.\n")
         cat("Processing with current settings...\n")

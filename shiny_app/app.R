@@ -1,45 +1,26 @@
-# Load required libraries
-library(shiny)
-library(shinydashboard)
-library(visNetwork)
-library(dplyr)
-library(DT)
-library(jsonlite)
-library(htmltools)
+# Global logging control - set to FALSE to suppress verbose output
+VERBOSE_LOGGING <- FALSE
 
-# Load shinyjs for UI interactions (with error handling)
-tryCatch({
+# Load required libraries (suppress startup messages)
+suppressPackageStartupMessages({
+    library(shiny)
+    library(shinydashboard)
+    library(visNetwork)
+    library(dplyr)
+    library(DT)
+    library(jsonlite)
+    library(htmltools)
     library(shinyjs)
-    cat("✓ shinyjs library loaded\n")
-}, error = function(e) {
-    cat("⚠ shinyjs not available:", e$message, "\n")
-    cat("  Some UI interactions may be limited\n")
-})
-
-# Load DAG processing libraries with error handling
-tryCatch({
     library(SEMgraph)
-    cat("✓ SEMgraph library loaded\n")
-}, error = function(e) {
-    cat("⚠ SEMgraph not available:", e$message, "\n")
-    cat("  Some DAG processing features may be limited\n")
-})
-
-tryCatch({
     library(dagitty)
-    cat("✓ dagitty library loaded\n")
-}, error = function(e) {
-    cat("⚠ dagitty not available:", e$message, "\n")
-    cat("  DAG processing will not work without this package\n")
+    library(igraph)
 })
 
-tryCatch({
-    library(igraph)
-    cat("✓ igraph library loaded\n")
-}, error = function(e) {
-    cat("⚠ igraph not available:", e$message, "\n")
-    cat("  Graph conversion features may be limited\n")
-})
+# Source logging utility
+source("modules/logging_utility.R")
+
+# Initialize logging system
+init_logging(log_dir = "../logs", console_output = FALSE)
 
 # Source modular components
 source("modules/dag_visualization.R")
@@ -54,15 +35,12 @@ source("modules/json_to_html.R")      # For HTML export functionality
 tryCatch({
     source("modules/graph_config_module.R")
     graph_config_available <- TRUE
-    cat("Graph configuration module loaded successfully\n")
 }, error = function(e) {
     graph_config_available <- FALSE
-    cat("Graph configuration module not found, creating placeholder\n")
 })
 
 # Initialize empty data structures for immediate app startup
 # The app will start with no graph loaded, and users will load graphs through the UI
-cat("Starting Shiny application without loading graph files...\n")
 
 # Create empty data structures for immediate startup
 dag_nodes <- data.frame(
@@ -90,9 +68,6 @@ dag_object <- NULL
 # Initialize empty groups for legend
 unique_groups <- character(0)
 group_colors <- character(0)
-
-cat("Application ready to start at localhost.\n")
-cat("Use the Data Upload tab to select and load a graph file.\n")
 
 # Define UI
 ui <- dashboardPage(
@@ -942,13 +917,19 @@ server <- function(input, output, session) {
             cui_mappings_result <- load_consolidated_cui_mappings()
             if (cui_mappings_result$success) {
                 current_data$consolidated_cui_mappings <- cui_mappings_result$mappings
-                cat("Loaded consolidated CUI mappings:", cui_mappings_result$message, "\n")
+                if (exists("log_cui_mappings")) {
+                    log_cui_mappings(length(cui_mappings_result$mappings), cui_mappings_result$message)
+                }
             } else {
                 current_data$consolidated_cui_mappings <- list()
-                cat("Could not load consolidated CUI mappings:", cui_mappings_result$message, "\n")
+                if (exists("log_message")) {
+                    log_message(paste("Could not load consolidated CUI mappings:", cui_mappings_result$message), "WARNING")
+                }
             }
         }, error = function(e) {
-            cat("Error during initialization:", e$message, "\n")
+            if (exists("log_message")) {
+                log_message(paste("Error during initialization:", e$message), "ERROR")
+            }
             updateSelectInput(session, "dag_file_selector", choices = "No DAG files found")
             current_data$consolidated_cui_mappings <- list()
         })

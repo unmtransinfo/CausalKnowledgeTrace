@@ -72,8 +72,9 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
         # Load .env file if it exists
         env_file <- file.path(getwd(), "..", ".env")
         if (file.exists(env_file)) {
-            cat("Loading database configuration from .env file\n")
-            env_vars <- readLines(env_file)
+            suppressWarnings({
+                env_vars <- readLines(env_file)
+            })
             for (line in env_vars) {
                 line <- trimws(line)
                 if (grepl("^[A-Z_]+=", line) && !grepl("^#", line)) {
@@ -83,7 +84,10 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
                         var_value <- trimws(paste(parts[-1], collapse = "="))
                         # Set environment variable properly
                         do.call(Sys.setenv, setNames(list(var_value), var_name))
-                        cat("  Set", var_name, "=", var_value, "\n")
+                        # Log to file instead of console
+                        if (exists("log_env_var")) {
+                            log_env_var(var_name, var_value)
+                        }
                     }
                 }
             }
@@ -146,11 +150,13 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
         result <- DBI::dbGetQuery(test_conn, test_query)
         
         pool::poolReturn(test_conn)
-        
-        cat("Database connection pool initialized successfully\n")
-        cat("Host:", host, "Port:", port, "Database:", dbname, "Schema:", schema, "\n")
-        cat("Pool size:", min_size, "-", max_size, "connections\n")
-        
+
+        # Log to file instead of console
+        if (exists("log_db_config")) {
+            log_db_config(host, port, dbname, schema, user)
+            log_db_pool(min_size, max_size)
+        }
+
         return(list(
             success = TRUE,
             message = "Database connection pool initialized successfully",
@@ -182,9 +188,13 @@ close_database_pool <- function() {
         tryCatch({
             pool::poolClose(.db_pool)
             .db_pool <<- NULL
-            cat("Database connection pool closed\n")
+            if (exists("log_message")) {
+                log_message("Database connection pool closed", "INFO")
+            }
         }, error = function(e) {
-            cat("Error closing database pool:", e$message, "\n")
+            if (exists("log_message")) {
+                log_message(paste("Error closing database pool:", e$message), "ERROR")
+            }
         })
     }
 }
@@ -246,11 +256,11 @@ search_cui_entities <- function(search_term, exact_match = FALSE) {
         }
 
         # Log the SQL query being executed
-        cat("🔍 Executing SQL Query (using cui_search):\n")
-        cat("Query:", query, "\n")
-        cat("Parameters:", paste(params, collapse = ", "), "\n")
-        cat("Search term:", search_term, "-> Pattern:", if(exact_match) clean_term else search_pattern, "\n")
-        cat("Expected to return ALL matching results (no limit)\n")
+        if (exists("log_message")) {
+            log_message(paste("SQL Query:", query), "DEBUG")
+            log_message(paste("Parameters:", paste(params, collapse = ", ")), "DEBUG")
+            log_message(paste("Search term:", search_term, "-> Pattern:", if(exact_match) clean_term else search_pattern), "DEBUG")
+        }
 
         # Execute query
         results <- pool::dbGetQuery(.db_pool, query, params = params)
