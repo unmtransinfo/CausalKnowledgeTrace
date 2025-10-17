@@ -272,12 +272,9 @@ graphConfigUI <- function(id) {
                                     "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
                                     "AUGMENTS" = "AUGMENTS",
                                     "CAUSES" = "CAUSES",
-                                    "COEXISTS_WITH" = "COEXISTS_WITH",
                                     "COMPLICATES" = "COMPLICATES",
                                     "DISRUPTS" = "DISRUPTS",
                                     "INHIBITS" = "INHIBITS",
-                                    "INTERACTS_WITH" = "INTERACTS_WITH",
-                                    "MANIFESTATION_OF" = "MANIFESTATION_OF",
                                     "PRECEDES" = "PRECEDES",
                                     "PREDISPOSES" = "PREDISPOSES",
                                     "PREVENTS" = "PREVENTS",
@@ -495,8 +492,8 @@ graphConfigServer <- function(id) {
         # Predication type validation function
         validate_predication_types <- function(predication_input) {
             # Define valid predication types (as specified by user)
-            valid_types <- c("AFFECTS", "ASSOCIATED_WITH", "AUGMENTS", "CAUSES", "COEXISTS_WITH",
-                           "COMPLICATES", "DISRUPTS", "INHIBITS", "INTERACTS_WITH", "MANIFESTATION_OF",
+            valid_types <- c("AFFECTS", "ASSOCIATED_WITH", "AUGMENTS", "CAUSES",
+                           "COMPLICATES", "DISRUPTS", "INHIBITS",
                            "PRECEDES", "PREDISPOSES", "PREVENTS", "PRODUCES", "STIMULATES", "TREATS")
 
             # Handle null or empty input - default to CAUSES
