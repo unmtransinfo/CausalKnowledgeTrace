@@ -79,9 +79,7 @@ ui <- dashboardPage(
             menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
             menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
             menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
-            menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus")),
-            menuItem("Node Information", tabName = "info", icon = icon("info-circle")),
-            menuItem("Statistics", tabName = "stats", icon = icon("chart-bar"))
+            menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus"))
         )
     ),
     
@@ -695,61 +693,7 @@ ui <- dashboardPage(
                 )
             ),
 
-            # Node Information Tab
-            tabItem(tabName = "info",
-                fluidRow(
-                    box(
-                        title = "Selected Node Information",
-                        status = "primary",
-                        solidHeader = TRUE,
-                        width = 12,
-                        verbatimTextOutput("node_info")
-                    )
-                ),
-                fluidRow(
-                    box(
-                        title = "All Nodes",
-                        status = "info",
-                        solidHeader = TRUE,
-                        width = 12,
-                        DT::dataTableOutput("nodes_table")
-                    )
-                )
-            ),
-            
-            # Statistics Tab
-            tabItem(tabName = "stats",
-                fluidRow(
-                    valueBoxOutput("total_nodes"),
-                    valueBoxOutput("total_edges"),
-                    valueBoxOutput("total_groups")
-                ),
-                fluidRow(
-                    box(
-                        title = "Node Distribution by Category",
-                        status = "primary",
-                        solidHeader = TRUE,
-                        width = 6,
-                        plotOutput("node_distribution")
-                    ),
-                    box(
-                        title = "DAG Structure Information",
-                        status = "info",
-                        solidHeader = TRUE,
-                        width = 6,
-                        verbatimTextOutput("dag_info")
-                    )
-                ),
-                fluidRow(
-                    box(
-                        title = "Cycle Detection",
-                        status = "warning",
-                        solidHeader = TRUE,
-                        width = 12,
-                        verbatimTextOutput("cycle_detection")
-                    )
-                )
-            ),
+
             
             # Data Upload Tab
             tabItem(tabName = "upload",
@@ -1840,74 +1784,7 @@ server <- function(input, output, session) {
         paste("Nodes:", stats$nodes, "| Edges:", stats$edges)
     })
 
-    # Node information output using modular function
-    output$node_info <- renderText({
-        format_node_info(input$network_selected, current_data$nodes)
-    })
 
-    # Nodes table using modular function
-    output$nodes_table <- DT::renderDataTable({
-        create_nodes_display_table(current_data$nodes)
-    }, options = list(pageLength = 15))
-    
-    # Value boxes using modular function
-    summary_stats <- reactive({
-        generate_summary_stats(current_data$nodes, current_data$edges)
-    })
-
-    output$total_nodes <- renderValueBox({
-        stats <- summary_stats()$total_nodes
-        valueBox(
-            value = stats$value,
-            subtitle = stats$subtitle,
-            icon = icon(stats$icon),
-            color = stats$color
-        )
-    })
-
-    output$total_edges <- renderValueBox({
-        stats <- summary_stats()$total_edges
-        valueBox(
-            value = stats$value,
-            subtitle = stats$subtitle,
-            icon = icon(stats$icon),
-            color = stats$color
-        )
-    })
-
-    output$total_groups <- renderValueBox({
-        stats <- summary_stats()$total_groups
-        valueBox(
-            value = stats$value,
-            subtitle = stats$subtitle,
-            icon = icon(stats$icon),
-            color = stats$color
-        )
-    })
-    
-    # Node distribution plot using modular function
-    output$node_distribution <- renderPlot({
-        plot_data <- create_distribution_plot_data(current_data$nodes)
-        if (length(plot_data$counts) > 0) {
-            barplot(plot_data$counts,
-                    names.arg = plot_data$labels,
-                    main = "Node Distribution by Group",
-                    xlab = "Group",
-                    ylab = "Count",
-                    col = plot_data$colors,
-                    las = 2)
-        }
-    })
-
-    # DAG information using modular function
-    output$dag_info <- renderText({
-        generate_dag_report(current_data$nodes, current_data$edges, current_data$current_file)
-    })
-
-    # Cycle detection using modular function
-    output$cycle_detection <- renderText({
-        generate_cycle_report(current_data$nodes, current_data$edges)
-    })
 
     # ===== CAUSAL ANALYSIS SERVER LOGIC =====
 
