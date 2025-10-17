@@ -869,7 +869,10 @@ server <- function(input, output, session) {
         assertions_loaded = FALSE,
         consolidated_cui_mappings = list(),
         loading_strategy = NULL,
-        lazy_loader = NULL
+        lazy_loader = NULL,
+        html_download_in_progress = FALSE,
+        json_download_in_progress = FALSE,
+        dag_download_in_progress = FALSE
     )
 
     # Initialize available files list and consolidated CUI mappings on startup
@@ -2462,9 +2465,31 @@ server <- function(input, output, session) {
         },
         content = function(file) {
             tryCatch({
-                # Show progress notification
-                showNotification("Converting JSON to HTML... This may take a moment for large datasets.",
-                               type = "message", duration = 5, id = "html_conversion")
+                # Check if download is already in progress
+                if (current_data$html_download_in_progress) {
+                    showNotification("⬇️ HTML file is already downloading. Please wait for it to complete.",
+                                   type = "warning", duration = 5)
+                    stop("Download already in progress")
+                }
+
+                # Set flag to indicate download is in progress
+                current_data$html_download_in_progress <- TRUE
+
+                # Disable both HTML download buttons
+                shinyjs::disable("save_html_main")
+                shinyjs::disable("save_html_btn")
+
+                on.exit({
+                    current_data$html_download_in_progress <- FALSE
+                    # Re-enable both HTML download buttons
+                    shinyjs::enable("save_html_main")
+                    shinyjs::enable("save_html_btn")
+                })
+
+                # Create progress bar with download styling
+                progress <- shiny::Progress$new()
+                on.exit(progress$close(), add = TRUE)
+                progress$set(message = "⬇️ Preparing to download HTML file...", value = 0)
 
                 # Check if we have network data and assertions
                 if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
@@ -2475,7 +2500,13 @@ server <- function(input, output, session) {
                     stop("No causal assertions data available")
                 }
 
+                # Progress callback function
+                progress_callback <- function(message) {
+                    progress$set(value = NULL, message = message)
+                }
+
                 # Extract assertions for the modified DAG
+                progress_callback("⬇️ Preparing data for download...")
                 modified_assertions <- extract_modified_dag_assertions(
                     current_data$edges,
                     current_data$causal_assertions
@@ -2485,21 +2516,22 @@ server <- function(input, output, session) {
                     stop("No causal assertions found for the current edges")
                 }
 
-                # Convert to HTML using the simplified module
+                # Convert to HTML using the simplified module with progress callback
                 html_content <- convert_json_to_html(
                     modified_assertions,
-                    title = "Causal Knowledge Trace - Evidence Report"
+                    title = "Causal Knowledge Trace - Evidence Report",
+                    progress_callback = progress_callback
                 )
 
                 # Write HTML to file
+                progress_callback("⬇️ Finalizing download...")
                 writeLines(html_content, file, useBytes = TRUE)
 
-                # Remove progress notification
-                removeNotification("html_conversion")
-                showNotification("HTML report generated successfully!", type = "message")
+                # Complete progress
+                progress$set(value = 1, message = "✓ HTML file ready for download!")
+                showNotification("✓ HTML report generated successfully!", type = "message")
 
             }, error = function(e) {
-                removeNotification("html_conversion")
                 showNotification(paste("Error generating HTML report:", e$message), type = "error")
                 stop(paste("Error generating HTML report:", e$message))
             })
@@ -2514,9 +2546,31 @@ server <- function(input, output, session) {
         },
         content = function(file) {
             tryCatch({
-                # Show progress notification
-                showNotification("Converting JSON to HTML... This may take a moment for large datasets.",
-                               type = "message", duration = 5, id = "html_conversion_small")
+                # Check if download is already in progress
+                if (current_data$html_download_in_progress) {
+                    showNotification("⬇️ HTML file is already downloading. Please wait for it to complete.",
+                                   type = "warning", duration = 5)
+                    stop("Download already in progress")
+                }
+
+                # Set flag to indicate download is in progress
+                current_data$html_download_in_progress <- TRUE
+
+                # Disable both HTML download buttons
+                shinyjs::disable("save_html_main")
+                shinyjs::disable("save_html_btn")
+
+                on.exit({
+                    current_data$html_download_in_progress <- FALSE
+                    # Re-enable both HTML download buttons
+                    shinyjs::enable("save_html_main")
+                    shinyjs::enable("save_html_btn")
+                })
+
+                # Create progress bar with download styling
+                progress <- shiny::Progress$new()
+                on.exit(progress$close(), add = TRUE)
+                progress$set(message = "⬇️ Preparing to download HTML file...", value = 0)
 
                 # Check if we have network data and assertions
                 if (is.null(current_data$edges) || nrow(current_data$edges) == 0) {
@@ -2527,7 +2581,13 @@ server <- function(input, output, session) {
                     stop("No causal assertions data available")
                 }
 
+                # Progress callback function
+                progress_callback <- function(message) {
+                    progress$set(value = NULL, message = message)
+                }
+
                 # Extract assertions for the modified DAG
+                progress_callback("⬇️ Preparing data for download...")
                 modified_assertions <- extract_modified_dag_assertions(
                     current_data$edges,
                     current_data$causal_assertions
@@ -2537,21 +2597,22 @@ server <- function(input, output, session) {
                     stop("No causal assertions found for the current edges")
                 }
 
-                # Convert to HTML using the simplified module
+                # Convert to HTML using the simplified module with progress callback
                 html_content <- convert_json_to_html(
                     modified_assertions,
-                    title = "Causal Knowledge Trace - Evidence Report"
+                    title = "Causal Knowledge Trace - Evidence Report",
+                    progress_callback = progress_callback
                 )
 
                 # Write HTML to file
+                progress_callback("⬇️ Finalizing download...")
                 writeLines(html_content, file, useBytes = TRUE)
 
-                # Remove progress notification
-                removeNotification("html_conversion_small")
-                showNotification("HTML report generated successfully!", type = "message")
+                # Complete progress
+                progress$set(value = 1, message = "✓ HTML file ready for download!")
+                showNotification("✓ HTML report generated successfully!", type = "message")
 
             }, error = function(e) {
-                removeNotification("html_conversion_small")
                 showNotification(paste("Error generating HTML report:", e$message), type = "error")
                 stop(paste("Error generating HTML report:", e$message))
             })

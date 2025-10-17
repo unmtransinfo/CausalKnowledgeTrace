@@ -14,9 +14,10 @@ library(htmltools)
 #'
 #' @param json_data List containing causal assertions data
 #' @param title Report title (default: "Causal Evidence Report")
+#' @param progress_callback Optional function to report progress (receives message string)
 #' @return HTML string
 #' @export
-convert_json_to_html <- function(json_data, title = "Causal Evidence Report") {
+convert_json_to_html <- function(json_data, title = "Causal Evidence Report", progress_callback = NULL) {
 
     # Validate input
     if (is.null(json_data) || length(json_data) == 0) {
@@ -31,10 +32,14 @@ convert_json_to_html <- function(json_data, title = "Causal Evidence Report") {
         return(create_empty_html_report(title))
     }
 
+    if (!is.null(progress_callback)) {
+        progress_callback("⬇️ Preparing HTML generation...")
+    }
+
     cat("Converting", length(assertions), "assertions and", length(pmid_sentences), "PMID entries to HTML...\n")
 
     # Use fast template-based HTML generation
-    full_html <- create_fast_html_template(title, pmid_sentences, assertions)
+    full_html <- create_fast_html_template(title, pmid_sentences, assertions, progress_callback)
 
     return(full_html)
 }
@@ -46,8 +51,13 @@ convert_json_to_html <- function(json_data, title = "Causal Evidence Report") {
 #' @param title Report title
 #' @param pmid_sentences PMID sentences data
 #' @param assertions Assertions data
+#' @param progress_callback Optional function to report progress
 #' @return Complete HTML string
-create_fast_html_template <- function(title, pmid_sentences, assertions) {
+create_fast_html_template <- function(title, pmid_sentences, assertions, progress_callback = NULL) {
+
+    if (!is.null(progress_callback)) {
+        progress_callback("⬇️ Building HTML structure...")
+    }
 
     # Pre-built HTML template parts
     html_head <- paste0(
@@ -65,7 +75,11 @@ create_fast_html_template <- function(title, pmid_sentences, assertions) {
     )
 
     # Build assertions section efficiently
-    assertions_section <- create_fast_assertions_section(assertions, pmid_sentences)
+    assertions_section <- create_fast_assertions_section(assertions, pmid_sentences, progress_callback)
+
+    if (!is.null(progress_callback)) {
+        progress_callback("⬇️ Compiling HTML file...")
+    }
 
     # Pre-built footer
     html_footer <- paste0(
@@ -139,8 +153,10 @@ create_fast_pmid_section <- function(pmid_sentences) {
 #' Efficiently build assertions section
 #'
 #' @param assertions Assertions data
+#' @param pmid_sentences PMID sentences data
+#' @param progress_callback Optional function to report progress
 #' @return HTML string for assertions section
-create_fast_assertions_section <- function(assertions, pmid_sentences = NULL) {
+create_fast_assertions_section <- function(assertions, pmid_sentences = NULL, progress_callback = NULL) {
     if (is.null(assertions) || length(assertions) == 0) {
         return("<div class='section'><h2>🔗 Causal Assertions</h2><p>No causal assertions available.</p></div>")
     }
@@ -149,6 +165,12 @@ create_fast_assertions_section <- function(assertions, pmid_sentences = NULL) {
 
     # Start section
     section_parts <- c("<div class='section'><h2>🔗 Causal Assertions</h2>")
+
+    total_assertions <- length(assertions)
+
+    if (!is.null(progress_callback)) {
+        progress_callback(paste("⬇️ Processing", total_assertions, "assertions..."))
+    }
 
     # Process each assertion efficiently
     for (i in seq_along(assertions)) {
@@ -230,6 +252,13 @@ create_fast_assertions_section <- function(assertions, pmid_sentences = NULL) {
         )
 
         section_parts <- c(section_parts, assertion_entry)
+
+        # Update progress every 10% or every 100 assertions (whichever is smaller)
+        update_interval <- max(1, floor(total_assertions / 10))
+        if (i %% update_interval == 0 && !is.null(progress_callback)) {
+            progress_pct <- round((i / total_assertions) * 100)
+            progress_callback(paste("⬇️ Downloading HTML file:", progress_pct, "%"))
+        }
     }
 
     # Close section
