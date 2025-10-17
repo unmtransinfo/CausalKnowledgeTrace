@@ -224,7 +224,7 @@ class DatabaseOperations:
 
         query = f"""
         SELECT cui, name
-        FROM causalentity
+        FROM causalehr.causalentity
         WHERE cui IN ({cui_placeholders})
         """
 
@@ -251,7 +251,7 @@ class DatabaseOperations:
 
         query = f"""
         SELECT pmid, sentence
-        FROM causalsentence
+        FROM causalehr.causalsentence
         WHERE pmid IN ({pmid_placeholders})
         ORDER BY pmid, sentence
         """
@@ -304,7 +304,7 @@ class DatabaseOperations:
 
         query = f"""
         SELECT pmid, sentence_id, sentence
-        FROM causalsentence
+        FROM causalehr.causalsentence
         WHERE pmid IN ({pmid_placeholders})
           AND sentence_id IN ({sentence_id_placeholders})
         ORDER BY pmid, sentence_id
@@ -384,7 +384,7 @@ class DatabaseOperations:
         cp.subject_cui, cp.object_cui, cp.predicate,
         STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
         STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
-        FROM causalpredication cp
+        FROM causalehr.causalpredication cp
         WHERE {predication_condition}
         AND (
             (cp.subject_cui IN ({exposure_placeholders})
@@ -430,7 +430,7 @@ class DatabaseOperations:
             cp.subject_cui, cp.object_cui, cp.predicate,
             STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
             STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
-        FROM causalpredication cp
+        FROM causalehr.causalpredication cp
         WHERE {predication_condition}
         AND (cp.subject_cui IN ({cui_placeholders})
             OR cp.object_cui IN ({cui_placeholders}))
@@ -467,7 +467,7 @@ class DatabaseOperations:
         query = f"""
         WITH previous_hop_nodes AS (
             SELECT DISTINCT cp.subject_cui AS node_cui
-            FROM causalpredication cp
+            FROM causalehr.causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blocklist_condition}
             GROUP BY cp.subject_cui
@@ -476,7 +476,7 @@ class DatabaseOperations:
             UNION
 
             SELECT DISTINCT cp.object_cui AS node_cui
-            FROM causalpredication cp
+            FROM causalehr.causalpredication cp
             WHERE {predication_condition}
               AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blocklist_condition}
             GROUP BY cp.object_cui
@@ -486,7 +486,7 @@ class DatabaseOperations:
                cp.subject_cui, cp.object_cui, cp.predicate,
                STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
                STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
-        FROM causalpredication cp
+        FROM causalehr.causalpredication cp
         WHERE {predication_condition}
           AND (cp.subject_cui IN (SELECT node_cui FROM previous_hop_nodes)
                OR cp.object_cui IN (SELECT node_cui FROM previous_hop_nodes)){blocklist_condition}

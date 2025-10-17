@@ -9,3 +9,4 @@ test*.R
 *nohup.out
 
 .env
+.augment/

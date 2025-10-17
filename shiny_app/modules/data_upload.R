@@ -737,7 +737,10 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
     from_normalized <- normalize_name(from_node)
     to_normalized <- normalize_name(to_node)
 
-    # Search for matching assertion using multiple matching strategies
+    # Search for matching assertions using multiple matching strategies
+    # Collect ALL matching assertions for this edge (to handle multiple predicates)
+    matching_assertions <- list()
+
     for (assertion in assertions_data) {
         if (!is.null(assertion$subject_name) && !is.null(assertion$object_name)) {
             # Strategy 1: Exact match (original logic)
@@ -770,80 +773,113 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
             }
 
             if (exact_match || normalized_match || partial_match) {
-                # Extract PMID list from pmid_data keys (optimized structure)
-                pmid_list <- if (!is.null(assertion$pmid_data)) {
-                    names(assertion$pmid_data)
-                } else if (!is.null(assertion$pmid_list)) {
-                    assertion$pmid_list  # Backward compatibility
-                } else {
-                    character(0)
-                }
-
-                # Handle mixed PMID formats (strings and objects) - for backward compatibility
-                if (is.list(pmid_list)) {
-                    clean_pmids <- character(0)
-                    for (item in pmid_list) {
-                        if (is.character(item)) {
-                            clean_pmids <- c(clean_pmids, item)
-                        } else if (is.list(item) && !is.null(names(item))) {
-                            # If it's a named list, use the name as the PMID
-                            clean_pmids <- c(clean_pmids, names(item)[1])
-                        }
-                    }
-                    pmid_list <- clean_pmids
-                }
-
-                # Determine match type for debugging
-                match_type <- if (exact_match) "exact" else if (normalized_match) "normalized" else "partial"
-
-                # Extract PMID list from pmid_data keys (optimized structure) - FIRST
-                pmid_list <- if (!is.null(assertion$pmid_data)) {
-                    names(assertion$pmid_data)
-                } else if (!is.null(assertion$pmid_list)) {
-                    assertion$pmid_list  # Backward compatibility
-                } else {
-                    character(0)
-                }
-
-                # Extract sentence data if available - SECOND (using correct pmid_list)
-                pmid_data <- assertion$pmid_data
-                sentence_data <- list()
-                if (!is.null(pmid_data) && is.list(pmid_data)) {
-                    for (pmid in pmid_list) {
-                        tryCatch({
-                            if (!is.null(pmid_data[[pmid]]) && is.list(pmid_data[[pmid]]) && !is.null(pmid_data[[pmid]]$sentences)) {
-                                sentence_data[[pmid]] <- pmid_data[[pmid]]$sentences
-                            } else {
-                                sentence_data[[pmid]] <- character(0)
-                            }
-                        }, error = function(e) {
-                            cat("Warning: Error accessing sentence data for PMID", pmid, ":", e$message, "\n")
-                            sentence_data[[pmid]] <- character(0)
-                        })
-                    }
-                }
-
-                # Ensure sentence_data is always a proper list
-                if (!is.list(sentence_data)) {
-                    sentence_data <- list()
-                }
-
-                return(list(
-                    found = TRUE,
-                    message = paste("Found", length(pmid_list), "PMIDs for edge (", match_type, "match)"),
-                    pmid_list = pmid_list,
-                    sentence_data = sentence_data,
-                    evidence_count = assertion$evidence_count %||% length(pmid_list),
-                    relationship_degree = assertion$relationship_degree %||% "unknown",
-                    predicate = assertion$predicate %||% "CAUSES",
-                    match_type = match_type,
-                    original_subject = assertion$subject_name,
-                    original_object = assertion$object_name,
-                    subject_cui = assertion$subject_cui %||% "",
-                    object_cui = assertion$object_cui %||% ""
-                ))
+                # Store this matching assertion
+                matching_assertions[[length(matching_assertions) + 1]] <- list(
+                    assertion = assertion,
+                    match_type = if (exact_match) "exact" else if (normalized_match) "normalized" else "partial"
+                )
             }
         }
+    }
+
+    # If we found matching assertions, aggregate them
+    if (length(matching_assertions) > 0) {
+        # Aggregate all predicates, PMIDs, and sentences from all matching assertions
+        all_predicates <- character(0)
+        all_pmids <- character(0)
+        all_sentence_data <- list()
+        total_evidence_count <- 0
+        match_type <- "exact"  # Use the best match type
+        original_subject <- ""
+        original_object <- ""
+        subject_cui <- ""
+        object_cui <- ""
+
+        for (match_info in matching_assertions) {
+            assertion <- match_info$assertion
+
+            # Collect predicate
+            pred <- assertion$predicate %||% "CAUSES"
+            if (!(pred %in% all_predicates)) {
+                all_predicates <- c(all_predicates, pred)
+            }
+
+            # Extract PMID list from pmid_data keys (optimized structure)
+            pmid_list <- if (!is.null(assertion$pmid_data)) {
+                names(assertion$pmid_data)
+            } else if (!is.null(assertion$pmid_list)) {
+                assertion$pmid_list  # Backward compatibility
+            } else {
+                character(0)
+            }
+
+            # Handle mixed PMID formats (strings and objects) - for backward compatibility
+            if (is.list(pmid_list)) {
+                clean_pmids <- character(0)
+                for (item in pmid_list) {
+                    if (is.character(item)) {
+                        clean_pmids <- c(clean_pmids, item)
+                    } else if (is.list(item) && !is.null(names(item))) {
+                        # If it's a named list, use the name as the PMID
+                        clean_pmids <- c(clean_pmids, names(item)[1])
+                    }
+                }
+                pmid_list <- clean_pmids
+            }
+
+            # Add unique PMIDs
+            for (pmid in pmid_list) {
+                if (!(pmid %in% all_pmids)) {
+                    all_pmids <- c(all_pmids, pmid)
+                }
+            }
+
+            # Extract sentence data if available
+            pmid_data <- assertion$pmid_data
+            if (!is.null(pmid_data) && is.list(pmid_data)) {
+                for (pmid in pmid_list) {
+                    tryCatch({
+                        if (!is.null(pmid_data[[pmid]]) && is.list(pmid_data[[pmid]]) && !is.null(pmid_data[[pmid]]$sentences)) {
+                            if (is.null(all_sentence_data[[pmid]])) {
+                                all_sentence_data[[pmid]] <- pmid_data[[pmid]]$sentences
+                            }
+                        }
+                    }, error = function(e) {
+                        cat("Warning: Error accessing sentence data for PMID", pmid, ":", e$message, "\n")
+                    })
+                }
+            }
+
+            # Accumulate evidence count
+            total_evidence_count <- total_evidence_count + (assertion$evidence_count %||% length(pmid_list))
+
+            # Store metadata from first assertion
+            if (original_subject == "") {
+                original_subject <- assertion$subject_name %||% ""
+                original_object <- assertion$object_name %||% ""
+                subject_cui <- assertion$subject_cui %||% ""
+                object_cui <- assertion$object_cui %||% ""
+                match_type <- match_info$match_type
+            }
+        }
+
+        # Combine all predicates into a single string
+        combined_predicate <- paste(sort(all_predicates), collapse = ", ")
+
+        return(list(
+            found = TRUE,
+            message = paste("Found", length(all_pmids), "PMIDs for edge (", match_type, "match)"),
+            pmid_list = all_pmids,
+            sentence_data = all_sentence_data,
+            evidence_count = total_evidence_count,
+            relationship_degree = "unknown",
+            predicate = combined_predicate,  # Now contains all predicates
+            match_type = match_type,
+            original_subject = original_subject,
+            original_object = original_object,
+            subject_cui = subject_cui,
+            object_cui = object_cui
+        ))
     }
 
     return(list(
