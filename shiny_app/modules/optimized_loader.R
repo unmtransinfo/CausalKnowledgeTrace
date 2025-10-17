@@ -104,7 +104,7 @@ expand_optimized_format <- function(optimized_data) {
         expanded_assertion <- list(
             subject_name = compact_assertion$subj,
             subject_cui = compact_assertion$subj_cui,
-            predicate = "CAUSES",  # Default predicate
+            predicate = compact_assertion$predicate %||% "CAUSES",  # Use actual predicate from compact assertion
             object_name = compact_assertion$obj,
             object_cui = compact_assertion$obj_cui,
             evidence_count = compact_assertion$ev_count,

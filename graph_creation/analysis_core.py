@@ -390,7 +390,7 @@ if (lightweight_result$success) {{
         query = f"""
         SELECT EXISTS (
             SELECT 1
-            FROM causalpredication cp
+            FROM causalehr.causalpredication cp
             WHERE {predication_condition}
               AND {exposure_condition}
               AND {outcome_condition}
@@ -555,7 +555,11 @@ if (lightweight_result$success) {{
         print(f"  Total execution time: {total_time:.2f} seconds")
         for step, metrics in timing_results.items():
             if step != "total_execution":
-                print(f"  {step}: {metrics['duration']:.2f} seconds")
+                # Handle both dict and non-dict values safely
+                if isinstance(metrics, dict) and 'duration' in metrics:
+                    print(f"  {step}: {metrics['duration']:.2f} seconds")
+                elif isinstance(metrics, (int, float)):
+                    print(f"  {step}: {metrics:.2f} seconds")
 
         print("\nMultiple CUIs Configuration:")
         print(f"  This analysis used {len(self.config.exposure_cui_list)} exposure CUI(s) and {len(self.config.outcome_cui_list)} outcome CUI(s)")
@@ -738,7 +742,11 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
         print(f"  Total execution time: {total_time:.2f} seconds")
         for step, metrics in timing_results.items():
             if step != "total_execution":
-                print(f"  {step}: {metrics['duration']:.2f} seconds")
+                # Handle both dict and non-dict values safely
+                if isinstance(metrics, dict) and 'duration' in metrics:
+                    print(f"  {step}: {metrics['duration']:.2f} seconds")
+                elif isinstance(metrics, (int, float)):
+                    print(f"  {step}: {metrics:.2f} seconds")
 
         print("\nMarkov Blanket Analysis:")
         print(f"  This analysis computed Markov blankets for {len(self.config.exposure_cui_list)} exposure CUI(s) and {len(self.config.outcome_cui_list)} outcome CUI(s)")

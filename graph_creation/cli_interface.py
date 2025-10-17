@@ -222,6 +222,11 @@ def main():
             )
 
             timing_results = analyzer.run_markov_blanket_analysis()
+
+            # Check if analysis was aborted due to insufficient evidence
+            if isinstance(timing_results, dict) and "error" in timing_results:
+                sys.exit(1)
+
             analyzer.display_markov_blanket_summary(timing_results)
         else:
             # Use GraphAnalyzer for general graph analysis
@@ -235,6 +240,11 @@ def main():
             )
 
             timing_results = analyzer.run_analysis()
+
+            # Check if analysis was aborted due to insufficient evidence
+            if isinstance(timing_results, dict) and "error" in timing_results:
+                sys.exit(1)
+
             analyzer.display_results_summary(timing_results)
         
     except KeyboardInterrupt:

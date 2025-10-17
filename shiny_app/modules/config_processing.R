@@ -76,9 +76,9 @@ save_config_file <- function(validated_params, output_dir = "../graph_creation")
 }
 
 #' Execute Graph Creation Script
-#' 
+#'
 #' Executes the Python graph creation script with the saved configuration
-#' 
+#'
 #' @param config_file_path Character string path to the configuration file
 #' @param python_script_path Character string path to the Python script
 #' @return List with execution results
@@ -92,36 +92,39 @@ execute_graph_creation <- function(config_file_path = "../graph_creation/user_in
                 message = paste("Configuration file not found:", config_file_path)
             ))
         }
-        
+
         if (!file.exists(python_script_path)) {
             return(list(
                 success = FALSE,
                 message = paste("Python script not found:", python_script_path)
             ))
         }
-        
+
         # Construct command
         cmd <- paste("cd", dirname(python_script_path), "&&",
                     "python", basename(python_script_path),
                     "--yaml-config", basename(config_file_path),
                     "--host localhost --user myuser --password mypass --dbname causalehr")
-        
-        # Execute command
-        result <- system(cmd, intern = TRUE, wait = TRUE)
-        
-        if (length(result) == 0) {
+
+        # Execute command and capture exit code
+        # Note: We need to capture the exit code separately from the output
+        exit_code <- system(cmd, wait = TRUE)
+
+        # Check if execution was successful (exit code 0)
+        if (exit_code == 0) {
+            return(list(
+                success = TRUE,
+                exit_code = exit_code,
+                message = "Graph creation completed successfully"
+            ))
+        } else {
             return(list(
                 success = FALSE,
-                message = "No output from graph creation script"
+                exit_code = exit_code,
+                message = paste("Graph creation script failed with exit code:", exit_code, ". Check the console output for details.")
             ))
         }
-        
-        return(list(
-            success = TRUE,
-            output = result,
-            message = "Graph creation completed successfully"
-        ))
-        
+
     }, error = function(e) {
         return(list(
             success = FALSE,

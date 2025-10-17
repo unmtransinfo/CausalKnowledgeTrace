@@ -1478,7 +1478,7 @@ server <- function(input, output, session) {
                     pmid_list = character(0),
                     sentence_data = list(),
                     evidence_count = 0,
-                    predicate = "CAUSES",
+                    predicate = "UNKNOWN",  # Changed from hardcoded "CAUSES" to "UNKNOWN" for error cases
                     subject_cui = "",
                     object_cui = ""
                 ))
