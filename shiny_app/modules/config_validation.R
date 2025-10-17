@@ -76,8 +76,8 @@ validate_name <- function(name_string) {
 #' @return List with validation results
 validate_predication_types <- function(selected_types) {
     # Define valid predication types (as specified by user)
-    valid_types <- c("AFFECTS", "ASSOCIATED_WITH", "AUGMENTS", "CAUSES", "COEXISTS_WITH",
-                    "COMPLICATES", "DISRUPTS", "INHIBITS", "INTERACTS_WITH", "MANIFESTATION_OF",
+    valid_types <- c("AFFECTS", "ASSOCIATED_WITH", "AUGMENTS", "CAUSES",
+                    "COMPLICATES", "DISRUPTS", "INHIBITS",
                     "PRECEDES", "PREDISPOSES", "PREVENTS", "PRODUCES", "STIMULATES", "TREATS")
 
     # Handle null or empty input - default to CAUSES
