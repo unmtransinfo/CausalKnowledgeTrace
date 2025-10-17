@@ -64,7 +64,32 @@ create_custom_styles <- function() {
             height: 800px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            overflow: hidden;
+            overflow: visible;
+        }
+
+        /* Fix for visNetwork nodesIdSelection dropdown */
+        .resizable-dag-container .vis-network {
+            overflow: visible !important;
+        }
+
+        .resizable-dag-container .vis-option-container {
+            position: relative;
+            z-index: 10;
+            background: white;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .resizable-dag-container input.vis-input {
+            width: 200px;
+            padding: 6px 8px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 13px;
+            display: block !important;
+            visibility: visible !important;
         }
 
         .dag-resize-handle {
