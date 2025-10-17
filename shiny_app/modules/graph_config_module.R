@@ -371,10 +371,14 @@ graphConfigServer <- function(id) {
             # Initialize database connection pool
             db_init_result <- init_database_pool()
             if (!db_init_result$success) {
-                cat("Warning: Database connection failed:", db_init_result$message, "\n")
-                cat("CUI search functionality will be limited\n")
+                if (exists("log_message")) {
+                    log_message(paste("Database connection failed:", db_init_result$message), "WARNING")
+                    log_message("CUI search functionality will be limited", "WARNING")
+                }
             } else {
-                cat("Database connection initialized for CUI search\n")
+                if (exists("log_message")) {
+                    log_message("Database connection initialized for CUI search", "INFO")
+                }
             }
 
             # Initialize CUI search servers
