@@ -196,8 +196,6 @@ class GraphAnalyzer:
         # Save with custom readable formatting
         self._save_with_custom_formatting(optimized_data, filepath)
 
-        print(f"Saved optimized format with {len(optimized_data['pmid_sentences'])} unique PMIDs and {sum(len(sentences) for sentences in optimized_data['pmid_sentences'].values())} total sentences")
-
     def create_optimized_structure(self, data: List[Dict]) -> Dict:
         """Create optimized JSON structure with sentence deduplication."""
         optimized = {
@@ -373,23 +371,11 @@ if (lightweight_result$success) {{
     def run_analysis(self) -> Dict:
         """Execute the complete general graph analysis pipeline and return timing data."""
         with TimingContext("total_execution", self.timing_data):
-            print(f"\nStarting graph analysis for {self.config.description}...")
-            print(f"Configuration supports multiple CUIs:")
-            print(f"  Exposure CUIs: {', '.join(self.config.exposure_cui_list)} ({len(self.config.exposure_cui_list)} CUIs)")
-            print(f"  Outcome CUIs: {', '.join(self.config.outcome_cui_list)} ({len(self.config.outcome_cui_list)} CUIs)")
-            print(f"Using threshold: {self.threshold}")
-            print(f"Output directory: {self.output_dir.absolute()}")
-
             # Connect to database
             with psycopg2.connect(**self.db_params) as conn:
                 with conn.cursor() as cursor:
-                    print("\nFetching causal relationships from database...")
-                    print("Note: Queries now support multiple CUIs per exposure/outcome")
-                    print(f"Using degree parameter: {self.degree} (maximum relationship depth)")
-
                     # Fetch relationships using degree functionality with CUI-based node identification
                     _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
-                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.degree} degrees")
 
                     print("\nConstructing causal graph...")
                     # Build graph with cleaned node names and consolidated mapping
@@ -415,7 +401,6 @@ if (lightweight_result$success) {{
                                 G.add_edge(consolidated_src, consolidated_dst)
 
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (degree={self.degree})")
-                        print(f"Consolidated {len(cui_based_links)} CUI-based relationships into {len(consolidated_edges)} consolidated relationships")
 
                     print("\nGenerating DAGitty visualization script...")
                     # Generate basic DAG script
@@ -429,77 +414,17 @@ if (lightweight_result$success) {{
                     # Save all results and metadata
                     self.save_results_and_metadata(self.timing_data, detailed_assertions)
 
-        print("\nGraph analysis complete!")
         return self.timing_data
 
-    def display_results_summary(self, timing_results: Dict):
+    def display_results_summary(self):
         """Display a comprehensive summary of general graph analysis results."""
         output_path = self.output_dir
-
-        print("\n" + "="*60)
-        print("GRAPH ANALYSIS COMPLETE")
-        print("="*60)
-        print(f"Configuration: {self.config.name}")
         print(f"Description: {self.config.description}")
-
-        # Fetch CUI-to-name mappings from database
-        exposure_cui_display = []
-        outcome_cui_display = []
-
-        try:
-            with psycopg2.connect(**self.db_params) as conn:
-                with conn.cursor() as cursor:
-                    # Get all CUIs for mapping
-                    all_cuis = self.config.exposure_cui_list + self.config.outcome_cui_list
-                    cui_name_mapping = self.db_ops.fetch_cui_name_mappings(cursor, all_cuis)
-
-                    # Build exposure CUI display with names
-                    for cui in self.config.exposure_cui_list:
-                        if cui in cui_name_mapping:
-                            exposure_cui_display.append(f"{cui} -> {cui_name_mapping[cui]}")
-                        else:
-                            exposure_cui_display.append(f"{cui} -> CUI name mapping not found for {cui}")
-
-                    # Build outcome CUI display with names
-                    for cui in self.config.outcome_cui_list:
-                        if cui in cui_name_mapping:
-                            outcome_cui_display.append(f"{cui} -> {cui_name_mapping[cui]}")
-                        else:
-                            outcome_cui_display.append(f"{cui} -> CUI name mapping not found for {cui}")
-
-        except Exception as e:
-            print(f"Warning: Could not fetch CUI name mappings: {e}")
-            # Fallback to CUI-only display
-            exposure_cui_display = self.config.exposure_cui_list
-            outcome_cui_display = self.config.outcome_cui_list
-
-        print(f"Exposure CUIs: {', '.join(exposure_cui_display)} ({len(self.config.exposure_cui_list)} CUIs)")
-        print(f"Outcome CUIs: {', '.join(outcome_cui_display)} ({len(self.config.outcome_cui_list)} CUIs)")
-        print(f"Total target CUIs: {len(self.config.all_target_cuis)}")
-        print(f"Output directory: {output_path.absolute()}")
-
+        
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for DAG visualization (degree={self.degree})")
         print(f"  - performance_metrics.json: Timing information")
-
-        print("\nTiming Results:")
-        total_time = timing_results.get("total_execution", {}).get("duration", 0)
-        print(f"  Total execution time: {total_time:.2f} seconds")
-        for step, metrics in timing_results.items():
-            if step != "total_execution":
-                # Handle both dict and non-dict values safely
-                if isinstance(metrics, dict) and 'duration' in metrics:
-                    print(f"  {step}: {metrics['duration']:.2f} seconds")
-                elif isinstance(metrics, (int, float)):
-                    print(f"  {step}: {metrics:.2f} seconds")
-
-        print("\nMultiple CUIs Configuration:")
-        print(f"  This analysis used {len(self.config.exposure_cui_list)} exposure CUI(s) and {len(self.config.outcome_cui_list)} outcome CUI(s)")
-        print(f"  Total relationships analyzed across {len(self.config.all_target_cuis)} target concepts")
-        if self.yaml_config_data:
-            print(f"  Configuration loaded from YAML file")
-            print(f"  Threshold (min_pmids): {self.threshold}")
 
         print("\nTo visualize results, run the R script in the output directory:")
         print(f"  cd {output_path}")
@@ -618,75 +543,18 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
             with open(self.output_dir / "MarkovBlanket_Union.R", "w") as f:
                 f.write(dagitty_mb_format)
 
-    def display_markov_blanket_summary(self, timing_results: Dict):
+    def display_markov_blanket_summary(self):
         """Display a comprehensive summary of Markov blanket analysis results."""
         output_path = self.output_dir
 
-        print("\n" + "="*60)
-        print("MARKOV BLANKET ANALYSIS COMPLETE")
-        print("="*60)
         print(f"Configuration: {self.config.name}")
         print(f"Description: {self.config.description}")
-
-        # Fetch CUI-to-name mappings from database
-        exposure_cui_display = []
-        outcome_cui_display = []
-
-        try:
-            with psycopg2.connect(**self.db_params) as conn:
-                with conn.cursor() as cursor:
-                    # Get all CUIs for mapping
-                    all_cuis = self.config.exposure_cui_list + self.config.outcome_cui_list
-                    cui_name_mapping = self.db_ops.fetch_cui_name_mappings(cursor, all_cuis)
-
-                    # Build exposure CUI display with names
-                    for cui in self.config.exposure_cui_list:
-                        if cui in cui_name_mapping:
-                            exposure_cui_display.append(f"{cui} -> {cui_name_mapping[cui]}")
-                        else:
-                            exposure_cui_display.append(f"{cui} -> CUI name mapping not found for {cui}")
-
-                    # Build outcome CUI display with names
-                    for cui in self.config.outcome_cui_list:
-                        if cui in cui_name_mapping:
-                            outcome_cui_display.append(f"{cui} -> {cui_name_mapping[cui]}")
-                        else:
-                            outcome_cui_display.append(f"{cui} -> CUI name mapping not found for {cui}")
-
-        except Exception as e:
-            print(f"Warning: Could not fetch CUI name mappings: {e}")
-            # Fallback to CUI-only display
-            exposure_cui_display = self.config.exposure_cui_list
-            outcome_cui_display = self.config.outcome_cui_list
-
-        print(f"Exposure CUIs: {', '.join(exposure_cui_display)} ({len(self.config.exposure_cui_list)} CUIs)")
-        print(f"Outcome CUIs: {', '.join(outcome_cui_display)} ({len(self.config.outcome_cui_list)} CUIs)")
-        print(f"Total target CUIs: {len(self.config.all_target_cuis)}")
-        print(f"Output directory: {output_path.absolute()}")
 
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (degree={self.degree})")
         print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
         print(f"  - performance_metrics.json: Timing information")
-
-        print("\nTiming Results:")
-        total_time = timing_results.get("total_execution", {}).get("duration", 0)
-        print(f"  Total execution time: {total_time:.2f} seconds")
-        for step, metrics in timing_results.items():
-            if step != "total_execution":
-                # Handle both dict and non-dict values safely
-                if isinstance(metrics, dict) and 'duration' in metrics:
-                    print(f"  {step}: {metrics['duration']:.2f} seconds")
-                elif isinstance(metrics, (int, float)):
-                    print(f"  {step}: {metrics:.2f} seconds")
-
-        print("\nMarkov Blanket Analysis:")
-        print(f"  This analysis computed Markov blankets for {len(self.config.exposure_cui_list)} exposure CUI(s) and {len(self.config.outcome_cui_list)} outcome CUI(s)")
-        print(f"  Total relationships analyzed across {len(self.config.all_target_cuis)} target concepts")
-        if self.yaml_config_data:
-            print(f"  Configuration loaded from YAML file")
-            print(f"  Threshold (min_pmids): {self.threshold}")
 
         print("\nTo visualize results, run the R scripts in the output directory:")
         print(f"  cd {output_path}")
@@ -696,23 +564,11 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
     def run_markov_blanket_analysis(self) -> Dict:
         """Execute the complete Markov blanket analysis pipeline and return timing data."""
         with TimingContext("total_execution", self.timing_data):
-            print(f"\nStarting Markov blanket analysis for {self.config.description}...")
-            print(f"Configuration supports multiple CUIs:")
-            print(f"  Exposure CUIs: {', '.join(self.config.exposure_cui_list)} ({len(self.config.exposure_cui_list)} CUIs)")
-            print(f"  Outcome CUIs: {', '.join(self.config.outcome_cui_list)} ({len(self.config.outcome_cui_list)} CUIs)")
-            print(f"Using threshold: {self.threshold}")
-            print(f"Output directory: {self.output_dir.absolute()}")
-
             # Connect to database
             with psycopg2.connect(**self.db_params) as conn:
                 with conn.cursor() as cursor:
-                    print("\nFetching causal relationships from database...")
-                    print("Note: Queries now support multiple CUIs per exposure/outcome")
-                    print(f"Using degree parameter: {self.degree} (maximum relationship depth)")
-
                     # Fetch relationships using k-hop functionality with CUI-based node identification
                     _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
-                    print(f"Found {len(cui_based_links)} CUI-based relationships up to {self.degree} degrees")
 
                     # Compute Markov blankets
                     mb_union = self.mb_computer.compute_markov_blankets(cursor)

@@ -59,21 +59,18 @@ def format_sql_query_for_logging(query: str, params: Union[List, Tuple]) -> str:
     return formatted_query
 
 
-def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = None, operation_name: str = "SQL Query"):
+def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = None):
     """
-    Execute a database query with complete SQL logging.
+    Execute a database query with SQL logging.
 
     Args:
         cursor: Database cursor object
         query: SQL query string
         params: Query parameters (optional)
-        operation_name: Description of the operation for logging
     """
     # Format and print the complete executable SQL query
     if params:
         formatted_query = format_sql_query_for_logging(query, params)
-        print(f"\n=== {operation_name} ===")
-        print("Complete executable SQL query:")
         print("-" * 80)
         print(formatted_query)
         print("-" * 80)
@@ -81,12 +78,6 @@ def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = 
         # Execute the original parameterized query
         cursor.execute(query, params)
     else:
-        print(f"\n=== {operation_name} ===")
-        print("Complete executable SQL query:")
-        print("-" * 80)
-        print(query)
-        print("-" * 80)
-
         # Execute the query without parameters
         cursor.execute(query)
 
@@ -229,7 +220,7 @@ class DatabaseOperations:
         """
 
         try:
-            execute_query_with_logging(cursor, query, cui_list, "Fetch CUI Name Mappings")
+            execute_query_with_logging(cursor, query, cui_list)
             results = cursor.fetchall()
 
             # Create mapping dictionary
@@ -257,8 +248,6 @@ class DatabaseOperations:
         """
 
         try:
-            # Use concise logging for sentence fetching to avoid terminal clutter
-            print(f"Fetching causal sentences for {len(pmid_list)} PMIDs...")
             cursor.execute(query, pmid_list)
             results = cursor.fetchall()
 
@@ -404,7 +393,7 @@ class DatabaseOperations:
                  self.config.outcome_cui_list + self.config.outcome_cui_list +
                  [self.threshold] + blocklist_params)
 
-        execute_query_with_logging(cursor, query, params, f"Fetch Hop 1 Relationships")
+        execute_query_with_logging(cursor, query, params)
 
         results = cursor.fetchall()
         links = [(row[0], row[1]) for row in results]
@@ -443,7 +432,7 @@ class DatabaseOperations:
         # Parameters: predication_types + previous_hop_list (twice) + blocklist_params + threshold
         params = self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold]
 
-        execute_query_with_logging(cursor, query, params, f"Fetch Hop 2 Relationships")
+        execute_query_with_logging(cursor, query, params)
 
         results = cursor.fetchall()
         links = [(row[0], row[1]) for row in results]
@@ -499,8 +488,8 @@ class DatabaseOperations:
         params = (self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold] +
                  self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold] +
                  self.predication_types + blocklist_params + [self.threshold])
-        
-        execute_query_with_logging(cursor, query, params, f"Fetch Hop {hop_level} Relationships")
+
+        execute_query_with_logging(cursor, query, params)
 
         results = cursor.fetchall()
         links = [(row[0], row[1]) for row in results]
@@ -544,21 +533,16 @@ class DatabaseOperations:
             canonical_name = max(name_counts.items(), key=lambda x: x[1])[0]
             cui_to_canonical_name[cui] = canonical_name
 
-        print(f"Built CUI-to-name mapping for {len(cui_to_canonical_name)} unique CUIs")
         return cui_to_canonical_name
 
     def fetch_k_hop_relationships(self, cursor):
         """Fetch causal relationships up to k hops using dynamic loop-based approach."""
-        print(f"Fetching relationships up to {self.degree} hops using dynamic approach...")
-
         all_links = []
         all_detailed_assertions = []
         current_hop_cuis = set()
 
         # Iterate through each hop level dynamically
         for hop_level in range(1, self.degree + 1):
-            print(f"Processing hop {hop_level}...")
-
             # For hop 1, we don't need previous CUIs; for others, we use the first hop CUIs
             previous_cuis = None if hop_level == 1 else current_hop_cuis
 
@@ -574,7 +558,6 @@ class DatabaseOperations:
                 for assertion in detailed_assertions:
                     current_hop_cuis.add(assertion['subject_cui'])
                     current_hop_cuis.add(assertion['object_cui'])
-                print(f"Collected {len(current_hop_cuis)} unique CUIs from hop 1 for subsequent hops")
 
         # Build CUI-to-canonical-name mapping from all assertions
         cui_to_name_mapping = self.build_cui_to_name_mapping(all_detailed_assertions)
@@ -590,8 +573,6 @@ class DatabaseOperations:
                 canonical_object_name = cui_to_name_mapping[object_cui]
                 cui_based_links.append((canonical_subject_name, canonical_object_name))
 
-        print(f"Found {len(all_links)} total relationships across {self.degree} hops")
-        print(f"Created {len(cui_based_links)} CUI-based relationships with canonical names")
         return current_hop_cuis, cui_based_links, all_detailed_assertions
 
     def _process_hop_results(self, cursor, results: List, hop_level: int) -> List:
