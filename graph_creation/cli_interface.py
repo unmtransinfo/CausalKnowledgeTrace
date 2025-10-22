@@ -192,17 +192,13 @@ def main():
         selected_config = EXPOSURE_OUTCOME_CONFIGS[config_name]
         
         if args.verbose:
-            print(f"Running analysis with configuration: {config_name}")
             if yaml_config_data:
                 print(f"  Configuration source: YAML file ({args.yaml_config})")
-                print(f"  YAML min_pmids (threshold): {threshold}")
             else:
                 print(f"  Configuration source: Predefined")
                 print(f"  Command-line threshold: {threshold}")
-            print(f"  Description: {selected_config.description}")
             print(f"  Exposure CUIs: {', '.join(selected_config.exposure_cui_list)} ({len(selected_config.exposure_cui_list)} CUIs)")
             print(f"  Outcome CUIs: {', '.join(selected_config.outcome_cui_list)} ({len(selected_config.outcome_cui_list)} CUIs)")
-            print(f"  Total target CUIs: {len(selected_config.all_target_cuis)}")
             print(f"  Markov blanket: {'Enabled' if args.markov_blanket else 'Disabled'}")
             print(f"Database: {args.host}:{args.port}/{args.dbname}")
             print(f"Output directory: {args.output_dir}")
@@ -227,7 +223,7 @@ def main():
             if isinstance(timing_results, dict) and "error" in timing_results:
                 sys.exit(1)
 
-            analyzer.display_markov_blanket_summary(timing_results)
+            analyzer.display_markov_blanket_summary()
         else:
             # Use GraphAnalyzer for general graph analysis
             analyzer = GraphAnalyzer(
@@ -245,7 +241,7 @@ def main():
             if isinstance(timing_results, dict) and "error" in timing_results:
                 sys.exit(1)
 
-            analyzer.display_results_summary(timing_results)
+            analyzer.display_results_summary()
         
     except KeyboardInterrupt:
         print("\nAnalysis interrupted by user.")
