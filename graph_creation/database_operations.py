@@ -38,14 +38,31 @@ def format_sql_query_for_logging(query: str, params: Union[List, Tuple]) -> str:
     for param in params:
         if param is None:
             formatted_params.append('NULL')
+        elif isinstance(param, bool):
+            # Check bool before int/float since bool is subclass of int in Python
+            formatted_params.append('TRUE' if param else 'FALSE')
         elif isinstance(param, str):
             # Escape single quotes and wrap in quotes
             escaped_param = param.replace("'", "''")
             formatted_params.append(f"'{escaped_param}'")
         elif isinstance(param, (int, float)):
             formatted_params.append(str(param))
-        elif isinstance(param, bool):
-            formatted_params.append('TRUE' if param else 'FALSE')
+        elif isinstance(param, (list, tuple)):
+            # Handle array/list parameters for ANY operator
+            # Convert list to PostgreSQL ARRAY literal: ARRAY['val1', 'val2', ...]
+            array_items = []
+            for item in param:
+                if item is None:
+                    array_items.append('NULL')
+                elif isinstance(item, str):
+                    escaped_item = item.replace("'", "''")
+                    array_items.append(f"'{escaped_item}'")
+                elif isinstance(item, (int, float)):
+                    array_items.append(str(item))
+                else:
+                    escaped_item = str(item).replace("'", "''")
+                    array_items.append(f"'{escaped_item}'")
+            formatted_params.append(f"ARRAY[{', '.join(array_items)}]")
         else:
             # For other types, convert to string and quote
             escaped_param = str(param).replace("'", "''")
@@ -98,30 +115,31 @@ class DatabaseOperations:
             print(f"Blocklist filtering enabled: {len(self.blocklist_cuis)} CUI(s) will be excluded from graph creation")
             print(f"Blocklisted CUIs: {', '.join(self.blocklist_cuis)}")
     
+    def _create_cui_array_condition(self, field_name: str) -> str:
+        """Create SQL condition for CUI array using ANY operator (optimized)"""
+        return f"{field_name} = ANY(%s)"
+
     def _create_cui_placeholders(self, cui_list: List[str]) -> str:
-        """Create placeholder string for multiple CUIs in SQL queries"""
+        """Create placeholder string for multiple CUIs in SQL queries (deprecated - use array syntax)"""
         return ', '.join(['%s'] * len(cui_list))
-    
+
     def _create_cui_conditions(self, cui_list: List[str], field_name: str) -> str:
-        """Create SQL condition for multiple CUIs"""
+        """Create SQL condition for multiple CUIs (deprecated - use array syntax)"""
         placeholders = ', '.join(['%s'] * len(cui_list))
         return f"{field_name} IN ({placeholders})"
 
-    def _create_blocklist_conditions(self) -> Tuple[str, List[str]]:
-        """Create SQL conditions to exclude blocklisted CUIs"""
+    def _create_blocklist_conditions(self) -> Tuple[str, List]:
+        """Create SQL conditions to exclude blocklisted CUIs using optimized ANY operator"""
         if not self.blocklist_cuis:
             return "", []
 
-        # Create conditions to exclude blocklisted CUIs from both subject and object
-        subject_placeholders = ', '.join(['%s'] * len(self.blocklist_cuis))
-        object_placeholders = ', '.join(['%s'] * len(self.blocklist_cuis))
-
+        # Create conditions to exclude blocklisted CUIs from both subject and object using ANY operator
         blocklist_condition = f"""
-              AND cp.subject_cui NOT IN ({subject_placeholders})
-              AND cp.object_cui NOT IN ({object_placeholders})"""
+              AND cp.subject_cui != ALL(%s)
+              AND cp.object_cui != ALL(%s)"""
 
         # Return condition and parameters (blocklist_cuis twice - once for subject, once for object)
-        blocklist_params = self.blocklist_cuis + self.blocklist_cuis
+        blocklist_params = [self.blocklist_cuis, self.blocklist_cuis]
         return blocklist_condition, blocklist_params
     
     def _create_predication_condition(self) -> str:
@@ -210,17 +228,15 @@ class DatabaseOperations:
         if not cui_list:
             return {}
 
-        # Create placeholders for the CUI list
-        cui_placeholders = self._create_cui_placeholders(cui_list)
-
+        # Optimized query using ANY operator with array
         query = f"""
         SELECT cui, name
         FROM causalehr.causalentity
-        WHERE cui IN ({cui_placeholders})
+        WHERE cui = ANY(%s)
         """
 
         try:
-            execute_query_with_logging(cursor, query, cui_list)
+            execute_query_with_logging(cursor, query, [cui_list])
             results = cursor.fetchall()
 
             # Create mapping dictionary
@@ -237,18 +253,16 @@ class DatabaseOperations:
         if not pmid_list:
             return {}
 
-        # Create placeholders for the PMID list
-        pmid_placeholders = self._create_cui_placeholders(pmid_list)
-
+        # Optimized query using ANY operator with array
         query = f"""
         SELECT pmid, sentence
         FROM causalehr.causalsentence
-        WHERE pmid IN ({pmid_placeholders})
+        WHERE pmid = ANY(%s)
         ORDER BY pmid, sentence
         """
 
         try:
-            cursor.execute(query, pmid_list)
+            cursor.execute(query, [pmid_list])
             results = cursor.fetchall()
 
             # Create mapping dictionary: PMID -> list of unique sentences
@@ -282,27 +296,30 @@ class DatabaseOperations:
             if ':' in pair:
                 pmid, sentence_id = pair.strip().split(':', 1)
                 pmid_list.append(pmid)
-                sentence_id_list.append(sentence_id)
+                # Convert sentence_id to integer since it's bigint in database
+                try:
+                    sentence_id_list.append(int(sentence_id))
+                except ValueError:
+                    # Skip if not a valid integer
+                    continue
 
         if not pmid_list:
             return {}
 
-        # Create placeholders for the lists
-        pmid_placeholders = self._create_cui_placeholders(pmid_list)
-        sentence_id_placeholders = self._create_cui_placeholders(sentence_id_list)
-
+        # Optimized query using ANY operator with arrays
+        # Cast sentence_id array to bigint[] since sentence_id is bigint type in database
         query = f"""
         SELECT pmid, sentence_id, sentence
         FROM causalehr.causalsentence
-        WHERE pmid IN ({pmid_placeholders})
-          AND sentence_id IN ({sentence_id_placeholders})
+        WHERE pmid = ANY(%s)
+          AND sentence_id = ANY(%s::bigint[])
         ORDER BY pmid, sentence_id
         """
 
         try:
             # Use concise logging for sentence fetching to avoid terminal clutter
             print(f"Fetching causal sentences for {len(pmid_list)} PMID-sentence_id pairs...")
-            cursor.execute(query, pmid_list + sentence_id_list)
+            cursor.execute(query, [pmid_list, sentence_id_list])
             results = cursor.fetchall()
 
             # Create mapping dictionary: PMID -> list of unique sentences
@@ -363,11 +380,7 @@ class DatabaseOperations:
         # Create predication condition for multiple predication types
         predication_condition = self._create_predication_condition()
 
-        # Create placeholders for exposure and outcome CUIs from YAML config
-        exposure_placeholders = ', '.join(['%s'] * len(self.config.exposure_cui_list))
-        outcome_placeholders = ', '.join(['%s'] * len(self.config.outcome_cui_list))
-
-        # Query structure exactly matching the user's requested format with placeholders from input_user.yaml
+        # Optimized query using ANY operator with arrays instead of IN clauses
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
         cp.subject_cui, cp.object_cui, cp.predicate,
@@ -376,21 +389,21 @@ class DatabaseOperations:
         FROM causalehr.causalpredication cp
         WHERE {predication_condition}
         AND (
-            (cp.subject_cui IN ({exposure_placeholders})
-             OR cp.object_cui IN ({exposure_placeholders}))
+            (cp.subject_cui = ANY(%s)
+             OR cp.object_cui = ANY(%s))
             OR
-            (cp.subject_cui IN ({outcome_placeholders})
-             OR cp.object_cui IN ({outcome_placeholders}))
+            (cp.subject_cui = ANY(%s)
+             OR cp.object_cui = ANY(%s))
         ){blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Build parameters: predication_types + exposure CUIs (twice) + outcome CUIs (twice) + min_pmids threshold + blocklist params
+        # Build parameters: predication_types + exposure array (twice) + outcome array (twice) + threshold + blocklist params
         params = (self.predication_types +  # Use all predication types
-                 self.config.exposure_cui_list + self.config.exposure_cui_list +
-                 self.config.outcome_cui_list + self.config.outcome_cui_list +
+                 [self.config.exposure_cui_list, self.config.exposure_cui_list,
+                  self.config.outcome_cui_list, self.config.outcome_cui_list] +
                  [self.threshold] + blocklist_params)
 
         execute_query_with_logging(cursor, query, params)
@@ -402,18 +415,17 @@ class DatabaseOperations:
 
     def _fetch_second_hop(self, cursor, previous_hop_cuis: Set[str]) -> Tuple[List, List]:
         """Fetch second-hop relationships using first hop CUIs directly."""
-        # Convert set to list for SQL IN clause
+        # Convert set to list for SQL array parameter
         previous_hop_list = list(previous_hop_cuis)
 
         if not previous_hop_list:
             return [], []
 
-        # Create placeholders for the CUI list and predication condition
-        cui_placeholders = self._create_cui_placeholders(previous_hop_list)
+        # Create predication condition for multiple predication types
         predication_condition = self._create_predication_condition()
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
-        # Find extended network using first hop CUIs directly
+        # Optimized query using ANY operator with arrays instead of IN clauses
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
             cp.subject_cui, cp.object_cui, cp.predicate,
@@ -421,16 +433,16 @@ class DatabaseOperations:
             STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM causalehr.causalpredication cp
         WHERE {predication_condition}
-        AND (cp.subject_cui IN ({cui_placeholders})
-            OR cp.object_cui IN ({cui_placeholders}))
+        AND (cp.subject_cui = ANY(%s)
+            OR cp.object_cui = ANY(%s))
         {blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC
         """
 
-        # Parameters: predication_types + previous_hop_list (twice) + blocklist_params + threshold
-        params = self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold]
+        # Parameters: predication_types + previous_hop_list array (twice) + blocklist_params + threshold
+        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [self.threshold]
 
         execute_query_with_logging(cursor, query, params)
 
@@ -440,54 +452,34 @@ class DatabaseOperations:
         return self._process_hop_results(cursor, results, 2), links
 
     def _fetch_higher_hop(self, cursor, hop_level: int, previous_hop_cuis: Set[str]) -> Tuple[List, List]:
-        """Fetch relationships for hop level 3 and above using CTE pattern."""
-        # Convert set to list for SQL IN clause
+        """Fetch relationships for hop level 3 and above using direct ANY operator (no CTE needed)."""
+        # Convert set to list for SQL array parameter
         previous_hop_list = list(previous_hop_cuis)
 
         if not previous_hop_list:
             return [], []
 
-        # Create placeholders for the CUI list and predication condition
-        cui_placeholders = self._create_cui_placeholders(previous_hop_list)
+        # Create predication condition for multiple predication types
         predication_condition = self._create_predication_condition()
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
-        # Use CTE pattern for higher hops - fixed to use CUIs consistently
+        # Simplified query using ANY operator directly - no CTE needed
+        # This finds relationships where either subject or object is in the previous hop nodes
         query = f"""
-        WITH previous_hop_nodes AS (
-            SELECT DISTINCT cp.subject_cui AS node_cui
-            FROM causalehr.causalpredication cp
-            WHERE {predication_condition}
-              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blocklist_condition}
-            GROUP BY cp.subject_cui
-            HAVING COUNT(DISTINCT cp.pmid) >= %s
-
-            UNION
-
-            SELECT DISTINCT cp.object_cui AS node_cui
-            FROM causalehr.causalpredication cp
-            WHERE {predication_condition}
-              AND (cp.subject_cui IN ({cui_placeholders}) OR cp.object_cui IN ({cui_placeholders})){blocklist_condition}
-            GROUP BY cp.object_cui
-            HAVING COUNT(DISTINCT cp.pmid) >= %s
-        )
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
                cp.subject_cui, cp.object_cui, cp.predicate,
                STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
                STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM causalehr.causalpredication cp
         WHERE {predication_condition}
-          AND (cp.subject_cui IN (SELECT node_cui FROM previous_hop_nodes)
-               OR cp.object_cui IN (SELECT node_cui FROM previous_hop_nodes)){blocklist_condition}
+          AND (cp.subject_cui = ANY(%s) OR cp.object_cui = ANY(%s)){blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Parameters: predication_types (3 times) + previous_hop_list (4 times) + blocklist_params (3 times) + threshold (3 times)
-        params = (self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold] +
-                 self.predication_types + previous_hop_list + previous_hop_list + blocklist_params + [self.threshold] +
-                 self.predication_types + blocklist_params + [self.threshold])
+        # Parameters: predication_types + previous_hop_list array (twice) + blocklist_params + threshold
+        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [self.threshold]
 
         execute_query_with_logging(cursor, query, params)
 
