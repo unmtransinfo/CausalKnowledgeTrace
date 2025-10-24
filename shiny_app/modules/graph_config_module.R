@@ -269,7 +269,6 @@ graphConfigUI <- function(id) {
                                 "Predication Types",
                                 choices = list(
                                     "AFFECTS" = "AFFECTS",
-                                    "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
                                     "AUGMENTS" = "AUGMENTS",
                                     "CAUSES" = "CAUSES",
                                     "COMPLICATES" = "COMPLICATES",
@@ -492,7 +491,7 @@ graphConfigServer <- function(id) {
         # Predication type validation function
         validate_predication_types <- function(predication_input) {
             # Define valid predication types (as specified by user)
-            valid_types <- c("AFFECTS", "ASSOCIATED_WITH", "AUGMENTS", "CAUSES",
+            valid_types <- c("AFFECTS", "AUGMENTS", "CAUSES",
                            "COMPLICATES", "DISRUPTS", "INHIBITS",
                            "PRECEDES", "PREDISPOSES", "PREVENTS", "PRODUCES", "STIMULATES", "TREATS")
 

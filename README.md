@@ -411,7 +411,7 @@ The system supports multiple predication types for comprehensive causal relation
 - **Multiple types**: `predication_type: "CAUSES, AFFECTS, PREDISPOSES"`
 - **Alternative format**: `predication_type: ["CAUSES", "TREATS", "PREVENTS"]` (also supported)
 
-**Available predication types**: `AFFECTS`, `ASSOCIATED_WITH`, `AUGMENTS`, `CAUSES`, `COEXISTS_WITH`, `COMPLICATES`, `DISRUPTS`, `INHIBITS`, `INTERACTS_WITH`, `MANIFESTATION_OF`, `PRECEDES`, `PREDISPOSES`, `PREVENTS`, `PRODUCES`, `STIMULATES`, `TREATS`
+**Available predication types**: `AFFECTS`, `AUGMENTS`, `CAUSES`, `COMPLICATES`, `DISRUPTS`, `INHIBITS`, `PRECEDES`, `PREDISPOSES`, `PREVENTS`, `PRODUCES`, `STIMULATES`, `TREATS`
 
 **Multi-prediction type benefits**:
 - Captures diverse causal relationships in a single analysis
