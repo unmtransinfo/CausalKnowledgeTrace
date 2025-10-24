@@ -114,7 +114,6 @@ graphConfigModuleUI <- function(id) {
                                   "Select Predication Types:",
                                   choices = list(
                                       "AFFECTS" = "AFFECTS",
-                                      "ASSOCIATED_WITH" = "ASSOCIATED_WITH",
                                       "AUGMENTS" = "AUGMENTS",
                                       "CAUSES" = "CAUSES",
                                       "COMPLICATES" = "COMPLICATES",

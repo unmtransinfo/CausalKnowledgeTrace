@@ -22,7 +22,7 @@ from pathlib import Path
 
 # Valid predication types (as specified by user)
 VALID_PREDICATION_TYPES = {
-    'AFFECTS', 'ASSOCIATED_WITH', 'AUGMENTS', 'CAUSES',
+    'AFFECTS', 'AUGMENTS', 'CAUSES',
     'COMPLICATES', 'DISRUPTS', 'INHIBITS',
     'PRECEDES', 'PREDISPOSES', 'PREVENTS', 'PRODUCES', 'STIMULATES', 'TREATS'
 }
