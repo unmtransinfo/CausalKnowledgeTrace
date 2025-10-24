@@ -720,10 +720,7 @@ ui <- dashboardPage(
                             column(4,
                                 br(),
                                 actionButton("load_selected_dag", "Load Selected Graph",
-                                           class = "btn-primary", style = "margin-top: 5px; width: 100%;"),
-                                br(), br(),
-                                actionButton("refresh_file_list", "Refresh File List",
-                                           class = "btn-info", style = "margin-top: 5px; width: 100%;")
+                                           class = "btn-primary", style = "margin-top: 5px; width: 100%;")
                             )
                         ),
 
@@ -951,21 +948,7 @@ server <- function(input, output, session) {
         }
     })
     
-    # Refresh file list
-    observeEvent(input$refresh_file_list, {
-        tryCatch({
-            current_data$available_files <- scan_for_dag_files()
-            choices <- current_data$available_files
-            if (length(choices) == 0) {
-                choices <- "No DAG files found"
-            }
-            updateSelectInput(session, "dag_file_selector", choices = choices)
-            showNotification("File list refreshed", type = "message")
-        }, error = function(e) {
-            showNotification(paste("Error refreshing file list:", e$message), type = "error")
-        })
-    })
-    
+
     # Load selected DAG with progress indication and strategy selection
     observeEvent(input$load_selected_dag, {
         if (is.null(input$dag_file_selector) || input$dag_file_selector == "No DAG files found") {
