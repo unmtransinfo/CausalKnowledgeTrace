@@ -106,6 +106,15 @@ tryCatch({
     })
 
     if (inherits(app, "shiny.appobj")) {
+        # Get and display log file path if logging is available
+        if (exists("get_log_file")) {
+            log_file_path <- get_log_file()
+            if (!is.null(log_file_path)) {
+                cat("📋 Log File: ", log_file_path, "\n")
+                cat("=====================================\n\n")
+            }
+        }
+
         # Run the application
         runApp(app,
                host = host,

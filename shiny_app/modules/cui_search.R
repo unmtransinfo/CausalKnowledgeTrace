@@ -125,33 +125,37 @@ cuiSearchUI <- function(id, label = "Search Medical Concepts",
 }
 
 #' CUI Search Server Module
-#' 
+#'
 #' Server logic for CUI search functionality
-#' 
+#'
 #' @param id Character string. The namespace identifier for the module
 #' @param initial_cuis Character vector. Initial CUI codes to populate
+#' @param search_type Character string. Type of search: "exposure" (subject_search) or "outcome" (object_search)
 #' @return Reactive values containing selected CUIs
 #' @export
-cuiSearchServer <- function(id, initial_cuis = NULL) {
+cuiSearchServer <- function(id, initial_cuis = NULL, search_type = "exposure") {
     moduleServer(id, function(input, output, session) {
         ns <- session$ns
-        
+
         # Reactive values for managing state
         values <- reactiveValues(
-            search_results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0)),
+            search_results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0)),
             selected_cuis = character(0),
             last_search = ""
         )
-        
+
         # Initialize with initial CUIs if provided
-        observe({
-            if (!is.null(initial_cuis) && length(initial_cuis) > 0) {
-                cui_string <- paste(initial_cuis, collapse = ", ")
+        # Use isolate to ensure this runs once at startup
+        if (!is.null(initial_cuis) && length(initial_cuis) > 0) {
+            cui_string <- paste(initial_cuis, collapse = ", ")
+            values$selected_cuis <- initial_cuis
+
+            # Schedule the UI update to happen after the module is fully rendered
+            shiny::onFlushed(function() {
                 updateTextAreaInput(session, "selected_cuis", value = cui_string)
-                values$selected_cuis <- initial_cuis
-            }
-        })
-        
+            }, once = TRUE)
+        }
+
         # Search triggered by Enter key press only
         observeEvent(input$search_trigger, {
             search_term <- trimws(input$search_input)
@@ -159,30 +163,30 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
             # Only search if term is at least 3 characters and different from last search
             if (nchar(search_term) >= 3 && search_term != values$last_search) {
                 values$last_search <- search_term
-                cat("🔍 Search triggered by Enter key for term:", search_term, "\n")
-                
+                cat("🔍 Search triggered by Enter key for term:", search_term, "| Type:", search_type, "\n")
+
                 # Show loading indicator
                 shinyjs::show("loading_indicator")
-                
-                # Perform search (no limit - show all results)
-                search_result <- search_cui_entities(search_term)
-                
+
+                # Perform search (no limit - show all results) with search type
+                search_result <- search_cui_entities(search_term, search_type = search_type)
+
                 if (search_result$success) {
                     values$search_results <- search_result$results
                 } else {
-                    values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
+                    values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
                     showNotification(
                         paste("Search error:", search_result$message),
                         type = "error",
                         duration = 5
                     )
                 }
-                
+
                 # Hide loading indicator
                 shinyjs::hide("loading_indicator")
-                
+
             } else if (nchar(search_term) < 3) {
-                values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_defination = character(0))
+                values$search_results <- data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
                 values$last_search <- ""
             }
         })
@@ -194,10 +198,10 @@ cuiSearchServer <- function(id, initial_cuis = NULL) {
             }
 
             # Format results for display and reorder columns: CUI, Name, Definition, Type
-            display_data <- values$search_results[, c("cui", "name", "semtype_defination", "semtype")]
+            display_data <- values$search_results[, c("cui", "name", "semtype_definition", "semtype")]
             display_data$cui <- paste0('<code>', display_data$cui, '</code>')
             display_data$name <- htmltools::htmlEscape(display_data$name)
-            display_data$semtype_defination <- htmltools::htmlEscape(display_data$semtype_defination)
+            display_data$semtype_definition <- htmltools::htmlEscape(display_data$semtype_definition)
             display_data$semtype <- htmltools::htmlEscape(display_data$semtype)
 
             DT::datatable(

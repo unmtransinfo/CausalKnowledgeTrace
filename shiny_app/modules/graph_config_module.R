@@ -377,13 +377,92 @@ graphConfigServer <- function(id) {
                 }
             }
 
-            # Initialize CUI search servers
+            # Load configuration from YAML file if it exists
+            loaded_config <- load_graph_config("../user_input.yaml")
+
+            # Debug logging
+            if (!is.null(loaded_config)) {
+                cat("✓ Configuration loaded from user_input.yaml\n")
+                cat("  Exposure CUIs:", paste(unlist(loaded_config$exposure_cuis), collapse = ", "), "\n")
+                cat("  Outcome CUIs:", paste(unlist(loaded_config$outcome_cuis), collapse = ", "), "\n")
+            } else {
+                cat("⚠ No configuration file found, using defaults\n")
+            }
+
+            # Use loaded config CUIs if available, otherwise use defaults
+            exposure_cuis_initial <- if (!is.null(loaded_config) && !is.null(loaded_config$exposure_cuis)) {
+                unlist(loaded_config$exposure_cuis)
+            } else {
+                c("C0020538", "C4013784", "C0221155", "C0745114", "C0745135")
+            }
+
+            outcome_cuis_initial <- if (!is.null(loaded_config) && !is.null(loaded_config$outcome_cuis)) {
+                unlist(loaded_config$outcome_cuis)
+            } else {
+                c("C2677888", "C0750901", "C0494463", "C0002395")
+            }
+
+            blocklist_cuis_initial <- if (!is.null(loaded_config) && !is.null(loaded_config$blacklist_cuis)) {
+                unlist(loaded_config$blacklist_cuis)
+            } else {
+                NULL
+            }
+
+            # Initialize CUI search servers with appropriate search types
             exposure_cui_search <- cuiSearchServer("exposure_cui_search",
-                                                 initial_cuis = c("C0020538", "C4013784", "C0221155", "C0745114", "C0745135"))
+                                                 initial_cuis = exposure_cuis_initial,
+                                                 search_type = "exposure")
             outcome_cui_search <- cuiSearchServer("outcome_cui_search",
-                                                initial_cuis = c("C2677888", "C0750901", "C0494463", "C0002395"))
+                                                initial_cuis = outcome_cuis_initial,
+                                                search_type = "outcome")
             blocklist_cui_search <- cuiSearchServer("blocklist_cui_search",
-                                                   initial_cuis = NULL)
+                                                   initial_cuis = blocklist_cuis_initial,
+                                                   search_type = "exposure")
+        }
+
+        # Update UI inputs with loaded configuration values
+        if (!is.null(loaded_config)) {
+            # Update exposure CUIs
+            if (!is.null(loaded_config$exposure_cuis)) {
+                exposure_cuis_text <- paste(unlist(loaded_config$exposure_cuis), collapse = "\n")
+                updateTextAreaInput(session, "exposure_cuis", value = exposure_cuis_text)
+            }
+
+            # Update outcome CUIs
+            if (!is.null(loaded_config$outcome_cuis)) {
+                outcome_cuis_text <- paste(unlist(loaded_config$outcome_cuis), collapse = "\n")
+                updateTextAreaInput(session, "outcome_cuis", value = outcome_cuis_text)
+            }
+
+            # Update exposure name
+            if (!is.null(loaded_config$exposure_name)) {
+                updateTextInput(session, "exposure_name", value = loaded_config$exposure_name)
+            }
+
+            # Update outcome name
+            if (!is.null(loaded_config$outcome_name)) {
+                updateTextInput(session, "outcome_name", value = loaded_config$outcome_name)
+            }
+
+            # Update min_pmids
+            if (!is.null(loaded_config$min_pmids)) {
+                updateNumericInput(session, "min_pmids", value = loaded_config$min_pmids)
+            }
+
+            # Update pub_year_cutoff
+            if (!is.null(loaded_config$pub_year_cutoff)) {
+                updateNumericInput(session, "pub_year_cutoff", value = loaded_config$pub_year_cutoff)
+            }
+
+            # Update degree
+            if (!is.null(loaded_config$degree)) {
+                updateSelectInput(session, "degree", selected = as.character(loaded_config$degree))
+            }
+
+            # Update predication_type
+            if (!is.null(loaded_config$predication_type)) {
+                updateSelectInput(session, "predication_type", selected = loaded_config$predication_type)
+            }
         }
 
         # Reactive values to store validated parameters and progress
@@ -925,7 +1004,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
         # Validate loaded configuration
         required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
                            "min_pmids", "pub_year_cutoff", "degree",
-                           "SemMedDBD_version")
+                           "SemMedDBD_version", "predication_type")
         # Note: blacklist_cuis is optional, so not included in required_fields
 
         missing_fields <- required_fields[!required_fields %in% names(config)]
@@ -957,10 +1036,12 @@ test_graph_config_module <- function() {
         exposure_cuis = c("C0011849", "C0020538"),
         outcome_cuis = c("C0027051", "C0038454"),
         blacklist_cuis = c("C0000001", "C0000002"),
+        exposure_name = "Test Exposure",
+        outcome_name = "Test Outcome",
         min_pmids = 100,
         pub_year_cutoff = 2010,
         degree = 2,
-        PREDICATION_TYPE = "TREATS, CAUSES",
+        predication_type = "CAUSES",
         SemMedDBD_version = "heuristic"
     )
 
@@ -1022,42 +1103,15 @@ test_graph_config_module <- function() {
 #'     }
 #' })
 
-#' Load Configuration from YAML File
+#' Load Configuration from YAML File (Duplicate - kept for backward compatibility)
 #'
-#' Helper function to load previously saved configuration
+#' This is a duplicate of the earlier load_graph_config function.
+#' The first definition (around line 995) is the one being used.
+#' This duplicate is kept for backward compatibility but is not actively used.
 #'
 #' @param yaml_file Path to the YAML configuration file (default: "user_input.yaml")
 #' @return List containing configuration parameters, or NULL if file doesn't exist
-#' @export
-load_graph_config <- function(yaml_file = "../user_input.yaml") {
-    if (!file.exists(yaml_file)) {
-        warning(paste("Configuration file", yaml_file, "not found"))
-        return(NULL)
-    }
-
-    tryCatch({
-        config <- read_yaml(yaml_file)
-
-        # Validate loaded configuration
-        required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
-                           "min_pmids", "pub_year_cutoff", "degree",
-                           "SemMedDBD_version")
-        # Note: blacklist_cuis is optional, so not included in required_fields
-
-        missing_fields <- required_fields[!required_fields %in% names(config)]
-        if (length(missing_fields) > 0) {
-            warning(paste("Missing required fields in configuration:",
-                         paste(missing_fields, collapse = ", ")))
-            return(NULL)
-        }
-
-        return(config)
-
-    }, error = function(e) {
-        warning(paste("Error loading configuration:", e$message))
-        return(NULL)
-    })
-}
+#' @keywords internal
 
 #' Validate Configuration Parameters
 #'

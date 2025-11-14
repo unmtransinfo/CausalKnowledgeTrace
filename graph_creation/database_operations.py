@@ -13,7 +13,12 @@ import psycopg2
 import re
 import unicodedata
 import string
+import os
 from typing import Dict, Set, Tuple, List, Union, Optional
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Import configuration models
 from config_models import TimingContext
@@ -109,6 +114,17 @@ class DatabaseOperations:
         self.predication_types = predication_types or ['CAUSES']
         self.degree = degree
         self.blocklist_cuis = blocklist_cuis or []
+
+        # Load database schema and table names from environment variables
+        # Each table can have its own schema for maximum flexibility
+        self.entity_schema = os.getenv('DB_ENTITY_SCHEMA', 'public')
+        self.entity_table = os.getenv('DB_ENTITY_TABLE', 'entity')
+
+        self.sentence_schema = os.getenv('DB_SENTENCE_SCHEMA', 'public')
+        self.sentence_table = os.getenv('DB_SENTENCE_TABLE', 'sentence')
+
+        self.predication_schema = os.getenv('DB_PREDICATION_SCHEMA', 'public')
+        self.predication_table = os.getenv('DB_PREDICATION_TABLE', 'predication')
 
         # Log blocklist information if CUIs are provided
         if self.blocklist_cuis:
@@ -231,7 +247,7 @@ class DatabaseOperations:
         # Optimized query using ANY operator with array
         query = f"""
         SELECT cui, name
-        FROM causalehr.causalentity
+        FROM {self.entity_schema}.{self.entity_table}
         WHERE cui = ANY(%s)
         """
 
@@ -256,7 +272,7 @@ class DatabaseOperations:
         # Optimized query using ANY operator with array
         query = f"""
         SELECT pmid, sentence
-        FROM causalehr.causalsentence
+        FROM {self.sentence_schema}.{self.sentence_table}
         WHERE pmid = ANY(%s)
         ORDER BY pmid, sentence
         """
@@ -295,24 +311,20 @@ class DatabaseOperations:
         for pair in pmid_sentence_pairs:
             if ':' in pair:
                 pmid, sentence_id = pair.strip().split(':', 1)
-                pmid_list.append(pmid)
-                # Convert sentence_id to integer since it's bigint in database
-                try:
-                    sentence_id_list.append(int(sentence_id))
-                except ValueError:
-                    # Skip if not a valid integer
-                    continue
+                # Keep as strings since both pmid and sentence_id are text type in database
+                pmid_list.append(pmid.strip())
+                sentence_id_list.append(sentence_id.strip())
 
         if not pmid_list:
             return {}
 
         # Optimized query using ANY operator with arrays
-        # Cast sentence_id array to bigint[] since sentence_id is bigint type in database
+        # Both pmid and sentence_id are text type in database, so use text[] casting
         query = f"""
         SELECT pmid, sentence_id, sentence
-        FROM causalehr.causalsentence
-        WHERE pmid = ANY(%s)
-          AND sentence_id = ANY(%s::bigint[])
+        FROM {self.sentence_schema}.{self.sentence_table}
+        WHERE pmid = ANY(CAST(%s AS text[]))
+          AND sentence_id = ANY(CAST(%s AS text[]))
         ORDER BY pmid, sentence_id
         """
 
@@ -386,7 +398,7 @@ class DatabaseOperations:
         cp.subject_cui, cp.object_cui, cp.predicate,
         STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
         STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
-        FROM causalehr.causalpredication cp
+        FROM {self.predication_schema}.{self.predication_table} cp
         WHERE {predication_condition}
         AND (
             (cp.subject_cui = ANY(%s)
@@ -431,7 +443,7 @@ class DatabaseOperations:
             cp.subject_cui, cp.object_cui, cp.predicate,
             STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
             STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
-        FROM causalehr.causalpredication cp
+        FROM {self.predication_schema}.{self.predication_table} cp
         WHERE {predication_condition}
         AND (cp.subject_cui = ANY(%s)
             OR cp.object_cui = ANY(%s))
@@ -470,7 +482,7 @@ class DatabaseOperations:
                cp.subject_cui, cp.object_cui, cp.predicate,
                STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
                STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
-        FROM causalehr.causalpredication cp
+        FROM {self.predication_schema}.{self.predication_table} cp
         WHERE {predication_condition}
           AND (cp.subject_cui = ANY(%s) OR cp.object_cui = ANY(%s)){blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
