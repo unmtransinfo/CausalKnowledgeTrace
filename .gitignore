@@ -11,3 +11,6 @@ test*.R
 .env
 .augment/
 logs/
+
+causal_dump.sql.bz2
+semmed_database/

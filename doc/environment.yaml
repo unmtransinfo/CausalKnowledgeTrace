@@ -17,6 +17,7 @@ dependencies:
   - pip:
     - psycopg2
     - pyyaml
+    - python-dotenv
     - pandas
     - networkx
     - scipy
