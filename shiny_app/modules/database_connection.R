@@ -100,9 +100,9 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
         if (is.null(user)) user <- Sys.getenv("DB_USER", "")
         if (is.null(password)) password <- Sys.getenv("DB_PASSWORD", "")
 
-        # Load individual schema and table names for CUI search
-        cui_search_schema <- Sys.getenv("DB_ENTITY_SCHEMA", "causalehr")
-        cui_search_table <- Sys.getenv("DB_ENTITY_TABLE", "causalentity")
+        # Load individual schema and table names for CUI search (sentence table)
+        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA", "public")
+        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE", "sentence")
 
         # Fallback to working values if environment variables are not set
         if (user == "") user <- "rajesh"
@@ -388,9 +388,9 @@ get_cui_details <- function(cui_codes) {
     }
 
     tryCatch({
-        # Load schema and table names from environment variables
-        cui_search_schema <- Sys.getenv("DB_ENTITY_SCHEMA", "causalehr")
-        cui_search_table <- Sys.getenv("DB_ENTITY_TABLE", "causalentity")
+        # Load schema and table names from environment variables (sentence table now used for CUI details)
+        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA", "public")
+        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE", "sentence")
 
         # Clean CUI codes
         clean_cuis <- trimws(cui_codes)
@@ -406,7 +406,13 @@ get_cui_details <- function(cui_codes) {
 
         # Create placeholders for parameterized query
         placeholders <- paste(rep("$", length(clean_cuis)), 1:length(clean_cuis), sep = "", collapse = ",")
-        query <- paste("SELECT DISTINCT cui, name, semtype, semtype_definition FROM", paste0(cui_search_schema, ".", cui_search_table), "WHERE cui IN (", placeholders, ") ORDER BY name")
+        query <- paste(
+            "SELECT DISTINCT cui, name,",
+            "NULL::text AS semtype,",
+            "NULL::text AS semtype_definition",
+            "FROM", paste0(cui_search_schema, ".", cui_search_table),
+            "WHERE cui IN (", placeholders, ") ORDER BY name"
+        )
 
         # Execute query
         results <- pool::dbGetQuery(.db_pool, query, params = as.list(clean_cuis))
@@ -517,19 +523,25 @@ test_database_connection <- function() {
     }
 
     tryCatch({
-        # Load schema and table names from environment variables
-        cui_search_schema <- Sys.getenv("DB_ENTITY_SCHEMA", "causalehr")
-        cui_search_table <- Sys.getenv("DB_ENTITY_TABLE", "causalentity")
+        # Load schema and table names from environment variables (sentence table)
+        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA", "public")
+        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE", "sentence")
 
         # Test basic connection
         test_conn <- pool::poolCheckout(.db_pool)
 
-        # Test cui_search table access
+        # Test sentence table access
         count_query <- paste("SELECT COUNT(*) as total_entities FROM", paste0(cui_search_schema, ".", cui_search_table))
         count_result <- DBI::dbGetQuery(test_conn, count_query)
 
         # Test sample query
-        sample_query <- paste("SELECT DISTINCT cui, name, semtype, semtype_definition FROM", paste0(cui_search_schema, ".", cui_search_table), "LIMIT 5")
+        sample_query <- paste(
+            "SELECT DISTINCT cui, name,",
+            "NULL::text AS semtype,",
+            "NULL::text AS semtype_definition",
+            "FROM", paste0(cui_search_schema, ".", cui_search_table),
+            "LIMIT 5"
+        )
         sample_result <- DBI::dbGetQuery(test_conn, sample_query)
 
         pool::poolReturn(test_conn)

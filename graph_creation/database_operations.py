@@ -117,9 +117,6 @@ class DatabaseOperations:
 
         # Load database schema and table names from environment variables
         # Each table can have its own schema for maximum flexibility
-        self.entity_schema = os.getenv('DB_ENTITY_SCHEMA', 'public')
-        self.entity_table = os.getenv('DB_ENTITY_TABLE', 'entity')
-
         self.sentence_schema = os.getenv('DB_SENTENCE_SCHEMA', 'public')
         self.sentence_table = os.getenv('DB_SENTENCE_TABLE', 'sentence')
 
@@ -240,14 +237,14 @@ class DatabaseOperations:
         return consolidated_mapping.get(node_name, node_name)
 
     def fetch_cui_name_mappings(self, cursor, cui_list: List[str]) -> Dict[str, str]:
-        """Fetch CUI-to-name mappings from the causalentity table."""
+        """Fetch CUI-to-name mappings from the sentence table."""
         if not cui_list:
             return {}
 
-        # Optimized query using ANY operator with array
+        # Optimized query using ANY operator with array against the sentence table
         query = f"""
-        SELECT cui, name
-        FROM {self.entity_schema}.{self.entity_table}
+        SELECT DISTINCT cui, name
+        FROM {self.sentence_schema}.{self.sentence_table}
         WHERE cui = ANY(%s)
         """
 
