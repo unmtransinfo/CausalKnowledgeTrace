@@ -20,9 +20,10 @@ if (file.exists("modules/node_information.R")) {
 `%||%` <- function(x, y) if (is.null(x)) y else x
 
 #' Scan for Available DAG Files
-#' 
+#'
 #' Scans the current directory for R files that might contain DAG definitions
-#' 
+#' and compiled binary DAG files ("*_dag.rds").
+#'
 #' @param exclude_files Vector of filenames to exclude from scanning (default: system files)
 #' @return Vector of valid DAG filenames
 #' @export
@@ -38,13 +39,13 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
         dir.create(result_dir, recursive = TRUE)
     }
     r_files <- list.files(path = result_dir, pattern = "\\.(R|r)$", full.names = FALSE)
-    
+
     # Filter out system files
     dag_files <- r_files[!r_files %in% exclude_files]
-    
-    # Check if files contain dagitty definitions
+
+    # Check if R files contain dagitty definitions
     valid_dag_files <- c()
-    
+
     for (file in dag_files) {
         file_path <- file.path(result_dir, file)
         if (file.exists(file_path)) {
@@ -52,9 +53,9 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
                 # Read first few lines to check for dagitty syntax
                 lines <- readLines(file_path, n = 50, warn = FALSE)
                 content <- paste(lines, collapse = " ")
-                
+
                 # Check for dagitty syntax
-                if (grepl("dagitty\\s*\\(", content, ignore.case = TRUE) || 
+                if (grepl("dagitty\\s*\\(", content, ignore.case = TRUE) ||
                     grepl("dag\\s*\\{", content, ignore.case = TRUE)) {
                     valid_dag_files <- c(valid_dag_files, file)
                 }
@@ -63,7 +64,22 @@ scan_for_dag_files <- function(exclude_files = c("app.R", "dag_data.R", "dag_vis
             })
         }
     }
-    
+
+    # Also include compiled binary DAG files ("*_dag.rds") when no matching R script exists
+    binary_files <- list.files(path = result_dir, pattern = "_dag\\.rds$", full.names = FALSE)
+    if (length(binary_files) > 0) {
+        for (bfile in binary_files) {
+            # Corresponding source script would be <base>.R or <base>.r
+            base_name <- sub("_dag\\.rds$", "", bfile)
+            r_candidates <- paste0(base_name, c(".R", ".r"))
+            if (!any(r_candidates %in% r_files)) {
+                valid_dag_files <- c(valid_dag_files, bfile)
+            }
+        }
+    }
+
+    # Return unique, sorted file list
+    valid_dag_files <- sort(unique(valid_dag_files))
     return(valid_dag_files)
 }
 
@@ -86,12 +102,36 @@ load_dag_from_file <- function(filename) {
         }
     }
 
+    # If user selected a compiled binary DAG file directly ("*_dag.rds"),
+    # load it using the binary loader and return immediately.
+    if (grepl("_dag\\.rds$", filename, ignore.case = TRUE)) {
+        # Load binary storage module if not already loaded
+        if (!exists("load_dag_from_binary")) {
+            source("modules/dag_binary_storage.R")
+        }
+
+        binary_result <- load_dag_from_binary(filename)
+        if (binary_result$success) {
+            return(list(
+                success = TRUE,
+                message = paste("Successfully loaded DAG from compiled binary file -", binary_result$variable_count, "variables"),
+                dag = binary_result$dag,
+                degree = binary_result$degree,
+                filename = filename,
+                load_method = "binary_direct",
+                load_time_seconds = binary_result$load_time_seconds
+            ))
+        } else {
+            return(list(success = FALSE, message = binary_result$message))
+        }
+    }
+
     # Load binary storage module if not already loaded
     if (!exists("load_dag_from_binary")) {
         source("modules/dag_binary_storage.R")
     }
 
-    # Try binary loading first (much faster)
+    # Try binary loading first (much faster) starting from an R script
     base_name <- tools::file_path_sans_ext(basename(filename))
     binary_path <- file.path(dirname(filename), paste0(base_name, "_dag.rds"))
 
