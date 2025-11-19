@@ -1,6 +1,6 @@
 .Claude/
 user_input.yaml
-test*.R
+**test**
 
 *result**
 
@@ -12,5 +12,5 @@ test*.R
 .augment/
 logs/
 
-causal_dump.sql.bz2
-semmed_database/
+semmed_database.tar.gz
+causalehr.dump
