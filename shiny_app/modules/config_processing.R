@@ -153,11 +153,10 @@ check_generated_files <- function(output_dir = "../graph_creation/output") {
         expected_files <- c(
             "degree_1.R", "degree_2.R", "degree_3.R",
             "causal_assertions_1.json", "causal_assertions_2.json", "causal_assertions_3.json",
-            "performance_metrics.json",
             "run_configuration.json",
             "MarkovBlanket_Union.R"
         )
-        
+
         found_files <- character(0)
         for (file in expected_files) {
             file_path <- file.path(output_dir, file)
