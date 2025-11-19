@@ -26,18 +26,20 @@ if (!require(htmltools, quietly = TRUE)) {
 source("modules/database_connection.R", local = TRUE)
 
 #' CUI Search UI Module
-#' 
+#'
 #' Creates the user interface for CUI search functionality
-#' 
+#'
 #' @param id Character string. The namespace identifier for the module
 #' @param label Character string. Label for the search input
 #' @param placeholder Character string. Placeholder text for the search input
 #' @param height Character string. Height of the results container
+#' @param initial_value Character string. Initial value for the selected CUIs text area
 #' @return Shiny UI elements for CUI search
 #' @export
 cuiSearchUI <- function(id, label = "Search Medical Concepts",
                        placeholder = "Type to search for medical concepts...",
-                       height = "250px") {
+                       height = "250px",
+                       initial_value = NULL) {
     ns <- NS(id)
     
     tagList(
@@ -83,6 +85,7 @@ cuiSearchUI <- function(id, label = "Search Medical Concepts",
                 textAreaInput(
                     ns("selected_cuis"),
                     label = NULL,
+                    value = if (!is.null(initial_value)) initial_value else "",
                     placeholder = "Selected CUI codes will appear here (comma-separated)",
                     rows = 3,
                     width = "100%"
@@ -145,15 +148,19 @@ cuiSearchServer <- function(id, initial_cuis = NULL, search_type = "exposure") {
         )
 
         # Initialize with initial CUIs if provided
-        # Use isolate to ensure this runs once at startup
+        # Parse the initial CUIs and set them in reactive values
         if (!is.null(initial_cuis) && length(initial_cuis) > 0) {
-            cui_string <- paste(initial_cuis, collapse = ", ")
-            values$selected_cuis <- initial_cuis
+            # Convert to vector if it's a string
+            if (is.character(initial_cuis) && length(initial_cuis) == 1) {
+                # Split comma-separated string
+                parsed_cuis <- trimws(unlist(strsplit(initial_cuis, ",")))
+                parsed_cuis <- parsed_cuis[parsed_cuis != ""]
+            } else {
+                parsed_cuis <- initial_cuis
+            }
 
-            # Schedule the UI update to happen after the module is fully rendered
-            shiny::onFlushed(function() {
-                updateTextAreaInput(session, "selected_cuis", value = cui_string)
-            }, once = TRUE)
+            # Set the reactive values immediately
+            values$selected_cuis <- parsed_cuis
         }
 
         # Search triggered by Enter key press only
