@@ -96,63 +96,36 @@ class GraphAnalyzer:
         """Generate the causal assertions filename based on degree parameter."""
         return f"causal_assertions_{self.degree}.json"
 
-    def generate_basic_dagitty_script(self, nodes: Set[str], edges: Set[Tuple[str, str]]):
-        """Create basic R script for DAGitty visualization."""
+    def generate_basic_dagitty_script(
+        self,
+        nodes: Set[str],
+        edges: Set[Tuple[str, str]],
+        exposure_nodes: Optional[Set[str]] = None,
+        outcome_nodes: Optional[Set[str]] = None,
+    ):
+        """Create basic R script for DAGitty visualization.
+
+        Nodes and edges are assumed to already use cleaned/consolidated ids.
+        exposure_nodes and outcome_nodes (if provided) should be subsets of ``nodes``.
+        """
+        # Normalize optional sets
+        exposure_nodes = exposure_nodes or set()
+        outcome_nodes = outcome_nodes or set()
+
         with TimingContext("dagitty_generation", self.timing_data):
-            try:
-                with psycopg2.connect(**self.db_params) as conn:
-                    with conn.cursor() as cursor:
-                        # Create consolidated node mapping
-                        consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
-
-                        # Get consolidated exposure and outcome names
-                        consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
-                        consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
-
-            except Exception as e:
-                print(f"Warning: Could not create consolidated mapping for DAG generation: {e}")
-                # Fallback to basic consolidated names
-                consolidated_mapping = {}
-                consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
-                consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
-
-            # Clean all node names and apply consolidated mapping
-            cleaned_nodes = set()
-            for node in nodes:
-                clean_node = self.db_ops.clean_output_name(node)
-                consolidated_node = self.db_ops.apply_consolidated_mapping(clean_node, consolidated_mapping)
-                cleaned_nodes.add(consolidated_node)
-
-            # Clean edges and apply consolidated mapping
-            cleaned_edges = set()
-            for src, dst in edges:
-                clean_src = self.db_ops.clean_output_name(src)
-                clean_dst = self.db_ops.clean_output_name(dst)
-                consolidated_src = self.db_ops.apply_consolidated_mapping(clean_src, consolidated_mapping)
-                consolidated_dst = self.db_ops.apply_consolidated_mapping(clean_dst, consolidated_mapping)
-                # Only add edge if source and destination are different (avoid self-loops from consolidation)
-                if consolidated_src != consolidated_dst:
-                    cleaned_edges.add((consolidated_src, consolidated_dst))
-
-            # Overall DAG script - ENHANCED FORMAT with consolidated nodes
             dagitty_lines = ["g <- dagitty('dag {"]
 
-            # Add consolidated exposure node
-            dagitty_lines.append(f" {consolidated_exposure_name} [exposure]")
-
-            # Add consolidated outcome node
-            dagitty_lines.append(f" {consolidated_outcome_name} [outcome]")
-
-            # Collect consolidated exposure and outcome names for filtering
-            all_exposure_outcome_names = {consolidated_exposure_name, consolidated_outcome_name}
-
-            # Add other cleaned nodes (excluding consolidated exposure/outcome nodes)
-            for node in cleaned_nodes:
-                if node not in all_exposure_outcome_names:
+            # Add nodes with dagitty exposure/outcome annotations
+            for node in sorted(nodes):
+                if node in exposure_nodes:
+                    dagitty_lines.append(f" {node} [exposure]")
+                elif node in outcome_nodes:
+                    dagitty_lines.append(f" {node} [outcome]")
+                else:
                     dagitty_lines.append(f" {node}")
 
-            # Add cleaned edges
-            for src, dst in cleaned_edges:
+            # Add edges
+            for src, dst in sorted(edges):
                 dagitty_lines.append(f" {src} -> {dst}")
 
             # Close the DAG definition
@@ -377,13 +350,21 @@ if (lightweight_result$success) {{
                     # Fetch relationships using degree functionality with CUI-based node identification
                     _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
 
+                    # Build CUI -> canonical name mapping so we can later tag exposure/outcome nodes
+                    cui_to_name_mapping = self.db_ops.build_cui_to_name_mapping(detailed_assertions)
+
                     print("\nConstructing causal graph...")
                     # Build graph with cleaned node names and consolidated mapping
                     with TimingContext("graph_construction", self.timing_data):
                         G = nx.DiGraph()
 
-                        # Create consolidated node mapping
+                        # Create consolidated node mapping and augment it so that
+                        # canonical names for exposure/outcome CUIs also collapse to
+                        # the YAML-provided exposure_name / outcome_name labels.
                         consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
+                        consolidated_mapping = self._augment_consolidated_mapping_with_canonical_names(
+                            consolidated_mapping, cui_to_name_mapping
+                        )
 
                         # Add edges with cleaned node names from CUI-based relationships
                         consolidated_edges = set()
@@ -402,11 +383,17 @@ if (lightweight_result$success) {{
 
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (degree={self.degree})")
 
+                        # Determine which graph nodes correspond to exposure and outcome CUIs
+                        nodes_in_graph = set(G.nodes())
+                        exposure_nodes, outcome_nodes = self._get_exposure_outcome_node_sets(
+                            cui_to_name_mapping, consolidated_mapping, nodes_in_graph
+                        )
+
                     print("\nGenerating DAGitty visualization script...")
-                    # Generate basic DAG script
+                    # Generate basic DAG script with exposure/outcome annotations
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
-                    self.generate_basic_dagitty_script(all_nodes, all_edges)
+                    self.generate_basic_dagitty_script(all_nodes, all_edges, exposure_nodes, outcome_nodes)
 
                     print(f"DAGitty script generated:")
                     print(f"  - {self.output_dir}/{self.get_dag_filename()}")
@@ -416,11 +403,86 @@ if (lightweight_result$success) {{
 
         return self.timing_data
 
+    def _augment_consolidated_mapping_with_canonical_names(
+        self,
+        consolidated_mapping: Dict[str, str],
+        cui_to_name_mapping: Dict[str, str],
+    ) -> Dict[str, str]:
+        """Ensure canonical names for exposure/outcome CUIs map to YAML labels.
+
+        This guarantees that all exposure CUIs collapse to a single cleaned
+        ``exposure_name`` and all outcome CUIs collapse to a single cleaned
+        ``outcome_name``, regardless of which canonical labels appeared in the
+        relationship queries.
+        """
+        if consolidated_mapping is None:
+            consolidated_mapping = {}
+
+        # Compute the consolidated labels derived from the YAML config
+        consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
+        consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
+
+        # Map exposure CUIs' canonical names to the consolidated exposure label
+        for cui in getattr(self.config, "exposure_cui_list", []):
+            canonical_name = cui_to_name_mapping.get(cui)
+            if not canonical_name:
+                continue
+            clean_name = self.db_ops.clean_output_name(canonical_name)
+            consolidated_mapping[clean_name] = consolidated_exposure_name
+
+        # Map outcome CUIs' canonical names to the consolidated outcome label
+        for cui in getattr(self.config, "outcome_cui_list", []):
+            canonical_name = cui_to_name_mapping.get(cui)
+            if not canonical_name:
+                continue
+            clean_name = self.db_ops.clean_output_name(canonical_name)
+            consolidated_mapping[clean_name] = consolidated_outcome_name
+
+        return consolidated_mapping
+
+    def _get_exposure_outcome_node_sets(
+        self,
+        cui_to_name_mapping: Dict[str, str],
+        consolidated_mapping: Dict[str, str],
+        nodes_in_graph: Set[str],
+    ) -> Tuple[Set[str], Set[str]]:
+        """Map configured exposure/outcome CUIs to actual graph node ids.
+
+        This ensures that DAGitty [exposure] and [outcome] annotations are applied
+        to nodes that participate in the connected graph rather than to isolated
+        synthetic nodes.
+        """
+        exposure_nodes: Set[str] = set()
+        outcome_nodes: Set[str] = set()
+
+        # Map exposure CUIs to graph nodes (after consolidation)
+        for cui in getattr(self.config, "exposure_cui_list", []):
+            canonical_name = cui_to_name_mapping.get(cui)
+            if not canonical_name:
+                continue
+            clean_name = self.db_ops.clean_output_name(canonical_name)
+            consolidated_name = self.db_ops.apply_consolidated_mapping(clean_name, consolidated_mapping)
+            if consolidated_name in nodes_in_graph:
+                exposure_nodes.add(consolidated_name)
+
+        # Map outcome CUIs to graph nodes (after consolidation)
+        for cui in getattr(self.config, "outcome_cui_list", []):
+            canonical_name = cui_to_name_mapping.get(cui)
+            if not canonical_name:
+                continue
+            clean_name = self.db_ops.clean_output_name(canonical_name)
+            consolidated_name = self.db_ops.apply_consolidated_mapping(clean_name, consolidated_mapping)
+            if consolidated_name in nodes_in_graph:
+                outcome_nodes.add(consolidated_name)
+
+        return exposure_nodes, outcome_nodes
+
+
     def display_results_summary(self):
         """Display a comprehensive summary of general graph analysis results."""
         output_path = self.output_dir
         print(f"Description: {self.config.description}")
-        
+
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for DAG visualization (degree={self.degree})")
@@ -570,6 +632,9 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                     # Fetch relationships using k-hop functionality with CUI-based node identification
                     _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
 
+                    # Build CUI -> canonical name mapping so we can later tag exposure/outcome nodes
+                    cui_to_name_mapping = self.db_ops.build_cui_to_name_mapping(detailed_assertions)
+
                     # Compute Markov blankets
                     mb_union = self.mb_computer.compute_markov_blankets(cursor)
 
@@ -578,8 +643,13 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                     with TimingContext("graph_construction", self.timing_data):
                         G = nx.DiGraph()
 
-                        # Create consolidated node mapping
+                        # Create consolidated node mapping and augment it so that
+                        # canonical names for exposure/outcome CUIs also collapse to
+                        # the YAML-provided exposure_name / outcome_name labels.
                         consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
+                        consolidated_mapping = self._augment_consolidated_mapping_with_canonical_names(
+                            consolidated_mapping, cui_to_name_mapping
+                        )
 
                         # Add edges with cleaned node names from CUI-based relationships
                         consolidated_edges = set()
@@ -599,11 +669,17 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (degree={self.degree})")
                         print(f"Consolidated {len(cui_based_links)} CUI-based relationships into {len(consolidated_edges)} consolidated relationships")
 
+                        # Determine which graph nodes correspond to exposure and outcome CUIs
+                        nodes_in_graph = set(G.nodes())
+                        exposure_nodes, outcome_nodes = self._get_exposure_outcome_node_sets(
+                            cui_to_name_mapping, consolidated_mapping, nodes_in_graph
+                        )
+
                     print("\nGenerating DAGitty visualization scripts...")
-                    # Generate basic DAG script using parent class method
+                    # Generate basic DAG script using parent class method, with exposure/outcome annotations
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
-                    self.generate_basic_dagitty_script(all_nodes, all_edges)
+                    self.generate_basic_dagitty_script(all_nodes, all_edges, exposure_nodes, outcome_nodes)
 
                     # Generate Markov blanket-specific script
                     self.generate_markov_blanket_dagitty_script(all_edges, mb_union)
