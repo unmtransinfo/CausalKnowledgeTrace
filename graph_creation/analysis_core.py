@@ -142,10 +142,6 @@ class GraphAnalyzer:
         """Save analysis results, timing data, and configuration metadata with optimization."""
         output_path = self.output_dir
 
-        # Save timing results
-        with open(output_path / "performance_metrics.json", "w") as f:
-            json.dump(timing_results, f, indent=2)
-
         # Save detailed assertions with degree suffix using optimized serialization
         causal_assertions_filename = self.get_causal_assertions_filename()
         print(f"Saving {len(detailed_assertions)} assertions to {causal_assertions_filename}...")
@@ -486,7 +482,6 @@ if (lightweight_result$success) {{
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for DAG visualization (degree={self.degree})")
-        print(f"  - performance_metrics.json: Timing information")
 
         print("\nTo visualize results, run the R script in the output directory:")
         print(f"  cd {output_path}")
@@ -616,7 +611,6 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
         print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (degree={self.degree})")
         print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
-        print(f"  - performance_metrics.json: Timing information")
 
         print("\nTo visualize results, run the R scripts in the output directory:")
         print(f"  cd {output_path}")
