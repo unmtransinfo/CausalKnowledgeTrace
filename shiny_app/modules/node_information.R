@@ -16,37 +16,21 @@ if (!require(igraph)) stop("igraph package is required")
 #' @export
 get_node_color_scheme <- function() {
     return(list(
-        Exposure = "#FF4500",           # Bright orange-red for exposure (highly contrasting)
-        Outcome = "#0066CC",            # Bright blue for outcome (highly contrasting)
+        Exposure = "#FF6B6B",           # Red for exposure
+        Outcome = "#4ECDC4",            # Teal for outcome
         Other = "#808080"               # Gray for all other nodes
     ))
 }
 
 #' Create Nodes Data Frame
-#' 
+#'
 #' Creates a properly formatted nodes data frame from DAG object
-#' 
+#'
 #' @param dag_object dagitty object containing the DAG
 #' @return Data frame with node information including id, label, group, and color
 #' @export
 create_nodes_dataframe <- function(dag_object) {
     if (is.null(dag_object)) {
-        # Return minimal fallback data
-        return(data.frame(
-            id = c("Node1", "Node2"),
-            label = c("Node 1", "Node 2"),
-            group = c("Other", "Other"),
-            color = c("#808080", "#808080"),
-            font.size = 14,
-            font.color = "black",
-            stringsAsFactors = FALSE
-        ))
-    }
-    
-    # Get all node names from the DAG
-    all_nodes <- names(dag_object)
-    
-    if (length(all_nodes) == 0) {
         return(data.frame(
             id = character(0),
             label = character(0),
@@ -57,48 +41,43 @@ create_nodes_dataframe <- function(dag_object) {
             stringsAsFactors = FALSE
         ))
     }
-    
-    # Create nodes dataframe with optimized categorization
+
+    # Get all node names
+    all_nodes <- names(dag_object)
+
+    # Get exposure and outcome nodes using dagitty functions
+    exposure_nodes <- tryCatch(exposures(dag_object), error = function(e) character(0))
+    outcome_nodes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
+
+    # Create nodes dataframe
     nodes <- data.frame(
         id = all_nodes,
         label = gsub("_", " ", all_nodes),
-        group = "Other",  # Default to Other
         stringsAsFactors = FALSE
     )
 
-    # Extract exposure and outcome nodes efficiently (no individual node processing)
-    exposures <- character(0)
-    outcomes <- character(0)
+    # Assign groups and colors based on node type using centralized color scheme
+    color_scheme <- get_node_color_scheme()
 
-    if (!is.null(dag_object)) {
-        exposures <- tryCatch(exposures(dag_object), error = function(e) character(0))
-        outcomes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
+    nodes$group <- "Other"
+    nodes$color <- color_scheme[["Other"]]
+
+    # Set exposure nodes
+    if (length(exposure_nodes) > 0) {
+        nodes$group[nodes$id %in% exposure_nodes] <- "Exposure"
+        nodes$color[nodes$id %in% exposure_nodes] <- color_scheme[["Exposure"]]
     }
 
-    # Apply categorization using vectorized operations (much faster)
-    if (length(exposures) > 0) {
-        nodes$group[nodes$id %in% exposures] <- "Exposure"
-    }
-    if (length(outcomes) > 0) {
-        nodes$group[nodes$id %in% outcomes] <- "Outcome"
+    # Set outcome nodes
+    if (length(outcome_nodes) > 0) {
+        nodes$group[nodes$id %in% outcome_nodes] <- "Outcome"
+        nodes$color[nodes$id %in% outcome_nodes] <- color_scheme[["Outcome"]]
     }
 
-    # Add node properties
+    # Add font properties
     nodes$font.size <- 14
     nodes$font.color <- "black"
 
-    # Get color scheme and assign colors using vectorized operations
-    color_scheme <- get_node_color_scheme()
-    nodes$color <- color_scheme[["Other"]]  # Default color
-
-    # Apply colors efficiently
-    if (length(exposures) > 0) {
-        nodes$color[nodes$group == "Exposure"] <- color_scheme[["Exposure"]]
-    }
-    if (length(outcomes) > 0) {
-        nodes$color[nodes$group == "Outcome"] <- color_scheme[["Outcome"]]
-    }
-    
     return(nodes)
 }
 
