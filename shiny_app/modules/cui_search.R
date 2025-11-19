@@ -61,7 +61,7 @@ cuiSearchUI <- function(id, label = "Search Medical Concepts",
                         }
                     });
                 "))),
-                helpText("Type at least 3 characters and press Enter to search. Click on results to select CUIs.")
+                helpText("Type at least 3 characters and press Enter to search. Results are limited to 500 for performance. Click on results to select CUIs.")
             ),
             
             # Search results container
@@ -216,10 +216,11 @@ cuiSearchServer <- function(id, initial_cuis = NULL, search_type = "exposure") {
                 selection = 'single',
                 escape = FALSE,
                 options = list(
-                    pageLength = -1,  # Show ALL rows (no pagination limit)
+                    pageLength = 25,  # Show 25 rows per page for better performance
                     scrollY = "200px",  # Compact height for better space usage
                     scrollCollapse = TRUE,
-                    dom = 't',  # Only show table
+                    dom = 'ltp',  # Show length menu, table, and pagination
+                    lengthMenu = list(c(10, 25, 50, 100), c('10', '25', '50', '100')),
                     columnDefs = list(
                         list(width = '80px', targets = 0),   # CUI column
                         list(width = '200px', targets = 1),  # Name column

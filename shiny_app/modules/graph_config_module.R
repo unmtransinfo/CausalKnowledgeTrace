@@ -435,23 +435,16 @@ graphConfigUI <- function(id) {
 graphConfigServer <- function(id) {
     moduleServer(id, function(input, output, session) {
 
-        # Initialize database connection for CUI search
-        if (exists("cui_search_available") && cui_search_available) {
-            # Initialize database connection pool
-            db_init_result <- init_database_pool()
-            if (!db_init_result$success) {
-                if (exists("log_message")) {
-                    log_message(paste("Database connection failed:", db_init_result$message), "WARNING")
-                    log_message("CUI search functionality will be limited", "WARNING")
-                }
-            } else {
-                if (exists("log_message")) {
-                    log_message("Database connection initialized for CUI search", "INFO")
-                }
-            }
+        # Database connection is now initialized BEFORE server starts (in app.R)
+        # This ensures connection pool is pre-warmed before any requests arrive
+        # No need to initialize again here
 
-            # Load configuration from YAML file if it exists
-            loaded_config <- load_graph_config("../user_input.yaml")
+        if (exists("log_message")) {
+            log_message("Graph configuration module loaded - database connection already pre-warmed", "DEBUG")
+        }
+
+        # Load configuration from YAML file if it exists
+        loaded_config <- load_graph_config("../user_input.yaml")
 
             # Debug logging
             if (!is.null(loaded_config)) {
@@ -491,7 +484,6 @@ graphConfigServer <- function(id) {
             blocklist_cui_search <- cuiSearchServer("blocklist_cui_search",
                                                    initial_cuis = blocklist_cuis_initial,
                                                    search_type = "exposure")
-        }
 
         # Update UI inputs with loaded configuration values
         if (!is.null(loaded_config)) {

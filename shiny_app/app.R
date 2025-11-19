@@ -39,6 +39,36 @@ tryCatch({
     graph_config_available <- FALSE
 })
 
+# Try to source database connection module if it exists
+tryCatch({
+    source("modules/database_connection.R")
+    database_connection_available <- TRUE
+}, error = function(e) {
+    database_connection_available <- FALSE
+})
+
+# ============================================================================
+# CRITICAL: Initialize database connection BEFORE server starts
+# This ensures connection pool is pre-warmed before any requests arrive
+# ============================================================================
+if (exists("database_connection_available") && database_connection_available) {
+    if (exists("log_message")) {
+        log_message("=== PRE-WARMING CONNECTION POOL BEFORE SERVER START ===", "INFO")
+    }
+
+    db_init_result <- init_database_pool()
+    if (!db_init_result$success) {
+        if (exists("log_message")) {
+            log_message(paste("⚠️  Database connection failed:", db_init_result$message), "WARNING")
+        }
+    } else {
+        if (exists("log_message")) {
+            log_message("✅ Database connection pool pre-warmed and ready!", "INFO")
+            log_message("=== SERVER READY TO ACCEPT REQUESTS ===", "INFO")
+        }
+    }
+}
+
 # Initialize empty data structures for immediate app startup
 # The app will start with no graph loaded, and users will load graphs through the UI
 

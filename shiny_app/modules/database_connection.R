@@ -128,7 +128,8 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
             ))
         }
 
-        # Create connection pool
+        # Create connection pool with increased minSize to pre-warm connections
+        # This prevents the first query from being slow due to connection initialization
         .db_pool <<- pool::dbPool(
             drv = postgres_driver,
             host = host,
@@ -136,22 +137,50 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
             dbname = dbname,
             user = user,
             password = password,
-            minSize = min_size,
-            maxSize = max_size
+            minSize = max(min_size, 2),  # Ensure at least 2 connections are pre-created
+            maxSize = max_size,
+            idleTimeout = 3600,  # Keep idle connections for 1 hour
+            validationInterval = 60  # Validate connections every 60 seconds
         )
-        
+
+        # Warm up the connection pool by creating initial connections
+        # This eliminates the delay on the first query
+        if (exists("log_message")) {
+            log_message("Pre-warming connection pool...", "DEBUG")
+        }
+
+        tryCatch({
+            # Checkout and return multiple connections to pre-create them
+            for (i in 1:max(min_size, 2)) {
+                warm_conn <- pool::poolCheckout(.db_pool)
+
+                # Execute a simple query to fully initialize the connection
+                DBI::dbGetQuery(warm_conn, "SELECT 1")
+
+                pool::poolReturn(warm_conn)
+            }
+
+            if (exists("log_message")) {
+                log_message("Connection pool pre-warming completed", "DEBUG")
+            }
+        }, error = function(e) {
+            if (exists("log_message")) {
+                log_message(paste("Warning: Connection pool pre-warming failed:", e$message), "WARNING")
+            }
+        })
+
         # Test connection
         test_conn <- pool::poolCheckout(.db_pool)
-        
+
         # Set schema if specified
         if (!is.null(schema) && schema != "") {
             DBI::dbExecute(test_conn, paste("SET search_path TO", schema))
         }
 
-        # Test query to verify cui_search table access using environment variables
-        test_query <- paste("SELECT COUNT(*) FROM", paste0(cui_search_schema, ".", cui_search_table), "LIMIT 1")
+        # Lightweight test query to verify cui_search table access without scanning entire table
+        test_query <- paste("SELECT 1 FROM", paste0(cui_search_schema, ".", cui_search_table), "LIMIT 1")
         result <- DBI::dbGetQuery(test_conn, test_query)
-        
+
         pool::poolReturn(test_conn)
 
         # Log to file instead of console
@@ -262,14 +291,23 @@ search_cui_entities <- function(search_term, search_type = "exposure", exact_mat
         # Clean and prepare search term
         clean_term <- trimws(search_term)
 
-        # Build query based on match type - NO LIMIT to show all results
+        # Build query based on match type - WITH LIMIT for performance
+        # Limit to 500 results to prevent browser rendering slowdown
+        result_limit <- 500
+
         if (exact_match) {
-            query <- paste("SELECT DISTINCT cui, name, semtype, semtype_definition FROM", paste0(search_schema, ".", search_table), "WHERE LOWER(name) = LOWER($1) ORDER BY name")
+            # Exact match: use simple equality (can use index)
+            query <- paste("SELECT cui, name, semtype, semtype_definition FROM",
+                          paste0(search_schema, ".", search_table),
+                          "WHERE LOWER(name) = LOWER($1) ORDER BY name LIMIT", result_limit)
             params <- list(clean_term)
         } else {
-            # Use DISTINCT for unique results and case-insensitive partial matching
-            search_pattern <- paste0("%", clean_term, "%")
-            query <- paste("SELECT DISTINCT cui, name, semtype, semtype_definition FROM", paste0(search_schema, ".", search_table), "WHERE LOWER(name) LIKE LOWER($1) ORDER BY name")
+            # Partial match: use trigram index for better performance
+            # Pattern: starts with search term (better index usage than LIKE %term%)
+            search_pattern <- paste0(clean_term, "%")
+            query <- paste("SELECT cui, name, semtype, semtype_definition FROM",
+                          paste0(search_schema, ".", search_table),
+                          "WHERE name ILIKE $1 ORDER BY name LIMIT", result_limit)
             params <- list(search_pattern)
         }
 
@@ -300,13 +338,18 @@ search_cui_entities <- function(search_term, search_type = "exposure", exact_mat
             )
         }
 
+        # Check if we hit the limit
+        hit_limit <- nrow(results) >= result_limit
+        limit_message <- if(hit_limit) paste("(showing first", result_limit, "of many results)") else ""
+
         return(list(
             success = TRUE,
-            message = paste("Found", nrow(results), "results in", search_type, "table"),
+            message = paste("Found", nrow(results), "results in", search_type, "table", limit_message),
             results = results,
             search_term = clean_term,
             search_type = search_type,
-            total_results = nrow(results)
+            total_results = nrow(results),
+            hit_limit = hit_limit
         ))
 
     }, error = function(e) {
