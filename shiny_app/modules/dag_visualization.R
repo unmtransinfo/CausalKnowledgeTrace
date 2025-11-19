@@ -166,12 +166,12 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                     centralGravity = 0.2,  # Moderate central gravity
                     springLength = spring_length * 0.7,  # Slightly shorter springs
                     springConstant = 0.08,  # Moderate spring strength
-                    damping = 0.5,  # Moderate damping
+                    damping = 0.9,  # Moderate damping
                     avoidOverlap = 0.2  # Some overlap avoidance
                 ),
                 stabilization = list(
                     enabled = TRUE,
-                    iterations = 150,  # More iterations for better layout
+                    iterations = 300,  # More iterations for better layout
                     updateInterval = 50,  # Smoother updates
                     fit = TRUE  # Fit to screen after stabilization
                 )
