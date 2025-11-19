@@ -36,15 +36,86 @@ tryCatch({
     message("shinyjs not available, using alternative UI update methods")
 })
 
+#' Load graph configuration from YAML file
+#'
+#' Helper function to load configuration at UI build time
+#'
+#' @return List containing configuration or NULL if not found
+#' @keywords internal
+load_graph_config_at_ui_time <- function() {
+    config_file <- "../user_input.yaml"
+    if (file.exists(config_file)) {
+        tryCatch({
+            config <- yaml::read_yaml(config_file)
+            return(config)
+        }, error = function(e) {
+            return(NULL)
+        })
+    }
+    return(NULL)
+}
+
 #' Graph Configuration UI Function
-#' 
+#'
 #' Creates the user interface for knowledge graph parameter configuration
-#' 
+#'
 #' @param id Character string. The namespace identifier for the module
 #' @return Shiny UI elements for graph configuration
 #' @export
 graphConfigUI <- function(id) {
     ns <- NS(id)
+
+    # Load configuration at UI build time (before rendering)
+    ui_config <- load_graph_config_at_ui_time()
+
+    # Extract CUIs for use in UI
+    exposure_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$exposure_cuis)) {
+        paste(unlist(ui_config$exposure_cuis), collapse = ", ")
+    } else {
+        "C0020538, C4013784, C0221155, C0745114, C0745135"
+    }
+
+    outcome_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_cuis)) {
+        paste(unlist(ui_config$outcome_cuis), collapse = ", ")
+    } else {
+        "C2677888, C0750901, C0494463, C0002395"
+    }
+
+    exposure_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$exposure_name)) {
+        ui_config$exposure_name
+    } else {
+        "Hypertension"
+    }
+
+    outcome_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_name)) {
+        ui_config$outcome_name
+    } else {
+        "Alzheimers"
+    }
+
+    min_pmids_ui <- if (!is.null(ui_config) && !is.null(ui_config$min_pmids)) {
+        ui_config$min_pmids
+    } else {
+        10
+    }
+
+    pub_year_cutoff_ui <- if (!is.null(ui_config) && !is.null(ui_config$pub_year_cutoff)) {
+        ui_config$pub_year_cutoff
+    } else {
+        2015
+    }
+
+    degree_ui <- if (!is.null(ui_config) && !is.null(ui_config$degree)) {
+        as.character(ui_config$degree)
+    } else {
+        "2"
+    }
+
+    predication_type_ui <- if (!is.null(ui_config) && !is.null(ui_config$predication_type)) {
+        ui_config$predication_type
+    } else {
+        "CAUSES"
+    }
 
     tagList(
         # Add JavaScript for progress handling
@@ -110,7 +181,8 @@ graphConfigUI <- function(id) {
                                     ns("exposure_cui_search"),
                                     label = "Exposure CUIs *",
                                     placeholder = "Search for exposure concepts (e.g., hypertension, diabetes)...",
-                                    height = "250px"
+                                    height = "250px",
+                                    initial_value = exposure_cuis_ui
                                 )
                             } else {
                                 # Fallback to manual entry
@@ -119,7 +191,7 @@ graphConfigUI <- function(id) {
                                     textAreaInput(
                                         ns("exposure_cuis"),
                                         label = NULL,
-                                        value = "C0020538, C4013784, C0221155, C0745114, C0745135",
+                                        value = exposure_cuis_ui,
                                         placeholder = "C0020538, C4013784, C0221155, C0745114, C0745135",
                                         rows = 3,
                                         width = "100%"
@@ -138,7 +210,8 @@ graphConfigUI <- function(id) {
                                     ns("outcome_cui_search"),
                                     label = "Outcome CUIs *",
                                     placeholder = "Search for outcome concepts (e.g., alzheimer, stroke)...",
-                                    height = "250px"
+                                    height = "250px",
+                                    initial_value = outcome_cuis_ui
                                 )
                             } else {
                                 # Fallback to manual entry
@@ -147,7 +220,7 @@ graphConfigUI <- function(id) {
                                     textAreaInput(
                                         ns("outcome_cuis"),
                                         label = NULL,
-                                        value = "C2677888, C0750901, C0494463, C0002395",
+                                        value = outcome_cuis_ui,
                                         placeholder = "C2677888, C0750901, C0494463, C0002395",
                                         rows = 3,
                                         width = "100%"
