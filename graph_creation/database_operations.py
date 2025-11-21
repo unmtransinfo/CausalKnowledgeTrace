@@ -127,7 +127,7 @@ class DatabaseOperations:
         if self.blocklist_cuis:
             print(f"Blocklist filtering enabled: {len(self.blocklist_cuis)} CUI(s) will be excluded from graph creation")
             print(f"Blocklisted CUIs: {', '.join(self.blocklist_cuis)}")
-    
+
     def _create_cui_array_condition(self, field_name: str) -> str:
         """Create SQL condition for CUI array using ANY operator (optimized)"""
         return f"{field_name} = ANY(%s)"
@@ -154,7 +154,7 @@ class DatabaseOperations:
         # Return condition and parameters (blocklist_cuis twice - once for subject, once for object)
         blocklist_params = [self.blocklist_cuis, self.blocklist_cuis]
         return blocklist_condition, blocklist_params
-    
+
     def _create_predication_condition(self) -> str:
         """Create SQL condition for predication types"""
         if len(self.predication_types) == 1:
@@ -162,7 +162,33 @@ class DatabaseOperations:
         else:
             placeholders = ', '.join(['%s'] * len(self.predication_types))
             return f"cp.predicate IN ({placeholders})"
-    
+
+    def _build_query_params(self, cui_arrays: List[List[str]], blocklist_params: List) -> List:
+        """Build query parameter list in a consistent order for hop queries.
+
+        Order of parameters always matches placeholder order in SQL:
+        1) Predication type placeholders from `_create_predication_condition()`
+        2) CUI array placeholders (for `ANY(%s)` conditions)
+        3) Blocklist array placeholders (for `ALL(%s)` conditions)
+        4) Evidence threshold for the `HAVING` clause
+        """
+        params: List = []
+
+        # 1) Predication types (flattened)
+        params.extend(self.predication_types)
+
+        # 2) CUI arrays for ANY(%s) conditions
+        params.extend(cui_arrays)
+
+        # 3) Blocklist arrays (may be empty if no blocklist is configured)
+        params.extend(blocklist_params)
+
+        # 4) Evidence threshold for HAVING clause
+        params.append(self.threshold)
+
+        return params
+
+
     def clean_output_name(self, name: str) -> str:
         """Clean node names for output by removing all special characters and punctuation."""
         if not name:
@@ -382,38 +408,40 @@ class DatabaseOperations:
         return ordinals.get(hop_level, f"hop_{hop_level}")
 
     def _fetch_first_hop(self, cursor) -> Tuple[List, List]:
-        """Fetch first-hop relationships (direct exposure -> outcome)."""
+        """Fetch first-hop relationships using exposure and outcome CUIs as seed nodes.
+
+        For degree = 1, we want the same neighborhood-style expansion that is used
+        for higher degrees, but with the initial seed set being all exposure and
+        outcome CUIs.
+        """
         # Create blocklist conditions for filtering
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
-        # Create predication condition for multiple predication types
+        # Create predication condition for the configured predication types
         predication_condition = self._create_predication_condition()
 
-        # Optimized query using ANY operator with arrays instead of IN clauses
+        # Seed CUIs for the first hop: all exposure and outcome CUIs
+        seed_cuis = list(set(self.config.exposure_cui_list + self.config.outcome_cui_list))
+
+        # Query is structurally the same as for second and higher hops:
+        # any edge where either subject or object is in the seed set
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-        cp.subject_cui, cp.object_cui, cp.predicate,
-        STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
-        STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+               cp.subject_cui, cp.object_cui, cp.predicate,
+               STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+               STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM {self.predication_schema}.{self.predication_table} cp
         WHERE {predication_condition}
-        AND (
-            (cp.subject_cui = ANY(%s)
-             OR cp.object_cui = ANY(%s))
-            OR
-            (cp.subject_cui = ANY(%s)
-             OR cp.object_cui = ANY(%s))
-        ){blocklist_condition}
+          AND (cp.subject_cui = ANY(%s) OR cp.object_cui = ANY(%s))
+        {blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Build parameters: predication_types + exposure array (twice) + outcome array (twice) + threshold + blocklist params
-        params = (self.predication_types +  # Use all predication types
-                 [self.config.exposure_cui_list, self.config.exposure_cui_list,
-                  self.config.outcome_cui_list, self.config.outcome_cui_list] +
-                 [self.threshold] + blocklist_params)
+        # Use the shared parameter builder: predicates, CUI arrays, blocklist, threshold
+        cui_arrays = [seed_cuis, seed_cuis]
+        params = self._build_query_params(cui_arrays, blocklist_params)
 
         execute_query_with_logging(cursor, query, params)
 
@@ -423,35 +451,35 @@ class DatabaseOperations:
         return self._process_hop_results(cursor, results, 1), links
 
     def _fetch_second_hop(self, cursor, previous_hop_cuis: Set[str]) -> Tuple[List, List]:
-        """Fetch second-hop relationships using first hop CUIs directly."""
+        """Fetch second-hop relationships using CUIs discovered in the previous hop."""
         # Convert set to list for SQL array parameter
         previous_hop_list = list(previous_hop_cuis)
 
         if not previous_hop_list:
             return [], []
 
-        # Create predication condition for multiple predication types
+        # Create predication and blocklist conditions
         predication_condition = self._create_predication_condition()
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
         # Optimized query using ANY operator with arrays instead of IN clauses
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
-            cp.subject_cui, cp.object_cui, cp.predicate,
-            STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
-            STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
+               cp.subject_cui, cp.object_cui, cp.predicate,
+               STRING_AGG(DISTINCT cp.pmid::text, ',' ORDER BY cp.pmid::text) AS pmid_list,
+               STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM {self.predication_schema}.{self.predication_table} cp
         WHERE {predication_condition}
-        AND (cp.subject_cui = ANY(%s)
-            OR cp.object_cui = ANY(%s))
+          AND (cp.subject_cui = ANY(%s) OR cp.object_cui = ANY(%s))
         {blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
-        ORDER BY cp.subject_name ASC
+        ORDER BY cp.subject_name ASC;
         """
 
-        # Parameters: predication_types + previous_hop_list array (twice) + blocklist_params + threshold
-        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [self.threshold]
+        # Parameters: predication types, CUI arrays, blocklist arrays, threshold
+        cui_arrays = [previous_hop_list, previous_hop_list]
+        params = self._build_query_params(cui_arrays, blocklist_params)
 
         execute_query_with_logging(cursor, query, params)
 
@@ -468,7 +496,7 @@ class DatabaseOperations:
         if not previous_hop_list:
             return [], []
 
-        # Create predication condition for multiple predication types
+        # Create predication and blocklist conditions
         predication_condition = self._create_predication_condition()
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
@@ -481,14 +509,16 @@ class DatabaseOperations:
                STRING_AGG(DISTINCT CONCAT(cp.pmid::text, ':', cp.sentence_id::text), ',') AS pmid_sentence_id_list
         FROM {self.predication_schema}.{self.predication_table} cp
         WHERE {predication_condition}
-          AND (cp.subject_cui = ANY(%s) OR cp.object_cui = ANY(%s)){blocklist_condition}
+          AND (cp.subject_cui = ANY(%s) OR cp.object_cui = ANY(%s))
+        {blocklist_condition}
         GROUP BY cp.subject_name, cp.object_name, cp.subject_cui, cp.object_cui, cp.predicate
         HAVING COUNT(DISTINCT cp.pmid) >= %s
         ORDER BY cp.subject_name ASC;
         """
 
-        # Parameters: predication_types + previous_hop_list array (twice) + blocklist_params + threshold
-        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [self.threshold]
+        # Parameters: predication types, CUI arrays, blocklist arrays, threshold
+        cui_arrays = [previous_hop_list, previous_hop_list]
+        params = self._build_query_params(cui_arrays, blocklist_params)
 
         execute_query_with_logging(cursor, query, params)
 
