@@ -106,8 +106,7 @@ CausalKnowledgeTrace/
 
 - PostgreSQL database with SemMedDB schema
 - Database connection parameters (host, port, username, password, database name)
-- Properly configured `causalehr` schema with causalpredication and causalentity tables
-- **CUI Search Index Table**: Optimized search table for enhanced CUI selection interface
+- **CUI Search Index Table**: Automatically created by the application on first use
 
 ## Installation
 
@@ -117,7 +116,7 @@ CausalKnowledgeTrace/
 
 We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) that is available in PostgreSQL format.
 
-**Download Link**: https://drive.google.com/file/d/1842FzR1viGkKU3IdqMpBlD2GnupuGF1n/view?usp=drive_link
+**Download Link**: Download the `causalehr_backup.tar.gz` file from OneDrive :https://unmm-my.sharepoint.com/:u:/g/personal/rajeshupadhayaya_unm_edu/ESO2UPECVk5Ku3JRSClPytMBngCV_0QN8-cA-zQRjaYogg?e=YolDZH
 
 **Note**: The database file is approximately 25GB in size, so the download may take several minutes depending on your internet connection.
 
@@ -129,112 +128,61 @@ We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) 
 - Sufficient disk space (at least 50GB recommended for extraction and setup)
 
 **Create the Database:**
+
 Replace `<username>` with your actual PostgreSQL username.
 
 ```bash
+tar -xzf causalehr_backup.tar.gz
 createdb -U <username> -h localhost causalehr
+pg_restore -d causalehr -U <username> causalehr_backup/
 ```
 
-#### CUI Search Index Setup
+**Note**: The CUI search index table is automatically created by the application on first use, so no additional setup is required.
 
-After setting up the main database, you need to create an optimized search index table for enhanced CUI selection functionality:
+### Step 2: Install Miniconda and Setup Environment
 
-**Prerequisites:**
-- PostgreSQL extensions: `pg_trgm` and `unaccent` (usually available by default)
-- The main SemMedDB database must be loaded and accessible
+This project requires Conda for environment management. If you don't have Conda/Miniconda installed, please follow the official installation guide:
 
-**Create the CUI Search Index:**
+**Installation Guide**: [https://www.anaconda.com/docs/getting-started/miniconda/install](https://www.anaconda.com/docs/getting-started/miniconda/install)
 
-```bash
-# Navigate to your project directory
-cd CausalKnowledgeTrace
+The guide provides detailed instructions for:
 
-# Run the table creation script
-psql -U <username> -h localhost -d causalehr -f doc/create_cui_search_table.sql
-```
+- Windows
+- macOS (Intel and Apple Silicon)
+- Linux
 
-This script will:
-- Enable required PostgreSQL extensions (`pg_trgm`, `unaccent`)
-- Create the `causalehr.cui_search` table with optimized structure
-- Populate it with data from the existing `causalentity` table
-- Add comprehensive indexes for fast search performance
-- Include semantic type definitions for better user experience
-
-**Verification:**
-After running the script, you should see output showing the number of records created:
-```
- total_records | unique_cuis | unique_semtypes | unique_definitions
----------------+-------------+-----------------+-------------------
-      1234567  |     987654  |              130|                130
-```
-
-### Step 2: Install Miniconda
-
-This project requires Conda for environment management. If you don't have Conda/Miniconda installed:
-
-#### Download Miniconda
-
-- **Windows**: [Miniconda3 Windows 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-Windows-x86_64.exe)
-- **macOS**: [Miniconda3 macOS 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh)
-- **macOS (Apple Silicon)**: [Miniconda3 macOS ARM64](https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh)
-- **Linux**: [Miniconda3 Linux 64-bit](https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh)
-
-#### Install Miniconda
-
-**Windows:**
-
-1. Download the Windows installer from the link above
-2. Run the `.exe` file as administrator
-3. Follow the installation wizard
-4. Check "Add Anaconda to my PATH environment variable" (optional but recommended)
-5. Complete installation and restart your command prompt
-
-**macOS/Linux:**
-
-1. Download the appropriate `.sh` file for your system
-2. Open Terminal and navigate to the download location
-3. Run the installer:
-   ```bash
-   bash Miniconda3-latest-[YourSystem].sh
-   ```
-4. Follow the prompts and accept the license
-5. Allow the installer to initialize conda
-6. Restart your terminal or run: `source ~/.bashrc`
-
-#### Verify Conda Installation
-
-Check if conda is installed correctly:
+After installation, verify that conda is installed correctly:
 
 ```bash
 conda --version
 conda info
 ```
 
-### Step 3: Project Setup
+#### Setup Steps
 
-The project includes an automated setup script that creates a conda environment and installs all dependencies:
+Once Miniconda is installed, follow these steps to set up the project environment:
 
 ```bash
-# Clone or download the project
-cd CausalKnowledgeTrace
-
-# 1. Create environment configuration file
+# 1. Setup environment configuration
 cp doc/sample.env .env
-# Edit .env with your database credentials (see Database Configuration below)
+# Edit .env with your database credentials
 
-# 2. Run the automated setup script
-chmod +x setup.sh
-./setup.sh
+# 2. Create conda environment from the YAML file
+conda env create -f doc/environment.yaml
+
+# 3. Activate the environment
+conda activate causalknowledgetrace
+
+# 4. Update environment with Python dependencies
+pip install -r doc/requirements.txt
+
+# 5. Install R packages
+Rscript doc/packages.R
 ```
 
-This script will:
+**Note**: Make sure R is installed on your system before running the R package installation script.
 
-1. Create a conda environment named `causalknowledgetrace` using `doc/environment.yaml`
-2. Install Python dependencies (psycopg2, PyYAML, pandas, networkx, scipy, numpy, matplotlib, jupyter, rpy2)
-3. Install R packages using `doc/packages.R`
-4. **Create the CUI search index table** for enhanced search functionality
-
-### Database Configuration
+### Step 3: Database Configuration
 
 Before running graph creation, you need to configure your database connection:
 
@@ -264,450 +212,12 @@ DB_SCHEMA=causalehr
 - The `.env` file is ignored by git for security (contains sensitive information)
 - Make sure your database contains the SemMedDB schema with causalpredication table
 
-### Manual Installation (Alternative)
-
-If you prefer manual installation or the automated setup fails:
-
-#### 1. Setup Environment Configuration
-
-```bash
-# Copy the sample environment file
-cp doc/sample.env .env
-
-# Edit with your database credentials
-nano .env  # or use your preferred editor
-```
-
-#### 2. Create Conda Environment
-
-```bash
-# Create environment from YAML file
-conda env create -f doc/environment.yaml
-
-# Activate the environment
-conda activate causalknowledgetrace
-```
-
-#### 3. Install Python Dependencies
-
-```bash
-# Using pip with requirements file
-pip install -r doc/requirements.txt
-
-# Or install individually
-pip install psycopg2-binary PyYAML pandas networkx scipy rpy2
-```
-
-#### 4. Install R Packages
-
-```r
-# Run the R package installation script
-source("doc/packages.R")
-
-# Or install core packages manually
-install.packages(c(
-    "shiny", "shinydashboard", "visNetwork", "dplyr", "DT",
-    "dagitty", "igraph", "yaml", "shinyjs", "SEMgraph",
-    "ggplot2", "testthat", "knitr", "rmarkdown"
-))
-```
-
 ## CUI Search Functionality
 
 ### Enhanced Medical Concept Search
 
 The application includes an advanced CUI (Concept Unique Identifier) search system that provides an intuitive interface for selecting medical concepts:
 
-#### Features
-
-- **Interactive Search Interface**: Type-ahead search with real-time results
-- **Semantic Type Information**: View concept categories (Disease, Procedure, etc.)
-- **Comprehensive Coverage**: Search across all UMLS concepts in the database
-- **Performance Optimized**: Fast search with trigram indexing and full-text capabilities
-- **Multiple Selection**: Select multiple CUIs for complex exposure-outcome relationships
-
 #### How to Use
 
-1. **Search for Concepts**:
-   - Type at least 3 characters in the search box
-   - Press Enter to trigger the search
-   - Results show CUI code, concept name, semantic type, and definition
-
-2. **Select CUIs**:
-   - Click on any search result to add it to your selection
-   - Selected CUIs appear in the text area below
-   - Manual entry is also supported (format: C followed by 7 digits)
-
-3. **Manage Selection**:
-   - View selected CUIs as comma-separated list
-   - Use "Clear Selection" to start over
-   - Edit the text area directly for manual adjustments
-
-#### Search Examples
-
-- **Diseases**: "diabetes", "hypertension", "alzheimer"
-- **Procedures**: "surgery", "therapy", "treatment"
-- **Substances**: "insulin", "medication", "drug"
-- **Anatomy**: "heart", "brain", "liver"
-
-#### Technical Implementation
-
-The search functionality uses the `causalehr.cui_search` table which:
-- Contains normalized concept names for better matching
-- Includes semantic type definitions for context
-- Uses PostgreSQL trigram indexes for fuzzy matching
-- Supports both exact and partial matching
-- Provides fast performance even with large datasets
-
-## Configuration and Workflow
-
-### Typical User Workflow (Recommended)
-
-For most users, the integrated web application provides the complete workflow:
-
-1. **Launch Application**: `Rscript run_app.R`
-2. **Configure Analysis**: Use "Graph Configuration" tab to set parameters
-3. **Generate Graphs**: Click "Create Graph" to generate directly in the app
-4. **Visualize Results**: Automatically load and explore generated graphs
-5. **Interactive Analysis**: Use all visualization and analysis features
-
-### YAML Configuration Format
-
-The `user_input.yaml` file supports the following structure:
-
-```yaml
-# Multiple CUIs supported for both exposure and outcome
-exposure_cuis:
-  - C0020538  # Hypertension
-  - C4013784  # Hypertensive disease
-  - C0221155  # High blood pressure
-outcome_cuis:
-  - C2677888  # Alzheimer's disease
-  - C0750901  # Dementia
-  - C0494463  # Cognitive impairment
-
-# Optional blacklist to exclude generic concepts
-blacklist_cuis:
-  - C0001687  # Generic concept to exclude
-  - C0002526  # Another generic concept
-
-# Custom names (optional)
-exposure_name: "Hypertension"
-outcome_name: "Alzheimers"
-
-# Analysis parameters
-min_pmids: 10                    # Minimum publications required
-pub_year_cutoff: 2010           # Exclude publications before 2010
-degree: 1                       # Relationship depth (1-3)
-predication_type: "CAUSES, AFFECTS, PREDISPOSES"  # Single or multiple types (comma-separated)
-SemMedDBD_version: "heuristic"  # Database version
-```
-
-### Predication Types
-
-The system supports multiple predication types for comprehensive causal relationship analysis:
-
-- **Single type**: `predication_type: "CAUSES"`
-- **Multiple types**: `predication_type: "CAUSES, AFFECTS, PREDISPOSES"`
-- **Alternative format**: `predication_type: ["CAUSES", "TREATS", "PREVENTS"]` (also supported)
-
-**Available predication types**: `AFFECTS`, `AUGMENTS`, `CAUSES`, `COMPLICATES`, `DISRUPTS`, `INHIBITS`, `PRECEDES`, `PREDISPOSES`, `PREVENTS`, `PRODUCES`, `STIMULATES`, `TREATS`
-
-**Multi-prediction type benefits**:
-- Captures diverse causal relationships in a single analysis
-- Provides comprehensive evidence from different relationship types
-- Enables comparison of relationship strengths across predication types
-- Generates richer causal knowledge graphs with multiple edge types
-
-## Data Loading and Visualization
-
-### Loading Generated Graphs
-
-The application provides optimized loading for graphs generated by the Python engine:
-
-#### Method 1: Generated Graph Files
-
-1. **Generate graphs** using the graph creation engine
-2. **Files are saved** to `graph_creation/result/` directory:
-
-   - `degree_X.R` - Standard DAG files (X = k-hops value)
-   - `MarkovBlanket_Union.R` - Markov blanket analysis results
-   - `causal_assertions_X.json` - Evidence data
-3. **Load in Shiny app**:
-
-   - Go to "Data Upload" tab
-   - Click "Refresh File List" to scan for available files
-   - Select your generated file from the dropdown
-   - Click "Load Selected DAG"
-
-#### Method 2: Upload Custom DAG Files
-
-1. **Go to "Data Upload" tab** in the Shiny app
-2. **Use file upload interface** to select your R file
-3. **Click "Upload & Load"** to upload and immediately load the DAG
-
-### DAG File Format
-
-DAG files should contain a dagitty graph definition with variable name `g`:
-
-```r
-# Example DAG file format
-g <- dagitty('dag {
-    Hypertension [exposure]
-    Alzheimers_Disease [outcome]
-    Age
-    BMI
-    Diabetes
-
-    Age -> Hypertension
-    BMI -> Diabetes
-    Hypertension -> Alzheimers_Disease
-    Diabetes -> Alzheimers_Disease
-    Age -> Alzheimers_Disease
-}')
-```
-
-### Performance Features
-
-The application includes several performance features:
-
-- **Automatic file detection** and validation
-- **Graph caching system** for repeated access
-- **Node categorization** using vectorized operations
-- **Progressive loading** with status indicators
-
-### Node Categories and Visualization
-
-The application uses an optimized three-category system for node classification:
-
-- **🔴 Exposure** (Red #FF4500): Variables marked as `[exposure]` in the DAG
-- **🔵 Outcome** (Blue #0066CC): Variables marked as `[outcome]` in the DAG
-- **⚫ Other** (Gray #808080): All other variables in the DAG
-
-**Performance features:**
-
-- Vectorized operations for categorization of large graphs
-- Color assignment using batch processing
-- Font sizing and edge styling for better visibility
-- Progress indicators during processing
-
-## Advanced Usage
-
-### Graph Creation Options
-
-#### Standard Graph Analysis
-
-```bash
-cd graph_creation
-python pushkin.py --yaml-config ../user_input.yaml --host localhost --port 5432 --dbname causalehr --user username --password password --schema causalehr
-```
-
-### Database Filtering
-
-The project includes SQL filters to exclude generic concepts:
-
-- **Generic CUI filtering**: Removes overly broad medical concepts
-- **Semantic type filtering**: Excludes non-specific semantic types
-- **Custom blacklists**: User-defined CUI exclusions
-
-Filter file: `doc/filter.sql` contains predefined exclusion lists
-
-## Shiny Application Usage
-
-### Application Tabs
-
-#### 1. ⚙️ Graph Configuration Tab
-
-- **Parameter configuration**: Set exposure/outcome CUIs, thresholds, filters
-- **Enhanced CUI Search Interface**: Interactive search with semantic type information
-  - Type-ahead search with minimum 3 characters
-  - Press Enter to search medical concepts
-  - Click results to select CUIs
-  - View semantic types and definitions
-  - Manual CUI entry also supported
-- **Multiple CUI support**: Handle complex exposure-outcome relationships
-- **Multi-select Predication Types**: Choose multiple relationship types simultaneously
-  - Select from 16 available predication types (CAUSES, AFFECTS, PREDISPOSES, etc.)
-  - Hold Ctrl/Cmd to select multiple types
-  - Comprehensive causal relationship analysis in single run
-  - Default selection: CAUSES (can be changed to any combination)
-- **Blacklist management**: Exclude unwanted concepts with search interface
-- **Real-time validation**: Input validation with immediate feedback
-- **YAML export**: Save configuration for Python engine
-
-#### 2. 📁 Data Upload Tab
-
-- **File management**: Upload and load custom DAG files
-- **Generated file loading**: Access graphs created by Python engine
-- **File format validation**: Automatic dagitty syntax checking
-- **Status indicators**: Real-time feedback on loading progress
-
-#### 3. 📊 DAG Visualization Tab
-
-- **Interactive network diagram** with full DAG structure
-- **Node interaction**: Drag to reposition, click to select and view details
-- **Zoom and pan**: Mouse wheel zoom, drag to pan
-- **Physics controls**: Real-time adjustment of layout parameters
-- **Node removal**: Interactive removal of nodes and edges with graph updates
-- **Reload DAG Data**: Refresh from current data files
-- **Create Graph**: Navigate to graph configuration
-
-#### 4. 🔍 Causal Analysis Tab
-
-- **Adjustment set identification**: Find minimal sufficient adjustment sets
-- **Instrumental variable detection**: Identify valid instruments
-- **Causal path analysis**: Explore all paths between exposure and outcome
-- **Interactive causal inference**: Real-time analysis with DAG updates
-
-#### 5. 📋 Node Information Tab
-
-- **Selected node details**: Comprehensive information about clicked nodes
-- **Searchable node table**: All nodes with metadata and properties
-- **Evidence information**: PMID lists and evidence counts (for generated graphs)
-- **Instrumental variables**: Displayed as comma-separated lists
-
-#### 6. 📈 Statistics Tab
-
-- **Network metrics**: Node count, edge count, group distributions
-- **Visual charts**: Node distribution and category breakdowns
-- **DAG structure**: Connectivity and topology information
-- **Performance metrics**: Loading times and processing status
-
-## Technical Details
-
-### Graph Creation Engine Architecture
-
-#### Core Components
-
-- **`pushkin.py`**: Main entry point that delegates to CLI interface
-- **`cli_interface.py`**: Command-line argument parsing and validation
-- **`analysis_core.py`**: Core analyzer classes:
-  - `GraphAnalyzer`: General graph analysis and DAG generation
-  - `MarkovBlanketAnalyzer`: Specialized Markov blanket computation
-- **`config_models.py`**: Configuration validation and data models
-- **`database_operations.py`**: PostgreSQL database operations and k-hop queries
-- **`markov_blanket.py`**: Markov blanket algorithms for causal inference
-
-#### Analysis Modes
-
-1. **Standard Graph Analysis**: Basic causal graph construction from SemMedDB
-2. **Markov Blanket Analysis**: Advanced causal inference with confounder identification
-3. **K-hop Analysis**: Configurable relationship depth (1-3 hops) for comprehensive traversal
-
-#### Output Formats
-
-- **R DAG files**: `degree_X.R`, `MarkovBlanket_Union.R` (dagitty format)
-- **JSON assertions**: `causal_assertions_X.json` (detailed evidence)
-- **Metadata**: Performance metrics, configuration logs, timing analysis
-
-### CUI Search Index Architecture
-
-#### Database Schema
-
-The `causalehr.cui_search` table provides optimized search capabilities:
-
-```sql
-CREATE TABLE causalehr.cui_search (
-    cui VARCHAR(20) NOT NULL,           -- UMLS Concept Unique Identifier
-    name TEXT NOT NULL,                 -- Normalized concept name
-    semtype VARCHAR(50),                -- Semantic type code
-    semtype_defination TEXT             -- Human-readable semantic type
-);
-```
-
-#### Performance Features
-
-- **Trigram Indexing**: Fast fuzzy matching using PostgreSQL's `pg_trgm` extension
-- **Normalized Names**: Lowercase, standardized spacing for consistent matching
-- **Semantic Type Mapping**: Complete mapping of UMLS semantic types to descriptions
-- **Composite Indexes**: Optimized for common query patterns
-- **Full-Text Search**: Support for partial and exact matching
-
-#### Data Population
-
-The table is populated from the existing `causalentity` table with:
-- Name normalization and cleaning
-- Semantic type definition lookup
-- Duplicate removal and data validation
-- Comprehensive indexing for performance
-
-### Troubleshooting
-
-### Setup Issues
-
-#### Conda Environment Setup
-
-```bash
-# If conda command not found (Linux/macOS)
-export PATH="/path/to/miniconda3/bin:$PATH"
-# Or reinitialize
-conda init bash  # or zsh, fish, etc.
-
-# If conda environment creation fails
-conda clean --all
-conda env create -f doc/environment.yaml --force
-
-# If R package installation fails
-Rscript -e "install.packages('devtools'); devtools::install_deps()"
-```
-
-#### Database Connection
-
-```bash
-# Test PostgreSQL connection
-psql -h localhost -p 5432 -U username -d causalehr -c "SELECT COUNT(*) FROM causalehr.causalpredication;"
-
-# Check schema exists
-psql -h localhost -p 5432 -U username -d causalehr -c "\dt causalehr.*"
-```
-
-### **Environment Variable Debugging**:
-
-```bash
-# Check if environment variables are loaded correctly
-echo "DB_HOST: $DB_HOST"
-echo "DB_PORT: $DB_PORT"
-echo "DB_USER: $DB_USER"
-echo "DB_NAME: $DB_NAME"
-```
-
-**Note**: The Python code automatically handles string-to-integer conversion for the port parameter, so both `DB_PORT=5432` and `DB_PORT="5432"` work correctly.
-
-#### CUI Search Issues
-
-If the CUI search functionality is not working:
-
-```bash
-# Check if the cui_search table exists
-psql -h localhost -p 5432 -U username -d causalehr -c "\dt causalehr.cui_search"
-
-# Check table population
-psql -h localhost -p 5432 -U username -d causalehr -c "SELECT COUNT(*) FROM causalehr.cui_search;"
-
-# Test search functionality
-psql -h localhost -p 5432 -U username -d causalehr -c "SELECT cui, name, semtype FROM causalehr.cui_search WHERE name LIKE '%diabetes%' LIMIT 5;"
-
-# Recreate the table if needed
-psql -h localhost -p 5432 -U username -d causalehr -f doc/create_cui_search_table.sql
-```
-
-**Common Issues:**
-- **Table not found**: Run the `create_cui_search_table.sql` script
-- **Empty results**: Ensure the `causalentity` table is populated
-- **Slow searches**: Check if indexes were created properly
-- **Permission errors**: Verify database user has CREATE and INSERT privileges
-
-### Performance Tips
-
-- Check for generated files in `graph_creation/result/` directory
-- Monitor console output for processing status
-- Clear cache if needed: `rm -rf shiny_app/.cache/`
-
-### Data Validation
-
-The system includes comprehensive validation:
-
-- **YAML configuration**: Real-time validation with error messages
-- **DAG file format**: Automatic dagitty syntax checking
-- **Database queries**: Parameter validation and SQL injection prevention
-- **File integrity**: Checksum validation for optimized files
+Type at least 3 characters and press Enter to search. Click on search results to select CUIs, or manually enter them in the format C followed by 7 digits (e.g., C0020538). Selected CUIs appear as a comma-separated list that can be edited directly.

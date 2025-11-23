@@ -3,6 +3,13 @@
 # Set CRAN mirror
 options(repos = c(CRAN = "https://cran.rstudio.com/"))
 
+# Install BiocManager and Bioconductor dependencies for ggm
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+# Install graph dependencies from Bioconductor (required for ggm and SEMgraph)
+BiocManager::install(c("graph", "RBGL", "Rgraphviz", "SEMgraph"), update = FALSE, ask = FALSE)
+
 # Install all required packages for CausalKnowledgeTrace application
 install.packages(c(
     # Core required packages
@@ -15,7 +22,6 @@ install.packages(c(
     "igraph",          # Graph analysis and manipulation
     "yaml",            # YAML configuration file support
     "shinyjs",         # Enhanced UI interactions
-    "SEMgraph",        # Structural equation modeling graphs
     "ggplot2",         # Enhanced plotting capabilities
     "testthat",        # Testing framework
     "knitr",           # Dynamic report generation

@@ -15,7 +15,7 @@ dependencies:
   # Pip dependencies (if needed)
   - pip
   - pip:
-    - psycopg2
+    - psycopg2-binary
     - pyyaml
     - python-dotenv
     - pandas
