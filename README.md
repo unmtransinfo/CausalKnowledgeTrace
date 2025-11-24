@@ -70,6 +70,13 @@ CausalKnowledgeTrace/
 │   ├── ui/                      # UI component modules
 │   └── utils/                   # Utility functions
 │
+├── furtherAnalysis/             # Analytic code and features that haven't been worked into the main body of code
+│   ├── cleanByRemovingLeaves.R  # Removes leaves (singly-connected nodes) from the causal graph from initial search
+│   ├── cleanButterflyReport-CausalGraph.R    # code for identifying minimally sufficient adjustment sets in context of butterfly bias 
+│   ├── cleanButterflyReport-CausalGraph_compiled.R #compiled version of above
+│   ├── mBiasReport-CausalGraph.R# identifying variables implicated in M-bias from causal graph
+│   └── utils/                   # Utility functions
+│
 └── graph_creation/              # Graph Creation Engine Component
     ├── pushkin.py               # Main entry point (delegates to cli_interface.py)
     ├── cli_interface.py         # Command line interface and argument parsing
