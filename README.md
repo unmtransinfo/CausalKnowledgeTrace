@@ -97,6 +97,7 @@ CausalKnowledgeTrace/
 
 ### System Requirements
 
+- **Git**: Version control system (required for cloning the repository)
 - **PostgreSQL** database with modified SemMEDdb data (for graph creation) in postgres
 - **Conda/Miniconda**: For environment management (required)
 - **Python** (version 3.11 or higher)
@@ -110,7 +111,54 @@ CausalKnowledgeTrace/
 
 ## Installation
 
-### Step 1: PostgreSQL Database Setup for SemMedDB
+### Step 1: Get the Repository
+
+#### Option 1: Download as ZIP (Quick Start)
+
+You can download the repository directly from GitHub without installing Git:
+
+**Download Link**: [Download ZIP from GitHub](https://github.com/unmtransinfo/CausalKnowledgeTrace/archive/refs/heads/main.zip)
+
+Extract the ZIP file and navigate to the extracted directory.
+
+#### Option 2: Clone with Git (Recommended for Updates)
+
+Installing Git is recommended as it allows you to easily pull future updates to the project.
+
+**Installation Guide**: [Git Installation Instructions](https://chatgpt.com/share/69249639-630c-800e-9936-7d052643edb7)
+
+After installation, verify that Git is installed correctly:
+
+```bash
+git --version
+```
+
+Clone the repository:
+
+```bash
+git clone git@github.com:unmtransinfo/CausalKnowledgeTrace.git
+cd CausalKnowledgeTrace
+```
+
+To get future updates, simply run:
+
+```bash
+git pull origin main
+```
+
+### Step 2: Install PostgreSQL
+
+PostgreSQL is required for storing and querying the SemMedDB data. If you don't have PostgreSQL installed, please follow the installation instructions:
+
+**Installation Guide**: [PostgreSQL Installation Instructions](https://chatgpt.com/share/692494d4-269c-800e-a5a1-96a9e469670b)
+
+After installation, verify that PostgreSQL is installed correctly:
+
+```bash
+psql --version
+```
+
+### Step 3: PostgreSQL Database Setup for SemMedDB
 
 #### Database Download
 
@@ -124,7 +172,7 @@ We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) 
 
 **Prerequisites:**
 
-- PostgreSQL must be installed on your system
+- PostgreSQL must be installed on your system (see Step 1 above)
 - Sufficient disk space (at least 50GB recommended for extraction and setup)
 
 **Create the Database:**
@@ -139,17 +187,11 @@ pg_restore -d causalehr -U <username> causalehr_backup/
 
 **Note**: The CUI search index table is automatically created by the application on first use, so no additional setup is required.
 
-### Step 2: Install Miniconda and Setup Environment
+### Step 4: Install Miniconda and Setup Environment
 
 This project requires Conda for environment management. If you don't have Conda/Miniconda installed, please follow the official installation guide:
 
 **Installation Guide**: [https://www.anaconda.com/docs/getting-started/miniconda/install](https://www.anaconda.com/docs/getting-started/miniconda/install)
-
-The guide provides detailed instructions for:
-
-- Windows
-- macOS (Intel and Apple Silicon)
-- Linux
 
 After installation, verify that conda is installed correctly:
 
@@ -182,7 +224,7 @@ Rscript doc/packages.R
 
 **Note**: Make sure R is installed on your system before running the R package installation script.
 
-### Step 3: Database Configuration
+### Step 5: Database Configuration
 
 Before running graph creation, you need to configure your database connection:
 
@@ -211,6 +253,22 @@ DB_SCHEMA=causalehr
 - Replace the placeholder values with your actual database credentials
 - The `.env` file is ignored by git for security (contains sensitive information)
 - Make sure your database contains the SemMedDB schema with causalpredication table
+
+### Step 6: Run the Application
+
+Once all the prerequisites are installed and configured, you can launch the Shiny web application:
+
+```bash
+# Make sure you're in the project directory and the conda environment is activated
+conda activate causalknowledgetrace
+
+# Run the Shiny application
+Rscript run_app.R
+```
+
+The application will start and open in your default web browser. If it doesn't open automatically, look for the URL in the terminal output (typically `http://127.0.0.1:XXXX` where XXXX is the port number).
+
+**Note**: The first time you run the application, it may take a few moments to initialize the database connections and create necessary index tables.
 
 ## CUI Search Functionality
 
