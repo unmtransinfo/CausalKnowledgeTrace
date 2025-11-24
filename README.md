@@ -122,21 +122,21 @@ CausalKnowledgeTrace/
 
 #### Option 1: Download as ZIP (Quick Start)
 
-You can download the repository directly from GitHub without installing Git:
+You can download the repository directly from GitHub (without installing _Git_):
 
 **Download Link**: [Download ZIP from GitHub](https://github.com/unmtransinfo/CausalKnowledgeTrace/archive/refs/heads/main.zip)
 
 Extract the ZIP file and navigate to the extracted directory.
 
-#### Option 2: Clone with Git (Recommended for Updates)
+#### Option 2: Clone with Git (Recommended)
 
 Installing Git is recommended as it allows you to easily pull future updates to the project.
 
 **Installation Guide**
 
-We recommend using _git_ (a version control system that tracks changes to code and enables easy updating of software projects) to install the project codebase, which simplifies future updates. In case _git_ is not already installed on your system, you can install _git_ using the following instructions: [Git Installation Instructions](https://chatgpt.com/share/69249639-630c-800e-9936-7d052643edb7)
+_Git_ is a version control system that makes updating the software simple. If _Git_ is not already installed on your system, follow these instructions:: [_Git_ Installation Instructions](https://chatgpt.com/share/69249639-630c-800e-9936-7d052643edb7)
 
-After installation, verify that Git is installed correctly:
+After installation, verify that _Git_ is installed correctly:
 
 ```bash
 git --version
