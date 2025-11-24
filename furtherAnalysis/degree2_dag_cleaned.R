@@ -1,0 +1,3942 @@
+#Exported DAG from degree_2.R
+# Generated on 2025-10-22 15:53:45.02579
+
+library(dagitty)
+
+g <- dagitty('dag {
+1_4_dioxin
+1_Methyl_4_phenyl_1_2_3_6_tetrahydropyridine
+1_Methyl_4_phenylpyridinium
+1_Naphthylisothiocyanate
+2019_novel_coronavirus
+21_hydroxylase_deficiency
+2_2_azobis_2_amidinopropane
+3MC
+3_Methylglutaconic_aciduria_type_2
+9_10_Dimethyl_1_2_benzanthracene
+APP_gene
+APP_protein_human
+ASPERGILLOSIS_INVASIVE
+ATPase_Aminophospholipid_Transporter_Like_Class_I_Type_8A_Member_2_ATP8A2
+Abetalipoproteinemia
+Ablation
+Abnormal_coordination
+Abnormal_renal_function
+Abnormal_shape
+Abnormality_of_mitochondrial_metabolism
+Acclimatization
+Accumulation
+Acetaminophen
+Acetate
+Acetic_Acid
+Achondroplasia
+Acidosis
+Acids
+Acne
+Acquired_Immunodeficiency_Syndrome
+Acrolein
+Acrylamide
+Acute_Coronary_Syndrome
+Acute_hemorrhage
+Acute_myocardial_infarction
+Acute_respiratory_failure
+Acute_respiratory_infection_NOS
+Adenine
+Adenoviruses
+Adhesions
+Adiponectin
+Adoptive_Transfer
+Adrenal_Cortical_Adenoma
+Adrenal_adenoma
+Adrenal_gland_hypofunction
+Adrenoleukodystrophy
+Adriamycin
+Aflatoxin_B1
+Agar
+Age_related_macular_degeneration
+Agent
+Aggressive_behavior
+Airway_Obstruction
+Albers_Schonberg_disease
+Alcoholic_Intoxication_Chronic
+Alcoholic_Liver_Diseases
+Aldosterone
+Alexander_Disease
+Allergens
+Alloxan
+Alport_Syndrome_X_Linked
+Alport_s_syndrome
+Aluminum
+Alzheimers [outcome]
+Amebiasis
+Amelogenesis_Imperfecta
+Amiodarone
+Ammonia
+Amnesia
+Amyloid
+Amyloid_Fibrils
+Amyloid_beta
+Amyloid_beta_Peptides
+Amyloid_beta_Protein_Precursor
+Amyloid_deposition
+Amyloidosis
+Amyotrophic_Lateral_Sclerosis
+Anaphylaxis
+Androgen_Insensitivity_Syndrome
+Anemia
+Anesthetics
+Aneurysm_Dissecting
+Angelman_Syndrome
+Angiogenesis_Factor
+Angiotensin_II
+Angiotensins
+Anoxia
+Anterior_myocardial_infarction
+Anti_Inflammatory_Agents_Non_Steroidal
+Anti_diuresis
+Antibiotics
+Antibodies
+Antibodies_Anti_Idiotypic
+Antigen_Antibody_Complex
+Antigens
+Antineoplastic_Agents
+Antioxidants
+Antipsychotic_Agents
+Aortic_Aneurysm
+Aortic_Aneurysm_Abdominal
+Aortic_Valve_Insufficiency
+Aortic_Valve_Stenosis
+Aortic_coarctation
+Apert_Crouzon_syndrome
+Apolipoprotein_E_APOE
+Apoptosis
+Arachidonic_Acid
+Argipressin
+Arrhythmogenic_Right_Ventricular_Dysplasia
+Arsenic
+Arteriosclerosis
+Arthritis
+Arthropathies_NOS
+Asbestos
+Ascorbic_Acid
+Asphyxia
+Asphyxia_Neonatorum
+Aspiration_Pneumonia
+Aspirin
+Asthenia
+Asthma
+Astigmatism
+Ataxia
+Ataxia_Telangiectasia
+Atherogenesis
+Atherosclerosis
+Atrazine
+Atrial_Fibrillation
+Atrophic
+Aurothioglucose
+Autoantibodies
+Autoimmune_Diseases
+Autoimmune_Lymphoproliferative_Syndrome
+Autoimmunity
+Autosomal_Dominant_Disorder
+Autosomal_Recessive_Disorder
+Autosomal_Recessive_Juvenile_Parkinson_Disease
+Autosomal_Recessive_Parkinsonism
+Autosomal_Recessive_Polycystic_Kidney_Disease
+Autosomal_dominant_hereditary_disorder
+Autosomal_recessive_hereditary_disorder
+Avascular_necrosis
+Axotomy
+Azoospermia
+Azoxymethane
+BARRIER
+BAX_gene_BAX
+BK_Virus
+Bacteremia
+Bacteria
+Bacterial_Infections
+Banding_procedure
+Bands
+Bardet_Biedl_Syndrome
+Bartter_Disease
+Becker_Muscular_Dystrophy
+Benzene
+Bile_Acids
+Biliary_Atresia
+Biliary_calculi
+Bleeding_tendency
+Bleomycin
+Blind_Vision
+Blood_Coagulation_Disorders
+Blood_Glucose
+Blood_Pressure
+Blood_alcohol_concentration
+Blood_flow
+Bloom_Syndrome
+Bone_Diseases
+Bone_Wires
+Bone_necrosis
+Bradykinin
+Brain_Edema
+Brain_Injuries
+Brain_Ischemia
+Brain_hemorrhage
+Bronchopneumonia
+Bronchopulmonary_Dysplasia
+Bruck_de_Lange_syndrome
+Brugada_syndrome
+Bupivacaine
+CA2
+CADASIL
+CARDIAC_EVENT
+CD69_protein_human_CD69
+COGNITIVE_DEFICIT
+COLLAGENASE
+COVID_19
+CRYGC_CRYGEP
+Cachexia
+Cadmium
+Calcium
+Calculi
+Capsaicin
+Carbohydrates
+Carbon_Tetrachloride
+Carbon_tetrachloride_homeopathic_preparation
+Carboplatin
+Carcinogenesis
+Carcinogenicity
+Carcinogens
+Carcinoma
+Cardiac_Death
+Cardiac_Hypertrophy
+Cardiac_Tamponade
+Cardiac_complication
+Cardiac_fibrosis
+Cardiomyopathies
+Cardiomyopathies_Primary
+Cardiomyopathy_Dilated
+Cardiomyopathy_Hypertrophic_Familial
+Cardiopulmonary_Bypass
+Cardiorespiratory_failure
+Cardiotoxicity
+Cardiovascular_Diseases
+Cardiovascular_arteriosclerosis_unspecified
+Cardiovascular_morbidity
+Carotid_Atherosclerosis
+Carotid_Stenosis
+Carrageenan
+Cataract
+Catecholamines
+Cathodal_opening_clonus
+Cell_Death
+Cell_Proliferation
+Cellular_Stress
+Central_Diabetes_Insipidus
+Centronuclear_myopathy
+Cerebellar_Ataxia
+Cerebral_Amyloid_Angiopathy
+Cerebral_Edema
+Cerebral_Embolism
+Cerebral_Infarction
+Cerebral_Ischemia
+Cerebral_Palsy
+Cerebral_hemisphere_hemorrhage
+Cerebral_venous_sinus_thrombosis
+Cerebrovascular_Disorders
+Cerebrovascular_accident
+Cervical_Ripening
+Cessation_of_life
+Chagas_Disease
+Charcot_Marie_Tooth_Disease
+Chemicals
+Chemokine_C_C_Motif_Ligand_4_CCL4
+Chlamydophila_pneumoniae
+Chlorine
+Chlorpyrifos
+Cholangitis
+Cholestasis
+Cholesterol
+Chondrodysplasia_unspecified
+Christ_Siemens_Touraine_Syndrome
+Chromium
+Chronic_Disease
+Chronic_Kidney_Diseases
+Chronic_Obstructive_Airway_Disease
+Chronic_glomerulonephritis_NOS
+Chronic_heart_failure
+Chronic_infectious_disease
+Chronic_inflammation
+Chronic_inflammatory_disorder
+Chronic_liver_disease_NOS
+Chronic_low_back_pain
+Chronic_pain
+Cigarette_smoke
+Cirrhosis
+Cisplatin
+Cleft_Palate
+Cleidocranial_Dysplasia
+Closure_by_clamp
+Cocaine
+Cockayne_Syndrome
+Colitis
+Collagen
+Colorectal_Cancer
+Communicable_Diseases
+Complement_System_Proteins
+Complication_infection
+Compression_procedure
+Concanavalin_A
+Cone_dystrophy
+Congenital_Abnormality
+Congenital_Disorders
+Congenital_deafness
+Congenital_heart_disease
+Congenital_muscular_dystrophy
+Congenital_nephrotic_syndrome_NOS
+Congenital_neutropenia
+Congestive_heart_failure
+Conn_Syndrome
+Connective_Tissue_Diseases
+Constituents
+Constriction_procedure
+Contraceptives_Oral
+Contrast_Media
+Convulsions
+Copper
+Corneal_dystrophy
+Coronary_Aneurysm
+Coronary_Arteriosclerosis
+Coronary_Artery_Dissection_Spontaneous
+Coronary_Artery_Vasospasm
+Coronary_Occlusion
+Coronary_Thrombosis
+Coronary_artery_embolism
+Coronary_heart_disease
+Coronavirus_Infections
+Corticotropin
+Corticotropin_POMC
+Craniosynostosis
+Cretinism
+Croton_Oil
+Cushing_Syndrome
+Cyclophosphamide
+Cyclosporine
+Cystic_Fibrosis
+Cystic_kidney
+Cytokine_Storm
+DNA
+DNA_Damage
+DNA_Mitochondrial
+D_Pulmonary_hemorrhage
+D_Respiratory_arrest
+Deafness
+Death_Sudden
+Death_Sudden_Cardiac
+Death_finding
+Debris
+Deep_Vein_Thrombosis
+Deficiency_immune
+Deformity
+Degenerative_abnormality
+Degenerative_disorder
+Degenerative_polyarthritis
+Deglutition_Disorders
+Dehydration
+Delayed_Hypersensitivity
+Dementia
+Demyelination
+Dent_s_disease
+Deoxycorticosterone
+Dependence
+Depressed_mood
+Depressive_disorder
+Desoxycorticosterone_acetate
+Dexamethasone
+Dextran_Sulfate
+Dextran_Sulfate_Sodium
+Diabetes
+Diabetes_Insipidus_Nephrogenic
+Diabetes_Mellitus
+Diabetes_Mellitus_Insulin_Dependent
+Diabetes_Mellitus_Non_Insulin_Dependent
+Diabetic
+Diabetic_Ketoacidosis
+Diabetic_Nephropathy
+Diabetic_Neuropathies
+Diabetic_Retinopathy
+Diabetic_cardiomyopathy
+Diarrhea
+Diarrheal_disorder
+Diastasis
+Diastolic_dysfunction
+Diazinon
+Diclofenac
+Diet
+Diet_High_Fat
+Dietary_Fats
+Diethylhexyl_Phthalate
+Diethylnitrosamine
+Dimethylnitrosamine
+Dioxins
+Dipyridamole
+Diquat
+Direct_Lytic_Factors
+Disability_NOS
+Disability_neurological
+Discharge_Body_Substance
+Disease_Progression
+Disintegration
+Disorder_of_artery
+Dissection
+Dissection_of_aorta
+Disseminated_Intravascular_Coagulation
+Dissociation
+Distal_Muscular_Dystrophies
+Dobutamine
+Dopamine
+Down_Regulation
+Doxorubicin
+Drug_vehicle
+Dust
+Dysbiosis
+Dyskeratosis_Congenita
+Dyslipidemias
+Dyspnea
+Dystonia
+END_ORGAN_DAMAGE
+Ecstasy_drug
+Ectodermal_Dysplasia
+Edema
+Ehlers_Danlos_Syndrome
+Elastases
+Embolism
+Embolism_Paradoxical
+Embolization_Therapeutic
+Encephalitis
+Encephalomyocarditis_virus
+Encephalopathic_epilepsy
+Encephalopathies
+Encephalopathy_Bovine_Spongiform
+End_stage_renal_failure
+Endocarditis
+Endocrine_Disruptors
+Endometriosis_site_unspecified
+Endothelial_dysfunction
+Endothelin
+Endothelin_1
+Endotoxemia
+Endotoxins
+Enterocolitis_Necrotizing
+Environmental_Pollutants
+Enzyme_Deficiency
+Epidermolysis_Bullosa_Dystrophica
+Epidermolysis_Bullosa_Simplex
+Epilepsy
+Epilepsy_Frontal_Lobe
+Epinephrine
+Erectile_dysfunction
+Erythropoietin_EPO
+Escherichia_coli
+Estrogens
+Ethanol
+Ethylnitrosourea
+Excessive_daytime_somnolence
+Excessive_tearing
+Excision
+Excitation
+Exocytosis
+Exsanguination
+Extravasation
+FAS
+FLVCR1
+Fabry_Disease
+Falls
+Familial_Alzheimer_s_disease
+Familial_Mediterranean_Fever
+Familial_benign_neonatal_epilepsy
+Familial_disease
+Familial_hypokalemia_hypomagnesemia
+Familial_hypophosphatemic_bone_disease
+Fanconi_s_Anemia
+Fatty_Acids
+Fatty_Acids_Nonesterified
+Fatty_Acids_Saturated
+Fatty_Liver
+Fatty_Liver_Disease
+Fatty_Streak_Arterial
+Fatty_degeneration
+Fetal_Alcohol_Syndrome
+Fetal_Death
+Fetal_Diseases
+Fetal_Distress
+Fetal_Growth_Retardation
+Fever
+Fibromuscular_Dysplasia
+Fibrosis
+Fibrosis_Liver
+Fluorides
+Fluorouracil
+Focal_segmental_glomerulosclerosis
+Folic_Acid
+Food
+Foramen_Ovale_Patent
+Foreign_Bodies
+Formaldehyde
+Formalin
+Fracture
+Fragile_X_Syndrome
+Free_Radicals
+Freund_s_Adjuvant
+Friedreich_Ataxia
+Frontotemporal_dementia
+Fructose
+GTPase_Activating_Proteins
+Gadolinium
+Galactosamine
+Galactose
+Gases
+Gastric_mucosal_lesion
+Gastric_ulcer
+Gastritis
+Gastroenteritis
+Gastrointestinal_Diseases
+Gastrointestinal_Hemorrhage
+Gastrointestinal_tract_vascular_insufficiency
+Gaucher_Disease
+Gene_Mutation
+Generalized_ischemic_myocardial_dysfunction
+Genetic_Diseases_X_Linked
+Genetic_syndrome
+Gentamicins
+Gingival_Hyperplasia
+Gingival_Overgrowth
+Glaucoma
+Globoid_cell_leukodystrophy
+Glomerulonephritis
+Glucocorticoids
+Glucosamine
+Glucose
+Glucose_Intolerance
+Glutamate
+Glutamate_Receptor
+Glutamates
+Glutathione
+Gluten
+Glycerol
+Glycogen_storage_disease_type_II
+Glycosylation_End_Products_Advanced
+Gout
+Graft_loss
+Graft_vs_Host_Disease
+Graft_vs_Host_Reaction
+Granuloma
+Granulomatous_Disease_Chronic
+Growth
+Growth_arrest
+Growth_retardation
+HIV_Infections
+HMGB1_Protein
+HTT
+Hallopeau_Siemens_Disease
+Halothane
+Heart_Arrest
+Heart_Diseases
+Heart_failure
+Heart_ligation
+Helicobacter_Infections
+Helicobacter_pylori
+Hematological_Disease
+Heme
+Hemiparesis
+Hemiplegia
+Hemiplegic_Migraine_Familial
+Hemochromatosis
+Hemolytic_Uremic_Syndrome
+Hemophilia_A
+Hemophilia_B
+Hemoptysis
+Hemorrhage
+Hepatic_Vein_Thrombosis
+Hepatitis
+Hepatitis_B
+Hepatitis_B_Chronic
+Hepatitis_B_Virus
+Hepatitis_C
+Hepatitis_C_Chronic
+Hepatitis_C_virus
+Hepatitis_Chronic
+Hepatolenticular_Degeneration
+Hepatotoxicity
+Herbicides
+Hereditary_Autosomal_Dominant_Spastic_Paraplegia
+Hereditary_Diseases
+Hereditary_hemochromatosis
+Hereditary_hemorrhagic_telangiectasia
+Hereditary_sideroblastic_anemia
+Hernia
+Herpesvirus_2_Gallid
+Herpesvirus_4_Human
+Hip_Fractures
+Histamine
+Hospital_Readmissions
+Hospital_admission
+Hospitalization
+Human_Papillomavirus
+Huntington_Disease
+Hydrocephalus
+Hydrocortisone
+Hydrogen_Peroxide
+Hydronephrosis
+Hyperactive_behavior
+Hypercalcemia
+Hypercalciuria
+Hypercholesterolemia_Familial
+Hyperexplexia
+Hyperglycemia
+Hyperhomocysteinemia
+Hyperinsulinism
+Hyperlipidemia
+Hypernatremia
+Hyperparathyroidism
+Hyperparathyroidism_Secondary
+Hyperphagia
+Hyperplasia
+Hypersensitivity
+Hypertension [exposure]
+Hypertension_Portal
+Hypertension_Pulmonary
+Hypertension_Renovascular
+Hypertensive
+Hyperthyroidism
+Hypertriglyceridemia
+Hypertrophic_Cardiomyopathy
+Hypertrophy
+Hypertrophy_Left_Ventricular
+Hyperuricemia
+Hypogonadotropic_hypogonadism
+Hypokinesia
+Hyponatremia
+Hypophosphatasia
+Hypotension
+Hypoxia
+Hypoxic_Ischemic_Encephalopathy
+IGA_Glomerulonephritis
+IMPACT_gene
+Ichthyoses
+Immune_Mediated_Adverse_Reaction
+Immune_Tolerance
+Immune_response
+Immunization
+Immunologic_Adjuvants
+Immunologic_Deficiency_Syndromes
+Impaired_cognition
+Implantation_procedure
+Implants
+Increased_calorie_diet
+Indomethacin
+Induction
+Infarction
+Infection
+Infections_Hospital
+Infectious_disease_of_lung
+Infertility
+Infertility_Male
+Infiltration
+Inflammasomes
+Inflammation
+Inflammation_Mediators
+Inflammatory_Bowel_Diseases
+Inflammatory_Response
+Inflammatory_disorder
+Influenza
+Infusion_procedures
+Inherited_neuropathies
+Injection
+Injection_procedure
+Injections_Intraperitoneal
+Injury
+Injury_of_pancreas
+Injury_of_stomach
+Injury_to_kidney_NOS
+Injury_to_liver_NOS
+Insecticides
+Insemination
+Inspiration_function
+Insulin
+Insulin_INS
+Insulin_Like_Growth_Factor_I
+Insulin_Receptor_INSR
+Insulin_Resistance
+Interleukin_1
+Interleukin_13
+Interleukin_17
+Interleukin_1_beta
+Interleukin_6
+Interleukin_8
+Intestinal_Obstruction
+Intoxication
+Intracranial_Atherosclerosis
+Intracranial_Hemorrhages
+Intracranial_Hypertension
+Intraocular_pressure_disorder
+Intussusception
+Ions
+Iron
+Iron_Overload
+Irritants
+Ischemia
+Ischemic_stroke
+Isoproterenol
+Jaundice_Obstructive
+Job_s_Syndrome
+Junctional_Epidermolysis_Bullosa
+Juvenile_Neuronal_Ceroid_Lipfuscinosis
+Juxtaglomerular_tumor
+KCNJ11
+Kainate
+Kainic_Acid
+Keratosis_Follicularis
+Ketosis
+Kidney_Diseases
+Kidney_Failure
+Kidney_Failure_Acute
+Kidney_Failure_Chronic
+Labor_Childbirth
+Lack_of_sensation
+Lafora_Disease
+Late_Infantile_Neuronal_Ceroid_Lipfuscinosis
+Leak_NOS
+Leber_s_amaurosis
+Left_ventricular_systolic_dysfunction
+Legg_Calve_Perthes_Disease
+Leigh_Disease
+Leishmaniasis_Visceral
+Leprosy
+Leptin_LEP
+Lesion
+Lesion_of_liver
+Lesion_of_stomach
+Leucodystrophy_NOS
+Leukoencephalopathy
+Leukosis_Virus_Avian
+Licorice
+Liddle_s_syndrome
+Lidocaine
+Ligation
+Lindane
+Lipids
+Lipodystrophy
+Lipopolysaccharides
+Lipoproteins
+Lissencephaly
+Little_s_Disease
+Liver_Cirrhosis
+Liver_Failure
+Liver_Failure_Acute
+Liver_damage
+Liver_diseases
+Local_Anesthetics
+Long_QT_Syndrome
+Low_Density_Lipoproteins
+Lower_respiratory_tract_infection
+Lung_Diseases_Interstitial
+Lung_diseases
+Lupus_Erythematosus_Systemic
+Lupus_Nephritis
+Lysosomal_Storage_Diseases
+MAPT
+MAPT_protein_human_MAPT
+MULTISYSTEM_DISORDER
+MYC_gene_MYC
+Macular_dystrophy
+Malaria
+Malaria_Cerebral
+Malignant_Neoplasms
+Malignant_disease
+Malignant_hyperpyrexia_due_to_anesthesia
+Malignant_neoplasm_of_breast
+Malnutrition
+Manganese
+Marfan_Syndrome
+Massive_hemorrhage
+Maturity_onset_diabetes_mellitus_in_young
+Mean_blood_pressure
+Measles
+Mechanical_ventilation
+Melanocortin_4_Receptor
+Memory_impairment
+Mendelian_disorders
+Meningitis
+Meningitis_Cryptococcal
+Menkes_Kinky_Hair_Syndrome
+Mercury
+Metabolic_Diseases
+Metabolic_acidosis
+Metabolic_syndrome
+Metals
+Metals_Heavy
+Methamphetamine
+Methotrexate
+Methylcholanthrene
+Methylmalonic_acidemia
+Methylnitronitrosoguanidine
+Methylnitrosourea
+MicroRNAs
+Microcephaly
+Microplastics
+Middle_Cerebral_Artery_Occlusion
+Migraine_Disorders
+Mineralocorticoids
+Mitochondrial_Diseases
+Mitochondrial_Encephalomyopathies
+Mitral_Valve_Insufficiency
+Mixture
+Moloney_Leukemia_Virus
+Moloney_murine_sarcoma_virus
+Monocrotaline
+Motor_Neuron_Disease
+Mouse_Model
+Movement_Disorders
+Moyamoya_Disease
+Multiple_Organ_Failure
+Multiple_Sclerosis
+Murine_sarcoma_viruses
+Muscular_Atrophy
+Muscular_Dystrophies
+Muscular_Dystrophies_Limb_Girdle
+Muscular_Dystrophy_Duchenne
+Muscular_Dystrophy_Emery_Dreifuss
+Musculoskeletal_Diseases
+Mustard_Gas
+Mutagens
+Mutation
+Myasthenic_Syndromes_Congenital
+Mycobacterium_tuberculosis
+Mycoses
+Mycotoxins
+Myocardial_Infarction
+Myocardial_Ischemia
+Myocardial_dysfunction
+Myocardial_rupture
+Myocarditis
+Myoclonic_Epilepsies_Progressive
+Myopathies_Nemaline
+Myopathy
+Myotonia_Congenita
+NADPH_Oxidase
+NEPHROTOXICITY
+NEUROLOGIC_COMPLICATION
+NF_kappa_B
+NG_Nitroarginine_Methyl_Ester
+NOS3_protein_human_NOS3
+N_Methylaspartate
+N_N_dimethylarginine
+Nanotubes_Carbon
+Naphthalene
+Narcosis
+Necrosis
+Necrosis_Avascular_of_Femur_Head
+Needle_device
+Neonatal_diabetes_mellitus
+Neoplasm
+Neoplasm_Metastasis
+Neoplasm_progression
+Nephrectomy
+Nephronophthisis
+Nephrotic_Syndrome
+Nerve_Degeneration
+Nerve_injury_NOS
+Neural_Development
+Neurodegenerative_Disorders
+Neuroendocrine_Tumors
+Neurofibrillary_Tangles
+Neuromuscular_Diseases
+Neuronal_Ceroid_Lipofuscinosis
+Neuropathic_pain
+Neuropathy
+Neurotoxins
+Nickel
+Nicotine
+Niemann_Pick_Disease_Type_C
+Niemann_Pick_Diseases
+Nijmegen_Breakage_Syndrome
+Nitric_Oxide
+Nitric_Oxide_Synthase
+Nitrosamines
+Non_alcoholic_fatty_liver
+Non_obstructive_reflux_associated_chronic_pyelonephritis
+Nonalcoholic_Steatohepatitis
+Noncommunicable_Diseases
+Norepinephrine
+Obesity
+Obstetric_Labor_Premature
+Obstruction
+Obstructive_Hydrocephalus
+Occlusion_of_artery
+Occupational_asthma
+Ocular_Hypertension
+Oculocerebrorenal_Syndrome
+Oleic_Acid
+Onset_of_illness
+Operative_Surgical_Procedures
+Opportunistic_Infections
+Optic_Atrophy_Autosomal_Dominant
+Optic_Atrophy_Hereditary_Leber
+Organ_failure
+Osteoarthritis_Knee
+Osteogenesis_Imperfecta
+Osteomalacia
+Osteopenia
+Osteoporosis
+Ouabain
+Out_of_Hospital_Cardiac_Arrest
+Ovalbumin
+Ovariectomy
+Overnutrition
+Overweight
+Ovulation
+Oxalates
+Oxidants
+Oxidative_Damage
+Oxidative_Stress
+Oxidopamine
+Oxygen
+Oxytocin
+Ozone
+PLAT_gene_PLAT
+Paclitaxel
+Pain
+Palmitates
+Palmitic_Acid
+Palmoplantar_Keratosis
+Pancreatic_carcinoma
+Pancreatitis
+Pancreatitis_Acute_Necrotizing
+Pancreatitis_Chronic
+Pancytopenia
+Paraplegia
+Paraquat
+Parasites
+Parasitic_Diseases
+Parkinson_Disease
+Parkinsonian_Disorders
+Particulate_Matter
+Pathogenesis
+Pathologic_Processes
+Pathological_Dilatation
+Pelizaeus_Merzbacher_Disease
+Pendred_s_syndrome
+Peptidoglycan
+Periodic_syndrome
+Periodontitis
+Peripartum_cardiomyopathy
+Peripheral_Neuropathy
+Peripheral_Vascular_Diseases
+Peritonitis
+Peroxides
+Peroxisomal_Disorders
+Peroxynitrite
+Persistent_Hyperinsulinemia_Hypoglycemia_of_Infancy
+Pertussis
+Pesticides
+Peutz_Jeghers_Syndrome
+Pharmacotherapy
+Phenylephrine
+Phenylketonurias
+Pheochromocytoma
+Photochemotherapy
+Physical_disability
+Pick_Disease_of_the_Brain
+Plasma
+Platelet_Activating_Factor
+Platelet_aggregation
+Pleural_effusion_disorder
+Pneumonia
+Poisoning
+Pollutant
+Polychlorinated_Biphenyls
+Polycyclic_Hydrocarbons_Aromatic
+Polycystic_Kidney_Autosomal_Dominant
+Polycystic_Kidney_Diseases
+Polycystic_Ovary_Syndrome
+Polycythemia
+Polyglandular_Type_I_Autoimmune_Syndrome
+Polyomavirus
+Porphyria_Acute_Intermittent
+Porphyromonas_gingivalis
+Postoperative_Complications
+Postpartum_Hemorrhage
+Prader_Willi_Syndrome
+Pre_Eclampsia
+Pregnancy
+Pregnancy_Prolonged
+Premature_Birth
+Premature_aging_syndrome
+Primary_carcinoma_of_the_liver_cells
+Primary_disease
+Primary_immune_deficiency_disorder
+Primary_open_angle_glaucoma
+Prion_Diseases
+Prions
+Progeria
+Propionibacterium_acnes
+Prostaglandins
+Proteinuria
+Pseudoachondroplastic_spondyloepiphyseal_dysplasia_syndrome
+Pseudoaneurysm
+Pseudomonas_aeruginosa
+Pseudoxanthoma_Elasticum
+Pulmonary_Edema
+Pulmonary_Embolism
+Pulmonary_Fibrosis
+Pulmonary_Thromboembolisms
+Pulmonary_arterial_hypertension
+Puromycin_Aminonucleoside
+Pyrenes
+Pyroglyphidae
+Quinolinic_Acid
+Quinones
+ROS1
+ROS1_wt_Allele_ROS1
+Radiation_therapy
+Rare_Diseases
+Reactive_Oxygen_Species
+Recovery_of_Function
+Recurrent_disease
+Renal_Artery_Stenosis
+Renal_glomerular_disease
+Renal_ischaemia
+Renal_tubular_acidosis
+Renal_tubular_disorder
+Renal_vascular_disorders_NOS
+Renin_REN
+Reperfusion_Injury
+Respiration_Disorders
+Respiratory_Depression
+Respiratory_Distress_Syndrome_Adult
+Respiratory_Distress_Syndrome_Newborn
+Respiratory_Failure
+Respiratory_Insufficiency
+Respiratory_Tract_Infections
+Respiratory_complication
+Respiratory_distress
+Respiratory_syncytial_virus
+Responsive_Disease
+Retinal_Degeneration
+Retinal_Diseases
+Retinal_Neovascularization
+Retinal_dystrophy
+Retinitis_Pigmentosa
+Retinoschisis_Juvenile_X_Linked
+Retroviridae
+Rett_Syndrome
+Rhabdomyolysis
+Rheumatism
+Rheumatoid_Arthritis
+Rhizobium_radiobacter
+Rifampin
+Right_ventricular_failure
+Rotator_cuff_syndrome
+Rotenone
+Rous_sarcoma_virus
+Rupture
+SUCLA2_gene_SUCLA2
+Salts
+Sandhoff_Disease
+Schizophrenia
+Secondary_hypertension_NOS
+Sedation
+Seizures
+Selenium
+Senile_dementia
+Senility
+Sensorineural_Hearing_Loss
+Sepsis_of_the_newborn
+Septic_Shock
+Septicemia
+Serotonin
+Serum
+Severe_Acute_Respiratory_Syndrome
+Severe_Combined_Immunodeficiency
+Severe_infection
+Shock
+Shock_Cardiogenic
+Shock_Hemorrhagic
+Sickle_Cell_Anemia
+Signal_Transduction
+Silence
+Silicon_Dioxide
+Simian_virus_40
+Single_organ_dysfunction
+Skeletal_dysplasia
+Skin_Diseases_Genetic
+Sleep_Apnea_Obstructive
+Sleep_Apnea_Syndromes
+Smith_Lemli_Opitz_Syndrome
+Smoke
+Sodium
+Sodium_Chloride
+Sodium_Chloride_Dietary
+Sodium_Glutamate
+Sodium_Urate_Monohydrate
+Soil
+Solutions
+Somatotropin
+Spastic_Paraplegia
+Spastic_Paraplegia_Hereditary
+Spastic_syndrome
+Spinal_Cord_Diseases
+Spinal_Cord_Injuries
+Spinal_Cord_Ischemia
+Spinal_Muscular_Atrophy
+Spontaneous_abortion
+Staphylococcus_aureus
+Stargardt_s_disease
+Starvation
+Status_Epilepticus
+Steatohepatitis
+Steatohepatitis_non_alcoholic
+Stenosis
+Stenosis_unspecified
+Stents
+Steroids
+Stillbirth
+Streptococcus_pneumoniae
+Streptozocin
+Stress
+Stroke_Acute
+Study_models
+Subarachnoid_Hemorrhage
+Substance
+Substance_P
+Sucrose
+Sudden_infant_death_syndrome
+Sulfonic_Acids
+Superior_Vena_Cava_Syndrome
+Superoxide_Dismutase
+Superoxides
+Syncope
+Systemic_Scleroderma
+Systemic_disease
+Systolic_dysfunction
+TGFB1_protein_human_TGFB1
+TLE5_gene_AES
+TLR4_gene_TLR4
+TLR4_protein_human_TLR4
+TNF_protein_human_TNF
+TONIC_CONTRACTION
+TP53_gene_TP53
+Tachycardia
+Tachycardia_Ventricular
+Tangier_Disease
+Tauopathies
+Tay_Sachs_Disease
+Tension
+Teratogenesis
+Testosterone
+Tetradecanoylphorbol_Acetate
+Thalassemia
+Thioacetamide
+Thrombocytopenia
+Thromboembolism
+Thrombophilia
+Thrombosis
+Thrombosis_of_cerebral_veins
+Thrombus
+Thyroxine
+Tissue_damage
+Toll_like_receptors
+Tourniquets
+Toxic_Epidermal_Necrolysis
+Toxic_effect
+Toxic_nephropathy
+Toxin
+Transforming_Growth_Factor_beta
+Transient_Cerebral_Ischemia
+Transient_ischemia
+Transplantation
+Traumatic_Brain_Injury
+Trigeminal_Neuralgia
+Triglycerides
+Trinitrobenzenesulfonic_Acid
+Trinucleotide_Repeat_Expansion
+Tuberculosis
+Tuberculosis_Pulmonary
+Tumor_Necrosis_Factor_Ligand_Superfamily_Member_6_FASLG
+Tumor_Necrosis_Factor_alpha_TNF
+Tumor_Necrosis_Factors
+Tumor_Suppressor_Genes
+Tumor_induced_osteomalacia
+Tumorigenesis
+Turpentine
+Type_IV_Mucolipidosis
+Ulcer
+Ulcerative_Colitis
+Up_Regulation_Physiology
+Urate_crystals
+Uremia
+Ureteral_obstruction
+Urethane
+Uric_Acid
+Urinary_tract_obstruction
+Uveitis
+Vaccination
+Vaccines
+Vancomycin
+Vas_Occlusion
+Vascular_Diseases
+Vascular_occlusion
+Vascular_proliferation
+Vasculitis
+Vasodilation
+Vasodilation_disorder
+Vasospasm
+Venoms
+Venous_Thromboembolism
+Ventricular_Dysfunction_Left
+Ventricular_Fibrillation
+Ventricular_arrhythmia
+Ventricular_tachycardia_polymorphic
+Vertebral_Artery_Dissection
+Viral_hepatitis
+Viral_myocarditis
+Virus
+Virus_Diseases
+Vitamin_B_12_Deficiency
+Vitamin_K_3
+Vitiligo
+Von_Hippel_Lindau_Syndrome
+Water
+Water_consumption
+Werner_Syndrome
+Wiskott_Aldrich_Syndrome
+Wolfram_Syndrome
+Wound_Healing
+Wounds_and_Injuries
+X_Unspecified_osteoporosis_with_pathological_fracture
+X_linked_agammaglobulinemia
+Xanthine_Oxidase
+Xanthomatosis_Cerebrotendinous
+Xenobiotics
+Zearalenone
+Zidovudine
+Zinc
+Zymosan
+adenoma
+alanosine
+alpha_Synuclein
+aluminum_chloride
+anthracene
+arginine_methyl_ester
+arsenite
+ascorbate
+associated_disease
+beta_Thalassemia
+bevacizumab
+bisphenol_A
+c_myc_Genes_MYC
+cardiac_arrhythmia
+cardiac_muscle_cell_hypertrophy
+cell_injury
+chemokine
+cobaltous_chloride
+cyanoginosin_LR
+cyclooxygenase_2
+cypermethrin
+cytokine
+cytotoxicity
+decamethrin
+deoxynivalenol
+depolarization
+destruction_bone
+dimazine
+docetaxel
+ferric_nitrilotriacetate
+follow_up
+free_radical_oxygen
+gamma_secretase
+gemcitabine
+glucose_high
+glyphosate
+hearing_impairment
+hepatotoxin
+homocysteine
+human_herpesvirus_8
+hydroquinone
+hypercholesterolemia
+hypoglycemia
+hypothermia_natural
+imbalance
+imiquimod
+inhibitors
+irinotecan
+isoniazid
+lead_acetate
+loss_bone
+nervous_system_disorder
+neuron_loss
+neuropeptide_Y_NPY
+nonylphenol
+olanzapine
+oxaliplatin
+oxidized_low_density_lipoprotein
+palmitate
+particle
+pathologic_fistula
+perfluorooctane_sulfonate
+perfluorooctanoic_acid
+phthalates
+polyglutamine
+potassium_oxonate
+presenilin
+pulmonary_complications
+receptor
+resistance_education
+resistin_RETN
+ripening
+ropivacaine
+skin_disorder
+sodium_arsenite
+tert_Butylhydroperoxide
+toxicant
+trimethyltin
+triptolide
+tumor_growth
+von_Willebrand_Disease
+1_4_dioxin -> Oxidative_Stress
+1_4_dioxin -> Toxic_effect
+1_Methyl_4_phenyl_1_2_3_6_tetrahydropyridine -> Degenerative_abnormality
+1_Methyl_4_phenyl_1_2_3_6_tetrahydropyridine -> Nerve_Degeneration
+1_Methyl_4_phenyl_1_2_3_6_tetrahydropyridine -> Oxidative_Stress
+1_Methyl_4_phenyl_1_2_3_6_tetrahydropyridine -> Toxic_effect
+1_Methyl_4_phenylpyridinium -> Injury
+1_Methyl_4_phenylpyridinium -> Oxidative_Stress
+1_Methyl_4_phenylpyridinium -> Toxic_effect
+1_Naphthylisothiocyanate -> Injury
+2019_novel_coronavirus -> Inflammation
+2_2_azobis_2_amidinopropane -> Oxidative_Stress
+3MC -> Neoplasm
+9_10_Dimethyl_1_2_benzanthracene -> Neoplasm
+APP_gene -> Alzheimers
+APP_gene -> Apoptosis
+APP_gene -> COGNITIVE_DEFICIT
+APP_gene -> Cell_Death
+APP_gene -> Cessation_of_life
+APP_gene -> Impaired_cognition
+APP_gene -> Inflammation
+APP_gene -> Injury
+APP_gene -> Memory_impairment
+APP_gene -> Nerve_Degeneration
+APP_gene -> Oxidative_Stress
+APP_gene -> Toxic_effect
+APP_gene -> cell_injury
+APP_gene -> cytotoxicity
+APP_protein_human -> Alzheimers
+APP_protein_human -> Apoptosis
+APP_protein_human -> Cell_Death
+APP_protein_human -> Nerve_Degeneration
+APP_protein_human -> Oxidative_Stress
+APP_protein_human -> Toxic_effect
+ASPERGILLOSIS_INVASIVE -> Cessation_of_life
+ATPase_Aminophospholipid_Transporter_Like_Class_I_Type_8A_Member_2_ATP8A2 -> Cessation_of_life
+Ablation -> Degenerative_abnormality
+Ablation -> Inflammation
+Ablation -> Obstruction
+Accumulation -> Inflammation
+Acetaminophen -> Injury
+Acetaminophen -> Oxidative_Stress
+Acetaminophen -> Toxic_effect
+Acetate -> Apoptosis
+Acetate -> Hypertension
+Acetate -> Hypertensive
+Acetic_Acid -> Inflammation
+Acetic_Acid -> Injury
+Acidosis -> Cessation_of_life
+Acids -> Inflammation
+Acids -> Injury
+Acids -> Kidney_Diseases
+Acids -> Oxidative_Stress
+Acids -> Toxic_effect
+Acne -> Inflammation
+Acquired_Immunodeficiency_Syndrome -> Cessation_of_life
+Acrolein -> Oxidative_Stress
+Acrolein -> Toxic_effect
+Acrylamide -> Oxidative_Stress
+Acrylamide -> Toxic_effect
+Acute_Coronary_Syndrome -> Cessation_of_life
+Acute_hemorrhage -> Cessation_of_life
+Acute_myocardial_infarction -> Cessation_of_life
+Acute_myocardial_infarction -> Heart_failure
+Acute_respiratory_failure -> Cessation_of_life
+Acute_respiratory_infection_NOS -> Cessation_of_life
+Adenine -> Kidney_Failure
+Adenine -> Kidney_Failure_Chronic
+Adenoviruses -> Neoplasm
+Adhesions -> Obstruction
+Adiponectin -> Insulin_Resistance
+Adoptive_Transfer -> Inflammation
+Adrenal_Cortical_Adenoma -> Conn_Syndrome
+Adrenal_adenoma -> Conn_Syndrome
+Adriamycin -> Heart_failure
+Adriamycin -> Injury
+Adriamycin -> Kidney_Diseases
+Adriamycin -> Oxidative_Stress
+Adriamycin -> Toxic_effect
+Aflatoxin_B1 -> Toxic_effect
+Agar -> Neoplasm
+Agent -> Acquired_Immunodeficiency_Syndrome
+Agent -> Anaphylaxis
+Agent -> Asthma
+Agent -> Cardiotoxicity
+Agent -> Communicable_Diseases
+Agent -> Congenital_Abnormality
+Agent -> Edema
+Agent -> Encephalitis
+Agent -> Encephalopathy_Bovine_Spongiform
+Agent -> Gastroenteritis
+Agent -> Hepatitis
+Agent -> Hypersensitivity
+Agent -> Hypertension
+Agent -> Infection
+Agent -> Inflammation
+Agent -> Inflammatory_Response
+Agent -> Injury
+Agent -> Lesion_of_stomach
+Agent -> Malignant_Neoplasms
+Agent -> Meningitis
+Agent -> Necrosis
+Agent -> Neoplasm
+Agent -> Obstruction
+Agent -> Occupational_asthma
+Agent -> Pneumonia
+Agent -> Poisoning
+Agent -> Prion_Diseases
+Agent -> Septicemia
+Agent -> Toxic_effect
+Agent -> depolarization
+Airway_Obstruction -> Cessation_of_life
+Alcoholic_Liver_Diseases -> Cessation_of_life
+Alcoholic_Liver_Diseases -> Fibrosis
+Aldosterone -> Adrenal_Cortical_Adenoma
+Aldosterone -> Adrenal_adenoma
+Aldosterone -> Fibrosis
+Aldosterone -> Hypertension
+Aldosterone -> Inflammation
+Aldosterone -> Injury
+Aldosterone -> Oxidative_Stress
+Allergens -> Inflammation
+Alloxan -> Diabetes
+Alloxan -> Oxidative_Stress
+Aluminum -> Alzheimers
+Aluminum -> Neurofibrillary_Tangles
+Aluminum -> Osteomalacia
+Aluminum -> Oxidative_Stress
+Aluminum -> Toxic_effect
+Alzheimers -> Cessation_of_life
+Alzheimers -> Degenerative_abnormality
+Alzheimers -> Disability_NOS
+Alzheimers -> Senile_dementia
+Amebiasis -> Cessation_of_life
+Amiodarone -> Toxic_effect
+Ammonia -> Toxic_effect
+Amyloid -> Alzheimers
+Amyloid -> Apoptosis
+Amyloid -> Cell_Death
+Amyloid -> Cessation_of_life
+Amyloid -> Impaired_cognition
+Amyloid -> Memory_impairment
+Amyloid -> Nerve_Degeneration
+Amyloid -> Oxidative_Stress
+Amyloid -> Toxic_effect
+Amyloid -> cytotoxicity
+Amyloid_Fibrils -> Alzheimers
+Amyloid_beta -> Alzheimers
+Amyloid_beta_Peptides -> Alzheimers
+Amyloid_beta_Peptides -> Nerve_Degeneration
+Amyloid_beta_Peptides -> Oxidative_Stress
+Amyloid_beta_Peptides -> Toxic_effect
+Amyloid_beta_Protein_Precursor -> Alzheimers
+Amyloid_beta_Protein_Precursor -> Familial_Alzheimer_s_disease
+Amyloid_deposition -> Alzheimers
+Amyloidosis -> Cessation_of_life
+Amyloidosis -> Heart_failure
+Amyloidosis -> Kidney_Failure
+Amyotrophic_Lateral_Sclerosis -> Cessation_of_life
+Amyotrophic_Lateral_Sclerosis -> Degenerative_abnormality
+Anaphylaxis -> Cessation_of_life
+Anemia -> Cessation_of_life
+Anemia -> Hypoxia
+Anesthetics -> Nerve_Degeneration
+Aneurysm_Dissecting -> Cerebrovascular_accident
+Angiogenesis_Factor -> Pre_Eclampsia
+Angiotensin_II -> Aortic_Aneurysm
+Angiotensin_II -> Aortic_Aneurysm_Abdominal
+Angiotensin_II -> Apoptosis
+Angiotensin_II -> Atherosclerosis
+Angiotensin_II -> Cardiac_Hypertrophy
+Angiotensin_II -> Cardiac_fibrosis
+Angiotensin_II -> Cell_Proliferation
+Angiotensin_II -> Down_Regulation
+Angiotensin_II -> Endothelial_dysfunction
+Angiotensin_II -> Exocytosis
+Angiotensin_II -> Fibrosis
+Angiotensin_II -> Growth
+Angiotensin_II -> Hypertension
+Angiotensin_II -> Hypertensive
+Angiotensin_II -> Hypertrophy
+Angiotensin_II -> Hypertrophy_Left_Ventricular
+Angiotensin_II -> Inflammation
+Angiotensin_II -> Injury
+Angiotensin_II -> Injury_to_kidney_NOS
+Angiotensin_II -> Insulin_Resistance
+Angiotensin_II -> Oxidative_Stress
+Angiotensin_II -> Senility
+Angiotensin_II -> Signal_Transduction
+Angiotensin_II -> Up_Regulation_Physiology
+Angiotensin_II -> Vascular_proliferation
+Angiotensin_II -> Vasodilation
+Angiotensin_II -> Vasospasm
+Angiotensin_II -> Water_consumption
+Angiotensin_II -> cardiac_muscle_cell_hypertrophy
+Angiotensins -> Hypertension
+Angiotensins -> Water_consumption
+Anoxia -> Cessation_of_life
+Anti_Inflammatory_Agents_Non_Steroidal -> Inflammation
+Anti_Inflammatory_Agents_Non_Steroidal -> Injury
+Anti_Inflammatory_Agents_Non_Steroidal -> Toxic_effect
+Antibiotics -> Injury
+Antibiotics -> Oxidative_Stress
+Antibiotics -> Toxic_effect
+Antibodies -> Cessation_of_life
+Antibodies -> Inflammation
+Antibodies -> Injury
+Antibodies_Anti_Idiotypic -> Cessation_of_life
+Antigen_Antibody_Complex -> Inflammation
+Antigen_Antibody_Complex -> Injury
+Antigens -> Inflammation
+Antigens -> Neoplasm
+Antineoplastic_Agents -> Toxic_effect
+Antioxidants -> Diabetes
+Antioxidants -> Injury
+Antioxidants -> Oxidative_Stress
+Antioxidants -> Toxic_effect
+Antipsychotic_Agents -> Obesity
+Aortic_Aneurysm -> Cessation_of_life
+Aortic_Aneurysm_Abdominal -> Cessation_of_life
+Aortic_Valve_Insufficiency -> Congestive_heart_failure
+Aortic_Valve_Insufficiency -> Heart_failure
+Aortic_Valve_Stenosis -> Cardiac_Hypertrophy
+Aortic_Valve_Stenosis -> Heart_failure
+Aortic_Valve_Stenosis -> Hypertrophy
+Aortic_Valve_Stenosis -> Hypertrophy_Left_Ventricular
+Aortic_coarctation -> Hypertension
+Apolipoprotein_E_APOE -> Alzheimers
+Arachidonic_Acid -> Inflammation
+Argipressin -> Anti_diuresis
+Argipressin -> Hypertension
+Argipressin -> Hyponatremia
+Arsenic -> Oxidative_Stress
+Arsenic -> Toxic_effect
+Arteriosclerosis -> Cardiovascular_Diseases
+Arteriosclerosis -> Cerebrovascular_accident
+Arteriosclerosis -> Cessation_of_life
+Arteriosclerosis -> Myocardial_Infarction
+Arthritis -> Disability_NOS
+Arthritis -> Inflammation
+Arthropathies_NOS -> Disability_NOS
+Asbestos -> Fibrosis
+Asbestos -> Injury
+Asbestos -> Neoplasm
+Ascorbic_Acid -> Oxidative_Stress
+Asphyxia -> Cessation_of_life
+Asphyxia_Neonatorum -> Cessation_of_life
+Aspiration_Pneumonia -> Cessation_of_life
+Aspirin -> Injury
+Asthenia -> Cessation_of_life
+Asthma -> Cessation_of_life
+Asthma -> Inflammation
+Asthma -> Obstruction
+Atherosclerosis -> Cardiovascular_Diseases
+Atherosclerosis -> Cardiovascular_morbidity
+Atherosclerosis -> Cerebrovascular_accident
+Atherosclerosis -> Cessation_of_life
+Atherosclerosis -> Coronary_Arteriosclerosis
+Atherosclerosis -> Coronary_heart_disease
+Atherosclerosis -> Heart_Diseases
+Atherosclerosis -> Ischemia
+Atherosclerosis -> Ischemic_stroke
+Atherosclerosis -> Myocardial_Infarction
+Atherosclerosis -> Myocardial_Ischemia
+Atherosclerosis -> Obstruction
+Atherosclerosis -> Peripheral_Vascular_Diseases
+Atherosclerosis -> Renal_Artery_Stenosis
+Atrazine -> Oxidative_Stress
+Atrazine -> Toxic_effect
+Atrial_Fibrillation -> Cardiovascular_morbidity
+Atrial_Fibrillation -> Cerebrovascular_accident
+Atrial_Fibrillation -> Cessation_of_life
+Atrial_Fibrillation -> Heart_failure
+Aurothioglucose -> Obesity
+Autoantibodies -> Inflammation
+Autoantibodies -> Injury
+Autoimmune_Diseases -> Inflammation
+Axotomy -> Degenerative_abnormality
+Azoxymethane -> Neoplasm
+BARRIER -> Inflammation
+BAX_gene_BAX -> Cessation_of_life
+BK_Virus -> Kidney_Diseases
+Bacteremia -> Cessation_of_life
+Bacteria -> Cessation_of_life
+Bacteria -> Inflammation
+Bacterial_Infections -> Cessation_of_life
+Bacterial_Infections -> Inflammation
+Banding_procedure -> Cardiac_Hypertrophy
+Banding_procedure -> Hypertrophy
+Banding_procedure -> Hypertrophy_Left_Ventricular
+Bands -> Obstruction
+Benzene -> Toxic_effect
+Bile_Acids -> Injury
+Bile_Acids -> Toxic_effect
+Biliary_Atresia -> Fibrosis
+Biliary_calculi -> Obstruction
+Bleomycin -> Fibrosis
+Bleomycin -> Inflammation
+Bleomycin -> Injury
+Bleomycin -> Oxidative_Stress
+Blood_Coagulation_Disorders -> Cessation_of_life
+Blood_Glucose -> Diabetes
+Bone_Wires -> Injury
+Bradykinin -> Inflammation
+Brain_Edema -> Cessation_of_life
+Brain_Injuries -> Disability_NOS
+Brain_Ischemia -> Cessation_of_life
+Brain_hemorrhage -> Cessation_of_life
+Bronchopneumonia -> Cessation_of_life
+Bupivacaine -> Obstruction
+Bupivacaine -> Toxic_effect
+CA2 -> Cessation_of_life
+CARDIAC_EVENT -> Cessation_of_life
+CD69_protein_human_CD69 -> Cessation_of_life
+COLLAGENASE -> Cerebral_hemisphere_hemorrhage
+COVID_19 -> Cessation_of_life
+COVID_19 -> Diabetes
+COVID_19 -> Inflammation
+CRYGC_CRYGEP -> Fibrosis
+CRYGC_CRYGEP -> Injury
+CRYGC_CRYGEP -> Oxidative_Stress
+CRYGC_CRYGEP -> Toxic_effect
+Cachexia -> Cessation_of_life
+Cadmium -> Abnormal_renal_function
+Cadmium -> Accumulation
+Cadmium -> Carcinogenesis
+Cadmium -> DNA_Damage
+Cadmium -> Hepatotoxicity
+Cadmium -> Hypertension
+Cadmium -> Injury
+Cadmium -> NEPHROTOXICITY
+Cadmium -> Oxidative_Damage
+Cadmium -> Oxidative_Stress
+Cadmium -> Renal_tubular_disorder
+Cadmium -> Stress
+Cadmium -> Toxic_effect
+Cadmium -> Toxic_nephropathy
+Cadmium -> cell_injury
+Cadmium -> cytotoxicity
+Calcium -> Injury
+Calculi -> Obstruction
+Capsaicin -> Degenerative_abnormality
+Carbohydrates -> Obesity
+Carbon_Tetrachloride -> Fibrosis
+Carbon_Tetrachloride -> Injury
+Carbon_Tetrachloride -> Oxidative_Stress
+Carbon_Tetrachloride -> Toxic_effect
+Carbon_tetrachloride_homeopathic_preparation -> Fibrosis
+Carbon_tetrachloride_homeopathic_preparation -> Injury
+Carboplatin -> Toxic_effect
+Carcinogenicity -> Neoplasm
+Carcinogens -> Neoplasm
+Carcinogens -> Oxidative_Stress
+Carcinoma -> Neoplasm
+Cardiac_Death -> Cessation_of_life
+Cardiac_Hypertrophy -> Heart_failure
+Cardiac_Tamponade -> Cessation_of_life
+Cardiac_complication -> Cessation_of_life
+Cardiomyopathies -> Cessation_of_life
+Cardiomyopathies -> Congestive_heart_failure
+Cardiomyopathies -> Heart_failure
+Cardiomyopathies_Primary -> Congestive_heart_failure
+Cardiomyopathies_Primary -> Heart_failure
+Cardiomyopathy_Dilated -> Cessation_of_life
+Cardiomyopathy_Dilated -> Congestive_heart_failure
+Cardiomyopathy_Dilated -> Heart_failure
+Cardiopulmonary_Bypass -> Inflammation
+Cardiorespiratory_failure -> Cessation_of_life
+Cardiotoxicity -> Heart_failure
+Cardiovascular_Diseases -> Cessation_of_life
+Cardiovascular_Diseases -> Death_Sudden
+Cardiovascular_Diseases -> Disability_NOS
+Cardiovascular_Diseases -> Heart_failure
+Cardiovascular_Diseases -> Hospital_admission
+Cardiovascular_Diseases -> Hospitalization
+Cardiovascular_Diseases -> Myocardial_Infarction
+Cardiovascular_Diseases -> follow_up
+Cardiovascular_arteriosclerosis_unspecified -> Cessation_of_life
+Carotid_Atherosclerosis -> Cerebrovascular_accident
+Carotid_Stenosis -> Cerebrovascular_accident
+Carrageenan -> Inflammation
+Cataract -> Disability_NOS
+Catecholamines -> Cardiomyopathies
+Catecholamines -> Cardiotoxicity
+Catecholamines -> Hypertension
+Catecholamines -> Neuroendocrine_Tumors
+Catecholamines -> Pheochromocytoma
+Catecholamines -> cardiac_arrhythmia
+Cathodal_opening_clonus -> Hypoxia
+Cerebral_Amyloid_Angiopathy -> Cerebral_hemisphere_hemorrhage
+Cerebral_Edema -> Cessation_of_life
+Cerebral_Embolism -> Cerebrovascular_accident
+Cerebral_Infarction -> Cerebrovascular_accident
+Cerebral_Infarction -> Cessation_of_life
+Cerebral_Ischemia -> Cessation_of_life
+Cerebral_Palsy -> Disability_NOS
+Cerebral_hemisphere_hemorrhage -> Brain_Edema
+Cerebral_hemisphere_hemorrhage -> Cerebrovascular_accident
+Cerebral_hemisphere_hemorrhage -> Cessation_of_life
+Cerebral_venous_sinus_thrombosis -> Cerebrovascular_accident
+Cerebrovascular_Disorders -> Cessation_of_life
+Cerebrovascular_accident -> Cerebral_Palsy
+Cerebrovascular_accident -> Cessation_of_life
+Cerebrovascular_accident -> Deglutition_Disorders
+Cerebrovascular_accident -> Disability_NOS
+Cerebrovascular_accident -> Disability_neurological
+Cerebrovascular_accident -> Epilepsy
+Cerebrovascular_accident -> Hemiparesis
+Cerebrovascular_accident -> Hemiplegia
+Cerebrovascular_accident -> Hospitalization
+Cerebrovascular_accident -> Infarction
+Cerebrovascular_accident -> Inflammation
+Cerebrovascular_accident -> Neural_Development
+Cerebrovascular_accident -> Physical_disability
+Cerebrovascular_accident -> Seizures
+Cervical_Ripening -> Labor_Childbirth
+Chagas_Disease -> Cessation_of_life
+Chagas_Disease -> Heart_Diseases
+Chagas_Disease -> Heart_failure
+Chemicals -> Inflammation
+Chemicals -> Injury
+Chemicals -> Neoplasm
+Chemicals -> Oxidative_Stress
+Chemicals -> Toxic_effect
+Chemokine_C_C_Motif_Ligand_4_CCL4 -> Fibrosis
+Chemokine_C_C_Motif_Ligand_4_CCL4 -> Inflammation
+Chemokine_C_C_Motif_Ligand_4_CCL4 -> Injury
+Chemokine_C_C_Motif_Ligand_4_CCL4 -> Oxidative_Stress
+Chemokine_C_C_Motif_Ligand_4_CCL4 -> Toxic_effect
+Chlamydophila_pneumoniae -> Atherosclerosis
+Chlorine -> Injury
+Chlorpyrifos -> Oxidative_Stress
+Chlorpyrifos -> Toxic_effect
+Cholestasis -> Fibrosis
+Cholesterol -> Alzheimers
+Cholesterol -> Atherosclerosis
+Cholesterol -> Lesion
+Cholesterol -> hypercholesterolemia
+Chromium -> Oxidative_Stress
+Chromium -> Toxic_effect
+Chronic_Disease -> Cessation_of_life
+Chronic_Disease -> Disability_NOS
+Chronic_Disease -> Inflammation
+Chronic_Kidney_Diseases -> Cessation_of_life
+Chronic_Obstructive_Airway_Disease -> Cessation_of_life
+Chronic_Obstructive_Airway_Disease -> Disability_NOS
+Chronic_glomerulonephritis_NOS -> End_stage_renal_failure
+Chronic_glomerulonephritis_NOS -> Kidney_Failure_Chronic
+Chronic_heart_failure -> Cessation_of_life
+Chronic_infectious_disease -> Cessation_of_life
+Chronic_infectious_disease -> Fibrosis
+Chronic_infectious_disease -> Inflammation
+Chronic_inflammation -> Atherosclerosis
+Chronic_inflammation -> Cardiovascular_Diseases
+Chronic_inflammatory_disorder -> Disability_NOS
+Chronic_liver_disease_NOS -> Cessation_of_life
+Chronic_liver_disease_NOS -> Fibrosis
+Chronic_low_back_pain -> Disability_NOS
+Chronic_pain -> Disability_NOS
+Cigarette_smoke -> Inflammation
+Cigarette_smoke -> Injury
+Cigarette_smoke -> Oxidative_Stress
+Cirrhosis -> Cessation_of_life
+Cisplatin -> Inflammation
+Cisplatin -> Injury
+Cisplatin -> Kidney_Diseases
+Cisplatin -> Kidney_Failure
+Cisplatin -> Oxidative_Stress
+Cisplatin -> Toxic_effect
+Closure_by_clamp -> Ischemia
+Closure_by_clamp -> Renal_ischaemia
+Cocaine -> Myocardial_Infarction
+Cocaine -> Toxic_effect
+Colitis -> Inflammation
+Collagen -> Fibrosis
+Communicable_Diseases -> Cessation_of_life
+Communicable_Diseases -> Inflammation
+Complement_System_Proteins -> Inflammation
+Complement_System_Proteins -> Injury
+Complication_infection -> Cessation_of_life
+Compression_procedure -> Deglutition_Disorders
+Compression_procedure -> Hypertension
+Compression_procedure -> Ischemia
+Compression_procedure -> Obstruction
+Compression_procedure -> Paraplegia
+Compression_procedure -> Spinal_Cord_Diseases
+Compression_procedure -> Stenosis_unspecified
+Compression_procedure -> Trigeminal_Neuralgia
+Concanavalin_A -> Injury
+Congenital_heart_disease -> Cessation_of_life
+Congenital_heart_disease -> Heart_failure
+Congestive_heart_failure -> Cessation_of_life
+Congestive_heart_failure -> Dyspnea
+Congestive_heart_failure -> Hospitalization
+Congestive_heart_failure -> Pleural_effusion_disorder
+Conn_Syndrome -> Hypertension
+Conn_Syndrome -> Secondary_hypertension_NOS
+Constituents -> Toxic_effect
+Constriction_procedure -> Cardiac_Hypertrophy
+Constriction_procedure -> Fibrosis
+Constriction_procedure -> Heart_failure
+Constriction_procedure -> Hypertension
+Constriction_procedure -> Hypertrophy
+Constriction_procedure -> Hypertrophy_Left_Ventricular
+Contraceptives_Oral -> Hypertension
+Contrast_Media -> Injury
+Contrast_Media -> Kidney_Diseases
+Contrast_Media -> Kidney_Failure
+Copper -> Injury
+Copper -> Oxidative_Stress
+Copper -> Toxic_effect
+Coronary_Aneurysm -> Myocardial_Infarction
+Coronary_Arteriosclerosis -> Cessation_of_life
+Coronary_Arteriosclerosis -> Congestive_heart_failure
+Coronary_Arteriosclerosis -> Heart_failure
+Coronary_Arteriosclerosis -> Ischemia
+Coronary_Arteriosclerosis -> Myocardial_Infarction
+Coronary_Artery_Dissection_Spontaneous -> Myocardial_Infarction
+Coronary_Artery_Vasospasm -> Ischemia
+Coronary_Artery_Vasospasm -> Myocardial_Infarction
+Coronary_Occlusion -> Ischemia
+Coronary_Occlusion -> Myocardial_Infarction
+Coronary_Thrombosis -> Myocardial_Infarction
+Coronary_artery_embolism -> Myocardial_Infarction
+Coronary_heart_disease -> Cessation_of_life
+Coronary_heart_disease -> Heart_failure
+Coronavirus_Infections -> Cessation_of_life
+Corticotropin -> Cushing_Syndrome
+Corticotropin -> Hypertension
+Corticotropin_POMC -> Cushing_Syndrome
+Corticotropin_POMC -> Hypertension
+Croton_Oil -> Inflammation
+Cyclophosphamide -> Diabetes
+Cyclophosphamide -> Injury
+Cyclophosphamide -> Oxidative_Stress
+Cyclophosphamide -> Toxic_effect
+Cyclosporine -> Abnormal_renal_function
+Cyclosporine -> Apoptosis
+Cyclosporine -> Autoimmunity
+Cyclosporine -> Cholestasis
+Cyclosporine -> Gingival_Hyperplasia
+Cyclosporine -> Gingival_Overgrowth
+Cyclosporine -> Graft_vs_Host_Disease
+Cyclosporine -> Hypertension
+Cyclosporine -> Injury
+Cyclosporine -> Injury_to_kidney_NOS
+Cyclosporine -> Kidney_Diseases
+Cyclosporine -> NEPHROTOXICITY
+Cyclosporine -> Oxidative_Stress
+Cyclosporine -> Toxic_effect
+Cyclosporine -> Vasospasm
+Cytokine_Storm -> Cessation_of_life
+DNA -> Inflammation
+DNA -> Neoplasm
+DNA -> Oxidative_Stress
+DNA -> Toxic_effect
+DNA_Mitochondrial -> Inflammation
+D_Pulmonary_hemorrhage -> Cessation_of_life
+D_Respiratory_arrest -> Cessation_of_life
+Death_Sudden -> Cessation_of_life
+Death_Sudden_Cardiac -> Cessation_of_life
+Debris -> Inflammation
+Deep_Vein_Thrombosis -> Cessation_of_life
+Degenerative_abnormality -> Alzheimers
+Degenerative_abnormality -> Amyotrophic_Lateral_Sclerosis
+Degenerative_abnormality -> Blind_Vision
+Degenerative_abnormality -> Cessation_of_life
+Degenerative_abnormality -> Degenerative_polyarthritis
+Degenerative_abnormality -> Neurodegenerative_Disorders
+Degenerative_abnormality -> Parkinson_Disease
+Degenerative_abnormality -> Spinal_Muscular_Atrophy
+Degenerative_polyarthritis -> Degenerative_abnormality
+Degenerative_polyarthritis -> Disability_NOS
+Dehydration -> Cessation_of_life
+Dementia -> Alzheimers
+Deoxycorticosterone -> Hypertension
+Desoxycorticosterone_acetate -> Hypertension
+Dexamethasone -> Apoptosis
+Dexamethasone -> Atrophic
+Dexamethasone -> Cell_Death
+Dexamethasone -> Down_Regulation
+Dexamethasone -> Hyperglycemia
+Dexamethasone -> Hypertension
+Dexamethasone -> Insulin_Resistance
+Dexamethasone -> Muscular_Atrophy
+Dexamethasone -> Osteoporosis
+Dexamethasone -> Up_Regulation_Physiology
+Dextran_Sulfate -> Inflammation
+Dextran_Sulfate -> Injury
+Dextran_Sulfate_Sodium -> Inflammation
+Dextran_Sulfate_Sodium -> Injury
+Diabetes -> Atherosclerosis
+Diabetes -> Blind_Vision
+Diabetes -> Cardiomyopathies
+Diabetes -> Cardiovascular_Diseases
+Diabetes -> Cessation_of_life
+Diabetes -> Chronic_Kidney_Diseases
+Diabetes -> Diabetes_Mellitus_Non_Insulin_Dependent
+Diabetes -> Diabetic_Nephropathy
+Diabetes -> Diabetic_Retinopathy
+Diabetes -> Disability_NOS
+Diabetes -> End_stage_renal_failure
+Diabetes -> Endothelial_dysfunction
+Diabetes -> Erectile_dysfunction
+Diabetes -> Extravasation
+Diabetes -> Fibrosis
+Diabetes -> Heart_failure
+Diabetes -> Hospitalization
+Diabetes -> Hyperglycemia
+Diabetes -> Hypertension
+Diabetes -> Hypertrophy
+Diabetes -> Inflammation
+Diabetes -> Insulin_Resistance
+Diabetes -> Kidney_Diseases
+Diabetes -> Kidney_Failure
+Diabetes -> Kidney_Failure_Chronic
+Diabetes -> Neuropathic_pain
+Diabetes -> Neuropathy
+Diabetes -> Osteoporosis
+Diabetes -> Peripheral_Neuropathy
+Diabetes -> Renal_glomerular_disease
+Diabetes -> Retinal_Diseases
+Diabetes_Mellitus -> Cessation_of_life
+Diabetes_Mellitus -> End_stage_renal_failure
+Diabetes_Mellitus -> Kidney_Diseases
+Diabetes_Mellitus -> Kidney_Failure
+Diabetes_Mellitus -> Kidney_Failure_Chronic
+Diabetes_Mellitus_Non_Insulin_Dependent -> Cardiovascular_Diseases
+Diabetes_Mellitus_Non_Insulin_Dependent -> Cessation_of_life
+Diabetes_Mellitus_Non_Insulin_Dependent -> Diabetes
+Diabetes_Mellitus_Non_Insulin_Dependent -> End_stage_renal_failure
+Diabetes_Mellitus_Non_Insulin_Dependent -> Insulin_Resistance
+Diabetes_Mellitus_Non_Insulin_Dependent -> Kidney_Diseases
+Diabetes_Mellitus_Non_Insulin_Dependent -> Kidney_Failure_Chronic
+Diabetes_Mellitus_Non_Insulin_Dependent -> Obesity
+Diabetic_Ketoacidosis -> Cessation_of_life
+Diabetic_Nephropathy -> Cessation_of_life
+Diabetic_Nephropathy -> End_stage_renal_failure
+Diabetic_Nephropathy -> Kidney_Diseases
+Diabetic_Nephropathy -> Kidney_Failure
+Diabetic_Nephropathy -> Kidney_Failure_Chronic
+Diabetic_cardiomyopathy -> Heart_failure
+Diarrhea -> Cessation_of_life
+Diarrheal_disorder -> Cessation_of_life
+Diastolic_dysfunction -> Heart_failure
+Diazinon -> Toxic_effect
+Diclofenac -> Injury
+Diet -> Acidosis
+Diet -> Arteriosclerosis
+Diet -> Atherogenesis
+Diet -> Atherosclerosis
+Diet -> Colorectal_Cancer
+Diet -> Diabetes
+Diet -> Diabetes_Mellitus_Non_Insulin_Dependent
+Diet -> Dysbiosis
+Diet -> Dyslipidemias
+Diet -> Endothelial_dysfunction
+Diet -> Fatty_Liver
+Diet -> Fatty_Liver_Disease
+Diet -> Fatty_Streak_Arterial
+Diet -> Fatty_degeneration
+Diet -> Fibrosis
+Diet -> Fibrosis_Liver
+Diet -> Glucose_Intolerance
+Diet -> Hyperglycemia
+Diet -> Hyperhomocysteinemia
+Diet -> Hyperinsulinism
+Diet -> Hyperlipidemia
+Diet -> Hyperphagia
+Diet -> Hypertension
+Diet -> Hypertrophy
+Diet -> Inflammation
+Diet -> Inflammatory_Bowel_Diseases
+Diet -> Inflammatory_Response
+Diet -> Injury
+Diet -> Insulin_Resistance
+Diet -> Ketosis
+Diet -> Liver_damage
+Diet -> Liver_diseases
+Diet -> Malignant_Neoplasms
+Diet -> Malignant_neoplasm_of_breast
+Diet -> Malnutrition
+Diet -> Metabolic_Diseases
+Diet -> Metabolic_acidosis
+Diet -> Metabolic_syndrome
+Diet -> Mouse_Model
+Diet -> Neoplasm
+Diet -> Non_alcoholic_fatty_liver
+Diet -> Nonalcoholic_Steatohepatitis
+Diet -> Obesity
+Diet -> Oxidative_Stress
+Diet -> Pancreatitis
+Diet -> Primary_carcinoma_of_the_liver_cells
+Diet -> Steatohepatitis
+Diet -> Steatohepatitis_non_alcoholic
+Diet -> hypercholesterolemia
+Diet_High_Fat -> Diabetes
+Diet_High_Fat -> Fibrosis
+Diet_High_Fat -> Inflammation
+Diet_High_Fat -> Insulin_Resistance
+Diet_High_Fat -> Obesity
+Dietary_Fats -> Obesity
+Diethylhexyl_Phthalate -> Oxidative_Stress
+Diethylhexyl_Phthalate -> Toxic_effect
+Diethylnitrosamine -> Injury
+Diethylnitrosamine -> Neoplasm
+Diethylnitrosamine -> Oxidative_Stress
+Dimethylnitrosamine -> Fibrosis
+Dimethylnitrosamine -> Injury
+Dioxins -> Toxic_effect
+Dipyridamole -> Ischemia
+Diquat -> Oxidative_Stress
+Direct_Lytic_Factors -> Injury
+Disability_NOS -> Cessation_of_life
+Discharge_Body_Substance -> Injury
+Disease_Progression -> Cessation_of_life
+Disorder_of_artery -> Cerebrovascular_accident
+Dissection -> Cerebrovascular_accident
+Dissection -> Ischemia
+Dissection -> Myocardial_Infarction
+Dissection -> Obstruction
+Dissection_of_aorta -> Cessation_of_life
+Disseminated_Intravascular_Coagulation -> Cessation_of_life
+Dobutamine -> Ischemia
+Dopamine -> Oxidative_Stress
+Dopamine -> Toxic_effect
+Doxorubicin -> Heart_failure
+Doxorubicin -> Inflammation
+Doxorubicin -> Injury
+Doxorubicin -> Oxidative_Stress
+Doxorubicin -> Toxic_effect
+Drug_vehicle -> Injury
+Dust -> Inflammation
+Dyslipidemias -> Atherosclerosis
+Dyslipidemias -> Cardiovascular_Diseases
+Dyspnea -> Cessation_of_life
+Ecstasy_drug -> Toxic_effect
+Edema -> Cessation_of_life
+Elastases -> Injury
+Embolism -> Cerebrovascular_accident
+Embolism -> Cessation_of_life
+Embolism -> Ischemia
+Embolism_Paradoxical -> Cerebrovascular_accident
+Embolization_Therapeutic -> Cerebrovascular_accident
+Embolization_Therapeutic -> Hypertrophy
+Embolization_Therapeutic -> Ischemia
+Embolization_Therapeutic -> Myocardial_Infarction
+Embolization_Therapeutic -> Obstruction
+Encephalitis -> Cessation_of_life
+Encephalomyocarditis_virus -> Diabetes
+Encephalopathies -> Cessation_of_life
+End_stage_renal_failure -> Cessation_of_life
+Endocarditis -> Cessation_of_life
+Endocrine_Disruptors -> Toxic_effect
+Endothelial_dysfunction -> Arteriosclerosis
+Endothelial_dysfunction -> Atherosclerosis
+Endothelial_dysfunction -> Cardiovascular_Diseases
+Endothelial_dysfunction -> Hypertension
+Endothelial_dysfunction -> Pre_Eclampsia
+Endothelial_dysfunction -> Vascular_Diseases
+Endothelin -> Hypertension
+Endothelin_1 -> Hypertension
+Endothelin_1 -> Hypertrophy
+Endothelin_1 -> Ischemia
+Endothelin_1 -> Vasodilation
+Endothelin_1 -> Vasospasm
+Endotoxemia -> Inflammation
+Endotoxins -> Inflammation
+Endotoxins -> Injury
+Endotoxins -> Oxidative_Stress
+Endotoxins -> Toxic_effect
+Enterocolitis_Necrotizing -> Cessation_of_life
+Environmental_Pollutants -> Oxidative_Stress
+Environmental_Pollutants -> Toxic_effect
+Epilepsy -> Cessation_of_life
+Epinephrine -> Falls
+Epinephrine -> Hyperglycemia
+Epinephrine -> Hypertension
+Epinephrine -> Lack_of_sensation
+Epinephrine -> Platelet_aggregation
+Epinephrine -> Pulmonary_Edema
+Epinephrine -> Ventricular_arrhythmia
+Epinephrine -> cardiac_arrhythmia
+Erythropoietin_EPO -> Anemia
+Erythropoietin_EPO -> Hypertension
+Escherichia_coli -> Cessation_of_life
+Escherichia_coli -> Inflammation
+Estrogens -> Neoplasm
+Ethanol -> Abnormal_coordination
+Ethanol -> Aggressive_behavior
+Ethanol -> Alcoholic_Intoxication_Chronic
+Ethanol -> Alcoholic_Liver_Diseases
+Ethanol -> Amnesia
+Ethanol -> Apoptosis
+Ethanol -> Ataxia
+Ethanol -> Blood_alcohol_concentration
+Ethanol -> Bone_necrosis
+Ethanol -> Brain_Injuries
+Ethanol -> COGNITIVE_DEFICIT
+Ethanol -> Cell_Death
+Ethanol -> Colitis
+Ethanol -> Congenital_Abnormality
+Ethanol -> DNA_Damage
+Ethanol -> Death_finding
+Ethanol -> Degenerative_abnormality
+Ethanol -> Dependence
+Ethanol -> Depressed_mood
+Ethanol -> Depressive_disorder
+Ethanol -> Down_Regulation
+Ethanol -> Excitation
+Ethanol -> Falls
+Ethanol -> Fatty_Liver
+Ethanol -> Fatty_degeneration
+Ethanol -> Fetal_Alcohol_Syndrome
+Ethanol -> Fetal_Diseases
+Ethanol -> Fibrosis
+Ethanol -> Fibrosis_Liver
+Ethanol -> Gastric_mucosal_lesion
+Ethanol -> Gastric_ulcer
+Ethanol -> Gastritis
+Ethanol -> Hepatotoxicity
+Ethanol -> Hyperactive_behavior
+Ethanol -> Hyperlipidemia
+Ethanol -> Hypertension
+Ethanol -> Impaired_cognition
+Ethanol -> Inflammation
+Ethanol -> Inflammatory_Response
+Ethanol -> Injury
+Ethanol -> Injury_of_pancreas
+Ethanol -> Injury_of_stomach
+Ethanol -> Injury_to_liver_NOS
+Ethanol -> Intoxication
+Ethanol -> Lesion
+Ethanol -> Lesion_of_liver
+Ethanol -> Lesion_of_stomach
+Ethanol -> Liver_Cirrhosis
+Ethanol -> Liver_damage
+Ethanol -> Liver_diseases
+Ethanol -> Malignant_Neoplasms
+Ethanol -> Memory_impairment
+Ethanol -> Microcephaly
+Ethanol -> Narcosis
+Ethanol -> Necrosis
+Ethanol -> Nerve_Degeneration
+Ethanol -> Obstruction
+Ethanol -> Onset_of_illness
+Ethanol -> Oxidative_Stress
+Ethanol -> Pain
+Ethanol -> Pancreatitis
+Ethanol -> Pancreatitis_Chronic
+Ethanol -> Sedation
+Ethanol -> Stress
+Ethanol -> Teratogenesis
+Ethanol -> Toxic_effect
+Ethanol -> Ulcer
+Ethanol -> Up_Regulation_Physiology
+Ethanol -> cell_injury
+Ethanol -> cytotoxicity
+Ethanol -> hypoglycemia
+Ethanol -> hypothermia_natural
+Ethanol -> imbalance
+Ethanol -> neuron_loss
+Ethylnitrosourea -> Neoplasm
+Excision -> Degenerative_abnormality
+Excision -> Ischemia
+Excision -> Obstruction
+Exsanguination -> Cessation_of_life
+Extravasation -> Cessation_of_life
+FAS -> Cessation_of_life
+FLVCR1 -> Cessation_of_life
+Falls -> Disability_NOS
+Fatty_Acids -> Inflammation
+Fatty_Acids -> Insulin_Resistance
+Fatty_Acids_Nonesterified -> Inflammation
+Fatty_Acids_Nonesterified -> Insulin_Resistance
+Fatty_Acids_Saturated -> Insulin_Resistance
+Fetal_Death -> Labor_Childbirth
+Fetal_Distress -> Pregnancy
+Fetal_Growth_Retardation -> Labor_Childbirth
+Fetal_Growth_Retardation -> Pregnancy
+Fever -> Cessation_of_life
+Fibromuscular_Dysplasia -> Hypertension
+Fibromuscular_Dysplasia -> Hypertension_Renovascular
+Fibromuscular_Dysplasia -> Renal_Artery_Stenosis
+Fibrosis -> Cessation_of_life
+Fibrosis -> Heart_failure
+Fibrosis -> Hypertension_Portal
+Fibrosis -> Liver_diseases
+Fibrosis_Liver -> Fibrosis
+Fluorides -> Oxidative_Stress
+Fluorides -> Toxic_effect
+Fluorouracil -> Injury
+Fluorouracil -> Toxic_effect
+Focal_segmental_glomerulosclerosis -> End_stage_renal_failure
+Folic_Acid -> Injury
+Food -> Obesity
+Food -> Toxic_effect
+Foramen_Ovale_Patent -> Cerebrovascular_accident
+Foreign_Bodies -> Inflammation
+Foreign_Bodies -> Obstruction
+Formaldehyde -> Toxic_effect
+Formalin -> Inflammation
+Fracture -> Disability_NOS
+Free_Radicals -> Inflammation
+Free_Radicals -> Injury
+Free_Radicals -> Nerve_Degeneration
+Free_Radicals -> Oxidative_Stress
+Free_Radicals -> Toxic_effect
+Freund_s_Adjuvant -> Inflammation
+Fructose -> Fatty_Liver
+Fructose -> Hypertension
+Fructose -> Hypertensive
+Fructose -> Hypertriglyceridemia
+Fructose -> Hyperuricemia
+Fructose -> Insulin_Resistance
+Fructose -> Metabolic_syndrome
+Fructose -> Non_alcoholic_fatty_liver
+Fructose -> Oxidative_Stress
+GTPase_Activating_Proteins -> Cessation_of_life
+Gadolinium -> Fibrosis
+Galactosamine -> Injury
+Galactosamine -> Toxic_effect
+Galactose -> Oxidative_Stress
+Gases -> Injury
+Gastrointestinal_Diseases -> Cessation_of_life
+Gastrointestinal_Hemorrhage -> Cessation_of_life
+Gene_Mutation -> Diabetes
+Generalized_ischemic_myocardial_dysfunction -> Heart_failure
+Gentamicins -> Injury
+Gentamicins -> Oxidative_Stress
+Gentamicins -> Toxic_effect
+Glomerulonephritis -> End_stage_renal_failure
+Glomerulonephritis -> Kidney_Failure
+Glomerulonephritis -> Kidney_Failure_Chronic
+Glucocorticoids -> Adrenal_gland_hypofunction
+Glucocorticoids -> Apoptosis
+Glucocorticoids -> Atrophic
+Glucocorticoids -> Bone_necrosis
+Glucocorticoids -> Cleft_Palate
+Glucocorticoids -> Diabetes
+Glucocorticoids -> Glaucoma
+Glucocorticoids -> Growth_retardation
+Glucocorticoids -> Hyperglycemia
+Glucocorticoids -> Hypertension
+Glucocorticoids -> Insulin_Resistance
+Glucocorticoids -> Legg_Calve_Perthes_Disease
+Glucocorticoids -> Muscular_Atrophy
+Glucocorticoids -> Myopathy
+Glucocorticoids -> Obesity
+Glucocorticoids -> Ocular_Hypertension
+Glucocorticoids -> Osteopenia
+Glucocorticoids -> Osteoporosis
+Glucocorticoids -> loss_bone
+Glucosamine -> Insulin_Resistance
+Glucose -> Diabetes
+Glucose -> Endothelial_dysfunction
+Glucose -> Fibrosis
+Glucose -> Hyperinsulinism
+Glucose -> Hypertrophy
+Glucose -> Inflammation
+Glucose -> Injury
+Glucose -> Insulin_Resistance
+Glucose -> Oxidative_Stress
+Glucose -> Toxic_effect
+Glutamate -> Cessation_of_life
+Glutamate -> Degenerative_abnormality
+Glutamate -> Injury
+Glutamate -> Nerve_Degeneration
+Glutamate -> Oxidative_Stress
+Glutamate -> Toxic_effect
+Glutamate_Receptor -> Cessation_of_life
+Glutamates -> Cessation_of_life
+Glutathione -> Oxidative_Stress
+Gluten -> Inflammation
+Glycerol -> Injury
+Glycosylation_End_Products_Advanced -> Inflammation
+Glycosylation_End_Products_Advanced -> Oxidative_Stress
+Graft_vs_Host_Disease -> Cessation_of_life
+HIV_Infections -> Cessation_of_life
+HMGB1_Protein -> Inflammation
+HTT -> Nerve_Degeneration
+Halothane -> Injury
+Heart_Arrest -> Cessation_of_life
+Heart_Arrest -> Ischemia
+Heart_Diseases -> Cessation_of_life
+Heart_Diseases -> Death_Sudden
+Heart_Diseases -> Death_Sudden_Cardiac
+Heart_Diseases -> Heart_Arrest
+Heart_Diseases -> Heart_failure
+Heart_Diseases -> Hypertension_Pulmonary
+Heart_Diseases -> Syncope
+Heart_Diseases -> cardiac_arrhythmia
+Heart_failure -> Atrial_Fibrillation
+Heart_failure -> Cessation_of_life
+Heart_failure -> Dyspnea
+Heart_failure -> Hospital_Readmissions
+Heart_failure -> Hospital_admission
+Heart_failure -> Hospitalization
+Heart_failure -> Pleural_effusion_disorder
+Heart_failure -> follow_up
+Heart_ligation -> Myocardial_Infarction
+Helicobacter_Infections -> Inflammation
+Helicobacter_pylori -> Inflammation
+Heme -> Oxidative_Stress
+Hemolytic_Uremic_Syndrome -> Kidney_Failure
+Hemoptysis -> Cessation_of_life
+Hemorrhage -> Cessation_of_life
+Hemorrhage -> Obstruction
+Hepatitis -> Cessation_of_life
+Hepatitis_B -> Cessation_of_life
+Hepatitis_B -> Fibrosis
+Hepatitis_B_Chronic -> Fibrosis
+Hepatitis_B_Virus -> Fibrosis
+Hepatitis_C -> Cessation_of_life
+Hepatitis_C -> Fibrosis
+Hepatitis_C_Chronic -> Fibrosis
+Hepatitis_C_virus -> Fibrosis
+Hepatitis_C_virus -> Inflammation
+Hepatitis_C_virus -> Insulin_Resistance
+Hepatitis_C_virus -> Oxidative_Stress
+Hepatitis_Chronic -> Fibrosis
+Herbicides -> Oxidative_Stress
+Herbicides -> Toxic_effect
+Hereditary_Diseases -> Cessation_of_life
+Hereditary_Diseases -> Kidney_Failure
+Hernia -> Obstruction
+Herpesvirus_2_Gallid -> Neoplasm
+Herpesvirus_4_Human -> Neoplasm
+Hip_Fractures -> Disability_NOS
+Histamine -> Inflammation
+Human_Papillomavirus -> Neoplasm
+Hydrocortisone -> Adrenal_adenoma
+Hydrocortisone -> Apoptosis
+Hydrocortisone -> Cushing_Syndrome
+Hydrocortisone -> Hypertension
+Hydrocortisone -> Stress
+Hydrogen_Peroxide -> Inflammation
+Hydrogen_Peroxide -> Injury
+Hydrogen_Peroxide -> Oxidative_Stress
+Hydrogen_Peroxide -> Toxic_effect
+Hyperglycemia -> Cessation_of_life
+Hyperglycemia -> Diabetes
+Hyperglycemia -> Endothelial_dysfunction
+Hyperglycemia -> Hyperinsulinism
+Hyperglycemia -> Inflammation
+Hyperglycemia -> Insulin_Resistance
+Hyperhomocysteinemia -> Endothelial_dysfunction
+Hyperinsulinism -> Hypertension
+Hyperinsulinism -> Insulin_Resistance
+Hyperinsulinism -> hypoglycemia
+Hyperlipidemia -> Atherosclerosis
+Hyperlipidemia -> Endothelial_dysfunction
+Hypernatremia -> Hypertension
+Hyperphagia -> Obesity
+Hypersensitivity -> Cessation_of_life
+Hypertension -> Atherosclerosis
+Hypertension -> Blood_Pressure
+Hypertension -> Cardiac_Hypertrophy
+Hypertension -> Cardiovascular_Diseases
+Hypertension -> Cardiovascular_morbidity
+Hypertension -> Cerebral_hemisphere_hemorrhage
+Hypertension -> Cerebrovascular_accident
+Hypertension -> Cessation_of_life
+Hypertension -> Congestive_heart_failure
+Hypertension -> END_ORGAN_DAMAGE
+Hypertension -> End_stage_renal_failure
+Hypertension -> Endothelial_dysfunction
+Hypertension -> Fibrosis
+Hypertension -> Heart_Diseases
+Hypertension -> Heart_failure
+Hypertension -> Hypertrophy
+Hypertension -> Hypertrophy_Left_Ventricular
+Hypertension -> Kidney_Diseases
+Hypertension -> Kidney_Failure
+Hypertension -> Kidney_Failure_Chronic
+Hypertension -> Labor_Childbirth
+Hypertension -> Myocardial_Infarction
+Hypertension -> Pregnancy
+Hypertension_Pulmonary -> Cessation_of_life
+Hypertension_Pulmonary -> Heart_failure
+Hypertrophic_Cardiomyopathy -> Cessation_of_life
+Hypertrophic_Cardiomyopathy -> Heart_failure
+Hypertrophy -> Airway_Obstruction
+Hypertrophy -> Growth
+Hypertrophy -> Heart_failure
+Hypertrophy -> Obesity
+Hypertrophy -> Sleep_Apnea_Obstructive
+Hyperuricemia -> Gout
+Hyperuricemia -> Hypertension
+Hypoxia -> Acclimatization
+Hypoxia -> Blood_flow
+Hypoxia -> Cessation_of_life
+Hypoxia -> Endothelial_dysfunction
+Hypoxia -> Growth
+Hypoxia -> Hypertension
+Hypoxia -> Hypertension_Pulmonary
+Hypoxia -> Myocardial_Infarction
+Hypoxia -> Polycythemia
+Hypoxia -> Pulmonary_arterial_hypertension
+Hypoxia -> Retinal_Diseases
+Hypoxia -> Sleep_Apnea_Obstructive
+Hypoxic_Ischemic_Encephalopathy -> Cessation_of_life
+IGA_Glomerulonephritis -> End_stage_renal_failure
+IGA_Glomerulonephritis -> Kidney_Failure
+IGA_Glomerulonephritis -> Kidney_Failure_Chronic
+IMPACT_gene -> Cessation_of_life
+Immunization -> Inflammation
+Immunologic_Adjuvants -> Inflammation
+Impaired_cognition -> Disability_NOS
+Implantation_procedure -> Inflammation
+Implantation_procedure -> Obstruction
+Implants -> Inflammation
+Increased_calorie_diet -> Obesity
+Indomethacin -> Injury
+Induction -> Inflammation
+Infarction -> Cerebrovascular_accident
+Infarction -> Cessation_of_life
+Infarction -> Heart_failure
+Infection -> Atherosclerosis
+Infection -> Cessation_of_life
+Infection -> Fibrosis
+Infection -> Inflammation
+Infection -> Obstruction
+Infections_Hospital -> Cessation_of_life
+Infectious_disease_of_lung -> Cessation_of_life
+Infiltration -> Cessation_of_life
+Inflammasomes -> Inflammation
+Inflammation -> Adhesions
+Inflammation -> Age_related_macular_degeneration
+Inflammation -> Alzheimers
+Inflammation -> Anemia
+Inflammation -> Arteriosclerosis
+Inflammation -> Arthritis
+Inflammation -> Asthma
+Inflammation -> Atherosclerosis
+Inflammation -> Autoimmune_Diseases
+Inflammation -> Blind_Vision
+Inflammation -> Bronchopulmonary_Dysplasia
+Inflammation -> COVID_19
+Inflammation -> Cardiovascular_Diseases
+Inflammation -> Cerebrovascular_accident
+Inflammation -> Cessation_of_life
+Inflammation -> Chronic_Disease
+Inflammation -> Chronic_Obstructive_Airway_Disease
+Inflammation -> Chronic_pain
+Inflammation -> Colitis
+Inflammation -> Coronary_Arteriosclerosis
+Inflammation -> Degenerative_polyarthritis
+Inflammation -> Diabetes
+Inflammation -> Diabetes_Mellitus_Non_Insulin_Dependent
+Inflammation -> Diabetic_Nephropathy
+Inflammation -> Diabetic_Retinopathy
+Inflammation -> Endothelial_dysfunction
+Inflammation -> Fibrosis_Liver
+Inflammation -> Growth
+Inflammation -> Heart_failure
+Inflammation -> Hypertension
+Inflammation -> Immune_response
+Inflammation -> Infection
+Inflammation -> Inflammatory_Bowel_Diseases
+Inflammation -> Inflammatory_disorder
+Inflammation -> Metabolic_Diseases
+Inflammation -> Multiple_Sclerosis
+Inflammation -> Myocardial_Infarction
+Inflammation -> Neurodegenerative_Disorders
+Inflammation -> Obesity
+Inflammation -> Obstetric_Labor_Premature
+Inflammation -> Osteopenia
+Inflammation -> Parkinson_Disease
+Inflammation -> Periodontitis
+Inflammation -> Pulmonary_Fibrosis
+Inflammation -> Respiratory_Distress_Syndrome_Adult
+Inflammation -> Rheumatoid_Arthritis
+Inflammation -> Septicemia
+Inflammation -> Ulcerative_Colitis
+Inflammation -> Wound_Healing
+Inflammation_Mediators -> Inflammation
+Inflammation_Mediators -> Injury
+Inflammatory_Bowel_Diseases -> Inflammation
+Inflammatory_Response -> Atherosclerosis
+Inflammatory_Response -> Cessation_of_life
+Inflammatory_disorder -> Disability_NOS
+Influenza -> Cessation_of_life
+Infusion_procedures -> Hypertension
+Infusion_procedures -> Pancreatitis
+Injection -> Diabetes
+Injection -> Inflammation
+Injection_procedure -> Alzheimers
+Injection_procedure -> Anaphylaxis
+Injection_procedure -> Arthritis
+Injection_procedure -> Cerebral_hemisphere_hemorrhage
+Injection_procedure -> Convulsions
+Injection_procedure -> Degenerative_abnormality
+Injection_procedure -> Delayed_Hypersensitivity
+Injection_procedure -> Demyelination
+Injection_procedure -> Diabetes
+Injection_procedure -> Diabetes_Mellitus
+Injection_procedure -> Edema
+Injection_procedure -> Epilepsy
+Injection_procedure -> Extravasation
+Injection_procedure -> Fibrosis
+Injection_procedure -> Fibrosis_Liver
+Injection_procedure -> Glomerulonephritis
+Injection_procedure -> Graft_vs_Host_Disease
+Injection_procedure -> Graft_vs_Host_Reaction
+Injection_procedure -> Granuloma
+Injection_procedure -> Hyperglycemia
+Injection_procedure -> Hypersensitivity
+Injection_procedure -> Hypertension
+Injection_procedure -> Hyperthyroidism
+Injection_procedure -> Hypertrophy
+Injection_procedure -> Infection
+Injection_procedure -> Infiltration
+Injection_procedure -> Inflammation
+Injection_procedure -> Inflammatory_Response
+Injection_procedure -> Ischemia
+Injection_procedure -> Necrosis
+Injection_procedure -> Obstruction
+Injection_procedure -> Pancreatitis
+Injection_procedure -> Pancreatitis_Acute_Necrotizing
+Injection_procedure -> Parkinson_Disease
+Injection_procedure -> Septicemia
+Injection_procedure -> Shock
+Injection_procedure -> Status_Epilepticus
+Injection_procedure -> Subarachnoid_Hemorrhage
+Injection_procedure -> Uveitis
+Injection_procedure -> depolarization
+Injection_procedure -> hypoglycemia
+Injections_Intraperitoneal -> Diabetes
+Injections_Intraperitoneal -> Inflammation
+Injury -> Asthenia
+Injury -> Atherosclerosis
+Injury -> Atrophic
+Injury -> Blind_Vision
+Injury -> Cerebral_Palsy
+Injury -> Cerebrovascular_accident
+Injury -> Chronic_pain
+Injury -> Deformity
+Injury -> Degenerative_abnormality
+Injury -> Degenerative_polyarthritis
+Injury -> Disability_NOS
+Injury -> Edema
+Injury -> Extravasation
+Injury -> Fibrosis
+Injury -> Fibrosis_Liver
+Injury -> Heart_failure
+Injury -> Hyperplasia
+Injury -> Hypersensitivity
+Injury -> Hypertension
+Injury -> Hypoxia
+Injury -> Infarction
+Injury -> Infection
+Injury -> Inflammation
+Injury -> Inflammatory_Response
+Injury -> Ischemia
+Injury -> Kidney_Diseases
+Injury -> Kidney_Failure
+Injury -> Kidney_Failure_Acute
+Injury -> Kidney_Failure_Chronic
+Injury -> Liver_Failure
+Injury -> Liver_Failure_Acute
+Injury -> Liver_damage
+Injury -> Multiple_Organ_Failure
+Injury -> Necrosis
+Injury -> Neuropathic_pain
+Injury -> Obstruction
+Injury -> Organ_failure
+Injury -> Pain
+Injury -> Paraplegia
+Injury -> Proteinuria
+Injury -> Pseudoaneurysm
+Injury -> Pulmonary_Fibrosis
+Injury -> Recovery_of_Function
+Injury -> Respiratory_Distress_Syndrome_Adult
+Injury -> Septicemia
+Injury -> Shock
+Injury -> Thrombosis
+Injury -> Thrombus
+Injury -> Ulcer
+Injury -> pathologic_fistula
+Insecticides -> Toxic_effect
+Insemination -> Pregnancy
+Inspiration_function -> Cessation_of_life
+Insulin -> Diabetes
+Insulin -> Hyperinsulinism
+Insulin -> Insulin_Resistance
+Insulin_INS -> Hyperinsulinism
+Insulin_INS -> Insulin_Resistance
+Insulin_Like_Growth_Factor_I -> Hypertrophy
+Insulin_Receptor_INSR -> Insulin_Resistance
+Insulin_Resistance -> Alzheimers
+Insulin_Resistance -> Atherosclerosis
+Insulin_Resistance -> Cardiovascular_Diseases
+Insulin_Resistance -> Diabetes
+Insulin_Resistance -> Diabetes_Mellitus
+Insulin_Resistance -> Diabetes_Mellitus_Non_Insulin_Dependent
+Insulin_Resistance -> Dyslipidemias
+Insulin_Resistance -> Endothelial_dysfunction
+Insulin_Resistance -> Fatty_Liver
+Insulin_Resistance -> Glucose_Intolerance
+Insulin_Resistance -> Hyperglycemia
+Insulin_Resistance -> Hyperinsulinism
+Insulin_Resistance -> Hypertension
+Insulin_Resistance -> Metabolic_Diseases
+Insulin_Resistance -> Metabolic_syndrome
+Insulin_Resistance -> Non_alcoholic_fatty_liver
+Insulin_Resistance -> Obesity
+Insulin_Resistance -> Polycystic_Ovary_Syndrome
+Interleukin_1 -> Inflammation
+Interleukin_13 -> Inflammation
+Interleukin_17 -> Inflammation
+Interleukin_1_beta -> Inflammation
+Interleukin_1_beta -> Injury
+Interleukin_6 -> Inflammation
+Interleukin_6 -> Insulin_Resistance
+Interleukin_8 -> Inflammation
+Intracranial_Atherosclerosis -> Cerebrovascular_accident
+Intracranial_Hemorrhages -> Cessation_of_life
+Intracranial_Hypertension -> Cessation_of_life
+Intussusception -> Obstruction
+Ions -> Abnormal_shape
+Ions -> Alzheimers
+Ions -> DNA_Damage
+Ions -> Diastasis
+Ions -> Dissociation
+Ions -> Oxidative_Stress
+Ions -> Stress
+Ions -> Toxic_effect
+Ions -> cytotoxicity
+Ions -> depolarization
+Iron -> Injury
+Iron -> Oxidative_Stress
+Iron -> Toxic_effect
+Irritants -> Inflammation
+Ischemia -> Acidosis
+Ischemia -> Blood_flow
+Ischemia -> Brain_Edema
+Ischemia -> Cerebrovascular_accident
+Ischemia -> Cessation_of_life
+Ischemia -> Degenerative_abnormality
+Ischemia -> Edema
+Ischemia -> Endothelial_dysfunction
+Ischemia -> Extravasation
+Ischemia -> Fibrosis
+Ischemia -> Heart_failure
+Ischemia -> Hypertension
+Ischemia -> Hypoxia
+Ischemia -> Infarction
+Ischemia -> Inflammation
+Ischemia -> Inflammatory_Response
+Ischemia -> Kidney_Failure_Acute
+Ischemia -> Liver_damage
+Ischemia -> Myocardial_Infarction
+Ischemia -> Myocardial_dysfunction
+Ischemia -> Necrosis
+Ischemia -> Neural_Development
+Ischemia -> Obstruction
+Ischemia -> Pain
+Ischemia -> Pancreatitis
+Ischemia -> Paraplegia
+Ischemia -> Retinal_Neovascularization
+Ischemia -> Tachycardia_Ventricular
+Ischemia -> Ulcer
+Ischemia -> Ventricular_Dysfunction_Left
+Ischemia -> Ventricular_Fibrillation
+Ischemia -> Ventricular_arrhythmia
+Ischemia -> cardiac_arrhythmia
+Ischemia -> depolarization
+Ischemic_stroke -> Cerebrovascular_accident
+Ischemic_stroke -> Cessation_of_life
+Ischemic_stroke -> Disability_NOS
+Isoproterenol -> Cardiac_Hypertrophy
+Isoproterenol -> Fibrosis
+Isoproterenol -> Heart_failure
+Isoproterenol -> Hypertrophy
+Isoproterenol -> Injury
+Isoproterenol -> Myocardial_Infarction
+Isoproterenol -> Oxidative_Stress
+Juxtaglomerular_tumor -> Hypertension
+KCNJ11 -> Diabetes
+Kainate -> Injury
+Kainate -> Nerve_Degeneration
+Kainate -> Toxic_effect
+Kainic_Acid -> Degenerative_abnormality
+Kainic_Acid -> Injury
+Kainic_Acid -> Nerve_Degeneration
+Kidney_Diseases -> Abnormal_renal_function
+Kidney_Diseases -> Cessation_of_life
+Kidney_Diseases -> End_stage_renal_failure
+Kidney_Diseases -> Graft_loss
+Kidney_Diseases -> Hypertension
+Kidney_Diseases -> Kidney_Failure
+Kidney_Diseases -> Kidney_Failure_Acute
+Kidney_Diseases -> Kidney_Failure_Chronic
+Kidney_Failure -> Cessation_of_life
+Kidney_Failure_Acute -> Cessation_of_life
+Kidney_Failure_Chronic -> Anemia
+Kidney_Failure_Chronic -> Cessation_of_life
+Kidney_Failure_Chronic -> End_stage_renal_failure
+Kidney_Failure_Chronic -> Hyperparathyroidism
+Kidney_Failure_Chronic -> Hyperparathyroidism_Secondary
+Kidney_Failure_Chronic -> Hypertension
+Lack_of_sensation -> Cessation_of_life
+Leak_NOS -> Cessation_of_life
+Left_ventricular_systolic_dysfunction -> Heart_failure
+Leishmaniasis_Visceral -> Cessation_of_life
+Leprosy -> Disability_NOS
+Leptin_LEP -> Obesity
+Lesion -> Degenerative_abnormality
+Lesion -> Disability_NOS
+Lesion -> Fibrosis
+Lesion -> Hypertrophy
+Lesion -> Inflammation
+Lesion -> Obstruction
+Lesion -> Stenosis
+Leukosis_Virus_Avian -> Neoplasm
+Licorice -> Hypertension
+Lidocaine -> Obstruction
+Ligation -> Acute_myocardial_infarction
+Ligation -> Atrophic
+Ligation -> Cerebral_Ischemia
+Ligation -> Cholestasis
+Ligation -> Chronic_heart_failure
+Ligation -> Congestive_heart_failure
+Ligation -> Fetal_Growth_Retardation
+Ligation -> Fibrosis
+Ligation -> Fibrosis_Liver
+Ligation -> Gastric_ulcer
+Ligation -> Heart_failure
+Ligation -> Hyperplasia
+Ligation -> Hypersensitivity
+Ligation -> Hypertension
+Ligation -> Hypertension_Portal
+Ligation -> Hypertrophy
+Ligation -> Infarction
+Ligation -> Inflammation
+Ligation -> Ischemia
+Ligation -> Liver_Cirrhosis
+Ligation -> Liver_damage
+Ligation -> Myocardial_Infarction
+Ligation -> Myocardial_Ischemia
+Ligation -> Neuropathy
+Ligation -> Obstruction
+Ligation -> Pancreatitis
+Ligation -> Periodontitis
+Ligation -> Peritonitis
+Ligation -> Septicemia
+Ligation -> Ulcer
+Ligation -> Ventricular_arrhythmia
+Ligation -> cardiac_arrhythmia
+Lindane -> Oxidative_Stress
+Lipids -> Atherosclerosis
+Lipids -> Inflammation
+Lipids -> Injury
+Lipids -> Insulin_Resistance
+Lipids -> Oxidative_Stress
+Lipids -> Toxic_effect
+Lipopolysaccharides -> Endothelial_dysfunction
+Lipopolysaccharides -> Fibrosis
+Lipopolysaccharides -> Inflammation
+Lipopolysaccharides -> Injury
+Lipopolysaccharides -> Nerve_Degeneration
+Lipopolysaccharides -> Oxidative_Stress
+Lipopolysaccharides -> Pre_Eclampsia
+Lipopolysaccharides -> Toxic_effect
+Lipoproteins -> Atherosclerosis
+Little_s_Disease -> Cessation_of_life
+Liver_Cirrhosis -> Cessation_of_life
+Liver_Failure -> Cessation_of_life
+Liver_Failure_Acute -> Cessation_of_life
+Liver_diseases -> Cessation_of_life
+Liver_diseases -> Fibrosis
+Local_Anesthetics -> Obstruction
+Local_Anesthetics -> Toxic_effect
+Low_Density_Lipoproteins -> Atherosclerosis
+Lower_respiratory_tract_infection -> Cessation_of_life
+Lung_Diseases_Interstitial -> Cessation_of_life
+Lung_diseases -> Cessation_of_life
+Lupus_Erythematosus_Systemic -> Cessation_of_life
+Lupus_Nephritis -> End_stage_renal_failure
+MAPT -> Alzheimers
+MAPT -> Frontotemporal_dementia
+MAPT -> Nerve_Degeneration
+MAPT -> Tauopathies
+MAPT_protein_human_MAPT -> Alzheimers
+MAPT_protein_human_MAPT -> Nerve_Degeneration
+MYC_gene_MYC -> Neoplasm
+Malaria -> Cessation_of_life
+Malaria_Cerebral -> Cessation_of_life
+Malignant_Neoplasms -> Cardiovascular_Diseases
+Malignant_Neoplasms -> Cessation_of_life
+Malignant_Neoplasms -> Neoplasm
+Malignant_disease -> Cessation_of_life
+Malignant_neoplasm_of_breast -> Neoplasm
+Malnutrition -> Cessation_of_life
+Manganese -> Oxidative_Stress
+Manganese -> Toxic_effect
+Massive_hemorrhage -> Cessation_of_life
+Measles -> Cessation_of_life
+Mechanical_ventilation -> Inflammation
+Melanocortin_4_Receptor -> Obesity
+Meningitis -> Cessation_of_life
+Meningitis_Cryptococcal -> Cessation_of_life
+Mercury -> Oxidative_Stress
+Mercury -> Toxic_effect
+Metabolic_Diseases -> Cessation_of_life
+Metabolic_syndrome -> Cardiovascular_Diseases
+Metals -> Injury
+Metals -> Oxidative_Stress
+Metals -> Toxic_effect
+Metals_Heavy -> Oxidative_Stress
+Metals_Heavy -> Toxic_effect
+Methamphetamine -> Degenerative_abnormality
+Methamphetamine -> Nerve_Degeneration
+Methamphetamine -> Oxidative_Stress
+Methamphetamine -> Toxic_effect
+Methotrexate -> Injury
+Methotrexate -> Oxidative_Stress
+Methotrexate -> Toxic_effect
+Methylcholanthrene -> Neoplasm
+Methylnitronitrosoguanidine -> Neoplasm
+Methylnitrosourea -> Neoplasm
+MicroRNAs -> Alzheimers
+MicroRNAs -> Malignant_Neoplasms
+MicroRNAs -> Neoplasm
+MicroRNAs -> Silence
+MicroRNAs -> Tumorigenesis
+Microplastics -> Oxidative_Stress
+Microplastics -> Toxic_effect
+Middle_Cerebral_Artery_Occlusion -> Cerebrovascular_accident
+Middle_Cerebral_Artery_Occlusion -> Ischemia
+Migraine_Disorders -> Cerebrovascular_accident
+Migraine_Disorders -> Disability_NOS
+Mineralocorticoids -> Hypertension
+Mitral_Valve_Insufficiency -> Congestive_heart_failure
+Mitral_Valve_Insufficiency -> Heart_failure
+Mixture -> Oxidative_Stress
+Mixture -> Toxic_effect
+Moloney_Leukemia_Virus -> Neoplasm
+Moloney_murine_sarcoma_virus -> Neoplasm
+Monocrotaline -> Injury
+Motor_Neuron_Disease -> Cessation_of_life
+Moyamoya_Disease -> Cerebrovascular_accident
+Multiple_Organ_Failure -> Cessation_of_life
+Multiple_Sclerosis -> Cessation_of_life
+Multiple_Sclerosis -> Disability_NOS
+Multiple_Sclerosis -> Inflammation
+Murine_sarcoma_viruses -> Neoplasm
+Musculoskeletal_Diseases -> Disability_NOS
+Mustard_Gas -> Injury
+Mutagens -> Neoplasm
+Mutation -> 21_hydroxylase_deficiency
+Mutation -> 3_Methylglutaconic_aciduria_type_2
+Mutation -> Abetalipoproteinemia
+Mutation -> Achondroplasia
+Mutation -> Adrenoleukodystrophy
+Mutation -> Albers_Schonberg_disease
+Mutation -> Alexander_Disease
+Mutation -> Alport_Syndrome_X_Linked
+Mutation -> Alport_s_syndrome
+Mutation -> Alzheimers
+Mutation -> Amelogenesis_Imperfecta
+Mutation -> Amyloidosis
+Mutation -> Amyotrophic_Lateral_Sclerosis
+Mutation -> Androgen_Insensitivity_Syndrome
+Mutation -> Angelman_Syndrome
+Mutation -> Apert_Crouzon_syndrome
+Mutation -> Arrhythmogenic_Right_Ventricular_Dysplasia
+Mutation -> Asthenia
+Mutation -> Ataxia
+Mutation -> Ataxia_Telangiectasia
+Mutation -> Autoimmune_Diseases
+Mutation -> Autoimmune_Lymphoproliferative_Syndrome
+Mutation -> Autosomal_Dominant_Disorder
+Mutation -> Autosomal_Recessive_Disorder
+Mutation -> Autosomal_Recessive_Juvenile_Parkinson_Disease
+Mutation -> Autosomal_Recessive_Parkinsonism
+Mutation -> Autosomal_Recessive_Polycystic_Kidney_Disease
+Mutation -> Autosomal_dominant_hereditary_disorder
+Mutation -> Autosomal_recessive_hereditary_disorder
+Mutation -> Bardet_Biedl_Syndrome
+Mutation -> Bartter_Disease
+Mutation -> Becker_Muscular_Dystrophy
+Mutation -> Bleeding_tendency
+Mutation -> Blind_Vision
+Mutation -> Bloom_Syndrome
+Mutation -> Bruck_de_Lange_syndrome
+Mutation -> Brugada_syndrome
+Mutation -> CADASIL
+Mutation -> Cardiomyopathies
+Mutation -> Cardiomyopathy_Dilated
+Mutation -> Cardiomyopathy_Hypertrophic_Familial
+Mutation -> Cataract
+Mutation -> Central_Diabetes_Insipidus
+Mutation -> Centronuclear_myopathy
+Mutation -> Cerebellar_Ataxia
+Mutation -> Charcot_Marie_Tooth_Disease
+Mutation -> Chondrodysplasia_unspecified
+Mutation -> Christ_Siemens_Touraine_Syndrome
+Mutation -> Cleidocranial_Dysplasia
+Mutation -> Cockayne_Syndrome
+Mutation -> Cone_dystrophy
+Mutation -> Congenital_Disorders
+Mutation -> Congenital_deafness
+Mutation -> Congenital_muscular_dystrophy
+Mutation -> Congenital_nephrotic_syndrome_NOS
+Mutation -> Congenital_neutropenia
+Mutation -> Connective_Tissue_Diseases
+Mutation -> Corneal_dystrophy
+Mutation -> Craniosynostosis
+Mutation -> Cretinism
+Mutation -> Cystic_Fibrosis
+Mutation -> Cystic_kidney
+Mutation -> Deafness
+Mutation -> Deficiency_immune
+Mutation -> Degenerative_disorder
+Mutation -> Dent_s_disease
+Mutation -> Diabetes
+Mutation -> Diabetes_Insipidus_Nephrogenic
+Mutation -> Diabetes_Mellitus
+Mutation -> Diabetes_Mellitus_Non_Insulin_Dependent
+Mutation -> Disorder_of_artery
+Mutation -> Distal_Muscular_Dystrophies
+Mutation -> Dyskeratosis_Congenita
+Mutation -> Dystonia
+Mutation -> Ectodermal_Dysplasia
+Mutation -> Ehlers_Danlos_Syndrome
+Mutation -> Encephalopathic_epilepsy
+Mutation -> Encephalopathies
+Mutation -> Enzyme_Deficiency
+Mutation -> Epidermolysis_Bullosa_Dystrophica
+Mutation -> Epidermolysis_Bullosa_Simplex
+Mutation -> Epilepsy
+Mutation -> Epilepsy_Frontal_Lobe
+Mutation -> Fabry_Disease
+Mutation -> Familial_Alzheimer_s_disease
+Mutation -> Familial_Mediterranean_Fever
+Mutation -> Familial_benign_neonatal_epilepsy
+Mutation -> Familial_disease
+Mutation -> Familial_hypokalemia_hypomagnesemia
+Mutation -> Familial_hypophosphatemic_bone_disease
+Mutation -> Fanconi_s_Anemia
+Mutation -> Focal_segmental_glomerulosclerosis
+Mutation -> Fragile_X_Syndrome
+Mutation -> Friedreich_Ataxia
+Mutation -> Gaucher_Disease
+Mutation -> Genetic_Diseases_X_Linked
+Mutation -> Genetic_syndrome
+Mutation -> Glaucoma
+Mutation -> Globoid_cell_leukodystrophy
+Mutation -> Glycogen_storage_disease_type_II
+Mutation -> Granulomatous_Disease_Chronic
+Mutation -> Hallopeau_Siemens_Disease
+Mutation -> Heart_Diseases
+Mutation -> Hematological_Disease
+Mutation -> Hemiplegic_Migraine_Familial
+Mutation -> Hemochromatosis
+Mutation -> Hemolytic_Uremic_Syndrome
+Mutation -> Hemophilia_A
+Mutation -> Hemophilia_B
+Mutation -> Hepatolenticular_Degeneration
+Mutation -> Hereditary_Autosomal_Dominant_Spastic_Paraplegia
+Mutation -> Hereditary_Diseases
+Mutation -> Hereditary_hemochromatosis
+Mutation -> Hereditary_hemorrhagic_telangiectasia
+Mutation -> Hereditary_sideroblastic_anemia
+Mutation -> Huntington_Disease
+Mutation -> Hydrocephalus
+Mutation -> Hypercalciuria
+Mutation -> Hypercholesterolemia_Familial
+Mutation -> Hyperexplexia
+Mutation -> Hyperinsulinism
+Mutation -> Hypertension
+Mutation -> Hypertrophic_Cardiomyopathy
+Mutation -> Hypogonadotropic_hypogonadism
+Mutation -> Hypokinesia
+Mutation -> Hypophosphatasia
+Mutation -> Ichthyoses
+Mutation -> Immunologic_Deficiency_Syndromes
+Mutation -> Infertility
+Mutation -> Infertility_Male
+Mutation -> Inherited_neuropathies
+Mutation -> Iron_Overload
+Mutation -> Job_s_Syndrome
+Mutation -> Junctional_Epidermolysis_Bullosa
+Mutation -> Juvenile_Neuronal_Ceroid_Lipfuscinosis
+Mutation -> Keratosis_Follicularis
+Mutation -> Kidney_Diseases
+Mutation -> Lafora_Disease
+Mutation -> Late_Infantile_Neuronal_Ceroid_Lipfuscinosis
+Mutation -> Leber_s_amaurosis
+Mutation -> Leigh_Disease
+Mutation -> Leucodystrophy_NOS
+Mutation -> Leukoencephalopathy
+Mutation -> Liddle_s_syndrome
+Mutation -> Lipodystrophy
+Mutation -> Lissencephaly
+Mutation -> Long_QT_Syndrome
+Mutation -> Lysosomal_Storage_Diseases
+Mutation -> MULTISYSTEM_DISORDER
+Mutation -> Macular_dystrophy
+Mutation -> Malignant_hyperpyrexia_due_to_anesthesia
+Mutation -> Marfan_Syndrome
+Mutation -> Maturity_onset_diabetes_mellitus_in_young
+Mutation -> Mendelian_disorders
+Mutation -> Menkes_Kinky_Hair_Syndrome
+Mutation -> Metabolic_Diseases
+Mutation -> Methylmalonic_acidemia
+Mutation -> Mitochondrial_Diseases
+Mutation -> Mitochondrial_Encephalomyopathies
+Mutation -> Motor_Neuron_Disease
+Mutation -> Movement_Disorders
+Mutation -> Muscular_Atrophy
+Mutation -> Muscular_Dystrophies
+Mutation -> Muscular_Dystrophies_Limb_Girdle
+Mutation -> Muscular_Dystrophy_Duchenne
+Mutation -> Muscular_Dystrophy_Emery_Dreifuss
+Mutation -> Myasthenic_Syndromes_Congenital
+Mutation -> Myoclonic_Epilepsies_Progressive
+Mutation -> Myopathies_Nemaline
+Mutation -> Myopathy
+Mutation -> Myotonia_Congenita
+Mutation -> Neonatal_diabetes_mellitus
+Mutation -> Nephrotic_Syndrome
+Mutation -> Neurodegenerative_Disorders
+Mutation -> Neuromuscular_Diseases
+Mutation -> Neuronal_Ceroid_Lipofuscinosis
+Mutation -> Neuropathy
+Mutation -> Niemann_Pick_Disease_Type_C
+Mutation -> Niemann_Pick_Diseases
+Mutation -> Nijmegen_Breakage_Syndrome
+Mutation -> Obesity
+Mutation -> Oculocerebrorenal_Syndrome
+Mutation -> Optic_Atrophy_Autosomal_Dominant
+Mutation -> Optic_Atrophy_Hereditary_Leber
+Mutation -> Osteogenesis_Imperfecta
+Mutation -> Palmoplantar_Keratosis
+Mutation -> Parkinson_Disease
+Mutation -> Parkinsonian_Disorders
+Mutation -> Pelizaeus_Merzbacher_Disease
+Mutation -> Pendred_s_syndrome
+Mutation -> Periodic_syndrome
+Mutation -> Peripheral_Neuropathy
+Mutation -> Peroxisomal_Disorders
+Mutation -> Persistent_Hyperinsulinemia_Hypoglycemia_of_Infancy
+Mutation -> Peutz_Jeghers_Syndrome
+Mutation -> Phenylketonurias
+Mutation -> Pick_Disease_of_the_Brain
+Mutation -> Polycystic_Kidney_Autosomal_Dominant
+Mutation -> Polycystic_Kidney_Diseases
+Mutation -> Polyglandular_Type_I_Autoimmune_Syndrome
+Mutation -> Porphyria_Acute_Intermittent
+Mutation -> Premature_aging_syndrome
+Mutation -> Primary_disease
+Mutation -> Primary_immune_deficiency_disorder
+Mutation -> Primary_open_angle_glaucoma
+Mutation -> Progeria
+Mutation -> Pseudoachondroplastic_spondyloepiphyseal_dysplasia_syndrome
+Mutation -> Pseudoxanthoma_Elasticum
+Mutation -> Rare_Diseases
+Mutation -> Renal_tubular_acidosis
+Mutation -> Retinal_Degeneration
+Mutation -> Retinal_Diseases
+Mutation -> Retinal_dystrophy
+Mutation -> Retinitis_Pigmentosa
+Mutation -> Retinoschisis_Juvenile_X_Linked
+Mutation -> Rett_Syndrome
+Mutation -> Sandhoff_Disease
+Mutation -> Seizures
+Mutation -> Sensorineural_Hearing_Loss
+Mutation -> Severe_Combined_Immunodeficiency
+Mutation -> Sickle_Cell_Anemia
+Mutation -> Skeletal_dysplasia
+Mutation -> Skin_Diseases_Genetic
+Mutation -> Smith_Lemli_Opitz_Syndrome
+Mutation -> Spastic_Paraplegia
+Mutation -> Spastic_Paraplegia_Hereditary
+Mutation -> Spinal_Muscular_Atrophy
+Mutation -> Stargardt_s_disease
+Mutation -> Systemic_disease
+Mutation -> Tangier_Disease
+Mutation -> Tay_Sachs_Disease
+Mutation -> Thalassemia
+Mutation -> Thrombocytopenia
+Mutation -> Thrombophilia
+Mutation -> Type_IV_Mucolipidosis
+Mutation -> Vascular_Diseases
+Mutation -> Ventricular_tachycardia_polymorphic
+Mutation -> Von_Hippel_Lindau_Syndrome
+Mutation -> Werner_Syndrome
+Mutation -> Wiskott_Aldrich_Syndrome
+Mutation -> Wolfram_Syndrome
+Mutation -> X_linked_agammaglobulinemia
+Mutation -> Xanthomatosis_Cerebrotendinous
+Mutation -> beta_Thalassemia
+Mutation -> hearing_impairment
+Mutation -> hypercholesterolemia
+Mutation -> hypoglycemia
+Mutation -> imbalance
+Mutation -> nervous_system_disorder
+Mutation -> skin_disorder
+Mutation -> von_Willebrand_Disease
+Mycobacterium_tuberculosis -> Cessation_of_life
+Mycoses -> Cessation_of_life
+Mycotoxins -> Toxic_effect
+Myocardial_Infarction -> Cerebrovascular_accident
+Myocardial_Infarction -> Cessation_of_life
+Myocardial_Infarction -> Chronic_heart_failure
+Myocardial_Infarction -> Congestive_heart_failure
+Myocardial_Infarction -> Death_Sudden
+Myocardial_Infarction -> Heart_Arrest
+Myocardial_Infarction -> Heart_failure
+Myocardial_Infarction -> Hospitalization
+Myocardial_Infarction -> Inflammatory_Response
+Myocardial_Infarction -> Shock_Cardiogenic
+Myocardial_Infarction -> Ventricular_Dysfunction_Left
+Myocardial_Infarction -> cardiac_arrhythmia
+Myocardial_Ischemia -> Cessation_of_life
+Myocardial_Ischemia -> Congestive_heart_failure
+Myocardial_Ischemia -> Heart_failure
+Myocardial_dysfunction -> Cessation_of_life
+Myocardial_rupture -> Cessation_of_life
+Myocarditis -> Cessation_of_life
+Myocarditis -> Heart_failure
+NADPH_Oxidase -> Oxidative_Stress
+NEUROLOGIC_COMPLICATION -> Cessation_of_life
+NF_kappa_B -> Inflammation
+NG_Nitroarginine_Methyl_Ester -> Hypertension
+NG_Nitroarginine_Methyl_Ester -> Hypertensive
+NG_Nitroarginine_Methyl_Ester -> Pre_Eclampsia
+NOS3_protein_human_NOS3 -> Endothelial_dysfunction
+N_Methylaspartate -> Cessation_of_life
+N_Methylaspartate -> Injury
+N_Methylaspartate -> Toxic_effect
+N_N_dimethylarginine -> Endothelial_dysfunction
+Nanotubes_Carbon -> Inflammation
+Nanotubes_Carbon -> Toxic_effect
+Naphthalene -> Injury
+Necrosis -> Cessation_of_life
+Needle_device -> Injury
+Neoplasm -> Airway_Obstruction
+Neoplasm -> Bone_Diseases
+Neoplasm -> Cushing_Syndrome
+Neoplasm -> Deglutition_Disorders
+Neoplasm -> Epilepsy
+Neoplasm -> Hydrocephalus
+Neoplasm -> Hypercalcemia
+Neoplasm -> Hypertension
+Neoplasm -> Intestinal_Obstruction
+Neoplasm -> Intussusception
+Neoplasm -> Jaundice_Obstructive
+Neoplasm -> Malignant_Neoplasms
+Neoplasm -> Neoplasm_Metastasis
+Neoplasm -> Neoplasm_progression
+Neoplasm -> Obstructive_Hydrocephalus
+Neoplasm -> Osteomalacia
+Neoplasm -> Tumor_induced_osteomalacia
+Neoplasm -> Tumorigenesis
+Neoplasm -> destruction_bone
+Neoplasm -> hypoglycemia
+Neoplasm -> tumor_growth
+Neoplasm_Metastasis -> Neoplasm
+Nephrectomy -> Chronic_Kidney_Diseases
+Nephrectomy -> Hypertension
+Nephrectomy -> Kidney_Failure
+Nephrectomy -> Kidney_Failure_Chronic
+Nephrectomy -> Uremia
+Nephronophthisis -> End_stage_renal_failure
+Nerve_Degeneration -> Alzheimers
+Nerve_Degeneration -> Diabetic_Retinopathy
+Nerve_Degeneration -> Parkinson_Disease
+Nerve_injury_NOS -> Disability_NOS
+Neurodegenerative_Disorders -> Alzheimers
+Neurodegenerative_Disorders -> Blind_Vision
+Neurodegenerative_Disorders -> Cessation_of_life
+Neurodegenerative_Disorders -> Degenerative_abnormality
+Neurodegenerative_Disorders -> Disability_NOS
+Neurotoxins -> Degenerative_abnormality
+Neurotoxins -> Nerve_Degeneration
+Nickel -> Toxic_effect
+Nicotine -> Oxidative_Stress
+Nicotine -> Toxic_effect
+Nitric_Oxide -> DNA_Damage
+Nitric_Oxide -> Endothelial_dysfunction
+Nitric_Oxide -> Hypertension
+Nitric_Oxide -> Hypotension
+Nitric_Oxide -> Inflammation
+Nitric_Oxide -> Injury
+Nitric_Oxide -> Oxidative_Stress
+Nitric_Oxide -> Pathological_Dilatation
+Nitric_Oxide -> Stress
+Nitric_Oxide -> Toxic_effect
+Nitric_Oxide -> Vasodilation
+Nitric_Oxide -> Vasodilation_disorder
+Nitric_Oxide -> cell_injury
+Nitric_Oxide -> cytotoxicity
+Nitric_Oxide_Synthase -> Hypertension
+Nitrosamines -> Neoplasm
+Non_alcoholic_fatty_liver -> Fibrosis
+Non_obstructive_reflux_associated_chronic_pyelonephritis -> End_stage_renal_failure
+Nonalcoholic_Steatohepatitis -> Fibrosis
+Noncommunicable_Diseases -> Cessation_of_life
+Norepinephrine -> Apoptosis
+Norepinephrine -> Depressed_mood
+Norepinephrine -> Falls
+Norepinephrine -> Hypertension
+Norepinephrine -> Hypertrophy
+Norepinephrine -> TONIC_CONTRACTION
+Norepinephrine -> Tension
+Norepinephrine -> Vasodilation
+Norepinephrine -> depolarization
+Obesity -> Asthma
+Obesity -> Atherosclerosis
+Obesity -> Cardiovascular_Diseases
+Obesity -> Cessation_of_life
+Obesity -> Chronic_Disease
+Obesity -> Chronic_inflammation
+Obesity -> Degenerative_polyarthritis
+Obesity -> Diabetes
+Obesity -> Diabetes_Mellitus_Non_Insulin_Dependent
+Obesity -> Dyslipidemias
+Obesity -> Endothelial_dysfunction
+Obesity -> Fatty_Liver
+Obesity -> Fibrosis
+Obesity -> Glucose_Intolerance
+Obesity -> Heart_failure
+Obesity -> Hyperglycemia
+Obesity -> Hyperinsulinism
+Obesity -> Hyperlipidemia
+Obesity -> Hypertension
+Obesity -> Inflammation
+Obesity -> Inflammatory_Response
+Obesity -> Insulin_Resistance
+Obesity -> Liver_diseases
+Obesity -> Metabolic_Diseases
+Obesity -> Metabolic_syndrome
+Obesity -> Non_alcoholic_fatty_liver
+Obesity -> Overweight
+Obesity -> Polycystic_Ovary_Syndrome
+Obesity -> Sleep_Apnea_Obstructive
+Obstetric_Labor_Premature -> Pregnancy
+Obstruction -> Acute_myocardial_infarction
+Obstruction -> Anterior_myocardial_infarction
+Obstruction -> Azoospermia
+Obstruction -> Blood_flow
+Obstruction -> Brain_Ischemia
+Obstruction -> Cerebral_Infarction
+Obstruction -> Cerebral_Ischemia
+Obstruction -> Cerebrovascular_accident
+Obstruction -> Cessation_of_life
+Obstruction -> Cholangitis
+Obstruction -> Cholestasis
+Obstruction -> Excessive_tearing
+Obstruction -> Gastrointestinal_tract_vascular_insufficiency
+Obstruction -> Growth
+Obstruction -> Heart_failure
+Obstruction -> Hepatic_Vein_Thrombosis
+Obstruction -> Hydrocephalus
+Obstruction -> Hydronephrosis
+Obstruction -> Hypertension
+Obstruction -> Hypertension_Portal
+Obstruction -> Hypertension_Pulmonary
+Obstruction -> Infection
+Obstruction -> Infertility
+Obstruction -> Intracranial_Hypertension
+Obstruction -> Ischemia
+Obstruction -> Ischemic_stroke
+Obstruction -> Jaundice_Obstructive
+Obstruction -> Kidney_Failure
+Obstruction -> Kidney_Failure_Acute
+Obstruction -> Myocardial_Infarction
+Obstruction -> Myocardial_Ischemia
+Obstruction -> Pancreatitis
+Obstruction -> Rare_Diseases
+Obstruction -> Sleep_Apnea_Obstructive
+Obstruction -> Spinal_Cord_Ischemia
+Obstruction -> Stroke_Acute
+Obstruction -> Superior_Vena_Cava_Syndrome
+Obstruction -> Transient_Cerebral_Ischemia
+Obstruction -> Transient_ischemia
+Obstruction -> Ventricular_Fibrillation
+Occlusion_of_artery -> Ischemia
+Oleic_Acid -> Injury
+Operative_Surgical_Procedures -> Adhesions
+Operative_Surgical_Procedures -> Astigmatism
+Operative_Surgical_Procedures -> Degenerative_polyarthritis
+Operative_Surgical_Procedures -> Disability_NOS
+Operative_Surgical_Procedures -> Edema
+Operative_Surgical_Procedures -> Endometriosis_site_unspecified
+Operative_Surgical_Procedures -> Fibrosis
+Operative_Surgical_Procedures -> Hypertension
+Operative_Surgical_Procedures -> Infection
+Operative_Surgical_Procedures -> Inflammation
+Operative_Surgical_Procedures -> Inflammatory_Response
+Operative_Surgical_Procedures -> Ischemia
+Operative_Surgical_Procedures -> Obstruction
+Operative_Surgical_Procedures -> Postoperative_Complications
+Operative_Surgical_Procedures -> Septicemia
+Opportunistic_Infections -> Cessation_of_life
+Organ_failure -> Cessation_of_life
+Osteoarthritis_Knee -> Disability_NOS
+Osteoporosis -> Disability_NOS
+Ouabain -> Hypertension
+Ouabain -> Ventricular_arrhythmia
+Ouabain -> cardiac_arrhythmia
+Ouabain -> depolarization
+Out_of_Hospital_Cardiac_Arrest -> Cessation_of_life
+Ovalbumin -> Inflammation
+Ovariectomy -> Obesity
+Overnutrition -> Obesity
+Overweight -> Obesity
+Ovulation -> Pregnancy
+Oxalates -> Injury
+Oxidants -> Inflammation
+Oxidants -> Injury
+Oxidative_Stress -> Age_related_macular_degeneration
+Oxidative_Stress -> Alzheimers
+Oxidative_Stress -> Amyotrophic_Lateral_Sclerosis
+Oxidative_Stress -> Atherosclerosis
+Oxidative_Stress -> Cardiovascular_Diseases
+Oxidative_Stress -> Cataract
+Oxidative_Stress -> Chronic_Disease
+Oxidative_Stress -> Chronic_Obstructive_Airway_Disease
+Oxidative_Stress -> Diabetes
+Oxidative_Stress -> Diabetes_Mellitus
+Oxidative_Stress -> Diabetes_Mellitus_Non_Insulin_Dependent
+Oxidative_Stress -> Diabetic_Nephropathy
+Oxidative_Stress -> Diabetic_Retinopathy
+Oxidative_Stress -> Endothelial_dysfunction
+Oxidative_Stress -> Hypertension
+Oxidative_Stress -> Infertility_Male
+Oxidative_Stress -> Neurodegenerative_Disorders
+Oxidative_Stress -> Obesity
+Oxidative_Stress -> Parkinson_Disease
+Oxidative_Stress -> Pre_Eclampsia
+Oxidative_Stress -> Vitiligo
+Oxidative_Stress -> nervous_system_disorder
+Oxidopamine -> Degenerative_abnormality
+Oxidopamine -> Injury
+Oxidopamine -> Nerve_Degeneration
+Oxidopamine -> Oxidative_Stress
+Oxidopamine -> Toxic_effect
+Oxygen -> Hypoxia
+Oxygen -> Injury
+Oxygen -> Ischemia
+Oxygen -> Oxidative_Stress
+Oxytocin -> Labor_Childbirth
+Ozone -> Inflammation
+Ozone -> Injury
+Ozone -> Oxidative_Stress
+PLAT_gene_PLAT -> Inflammation
+Paclitaxel -> Toxic_effect
+Palmitates -> Inflammation
+Palmitates -> Insulin_Resistance
+Palmitic_Acid -> Insulin_Resistance
+Pancreatic_carcinoma -> Diabetes
+Pancreatitis -> Cessation_of_life
+Pancreatitis -> Inflammation
+Pancreatitis_Chronic -> Diabetes
+Pancytopenia -> Cessation_of_life
+Paraquat -> Injury
+Paraquat -> Oxidative_Stress
+Paraquat -> Toxic_effect
+Parasites -> Inflammation
+Parasitic_Diseases -> Cessation_of_life
+Parkinson_Disease -> Cessation_of_life
+Parkinson_Disease -> Degenerative_abnormality
+Parkinson_Disease -> Disability_NOS
+Particulate_Matter -> Inflammation
+Particulate_Matter -> Oxidative_Stress
+Pathogenesis -> Cessation_of_life
+Pathologic_Processes -> Cessation_of_life
+Peptidoglycan -> Inflammation
+Periodontitis -> Inflammation
+Peripartum_cardiomyopathy -> Heart_failure
+Peripheral_Vascular_Diseases -> Cessation_of_life
+Peripheral_Vascular_Diseases -> Ischemia
+Peritonitis -> Cessation_of_life
+Peroxides -> Oxidative_Stress
+Peroxynitrite -> Injury
+Peroxynitrite -> Oxidative_Stress
+Pertussis -> Cessation_of_life
+Pesticides -> Oxidative_Stress
+Pesticides -> Toxic_effect
+Pharmacotherapy -> Heart_failure
+Pharmacotherapy -> Inflammation
+Phenylephrine -> Cardiac_Hypertrophy
+Phenylephrine -> Hypertension
+Phenylephrine -> Hypertrophy
+Phenylephrine -> Mean_blood_pressure
+Phenylephrine -> Tension
+Pheochromocytoma -> Cardiomyopathies
+Pheochromocytoma -> Hypertension
+Photochemotherapy -> Hypoxia
+Plasma -> Oxidative_Stress
+Platelet_Activating_Factor -> Inflammation
+Platelet_Activating_Factor -> Injury
+Pneumonia -> Cessation_of_life
+Pneumonia -> Inflammation
+Pollutant -> Oxidative_Stress
+Pollutant -> Toxic_effect
+Polychlorinated_Biphenyls -> Oxidative_Stress
+Polychlorinated_Biphenyls -> Toxic_effect
+Polycyclic_Hydrocarbons_Aromatic -> Neoplasm
+Polycyclic_Hydrocarbons_Aromatic -> Oxidative_Stress
+Polycyclic_Hydrocarbons_Aromatic -> Toxic_effect
+Polycystic_Kidney_Autosomal_Dominant -> End_stage_renal_failure
+Polycystic_Kidney_Autosomal_Dominant -> Kidney_Failure
+Polycystic_Kidney_Autosomal_Dominant -> Kidney_Failure_Chronic
+Polycystic_Kidney_Diseases -> End_stage_renal_failure
+Polycystic_Kidney_Diseases -> Kidney_Failure
+Polycystic_Kidney_Diseases -> Kidney_Failure_Chronic
+Polyomavirus -> Neoplasm
+Porphyromonas_gingivalis -> Inflammation
+Postoperative_Complications -> Cessation_of_life
+Postpartum_Hemorrhage -> Cessation_of_life
+Postpartum_Hemorrhage -> Labor_Childbirth
+Prader_Willi_Syndrome -> Obesity
+Pre_Eclampsia -> Cessation_of_life
+Pre_Eclampsia -> Endothelial_dysfunction
+Pre_Eclampsia -> Fetal_Growth_Retardation
+Pre_Eclampsia -> Hypertension
+Pre_Eclampsia -> Labor_Childbirth
+Pre_Eclampsia -> Pregnancy
+Pre_Eclampsia -> Premature_Birth
+Pregnancy_Prolonged -> Labor_Childbirth
+Premature_Birth -> Cessation_of_life
+Premature_Birth -> Labor_Childbirth
+Primary_disease -> Cessation_of_life
+Prions -> Nerve_Degeneration
+Prions -> Neurodegenerative_Disorders
+Propionibacterium_acnes -> Inflammation
+Prostaglandins -> Inflammation
+Pseudomonas_aeruginosa -> Cessation_of_life
+Pseudomonas_aeruginosa -> Inflammation
+Pulmonary_Edema -> Cessation_of_life
+Pulmonary_Embolism -> Cessation_of_life
+Pulmonary_Fibrosis -> Cessation_of_life
+Pulmonary_Thromboembolisms -> Cessation_of_life
+Pulmonary_arterial_hypertension -> Cessation_of_life
+Puromycin_Aminonucleoside -> Injury
+Pyrenes -> Neoplasm
+Pyroglyphidae -> Inflammation
+Quinolinic_Acid -> Nerve_Degeneration
+Quinolinic_Acid -> Toxic_effect
+Quinones -> Oxidative_Stress
+Quinones -> Toxic_effect
+ROS1 -> Oxidative_Stress
+ROS1_wt_Allele_ROS1 -> Oxidative_Stress
+Radiation_therapy -> Fibrosis
+Radiation_therapy -> Inflammation
+Rare_Diseases -> Cessation_of_life
+Rare_Diseases -> Disability_NOS
+Reactive_Oxygen_Species -> Abnormality_of_mitochondrial_metabolism
+Reactive_Oxygen_Species -> Accumulation
+Reactive_Oxygen_Species -> Cellular_Stress
+Reactive_Oxygen_Species -> DNA_Damage
+Reactive_Oxygen_Species -> Endothelial_dysfunction
+Reactive_Oxygen_Species -> Hypertension
+Reactive_Oxygen_Species -> Hypoxia
+Reactive_Oxygen_Species -> Inflammation
+Reactive_Oxygen_Species -> Inflammatory_Response
+Reactive_Oxygen_Species -> Injury
+Reactive_Oxygen_Species -> Insulin_Resistance
+Reactive_Oxygen_Species -> Ischemia
+Reactive_Oxygen_Species -> Lesion
+Reactive_Oxygen_Species -> Malignant_Neoplasms
+Reactive_Oxygen_Species -> Necrosis
+Reactive_Oxygen_Species -> Nerve_Degeneration
+Reactive_Oxygen_Species -> Oxidative_Damage
+Reactive_Oxygen_Species -> Oxidative_Stress
+Reactive_Oxygen_Species -> Reperfusion_Injury
+Reactive_Oxygen_Species -> Senility
+Reactive_Oxygen_Species -> Stress
+Reactive_Oxygen_Species -> Tissue_damage
+Reactive_Oxygen_Species -> Toxic_effect
+Reactive_Oxygen_Species -> cell_injury
+Reactive_Oxygen_Species -> cytotoxicity
+Reactive_Oxygen_Species -> imbalance
+Recurrent_disease -> Cessation_of_life
+Renal_Artery_Stenosis -> Hypertension
+Renal_Artery_Stenosis -> Hypertension_Renovascular
+Renal_Artery_Stenosis -> Secondary_hypertension_NOS
+Renal_glomerular_disease -> End_stage_renal_failure
+Renal_glomerular_disease -> Kidney_Failure_Chronic
+Renal_ischaemia -> Hypertension
+Renal_vascular_disorders_NOS -> Hypertension
+Renin_REN -> Hypertension
+Reperfusion_Injury -> Inflammation
+Respiration_Disorders -> Cessation_of_life
+Respiratory_Depression -> Cessation_of_life
+Respiratory_Distress_Syndrome_Adult -> Cessation_of_life
+Respiratory_Distress_Syndrome_Newborn -> Cessation_of_life
+Respiratory_Failure -> Cessation_of_life
+Respiratory_Insufficiency -> Cessation_of_life
+Respiratory_Tract_Infections -> Cessation_of_life
+Respiratory_complication -> Cessation_of_life
+Respiratory_distress -> Cessation_of_life
+Respiratory_syncytial_virus -> Inflammation
+Responsive_Disease -> Inflammation
+Retroviridae -> Neoplasm
+Rhabdomyolysis -> Kidney_Failure
+Rheumatism -> Disability_NOS
+Rheumatoid_Arthritis -> Disability_NOS
+Rheumatoid_Arthritis -> Inflammation
+Rhizobium_radiobacter -> Neoplasm
+Rifampin -> Injury
+Right_ventricular_failure -> Cessation_of_life
+Rotator_cuff_syndrome -> Disability_NOS
+Rotenone -> Degenerative_abnormality
+Rotenone -> Injury
+Rotenone -> Nerve_Degeneration
+Rotenone -> Oxidative_Stress
+Rotenone -> Toxic_effect
+Rous_sarcoma_virus -> Neoplasm
+Rupture -> Myocardial_Infarction
+SUCLA2_gene_SUCLA2 -> Alzheimers
+SUCLA2_gene_SUCLA2 -> Toxic_effect
+Salts -> Colitis
+Salts -> Hypertension
+Seizures -> Cessation_of_life
+Selenium -> Oxidative_Stress
+Selenium -> Toxic_effect
+Sepsis_of_the_newborn -> Cessation_of_life
+Septic_Shock -> Cessation_of_life
+Septicemia -> Cessation_of_life
+Septicemia -> Inflammation
+Serotonin -> Inflammation
+Serum -> Inflammation
+Serum -> Injury
+Serum -> Neoplasm
+Severe_Acute_Respiratory_Syndrome -> Cessation_of_life
+Severe_infection -> Cessation_of_life
+Shock -> Cessation_of_life
+Shock -> Sleep_Apnea_Obstructive
+Shock_Cardiogenic -> Cessation_of_life
+Shock_Hemorrhagic -> Cessation_of_life
+Silicon_Dioxide -> Fibrosis
+Silicon_Dioxide -> Inflammation
+Silicon_Dioxide -> Injury
+Simian_virus_40 -> Neoplasm
+Single_organ_dysfunction -> Cessation_of_life
+Sleep_Apnea_Obstructive -> Cardiovascular_Diseases
+Sleep_Apnea_Obstructive -> Excessive_daytime_somnolence
+Sleep_Apnea_Obstructive -> Hypertension
+Sleep_Apnea_Obstructive -> Hypoxia
+Sleep_Apnea_Syndromes -> Hypoxia
+Smoke -> Inflammation
+Smoke -> Oxidative_Stress
+Sodium -> Hypertension
+Sodium -> Hyponatremia
+Sodium_Chloride -> Dissociation
+Sodium_Chloride -> Hypertension
+Sodium_Chloride -> Hypertensive
+Sodium_Chloride -> Injury
+Sodium_Chloride -> Oxidative_Stress
+Sodium_Chloride -> Stress
+Sodium_Chloride_Dietary -> Hypertension
+Sodium_Glutamate -> Obesity
+Sodium_Urate_Monohydrate -> Inflammation
+Soil -> Toxic_effect
+Solutions -> Inflammation
+Solutions -> Toxic_effect
+Somatotropin -> Insulin_Resistance
+Spastic_syndrome -> Hypertrophy
+Spinal_Cord_Injuries -> Disability_NOS
+Spinal_Cord_Injuries -> Inflammation
+Spinal_Muscular_Atrophy -> Cessation_of_life
+Spontaneous_abortion -> Pregnancy
+Staphylococcus_aureus -> Cessation_of_life
+Staphylococcus_aureus -> Inflammation
+Starvation -> Cessation_of_life
+Status_Epilepticus -> Cessation_of_life
+Steatohepatitis_non_alcoholic -> Fibrosis
+Stenosis -> Cerebrovascular_accident
+Stenosis -> Hypertension
+Stenosis -> Ischemia
+Stenosis -> Ischemic_stroke
+Stenosis_unspecified -> Cerebrovascular_accident
+Stenosis_unspecified -> Ischemia
+Stents -> Injury
+Stents -> Obstruction
+Steroids -> Avascular_necrosis
+Steroids -> Bone_necrosis
+Steroids -> Cataract
+Steroids -> Diabetes
+Steroids -> Diabetes_Mellitus
+Steroids -> Glaucoma
+Steroids -> Hyperglycemia
+Steroids -> Hypertension
+Steroids -> Intraocular_pressure_disorder
+Steroids -> Necrosis_Avascular_of_Femur_Head
+Steroids -> Ocular_Hypertension
+Steroids -> Osteoporosis
+Steroids -> loss_bone
+Stillbirth -> Cessation_of_life
+Streptococcus_pneumoniae -> Cessation_of_life
+Streptozocin -> Alzheimers
+Streptozocin -> Dementia
+Streptozocin -> Diabetes
+Streptozocin -> Diabetes_Mellitus
+Streptozocin -> Diabetes_Mellitus_Insulin_Dependent
+Streptozocin -> Diabetes_Mellitus_Non_Insulin_Dependent
+Streptozocin -> Diabetic
+Streptozocin -> Diabetic_Nephropathy
+Streptozocin -> Diabetic_Neuropathies
+Streptozocin -> Diabetic_Retinopathy
+Streptozocin -> Diabetic_cardiomyopathy
+Streptozocin -> Hyperglycemia
+Streptozocin -> Impaired_cognition
+Streptozocin -> Injury
+Streptozocin -> Memory_impairment
+Streptozocin -> Mouse_Model
+Streptozocin -> Neuropathic_pain
+Streptozocin -> Oxidative_Stress
+Streptozocin -> Toxic_effect
+Streptozocin -> cell_injury
+Stress -> Degenerative_abnormality
+Stress -> Hypertrophy
+Stress -> Inflammation
+Stress -> Insulin_Resistance
+Stroke_Acute -> Cessation_of_life
+Study_models -> Abnormal_shape
+Study_models -> Acquired_Immunodeficiency_Syndrome
+Study_models -> Alzheimers
+Study_models -> Arthritis
+Study_models -> Asthma
+Study_models -> Brain_Injuries
+Study_models -> Congenital_Abnormality
+Study_models -> DNA_Damage
+Study_models -> Degenerative_abnormality
+Study_models -> Degenerative_polyarthritis
+Study_models -> Dependence
+Study_models -> Depressive_disorder
+Study_models -> Diabetes
+Study_models -> Diastasis
+Study_models -> Disintegration
+Study_models -> Dissociation
+Study_models -> Endometriosis_site_unspecified
+Study_models -> Fibrosis
+Study_models -> Heart_failure
+Study_models -> Hypertension
+Study_models -> Hypertrophy
+Study_models -> Infection
+Study_models -> Inflammation
+Study_models -> Inflammatory_Response
+Study_models -> Injury
+Study_models -> Insulin_Resistance
+Study_models -> Ischemia
+Study_models -> Malignant_Neoplasms
+Study_models -> Necrosis
+Study_models -> Neoplasm
+Study_models -> Nerve_Degeneration
+Study_models -> Obesity
+Study_models -> Obstruction
+Study_models -> Oxidative_Stress
+Study_models -> Pancreatitis
+Study_models -> Parkinson_Disease
+Study_models -> Schizophrenia
+Study_models -> Septicemia
+Study_models -> Subarachnoid_Hemorrhage
+Study_models -> Thrombosis
+Study_models -> Toxic_effect
+Study_models -> Traumatic_Brain_Injury
+Subarachnoid_Hemorrhage -> Cessation_of_life
+Subarachnoid_Hemorrhage -> Vasospasm
+Substance -> Inflammation
+Substance -> Injury
+Substance -> Neoplasm
+Substance -> Oxidative_Stress
+Substance -> Toxic_effect
+Substance_P -> Inflammation
+Sucrose -> Insulin_Resistance
+Sudden_infant_death_syndrome -> Cessation_of_life
+Sulfonic_Acids -> Inflammation
+Superoxide_Dismutase -> Oxidative_Stress
+Superoxides -> Injury
+Superoxides -> Oxidative_Stress
+Systemic_Scleroderma -> Cessation_of_life
+Systemic_Scleroderma -> Fibrosis
+Systolic_dysfunction -> Congestive_heart_failure
+Systolic_dysfunction -> Heart_failure
+TGFB1_protein_human_TGFB1 -> Fibrosis
+TGFB1_protein_human_TGFB1 -> Inflammation
+TLE5_gene_AES -> Cessation_of_life
+TLR4_gene_TLR4 -> Inflammation
+TLR4_protein_human_TLR4 -> Inflammation
+TNF_protein_human_TNF -> Cessation_of_life
+TNF_protein_human_TNF -> Endothelial_dysfunction
+TNF_protein_human_TNF -> Inflammation
+TNF_protein_human_TNF -> Injury
+TNF_protein_human_TNF -> Insulin_Resistance
+TNF_protein_human_TNF -> Oxidative_Stress
+TNF_protein_human_TNF -> Toxic_effect
+TP53_gene_TP53 -> Cessation_of_life
+TP53_gene_TP53 -> Neoplasm
+Tachycardia -> Heart_failure
+Tachycardia_Ventricular -> Cessation_of_life
+Teratogenesis -> Pregnancy
+Testosterone -> Hypertrophy
+Tetradecanoylphorbol_Acetate -> Inflammation
+Tetradecanoylphorbol_Acetate -> Injury
+Tetradecanoylphorbol_Acetate -> Neoplasm
+Thioacetamide -> Fibrosis
+Thioacetamide -> Injury
+Thioacetamide -> Oxidative_Stress
+Thromboembolism -> Cerebrovascular_accident
+Thromboembolism -> Cessation_of_life
+Thrombosis -> Cerebrovascular_accident
+Thrombosis -> Cessation_of_life
+Thrombosis -> Ischemia
+Thrombosis -> Myocardial_Infarction
+Thrombosis_of_cerebral_veins -> Cerebrovascular_accident
+Thrombus -> Cerebrovascular_accident
+Thrombus -> Cessation_of_life
+Thrombus -> Ischemia
+Thrombus -> Myocardial_Infarction
+Thrombus -> Obstruction
+Thyroxine -> Cardiac_Hypertrophy
+Tissue_damage -> Inflammation
+Toll_like_receptors -> Inflammation
+Tourniquets -> Ischemia
+Toxic_Epidermal_Necrolysis -> Cessation_of_life
+Toxic_effect -> Alzheimers
+Toxic_effect -> Degenerative_abnormality
+Toxic_effect -> Disease_Progression
+Toxic_effect -> Inflammation
+Toxic_effect -> Liver_damage
+Toxic_effect -> Necrosis
+Toxin -> Inflammation
+Toxin -> Injury
+Toxin -> Oxidative_Stress
+Toxin -> Toxic_effect
+Transforming_Growth_Factor_beta -> Fibrosis
+Transient_ischemia -> Cessation_of_life
+Transplantation -> Fibrosis
+Traumatic_Brain_Injury -> Disability_NOS
+Traumatic_Brain_Injury -> Inflammation
+Triglycerides -> Insulin_Resistance
+Trinitrobenzenesulfonic_Acid -> Inflammation
+Trinucleotide_Repeat_Expansion -> Neurodegenerative_Disorders
+Tuberculosis -> Cessation_of_life
+Tuberculosis_Pulmonary -> Cessation_of_life
+Tumor_Necrosis_Factor_Ligand_Superfamily_Member_6_FASLG -> Cessation_of_life
+Tumor_Necrosis_Factor_alpha_TNF -> Inflammation
+Tumor_Necrosis_Factor_alpha_TNF -> Injury
+Tumor_Necrosis_Factors -> Cessation_of_life
+Tumor_Necrosis_Factors -> Inflammation
+Tumor_Necrosis_Factors -> Injury
+Tumor_Suppressor_Genes -> Neoplasm
+Tumorigenesis -> Neoplasm
+Turpentine -> Inflammation
+Urate_crystals -> Inflammation
+Uremia -> Cessation_of_life
+Ureteral_obstruction -> Fibrosis
+Ureteral_obstruction -> Inflammation
+Urethane -> Neoplasm
+Uric_Acid -> Hyperuricemia
+Urinary_tract_obstruction -> Kidney_Failure
+Vaccination -> Inflammation
+Vaccines -> Neoplasm
+Vancomycin -> Injury
+Vas_Occlusion -> Cerebrovascular_accident
+Vas_Occlusion -> Ischemia
+Vascular_Diseases -> Cerebrovascular_accident
+Vascular_Diseases -> Cessation_of_life
+Vascular_occlusion -> Cerebrovascular_accident
+Vascular_occlusion -> Ischemia
+Vasculitis -> Cessation_of_life
+Vasculitis -> Ischemia
+Vasospasm -> Cerebral_Infarction
+Vasospasm -> Cerebral_Ischemia
+Vasospasm -> Hypertension
+Vasospasm -> Hypertension_Pulmonary
+Vasospasm -> Ischemia
+Venoms -> Inflammation
+Venoms -> Toxic_effect
+Venous_Thromboembolism -> Cessation_of_life
+Ventricular_Dysfunction_Left -> Heart_failure
+Ventricular_Fibrillation -> Cessation_of_life
+Ventricular_arrhythmia -> Cessation_of_life
+Vertebral_Artery_Dissection -> Cerebrovascular_accident
+Viral_hepatitis -> Fibrosis
+Viral_myocarditis -> Heart_failure
+Virus -> Fibrosis
+Virus -> Inflammation
+Virus -> Neoplasm
+Virus_Diseases -> Cessation_of_life
+Virus_Diseases -> Fibrosis
+Virus_Diseases -> Inflammation
+Vitamin_B_12_Deficiency -> Degenerative_abnormality
+Vitamin_K_3 -> Oxidative_Stress
+Water -> Toxic_effect
+Wounds_and_Injuries -> Degenerative_abnormality
+Wounds_and_Injuries -> Disability_NOS
+Wounds_and_Injuries -> Inflammation
+Wounds_and_Injuries -> Ischemia
+Wounds_and_Injuries -> Obstruction
+X_Unspecified_osteoporosis_with_pathological_fracture -> Disability_NOS
+Xanthine_Oxidase -> Injury
+Xanthine_Oxidase -> Oxidative_Stress
+Xenobiotics -> Injury
+Xenobiotics -> Oxidative_Stress
+Xenobiotics -> Toxic_effect
+Zearalenone -> Oxidative_Stress
+Zearalenone -> Toxic_effect
+Zidovudine -> Toxic_effect
+Zinc -> Injury
+Zinc -> Oxidative_Stress
+Zinc -> Toxic_effect
+Zymosan -> Inflammation
+adenoma -> Conn_Syndrome
+alanosine -> Hypertension
+alpha_Synuclein -> Cessation_of_life
+alpha_Synuclein -> Degenerative_abnormality
+alpha_Synuclein -> Nerve_Degeneration
+alpha_Synuclein -> Neurodegenerative_Disorders
+alpha_Synuclein -> Toxic_effect
+aluminum_chloride -> Alzheimers
+anthracene -> Neoplasm
+arginine_methyl_ester -> Hypertension
+arginine_methyl_ester -> Hypertensive
+arsenite -> Oxidative_Stress
+arsenite -> Toxic_effect
+ascorbate -> Oxidative_Stress
+associated_disease -> Cessation_of_life
+bevacizumab -> Hypertension
+bisphenol_A -> Oxidative_Stress
+bisphenol_A -> Toxic_effect
+c_myc_Genes_MYC -> Neoplasm
+cardiac_arrhythmia -> Cessation_of_life
+cardiac_arrhythmia -> Heart_failure
+chemokine -> Inflammation
+cobaltous_chloride -> Hypoxia
+cyanoginosin_LR -> Toxic_effect
+cyclooxygenase_2 -> Inflammation
+cypermethrin -> Oxidative_Stress
+cypermethrin -> Toxic_effect
+cytokine -> Cessation_of_life
+cytokine -> Fibrosis
+cytokine -> Inflammation
+cytokine -> Injury
+cytokine -> Insulin_Resistance
+cytokine -> Oxidative_Stress
+decamethrin -> Toxic_effect
+deoxynivalenol -> Oxidative_Stress
+deoxynivalenol -> Toxic_effect
+dimazine -> Neoplasm
+docetaxel -> Toxic_effect
+ferric_nitrilotriacetate -> Oxidative_Stress
+free_radical_oxygen -> Injury
+gamma_secretase -> Alzheimers
+gemcitabine -> Toxic_effect
+glucose_high -> Inflammation
+glyphosate -> Oxidative_Stress
+hepatotoxin -> Injury
+homocysteine -> Atherosclerosis
+homocysteine -> Endothelial_dysfunction
+homocysteine -> Injury
+homocysteine -> Oxidative_Stress
+human_herpesvirus_8 -> Neoplasm
+hydroquinone -> Toxic_effect
+hypercholesterolemia -> Atherosclerosis
+hypercholesterolemia -> Endothelial_dysfunction
+hypoglycemia -> Cessation_of_life
+hypothermia_natural -> Cessation_of_life
+imbalance -> Alzheimers
+imbalance -> Chronic_Obstructive_Airway_Disease
+imbalance -> Obesity
+imbalance -> Osteoporosis
+imbalance -> Pre_Eclampsia
+imiquimod -> Inflammation
+inhibitors -> Colitis
+inhibitors -> Growth_arrest
+inhibitors -> Hypertension
+inhibitors -> Immune_Mediated_Adverse_Reaction
+inhibitors -> Immune_Tolerance
+inhibitors -> Inflammation
+inhibitors -> Injury
+inhibitors -> Neoplasm
+inhibitors -> Obstruction
+inhibitors -> Toxic_effect
+irinotecan -> Toxic_effect
+isoniazid -> Injury
+lead_acetate -> Toxic_effect
+nervous_system_disorder -> Cessation_of_life
+nervous_system_disorder -> Disability_NOS
+neuropeptide_Y_NPY -> Obesity
+nonylphenol -> Oxidative_Stress
+olanzapine -> Insulin_Resistance
+oxaliplatin -> Toxic_effect
+oxidized_low_density_lipoprotein -> Atherosclerosis
+oxidized_low_density_lipoprotein -> Endothelial_dysfunction
+oxidized_low_density_lipoprotein -> Inflammation
+oxidized_low_density_lipoprotein -> Injury
+oxidized_low_density_lipoprotein -> Oxidative_Stress
+palmitate -> Insulin_Resistance
+particle -> Inflammation
+particle -> Injury
+particle -> Oxidative_Stress
+particle -> Toxic_effect
+perfluorooctane_sulfonate -> Toxic_effect
+perfluorooctanoic_acid -> Toxic_effect
+phthalates -> Toxic_effect
+polyglutamine -> Nerve_Degeneration
+polyglutamine -> Toxic_effect
+potassium_oxonate -> Hyperuricemia
+presenilin -> Alzheimers
+presenilin -> Familial_Alzheimer_s_disease
+pulmonary_complications -> Cessation_of_life
+receptor -> Cessation_of_life
+receptor -> Inflammation
+resistance_education -> Hypertrophy
+resistin_RETN -> Insulin_Resistance
+ripening -> Labor_Childbirth
+ropivacaine -> Obstruction
+sodium_arsenite -> Oxidative_Stress
+sodium_arsenite -> Toxic_effect
+tert_Butylhydroperoxide -> Injury
+tert_Butylhydroperoxide -> Oxidative_Stress
+tert_Butylhydroperoxide -> Toxic_effect
+toxicant -> Injury
+toxicant -> Oxidative_Stress
+toxicant -> Toxic_effect
+trimethyltin -> Nerve_Degeneration
+triptolide -> Toxic_effect
+tumor_growth -> Neoplasm
+}
+')
+
+
+#dagitty::ancestorGraph(x=g)
+
+# dagitty::adjustmentSets(x = g, exposure = "Hypertension", outcome = "Alzheimers", type = "all", effect = "total") #, max.results = Inf)
+
+
+
