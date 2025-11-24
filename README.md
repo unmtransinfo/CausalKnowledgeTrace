@@ -132,7 +132,9 @@ Extract the ZIP file and navigate to the extracted directory.
 
 Installing Git is recommended as it allows you to easily pull future updates to the project.
 
-**Installation Guide**: [Git Installation Instructions](https://chatgpt.com/share/69249639-630c-800e-9936-7d052643edb7)
+**Installation Guide**
+
+We recommend using _git_ (a version control system that tracks changes to code and enables easy updating of software projects) to install the project codebase, which simplifies future updates. In case _git_ is not already installed on your system, you can install _git_ using the following instructions: [Git Installation Instructions](https://chatgpt.com/share/69249639-630c-800e-9936-7d052643edb7)
 
 After installation, verify that Git is installed correctly:
 
