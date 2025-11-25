@@ -1,6 +1,16 @@
 # CausalKnowledgeTrace: Interactive DAG Visualization and Causal Knowledge Graph Generation
 
-CausalKnowledgeTrace is a comprehensive system for interactive visualization of Directed Acyclic Graphs (DAGs) and automated causal knowledge graph generation from biomedical literature. The system integrates a Shiny web application for visualization and configuration with a Python-based graph creation engine that queries SemMedDB for causal relationships. Usage instructions (*a veritable work-in-progress*) are available here: [Usage Instructions](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
+CausalKnowledgeTrace (CKT) automates causal knowledge graph generation from biomedical literature. The system extracts causal relationships from SemMedDB, a database of semantic predications derived from PubMed abstracts.
+
+CKT has two main components. A Python engine handles graph construction and causal identification algorithms. A Shiny web application provides interactive visualization and user configuration.
+
+Users specify an exposure and outcome of interest. They can constrain the search by publication year, causal predicate type, and minimum number of supporting articles per relationship. CKT constructs initial partially directed acyclic graphs (PDAGs) representing causal structures between biomedical concepts. Users then edit these graphs interactively to remove unnecessary nodes and edges. CKT can export graphs and evidence from the literature for downstream analysis. 
+
+Additional tools in the furtherAnalysis folder refine the exported graphs. These tools classify variables by their causal role relative to the exposure and outcome. They identify nodes within three causal steps of the exposure or outcome. The tools also remove extraneous variables and detect minimal adjustment sets for unbiased effect estimation. This includes adjustment sets that address butterfly bias, a form of sample selection bias in causal graphs.
+
+The adjustment sets account for confounding while avoiding collider bias and selection bias. This architecture supports systematic causal inference in observational biomedical research. Researchers can explore alternative causal structures and test different assumptions about edge directionality. The tool facilitates hypothesis generation and study design for epidemiological analyses.
+
+Usage instructions (*a veritable work-in-progress*) are available here: [Usage Instructions](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
 
 ## 📋 What This Project Does
 
