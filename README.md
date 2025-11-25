@@ -1,6 +1,6 @@
 # CausalKnowledgeTrace: Interactive DAG Visualization and Causal Knowledge Graph Generation
 
-CausalKnowledgeTrace is a comprehensive system for interactive visualization of Directed Acyclic Graphs (DAGs) and automated causal knowledge graph generation from biomedical literature. The system integrates a Shiny web application for visualization and configuration with a Python-based graph creation engine that queries SemMedDB for causal relationships.
+CausalKnowledgeTrace is a comprehensive system for interactive visualization of Directed Acyclic Graphs (DAGs) and automated causal knowledge graph generation from biomedical literature. The system integrates a Shiny web application for visualization and configuration with a Python-based graph creation engine that queries SemMedDB for causal relationships. Usage instructions (a veritable work-in-progress) are available here: [Usage Instructions](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
 
 ## 📋 What This Project Does
 
