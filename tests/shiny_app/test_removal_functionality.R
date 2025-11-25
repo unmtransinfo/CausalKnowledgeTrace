@@ -4,9 +4,36 @@
 library(shiny)
 library(visNetwork)
 
+# Set working directory to shiny_app for module loading
+original_wd <- getwd()
+current_dir <- basename(getwd())
+parent_dir <- basename(dirname(getwd()))
+
+if (current_dir == "shiny_app" && parent_dir == "tests") {
+    # Running from tests/shiny_app, go up two levels then into shiny_app
+    setwd(file.path(dirname(dirname(getwd())), "shiny_app"))
+} else if (current_dir == "tests") {
+    # Running from tests directory
+    setwd(file.path(dirname(getwd()), "shiny_app"))
+} else if (current_dir == "shiny_app" && dir.exists("modules")) {
+    # Already in the correct shiny_app directory
+    # Do nothing
+} else {
+    # Try to find and navigate to shiny_app directory
+    if (dir.exists("shiny_app") && dir.exists("shiny_app/modules")) {
+        setwd("shiny_app")
+    } else if (dir.exists("../../shiny_app")) {
+        setwd("../../shiny_app")
+    } else {
+        stop("Cannot find shiny_app directory with modules. Current dir: ", getwd())
+    }
+}
+
 # Source the required modules
 source("modules/dag_visualization.R")
-source("utils/data_validation.R")
+if (file.exists("utils/data_validation.R")) {
+    source("utils/data_validation.R")
+}
 
 # Create test data
 test_nodes <- data.frame(
