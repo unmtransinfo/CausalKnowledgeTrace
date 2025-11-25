@@ -81,6 +81,7 @@ CausalKnowledgeTrace/
 │   └── utils/                   # Utility functions
 │
 ├── furtherAnalysis/             # Analytic code and features that haven't been worked into the main body of code
+│   ├── classifyVariables.R      # Classifies each variable by its causal role, e.g., confounder, collider, mediator, IV, and the like.
 │   ├── cleanByRemovingLeaves.R  # Removes leaves (singly-connected nodes) from the causal graph from initial search
 │   ├── cleanButterflyReport-CausalGraph.R    # code for identifying minimally sufficient adjustment sets in context of butterfly bias 
 │   ├── cleanButterflyReport-CausalGraph_compiled.R #compiled version of above
