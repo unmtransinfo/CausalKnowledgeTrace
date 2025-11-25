@@ -3,6 +3,31 @@
 # This script tests the optimized loading functionality to ensure
 # the Shiny app can properly load and display causal assertions data
 
+# Set working directory to shiny_app for module loading
+original_wd <- getwd()
+current_dir <- basename(getwd())
+parent_dir <- basename(dirname(getwd()))
+
+if (current_dir == "shiny_app" && parent_dir == "tests") {
+    # Running from tests/shiny_app, go up two levels then into shiny_app
+    setwd(file.path(dirname(dirname(getwd())), "shiny_app"))
+} else if (current_dir == "tests") {
+    # Running from tests directory
+    setwd(file.path(dirname(getwd()), "shiny_app"))
+} else if (current_dir == "shiny_app" && dir.exists("modules")) {
+    # Already in the correct shiny_app directory
+    # Do nothing
+} else {
+    # Try to find and navigate to shiny_app directory
+    if (dir.exists("shiny_app") && dir.exists("shiny_app/modules")) {
+        setwd("shiny_app")
+    } else if (dir.exists("../../shiny_app")) {
+        setwd("../../shiny_app")
+    } else {
+        stop("Cannot find shiny_app directory with modules. Current dir: ", getwd())
+    }
+}
+
 # Load required modules
 source("modules/optimized_loader.R")
 source("modules/data_upload.R")

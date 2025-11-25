@@ -1,19 +1,37 @@
 # Test Suite for Refactored Shiny Application
-# 
+#
 # This test suite verifies that all refactored R modules work correctly
 # and that the Shiny application can be loaded without errors.
 #
 # Author: Created for R refactoring validation
 # Date: February 2025
 
-# Set working directory to shiny_app if not already there
-if (basename(getwd()) != "shiny_app") {
-    if (dir.exists("shiny_app")) {
+# Set working directory to shiny_app for module loading
+original_wd <- getwd()
+current_dir <- basename(getwd())
+parent_dir <- basename(dirname(getwd()))
+
+if (current_dir == "shiny_app" && parent_dir == "tests") {
+    # Running from tests/shiny_app, go up two levels then into shiny_app
+    setwd(file.path(dirname(dirname(getwd())), "shiny_app"))
+} else if (current_dir == "tests") {
+    # Running from tests directory
+    setwd(file.path(dirname(getwd()), "shiny_app"))
+} else if (current_dir == "shiny_app" && dir.exists("modules")) {
+    # Already in the correct shiny_app directory
+    # Do nothing
+} else {
+    # Try to find and navigate to shiny_app directory
+    if (dir.exists("shiny_app") && dir.exists("shiny_app/modules")) {
         setwd("shiny_app")
+    } else if (dir.exists("../../shiny_app")) {
+        setwd("../../shiny_app")
     } else {
-        stop("Please run this script from the project root or shiny_app directory")
+        stop("Cannot find shiny_app directory with modules. Current dir: ", getwd())
     }
 }
+
+cat("Working directory set to:", getwd(), "\n")
 
 # Test function to check if a file can be sourced without errors
 test_source_file <- function(file_path, description = NULL) {
