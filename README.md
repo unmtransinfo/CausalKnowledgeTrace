@@ -1,4 +1,4 @@
-# CausalKnowledgeTrace: Interactive DAG Visualization and Causal Knowledge Graph Generation
+# CausalKnowledgeTrace: Interactive Literature-Based Causal Structure Mapping, Graph Generation, Visualization, and Refinement 
 
 CausalKnowledgeTrace (CKT) automates causal knowledge graph generation from biomedical literature. The system extracts causal relationships from SemMedDB, a database of semantic predications derived from PubMed abstracts.
 
