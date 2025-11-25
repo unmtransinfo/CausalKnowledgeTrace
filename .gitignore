@@ -1,8 +1,8 @@
 .Claude/
 user_input.yaml
-**test**
 
 *result**
+**ignore**
 
 .vscode/
 *__pycache__/
