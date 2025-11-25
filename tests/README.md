@@ -15,8 +15,7 @@ tests/
 │   ├── test_edge_information.R # Edge information display
 │   ├── test_html_export.R      # HTML export functionality
 │   ├── test_optimized_loading.R # Optimized file loading
-│   ├── test_refactored_app.R   # Refactored app components
-│   ├── test_refactored_modules.R # Module validation
+│   ├── test_module_loading_validation.R # Validates all modules can load
 │   └── test_removal_functionality.R # Node/edge removal
 └── unit/                        # Unit tests (individual functions)
 ```
