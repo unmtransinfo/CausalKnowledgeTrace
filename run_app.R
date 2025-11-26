@@ -115,11 +115,28 @@ tryCatch({
             }
         }
 
+        # Handle browser detection for different environments
+        browser_option <- getOption("browser")
+        if (is.null(browser_option) || browser_option == "") {
+            # Set browser for environments without default browser
+            if (Sys.which("xdg-open") != "") {
+                options(browser = "xdg-open")
+                launch_browser <- TRUE
+            } else if (Sys.which("open") != "") {  # macOS
+                options(browser = "open")
+                launch_browser <- TRUE
+            } else {
+                launch_browser <- FALSE
+            }
+        } else {
+            launch_browser <- TRUE
+        }
+
         # Run the application
         runApp(app,
                host = host,
                port = port,
-               launch.browser = TRUE)
+               launch.browser = launch_browser)
     } else {
         stop("app.R did not return a valid Shiny application object")
     }
