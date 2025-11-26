@@ -2,17 +2,51 @@ name: causalknowledgetrace
 channels:
   - conda-forge
   - defaults
-  - r
 dependencies:
   # Core dependencies
   - python>=3.11
   
   # R integration packages
-  - r-base
+  - r-base=4.5.1
   - rpy2
   
-
-  # Pip dependencies (if needed)
+  # System libraries (CRITICAL for compilation)
+  - libcurl
+  - curl
+  - libuv  # Fixes httpuv compilation error
+  - postgresql  # Fixes RPostgres compilation error
+  - libpq  # PostgreSQL client library
+  - nodejs  # Required for V8 package
+  
+  # Pre-compiled R packages from conda-forge (avoid compilation issues)
+  - r-essentials
+  - r-curl
+  - r-httr
+  - r-jsonlite
+  - r-devtools
+  - r-biocmanager
+  - r-shiny
+  - r-shinydashboard
+  - r-httpuv
+  - r-igraph
+  - r-dplyr
+  - r-ggplot2
+  - r-dt
+  - r-yaml
+  - r-shinyjs
+  - r-testthat
+  - r-knitr
+  - r-rmarkdown
+  - r-dbi
+  - r-htmltools
+  - r-visnetwork
+  
+  # Compiler toolchain
+  - make
+  - cmake
+  - pkg-config
+  
+  # Python pip
   - pip
   - pip:
     - psycopg2-binary
@@ -24,4 +58,3 @@ dependencies:
     - numpy
     - matplotlib
     - jupyter
-    
