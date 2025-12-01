@@ -754,7 +754,21 @@ ui <- dashboardPage(
                             )
                         ),
 
-
+                        # Leaf removal option
+                        fluidRow(
+                            column(12,
+                                div(style = "margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
+                                    checkboxInput("remove_leaf_nodes",
+                                                 label = HTML("<strong>Remove Leaf Nodes</strong> - Iteratively remove nodes with only one connection (degree = 1)"),
+                                                 value = FALSE),
+                                    div(style = "margin-left: 25px; font-size: 12px; color: #6c757d;",
+                                        p("This option will clean the graph by removing peripheral nodes that have only a single connection.",
+                                          "Exposure and outcome nodes are preserved even if they are leaves.",
+                                          "This can help focus on the core causal structure.")
+                                    )
+                                )
+                            )
+                        ),
 
                         # Progress indication section
                         conditionalPanel(
@@ -1001,8 +1015,39 @@ server <- function(input, output, session) {
             result <- load_dag_from_file(input$dag_file_selector)
 
             if (result$success) {
+                # Apply leaf removal if requested
+                dag_to_use <- result$dag
+                if (!is.null(input$remove_leaf_nodes) && input$remove_leaf_nodes) {
+                    session$sendCustomMessage("updateProgress", list(
+                        percent = 30,
+                        text = "Removing leaf nodes...",
+                        status = "Cleaning graph structure"
+                    ))
+
+                    leaf_removal_result <- remove_leaf_nodes(result$dag, preserve_exposure_outcome = TRUE)
+
+                    if (leaf_removal_result$success) {
+                        dag_to_use <- leaf_removal_result$dag
+                        cat(leaf_removal_result$message, "\n")
+                        showNotification(
+                            HTML(paste0("Leaf removal complete:<br/>",
+                                       "Removed ", leaf_removal_result$removed_nodes, " nodes and ",
+                                       leaf_removal_result$removed_edges, " edges in ",
+                                       leaf_removal_result$iterations, " iterations")),
+                            type = "message",
+                            duration = 5
+                        )
+                    } else {
+                        showNotification(
+                            paste("Leaf removal failed:", leaf_removal_result$message),
+                            type = "warning",
+                            duration = 5
+                        )
+                    }
+                }
+
                 # Update progress: Processing graph
-                node_count <- length(names(result$dag))
+                node_count <- length(names(dag_to_use))
                 progress_text <- if (node_count > 8000) {
                     "Processing large graph structure (this may take a moment)..."
                 } else {
@@ -1015,8 +1060,8 @@ server <- function(input, output, session) {
                     status = paste("Converting", node_count, "nodes to network format")
                 ))
 
-                # Process the loaded DAG
-                network_data <- create_network_data(result$dag)
+                # Process the loaded DAG (potentially with leaves removed)
+                network_data <- create_network_data(dag_to_use)
 
                 # Update progress: Network created
                 session$sendCustomMessage("updateProgress", list(
@@ -1034,7 +1079,7 @@ server <- function(input, output, session) {
 
                 current_data$nodes <- network_data$nodes
                 current_data$edges <- network_data$edges
-                current_data$dag_object <- result$dag
+                current_data$dag_object <- dag_to_use  # Use the potentially cleaned DAG
                 current_data$current_file <- input$dag_file_selector
 
                 # Load causal assertions using unified optimized loading
@@ -1241,6 +1286,37 @@ server <- function(input, output, session) {
             result <- load_dag_from_file(new_filename)
 
             if (result$success) {
+                # Apply leaf removal if requested
+                dag_to_use <- result$dag
+                if (!is.null(input$remove_leaf_nodes) && input$remove_leaf_nodes) {
+                    session$sendCustomMessage("updateProgress", list(
+                        percent = 60,
+                        text = "Removing leaf nodes...",
+                        status = "Cleaning graph structure"
+                    ))
+
+                    leaf_removal_result <- remove_leaf_nodes(result$dag, preserve_exposure_outcome = TRUE)
+
+                    if (leaf_removal_result$success) {
+                        dag_to_use <- leaf_removal_result$dag
+                        cat(leaf_removal_result$message, "\n")
+                        showNotification(
+                            HTML(paste0("Leaf removal complete:<br/>",
+                                       "Removed ", leaf_removal_result$removed_nodes, " nodes and ",
+                                       leaf_removal_result$removed_edges, " edges in ",
+                                       leaf_removal_result$iterations, " iterations")),
+                            type = "message",
+                            duration = 5
+                        )
+                    } else {
+                        showNotification(
+                            paste("Leaf removal failed:", leaf_removal_result$message),
+                            type = "warning",
+                            duration = 5
+                        )
+                    }
+                }
+
                 # Update progress: Processing graph
                 session$sendCustomMessage("updateProgress", list(
                     percent = 70,
@@ -1248,11 +1324,11 @@ server <- function(input, output, session) {
                     status = "Converting graph data structure"
                 ))
 
-                # Process the loaded DAG
-                network_data <- create_network_data(result$dag)
+                # Process the loaded DAG (potentially with leaves removed)
+                network_data <- create_network_data(dag_to_use)
                 current_data$nodes <- network_data$nodes
                 current_data$edges <- network_data$edges
-                current_data$dag_object <- result$dag
+                current_data$dag_object <- dag_to_use  # Use the potentially cleaned DAG
                 current_data$current_file <- new_filename
 
                 # Update progress: Updating file list
