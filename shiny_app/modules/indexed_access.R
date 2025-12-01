@@ -44,7 +44,6 @@ create_edge_index <- function(assertions_data, include_variations = TRUE) {
     # Medical term variations for enhanced matching
     medical_variations <- list(
         c("hypertension", "hypertensive_disease", "hypertensive_disorder"),
-        c("alzheimers", "alzheimer_s_disease", "alzheimer_disease"),
         c("diabetes", "diabetes_mellitus"),
         c("heart_disease", "cardiovascular_disease", "coronary_artery_disease"),
         c("stroke", "cerebrovascular_accident", "cerebral_infarction"),

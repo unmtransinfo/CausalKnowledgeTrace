@@ -246,8 +246,8 @@ graphConfigModuleUI <- function(id) {
                 tags$ul(
                     tags$li("C0011849 - Diabetes Mellitus"),
                     tags$li("C0020538 - Hypertension"),
-                    tags$li("C0002395 - Alzheimer's Disease"),
-                    tags$li("C0011265 - Dementia")
+                    tags$li("C0011265 - Dementia"),
+                    tags$li("C0038454 - Stroke")
                 ),
                 
                 h4("Tips:"),

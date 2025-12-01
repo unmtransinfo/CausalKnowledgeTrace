@@ -375,19 +375,29 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                 // Send selected node to Shiny for removal functionality
                 if (params.nodes.length > 0) {
                     Shiny.onInputChange('network_selected', params.nodes[0]);
+                    // Also send for information display
+                    Shiny.onInputChange('clicked_node_info', params.nodes[0]);
                 } else {
                     Shiny.onInputChange('network_selected', null);
+                    Shiny.onInputChange('clicked_node_info', null);
                 }
             }",
             selectEdge = "function(params) {
                 if (params.edges.length > 0) {
                     var edgeId = this.body.data.edges.get(params.edges[0]).id;
                     Shiny.onInputChange('selected_edge_info', edgeId);
+                    // Clear node selection when edge is selected
+                    Shiny.onInputChange('clicked_node_info', null);
                 }
             }",
             deselectEdge = "function(params) {
                 if (params.previousSelection.edges.length > 0) {
                     Shiny.onInputChange('selected_edge_info', null);
+                }
+            }",
+            deselectNode = "function(params) {
+                if (params.previousSelection.nodes.length > 0) {
+                    Shiny.onInputChange('clicked_node_info', null);
                 }
             }"
         )

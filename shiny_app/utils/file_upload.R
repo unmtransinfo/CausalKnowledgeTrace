@@ -220,28 +220,28 @@ get_default_dag_files <- function() {
 #' @export
 create_example_dag <- function() {
     return(dagitty('dag {
-        Hypertension [exposure]
-        Alzheimers_Disease [outcome]
+        Exposure_Condition [exposure]
+        Outcome_Condition [outcome]
         Age
         Gender
         Education
         Smoking
         Diabetes
         Cardiovascular_Disease
-        
-        Age -> Hypertension
-        Age -> Alzheimers_Disease
+
+        Age -> Exposure_Condition
+        Age -> Outcome_Condition
         Age -> Cardiovascular_Disease
-        Gender -> Hypertension
-        Gender -> Alzheimers_Disease
-        Education -> Alzheimers_Disease
-        Smoking -> Hypertension
+        Gender -> Exposure_Condition
+        Gender -> Outcome_Condition
+        Education -> Outcome_Condition
+        Smoking -> Exposure_Condition
         Smoking -> Cardiovascular_Disease
-        Diabetes -> Hypertension
+        Diabetes -> Exposure_Condition
         Diabetes -> Cardiovascular_Disease
-        Hypertension -> Cardiovascular_Disease
-        Hypertension -> Alzheimers_Disease
-        Cardiovascular_Disease -> Alzheimers_Disease
+        Exposure_Condition -> Cardiovascular_Disease
+        Exposure_Condition -> Outcome_Condition
+        Cardiovascular_Disease -> Outcome_Condition
     }'))
 }
 
@@ -253,8 +253,8 @@ create_example_dag <- function() {
 #' @export
 create_fallback_dag <- function() {
     return(dagitty('dag {
-        Hypertension [exposure]
-        Alzheimers_Disease [outcome]
+        Exposure_Condition [exposure]
+        Outcome_Condition [outcome]
         Surgical_margins
         PeptidylDipeptidase_A
         TP73ARHGAP24
@@ -336,6 +336,6 @@ create_fallback_dag <- function() {
         Norepinephrine -> Substance_P
         Substance_P -> Senile_Plaques
         Senile_Plaques -> Myopathy
-        Myopathy -> Alzheimers_Disease
+        Myopathy -> Outcome_Condition
     }'))
 }

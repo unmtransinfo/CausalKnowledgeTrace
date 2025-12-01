@@ -1368,10 +1368,22 @@ server <- function(input, output, session) {
 
     # ===== EDGE SELECTION EVENT HANDLERS =====
 
-    # Reactive values for storing edge selection information
+    # Reactive values for storing edge and node selection information
     selection_data <- reactiveValues(
-        selected_edge = NULL
+        selected_edge = NULL,
+        selected_node = NULL
     )
+
+    # Handle node click for information display
+    observeEvent(input$clicked_node_info, {
+        if (!is.null(input$clicked_node_info)) {
+            selection_data$selected_node <- input$clicked_node_info
+            # Clear edge selection when node is selected
+            selection_data$selected_edge <- NULL
+        } else {
+            selection_data$selected_node <- NULL
+        }
+    })
 
     # Handle edge selection only
     observeEvent(input$selected_edge_info, {
@@ -1395,6 +1407,8 @@ server <- function(input, output, session) {
                                 to = potential_to,
                                 id = input$selected_edge_info
                             )
+                            # Clear node selection when edge is selected
+                            selection_data$selected_node <- NULL
                             break
                         }
                     }
@@ -1406,25 +1420,145 @@ server <- function(input, output, session) {
         }
     })
 
-    # Render edge selection title
+    # Render selection title (edge or node)
     output$selected_item_title <- renderText({
-        if (!is.null(selection_data$selected_edge)) {
+        if (!is.null(selection_data$selected_node)) {
+            paste("Node Information:", selection_data$selected_node)
+        } else if (!is.null(selection_data$selected_edge)) {
             paste("Edge Information:", selection_data$selected_edge$from, "→", selection_data$selected_edge$to)
         } else {
-            "Select an edge to view information"
+            "Click on a node or edge to view information"
         }
     })
 
-    # Render edge information table
+    # Render edge or node information table
     output$selection_info_table <- DT::renderDataTable({
-        if (!is.null(selection_data$selected_edge)) {
+        # Handle node selection
+        if (!is.null(selection_data$selected_node)) {
+            # Get all assertions related to this node
+            node_data <- tryCatch({
+                find_node_related_assertions(
+                    selection_data$selected_node,
+                    current_data$causal_assertions,
+                    current_data$edges
+                )
+            }, error = function(e) {
+                cat("ERROR in find_node_related_assertions:", e$message, "\n")
+                return(list(
+                    found = FALSE,
+                    message = paste("Error:", e$message),
+                    incoming = list(),
+                    outgoing = list(),
+                    total_count = 0
+                ))
+            })
+
+            if (node_data$found && node_data$total_count > 0) {
+                # Create a table showing all related edges
+                edge_rows <- list()
+
+                # Add outgoing edges
+                if (length(node_data$outgoing) > 0) {
+                    for (assertion in node_data$outgoing) {
+                        obj_name <- assertion$object_name %||% assertion$obj
+                        predicate <- assertion$predicate %||% "CAUSES"
+
+                        # Extract PMID list from different possible structures
+                        pmid_refs <- c()
+                        if (!is.null(assertion$pmid_data) && length(assertion$pmid_data) > 0) {
+                            pmid_refs <- names(assertion$pmid_data)
+                        } else if (!is.null(assertion$pmid_refs)) {
+                            pmid_refs <- assertion$pmid_refs
+                        } else if (!is.null(assertion$pmid_list)) {
+                            pmid_refs <- assertion$pmid_list
+                        }
+
+                        pmid_count <- assertion$evidence_count %||% length(pmid_refs)
+
+                        # Format PMID list
+                        pmid_display <- if (length(pmid_refs) > 0) {
+                            paste(pmid_refs, collapse = ", ")
+                        } else {
+                            "No PMIDs available"
+                        }
+
+                        edge_rows[[length(edge_rows) + 1]] <- data.frame(
+                            Direction = "Outgoing →",
+                            "From Node" = selection_data$selected_node,
+                            Predicate = predicate,
+                            "To Node" = obj_name,
+                            "PMID Evidence List" = pmid_display,
+                            "Evidence Count" = pmid_count,
+                            stringsAsFactors = FALSE,
+                            check.names = FALSE
+                        )
+                    }
+                }
+
+                # Add incoming edges
+                if (length(node_data$incoming) > 0) {
+                    for (assertion in node_data$incoming) {
+                        subj_name <- assertion$subject_name %||% assertion$subj
+                        predicate <- assertion$predicate %||% "CAUSES"
+
+                        # Extract PMID list from different possible structures
+                        pmid_refs <- c()
+                        if (!is.null(assertion$pmid_data) && length(assertion$pmid_data) > 0) {
+                            pmid_refs <- names(assertion$pmid_data)
+                        } else if (!is.null(assertion$pmid_refs)) {
+                            pmid_refs <- assertion$pmid_refs
+                        } else if (!is.null(assertion$pmid_list)) {
+                            pmid_refs <- assertion$pmid_list
+                        }
+
+                        pmid_count <- assertion$evidence_count %||% length(pmid_refs)
+
+                        # Format PMID list
+                        pmid_display <- if (length(pmid_refs) > 0) {
+                            paste(pmid_refs, collapse = ", ")
+                        } else {
+                            "No PMIDs available"
+                        }
+
+                        edge_rows[[length(edge_rows) + 1]] <- data.frame(
+                            Direction = "Incoming ←",
+                            "From Node" = subj_name,
+                            Predicate = predicate,
+                            "To Node" = selection_data$selected_node,
+                            "PMID Evidence List" = pmid_display,
+                            "Evidence Count" = pmid_count,
+                            stringsAsFactors = FALSE,
+                            check.names = FALSE
+                        )
+                    }
+                }
+
+                # Combine all rows
+                if (length(edge_rows) > 0) {
+                    node_info <- do.call(rbind, edge_rows)
+                } else {
+                    node_info <- data.frame(
+                        Information = "No assertion data found for this node",
+                        stringsAsFactors = FALSE
+                    )
+                }
+            } else {
+                node_info <- data.frame(
+                    Information = paste("No assertions found for node:", selection_data$selected_node),
+                    stringsAsFactors = FALSE
+                )
+            }
+
+            return(node_info)
+        } else if (!is.null(selection_data$selected_edge)) {
             # Get PMID data for the selected edge
             pmid_data <- tryCatch({
                 find_edge_pmid_data(
                     selection_data$selected_edge$from,
                     selection_data$selected_edge$to,
                     current_data$causal_assertions,
-                    current_data$lazy_loader
+                    current_data$lazy_loader,
+                    current_data$edges  # Pass edges dataframe for CUI-based matching
                 )
             }, error = function(e) {
                 cat("ERROR in find_edge_pmid_data:", e$message, "\n")
@@ -1573,7 +1707,7 @@ server <- function(input, output, session) {
             edge_info
         } else {
             data.frame(
-                Information = "Click on an edge in the network above to view detailed information",
+                Information = "Click on a node or edge in the network above to view detailed information",
                 stringsAsFactors = FALSE
             )
         }
