@@ -55,8 +55,8 @@ graphConfigModuleUI <- function(id) {
                         
                         textInput(ns("exposure_name"),
                                 "Exposure Name:",
-                                value = "Hypertension",
-                                placeholder = "Hypertension")
+                                value = "",
+                                placeholder = "e.g., Hypertension, Diabetes")
                     ),
                     column(6,
                         h4("Outcome Configuration"),

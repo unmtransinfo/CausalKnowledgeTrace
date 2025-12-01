@@ -42,12 +42,9 @@ create_edge_index <- function(assertions_data, include_variations = TRUE) {
     }
     
     # Medical term variations for enhanced matching
+    # Add specific term variations as needed for your use case
     medical_variations <- list(
-        c("hypertension", "hypertensive_disease", "hypertensive_disorder"),
-        c("diabetes", "diabetes_mellitus"),
-        c("heart_disease", "cardiovascular_disease", "coronary_artery_disease"),
-        c("stroke", "cerebrovascular_accident", "cerebral_infarction"),
-        c("cancer", "neoplasm", "malignant_neoplasm"),
+        # Example: c("term1", "term1_variation1", "term1_variation2"),
         c("obesity", "overweight", "body_mass_index")
     )
     

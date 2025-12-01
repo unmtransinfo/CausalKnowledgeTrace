@@ -84,7 +84,7 @@ graphConfigUI <- function(id) {
     exposure_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$exposure_name)) {
         ui_config$exposure_name
     } else {
-        "Hypertension"
+        ""
     }
 
     outcome_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_name)) {
@@ -268,8 +268,8 @@ graphConfigUI <- function(id) {
                             textInput(
                                 ns("exposure_name"),
                                 label = NULL,
-                                value = "Hypertension",
-                                placeholder = "Hypertension",
+                                value = "",
+                                placeholder = "e.g., Hypertension, Diabetes",
                                 width = "100%"
                             ),
                             helpText("Required: Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
