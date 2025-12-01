@@ -803,14 +803,10 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
 
     # Helper function to handle common medical term variations
     handle_medical_variations <- function(dag_name, json_name) {
-        # Common medical term mappings
+        # Common medical term mappings - add specific mappings as needed
         medical_mappings <- list(
-            # Hypertension variations
-            c("hypertension", "hypertensive_disease"),
-            c("hypertension", "hypertensive_disorder"),
-            # Add more mappings as needed
-            c("diabetes", "diabetes_mellitus"),
-            c("heart_disease", "cardiovascular_disease")
+            # Example: c("term1", "term1_variation"),
+            # Example: c("term2", "term2_variation")
         )
 
         dag_norm <- normalize_name(dag_name)
@@ -869,7 +865,6 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
             normalized_match <- (subject_match && object_match)
 
             # Strategy 4: Partial matching for common transformations
-            # Handle cases like "Hypertensive disease" -> "Hypertension"
             partial_match <- FALSE
             if (!exact_match && !cui_match && !normalized_match) {
                 # Get normalized versions for partial matching
@@ -1316,7 +1311,7 @@ create_fallback_dag <- function() {
         Senile_Plaques
         Myopathy
 
-        Triglycerides -> Hypertensive_disease
+        Triglycerides -> Mutation
         Mutation -> Neurodegenerative_Disorders
         Screening_procedure -> Kidney_Diseases
     }'))
@@ -1344,10 +1339,8 @@ find_edge_in_metadata <- function(from_node, to_node, metadata_data) {
     # Helper function to handle medical term variations
     handle_medical_variations <- function(dag_name, json_name) {
         medical_mappings <- list(
-            c("hypertension", "hypertensive_disease"),
-            c("hypertension", "hypertensive_disorder"),
-            c("diabetes", "diabetes_mellitus"),
-            c("heart_disease", "cardiovascular_disease")
+            # Example: c("term1", "term1_variation"),
+            # Example: c("term2", "term2_variation")
         )
 
         dag_norm <- normalize_name(dag_name)

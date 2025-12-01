@@ -295,9 +295,7 @@ create_fallback_dag <- function() {
         Senile_Plaques
         Myopathy
 
-        Triglycerides -> Hypertensive_disease
-        Hypertensive_disease -> Hypertension
-        Hypertension -> Surgical_margins
+        Triglycerides -> Surgical_margins
         Surgical_margins -> PeptidylDipeptidase_A
         PeptidylDipeptidase_A -> TP73ARHGAP24
         TP73ARHGAP24 -> Diarrhea
