@@ -198,20 +198,6 @@ filter_exposure_outcome_cycles <- function(all_cycles, nodes_df) {
     return(exposure_outcome_cycles)
 }
 
-    # Filter cycles that contain both exposure and outcome nodes
-    exposure_outcome_cycles <- list()
-    for (cycle in all_cycles) {
-        has_exposure <- any(cycle %in% exposure_nodes)
-        has_outcome <- any(cycle %in% outcome_nodes)
-
-        if (has_exposure && has_outcome) {
-            exposure_outcome_cycles <- c(exposure_outcome_cycles, list(cycle))
-        }
-    }
-
-    return(exposure_outcome_cycles)
-}
-
 #' Generate Cycle Report
 #'
 #' Generates a comprehensive report of cycle detection results
