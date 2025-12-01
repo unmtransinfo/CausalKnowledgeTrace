@@ -727,9 +727,10 @@ load_causal_assertions <- function(filename = NULL, degree = NULL,
 #' @param to_node Name of the target node (transformed/cleaned name)
 #' @param assertions_data List of causal assertions loaded from JSON or lazy loader
 #' @param lazy_loader Optional lazy loader function for on-demand data loading
+#' @param edges_df Optional edges dataframe with CUI information for better matching
 #' @return List containing PMID information for the edge
 #' @export
-find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader = NULL) {
+find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader = NULL, edges_df = NULL) {
     if (is.null(assertions_data) || length(assertions_data) == 0) {
         return(list(
             found = FALSE,
@@ -737,6 +738,27 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
             pmid_list = character(0),
             evidence_count = 0
         ))
+    }
+
+    # Extract CUIs from edges_df if available
+    from_cuis <- NULL
+    to_cuis <- NULL
+    if (!is.null(edges_df) && nrow(edges_df) > 0) {
+        # Find the edge in edges_df
+        edge_match <- edges_df[edges_df$from == from_node & edges_df$to == to_node, ]
+        if (nrow(edge_match) > 0) {
+            # Extract CUIs from the first matching edge
+            from_cuis <- edge_match$from_cui[1]
+            to_cuis <- edge_match$to_cui[1]
+
+            # Split multiple CUIs if they exist (e.g., "C001|C002")
+            if (!is.null(from_cuis) && !is.na(from_cuis)) {
+                from_cuis <- strsplit(as.character(from_cuis), "\\|")[[1]]
+            }
+            if (!is.null(to_cuis) && !is.na(to_cuis)) {
+                to_cuis <- strsplit(as.character(to_cuis), "\\|")[[1]]
+            }
+        }
     }
 
     # Check if we have indexed access (Phase 3 optimization)
@@ -786,9 +808,6 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
             # Hypertension variations
             c("hypertension", "hypertensive_disease"),
             c("hypertension", "hypertensive_disorder"),
-            # Alzheimer variations
-            c("alzheimers", "alzheimer_s_disease"),
-            c("alzheimers", "alzheimer_disease"),
             # Add more mappings as needed
             c("diabetes", "diabetes_mellitus"),
             c("heart_disease", "cardiovascular_disease")
@@ -824,15 +843,35 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
             # Strategy 1: Exact match (original logic)
             exact_match <- (assertion$subject_name == from_node && assertion$object_name == to_node)
 
-            # Strategy 2: Normalized name matching with medical variations
+            # Strategy 2: CUI-based matching (if CUIs are available)
+            cui_match <- FALSE
+            if (!exact_match && !is.null(from_cuis) && !is.null(to_cuis)) {
+                # Get assertion CUIs
+                assertion_subj_cui <- assertion$subj_cui %||% assertion$subject_cui
+                assertion_obj_cui <- assertion$obj_cui %||% assertion$object_cui
+
+                if (!is.null(assertion_subj_cui) && !is.null(assertion_obj_cui)) {
+                    # Split multiple CUIs if they exist
+                    assertion_subj_cuis <- strsplit(as.character(assertion_subj_cui), "\\|")[[1]]
+                    assertion_obj_cuis <- strsplit(as.character(assertion_obj_cui), "\\|")[[1]]
+
+                    # Check if any CUI matches
+                    subj_cui_match <- any(from_cuis %in% assertion_subj_cuis)
+                    obj_cui_match <- any(to_cuis %in% assertion_obj_cuis)
+
+                    cui_match <- (subj_cui_match && obj_cui_match)
+                }
+            }
+
+            # Strategy 3: Normalized name matching with medical variations
             subject_match <- handle_medical_variations(from_node, assertion$subject_name)
             object_match <- handle_medical_variations(to_node, assertion$object_name)
             normalized_match <- (subject_match && object_match)
 
-            # Strategy 3: Partial matching for common transformations
+            # Strategy 4: Partial matching for common transformations
             # Handle cases like "Hypertensive disease" -> "Hypertension"
             partial_match <- FALSE
-            if (!exact_match && !normalized_match) {
+            if (!exact_match && !cui_match && !normalized_match) {
                 # Get normalized versions for partial matching
                 subject_normalized <- normalize_name(assertion$subject_name)
                 object_normalized <- normalize_name(assertion$object_name)
@@ -850,11 +889,11 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
                 partial_match <- (from_overlap >= 0.5 && to_overlap >= 0.5)
             }
 
-            if (exact_match || normalized_match || partial_match) {
+            if (exact_match || cui_match || normalized_match || partial_match) {
                 # Store this matching assertion
                 matching_assertions[[length(matching_assertions) + 1]] <- list(
                     assertion = assertion,
-                    match_type = if (exact_match) "exact" else if (normalized_match) "normalized" else "partial"
+                    match_type = if (exact_match) "exact" else if (cui_match) "cui" else if (normalized_match) "normalized" else "partial"
                 )
             }
         }
@@ -967,6 +1006,118 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
         message = "No PMID data found for this edge",
         pmid_list = character(0),
         evidence_count = 0
+    ))
+}
+
+#' Find All Assertions Related to a Node
+#'
+#' Finds all causal assertions where the node appears as subject or object
+#'
+#' @param node_name Name of the node to search for
+#' @param assertions_data List of causal assertions
+#' @param edges_df Optional data frame of edges to help with matching
+#' @return List containing incoming and outgoing relationships
+#' @export
+find_node_related_assertions <- function(node_name, assertions_data, edges_df = NULL) {
+    if (is.null(assertions_data) || length(assertions_data) == 0) {
+        return(list(
+            found = FALSE,
+            message = "No assertions data available",
+            incoming = list(),
+            outgoing = list(),
+            total_count = 0,
+            node_name = node_name
+        ))
+    }
+
+    incoming_edges <- list()
+    outgoing_edges <- list()
+
+    # Clean node name for matching (handle underscores and spaces)
+    clean_node <- gsub("_", " ", node_name)
+    node_variants <- c(node_name, clean_node)
+
+    # Also try with different case
+    node_variants <- c(node_variants, tolower(node_name), tolower(clean_node))
+
+    for (assertion in assertions_data) {
+        # Get subject and object names
+        subj_name <- assertion$subject_name %||% assertion$subj
+        obj_name <- assertion$object_name %||% assertion$obj
+
+        # Clean assertion names
+        clean_subj <- gsub("_", " ", subj_name)
+        clean_obj <- gsub("_", " ", obj_name)
+
+        # Check if node is the subject (outgoing edge from this node)
+        if (!is.null(subj_name)) {
+            subj_variants <- c(subj_name, clean_subj, tolower(subj_name), tolower(clean_subj))
+            if (any(node_variants %in% subj_variants)) {
+                outgoing_edges <- c(outgoing_edges, list(assertion))
+            }
+        }
+
+        # Check if node is the object (incoming edge to this node)
+        if (!is.null(obj_name)) {
+            obj_variants <- c(obj_name, clean_obj, tolower(obj_name), tolower(clean_obj))
+            if (any(node_variants %in% obj_variants)) {
+                incoming_edges <- c(incoming_edges, list(assertion))
+            }
+        }
+    }
+
+    # If we have edges_df, try to match using actual edge connections
+    if (!is.null(edges_df) && nrow(edges_df) > 0) {
+        # Find edges connected to this node
+        connected_edges <- edges_df[edges_df$from == node_name | edges_df$to == node_name, ]
+
+        if (nrow(connected_edges) > 0) {
+            # Try to find assertions for these edges
+            for (i in 1:nrow(connected_edges)) {
+                edge <- connected_edges[i, ]
+
+                if (edge$from == node_name) {
+                    # This is an outgoing edge
+                    for (assertion in assertions_data) {
+                        obj_name <- assertion$object_name %||% assertion$obj
+                        if (!is.null(obj_name) && (obj_name == edge$to || gsub("_", " ", obj_name) == gsub("_", " ", edge$to))) {
+                            # Check if not already in outgoing_edges
+                            if (!any(sapply(outgoing_edges, function(x) identical(x, assertion)))) {
+                                outgoing_edges <- c(outgoing_edges, list(assertion))
+                            }
+                        }
+                    }
+                } else {
+                    # This is an incoming edge
+                    for (assertion in assertions_data) {
+                        subj_name <- assertion$subject_name %||% assertion$subj
+                        if (!is.null(subj_name) && (subj_name == edge$from || gsub("_", " ", subj_name) == gsub("_", " ", edge$from))) {
+                            # Check if not already in incoming_edges
+                            if (!any(sapply(incoming_edges, function(x) identical(x, assertion)))) {
+                                incoming_edges <- c(incoming_edges, list(assertion))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    total_count <- length(incoming_edges) + length(outgoing_edges)
+
+    return(list(
+        found = total_count > 0,
+        message = if (total_count > 0) {
+            paste("Found", total_count, "related assertions")
+        } else {
+            "No assertions found for this node"
+        },
+        incoming = incoming_edges,
+        outgoing = outgoing_edges,
+        total_count = total_count,
+        node_name = node_name,
+        incoming_count = length(incoming_edges),
+        outgoing_count = length(outgoing_edges)
     ))
 }
 
@@ -1123,8 +1274,8 @@ get_default_dag_files <- function() {
 #' @export
 create_fallback_dag <- function() {
     return(dagitty('dag {
-        Hypertension [exposure]
-        Alzheimers_Disease [outcome]
+        Exposure_Condition [exposure]
+        Outcome_Condition [outcome]
         Surgical_margins
         PeptidylDipeptidase_A
         TP73ARHGAP24
@@ -1195,8 +1346,6 @@ find_edge_in_metadata <- function(from_node, to_node, metadata_data) {
         medical_mappings <- list(
             c("hypertension", "hypertensive_disease"),
             c("hypertension", "hypertensive_disorder"),
-            c("alzheimers", "alzheimer_s_disease"),
-            c("alzheimers", "alzheimer_disease"),
             c("diabetes", "diabetes_mellitus"),
             c("heart_disease", "cardiovascular_disease")
         )

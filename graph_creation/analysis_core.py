@@ -138,7 +138,13 @@ class GraphAnalyzer:
             with open(self.output_dir / dag_filename, "w") as f:
                 f.write(dagitty_format)
 
-    def save_results_and_metadata(self, timing_results: Dict, detailed_assertions: List[Dict]):
+    def save_results_and_metadata(
+        self,
+        timing_results: Dict,
+        detailed_assertions: List[Dict],
+        consolidated_mapping: Dict[str, str] = None,
+        cui_to_name_mapping: Dict[str, str] = None
+    ):
         """Save analysis results, timing data, and configuration metadata with optimization."""
         output_path = self.output_dir
 
@@ -147,7 +153,12 @@ class GraphAnalyzer:
         print(f"Saving {len(detailed_assertions)} assertions to {causal_assertions_filename}...")
 
         # Use optimized JSON serialization for large files
-        self.save_optimized_json(detailed_assertions, output_path / causal_assertions_filename)
+        self.save_optimized_json(
+            detailed_assertions,
+            output_path / causal_assertions_filename,
+            consolidated_mapping,
+            cui_to_name_mapping
+        )
 
         # Automatically create optimized formats for large files
         file_size_mb = (output_path / causal_assertions_filename).stat().st_size / (1024 * 1024)
@@ -155,22 +166,43 @@ class GraphAnalyzer:
             print(f"Large file detected ({file_size_mb:.1f}MB) - creating optimized formats...")
             self.create_optimized_formats(output_path / causal_assertions_filename)
 
-    def save_optimized_json(self, data: List[Dict], filepath: Path):
+    def save_optimized_json(
+        self,
+        data: List[Dict],
+        filepath: Path,
+        consolidated_mapping: Dict[str, str] = None,
+        cui_to_name_mapping: Dict[str, str] = None
+    ):
         """Save JSON using the new single optimized format."""
         print(f"Saving {len(data)} assertions in optimized format...")
 
-        # Create optimized structure
-        optimized_data = self.create_optimized_structure(data)
+        # Create optimized structure with consolidated mapping
+        optimized_data = self.create_optimized_structure(
+            data,
+            consolidated_mapping,
+            cui_to_name_mapping
+        )
 
         # Save with custom readable formatting
         self._save_with_custom_formatting(optimized_data, filepath)
 
-    def create_optimized_structure(self, data: List[Dict]) -> Dict:
-        """Create optimized JSON structure with sentence deduplication."""
+    def create_optimized_structure(
+        self,
+        data: List[Dict],
+        consolidated_mapping: Dict[str, str] = None,
+        cui_to_name_mapping: Dict[str, str] = None
+    ) -> Dict:
+        """Create optimized JSON structure with sentence deduplication and node consolidation."""
         optimized = {
             'pmid_sentences': {},      # pmid -> [sentences] mapping
             'assertions': []           # assertions array (compact)
         }
+
+        # Initialize mappings if not provided
+        if consolidated_mapping is None:
+            consolidated_mapping = {}
+        if cui_to_name_mapping is None:
+            cui_to_name_mapping = {}
 
         # First pass: collect PMID -> sentences mapping
         for assertion in data:
@@ -191,12 +223,24 @@ class GraphAnalyzer:
 
         # Second pass: create compact assertions
         for assertion in data:
+            # Get original node names
+            subject_name = assertion.get('subject_name', '')
+            object_name = assertion.get('object_name', '')
+
+            # Apply the same cleaning as used for DAG nodes
+            cleaned_subject = self.db_ops.clean_output_name(subject_name)
+            cleaned_object = self.db_ops.clean_output_name(object_name)
+
+            # Apply consolidated mapping (e.g., map all PTSD CUIs to "PTSD")
+            consolidated_subject = self.db_ops.apply_consolidated_mapping(cleaned_subject, consolidated_mapping)
+            consolidated_object = self.db_ops.apply_consolidated_mapping(cleaned_object, consolidated_mapping)
+
             # Create compact assertion with meaningful short field names
             compact_assertion = {
-                'subj': assertion.get('subject_name', ''),      # subject_name -> subj
+                'subj': consolidated_subject,                   # subject_name -> subj (cleaned & consolidated)
                 'subj_cui': assertion.get('subject_cui', ''),   # subject_cui -> subj_cui
                 'predicate': assertion.get('predicate', ''),    # predicate -> predicate
-                'obj': assertion.get('object_name', ''),        # object_name -> obj
+                'obj': consolidated_object,                     # object_name -> obj (cleaned & consolidated)
                 'obj_cui': assertion.get('object_cui', ''),     # object_cui -> obj_cui
                 'ev_count': assertion.get('evidence_count', 0), # evidence_count -> ev_count
                 'pmid_refs': []                                 # List of PMIDs for this assertion
@@ -394,8 +438,13 @@ if (lightweight_result$success) {{
                     print(f"DAGitty script generated:")
                     print(f"  - {self.output_dir}/{self.get_dag_filename()}")
 
-                    # Save all results and metadata
-                    self.save_results_and_metadata(self.timing_data, detailed_assertions)
+                    # Save all results and metadata with consolidated mapping
+                    self.save_results_and_metadata(
+                        self.timing_data,
+                        detailed_assertions,
+                        consolidated_mapping,
+                        cui_to_name_mapping
+                    )
 
         return self.timing_data
 
@@ -682,8 +731,13 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                     print(f"  - {self.output_dir}/{self.get_dag_filename()}")
                     print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
 
-                    # Save all results and metadata
-                    self.save_results_and_metadata(self.timing_data, detailed_assertions)
+                    # Save all results and metadata with consolidated mapping
+                    self.save_results_and_metadata(
+                        self.timing_data,
+                        detailed_assertions,
+                        consolidated_mapping,
+                        cui_to_name_mapping
+                    )
 
         print("\nMarkov blanket analysis complete!")
         return self.timing_data
