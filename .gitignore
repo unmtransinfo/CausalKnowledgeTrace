@@ -14,3 +14,5 @@ logs/
 
 semmed_database.tar.gz
 causalehr.dump
+dump/
+filtering/
