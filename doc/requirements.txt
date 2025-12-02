@@ -4,6 +4,7 @@ PyYAML
 pandas
 networkx
 scipy
+python-dotenv
 
 # R integration packages
 rpy2

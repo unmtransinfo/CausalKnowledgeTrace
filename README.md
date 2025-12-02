@@ -262,9 +262,9 @@ The `.env` file should contain:
 # Database Configuration
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=your_username
-DB_PASSWORD=your_password
-DB_NAME=your_database_name
+DB_USER=your_username #change to your username
+DB_PASSWORD=your_password #change to your password
+DB_NAME=causalehr
 DB_SCHEMA=causalehr
 ```
 
