@@ -5,7 +5,7 @@ library(dagitty)
 library(igraph)
 
 # Source the data_upload module
-source("modules/data_upload.R")
+source("shiny_app/modules/data_upload.R")
 
 # Create a test DAG with some leaf nodes
 test_dag <- dagitty('dag {
