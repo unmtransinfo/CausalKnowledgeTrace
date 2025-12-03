@@ -754,17 +754,47 @@ ui <- dashboardPage(
                             )
                         ),
 
-                        # Leaf removal option
+                        # Graph filtering options
                         fluidRow(
                             column(12,
-                                div(style = "margin-top: 15px; margin-bottom: 15px; padding: 10px; background-color: #f8f9fa; border-radius: 5px;",
-                                    checkboxInput("remove_leaf_nodes",
-                                                 label = HTML("<strong>Remove Leaf Nodes</strong> - Iteratively remove nodes with only one connection (degree = 1)"),
-                                                 value = FALSE),
-                                    div(style = "margin-left: 25px; font-size: 12px; color: #6c757d;",
-                                        p("This option will clean the graph by removing peripheral nodes that have only a single connection.",
-                                          "Exposure and outcome nodes are preserved even if they are leaves.",
-                                          "This can help focus on the core causal structure.")
+                                div(style = "margin-top: 15px; margin-bottom: 15px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border-left: 4px solid #28a745;",
+                                    h4(icon("filter"), " Graph Filtering Options"),
+
+                                    # Radio buttons for filter type
+                                    radioButtons("filter_type",
+                                                label = "Select filtering method:",
+                                                choices = list(
+                                                    "No filtering - Load original graph" = "none",
+                                                    "Remove leaf nodes only (degree = 1)" = "leaf",
+                                                    "Keep only paths between exposure and outcome" = "path"
+                                                ),
+                                                selected = "none"),
+
+                                    # Description for each option
+                                    conditionalPanel(
+                                        condition = "input.filter_type == 'leaf'",
+                                        div(style = "margin-left: 25px; padding: 10px; background-color: #fff3cd; border-radius: 5px;",
+                                            icon("info-circle"),
+                                            strong(" Leaf Removal:"),
+                                            p("Iteratively removes nodes with only one connection (degree = 1). Exposure and outcome nodes are preserved.")
+                                        )
+                                    ),
+
+                                    conditionalPanel(
+                                        condition = "input.filter_type == 'path'",
+                                        div(style = "margin-left: 25px; padding: 10px; background-color: #d1ecf1; border-radius: 5px;",
+                                            icon("info-circle"),
+                                            strong(" Path-Based Filtering + Leaf Removal:"),
+                                            p("Keeps only nodes on directed paths connecting exposure and outcome. This includes:"),
+                                            tags$ul(
+                                                tags$li("Forward paths: exposure → ... → outcome"),
+                                                tags$li("Reverse paths: outcome → ... → exposure"),
+                                                tags$li("Common descendants: node → both exposure AND outcome"),
+                                                tags$li("Common ancestors: both exposure AND outcome → node")
+                                            ),
+                                            p(strong("Then removes leaf nodes"), " (degree = 1) from the filtered graph."),
+                                            p("This creates the most focused graph showing only well-connected bidirectional causal relationships.")
+                                        )
                                     )
                                 )
                             )
@@ -1015,34 +1045,97 @@ server <- function(input, output, session) {
             result <- load_dag_from_file(input$dag_file_selector)
 
             if (result$success) {
-                # Apply leaf removal if requested
+                # Apply filtering based on selected option
                 dag_to_use <- result$dag
-                if (!is.null(input$remove_leaf_nodes) && input$remove_leaf_nodes) {
-                    session$sendCustomMessage("updateProgress", list(
-                        percent = 30,
-                        text = "Removing leaf nodes...",
-                        status = "Cleaning graph structure"
-                    ))
+                filter_result <- NULL
+                filter_type_name <- "original"
 
-                    leaf_removal_result <- remove_leaf_nodes(result$dag, preserve_exposure_outcome = TRUE)
+                if (!is.null(input$filter_type) && input$filter_type != "none") {
+                    if (input$filter_type == "leaf") {
+                        # Leaf removal filtering
+                        session$sendCustomMessage("updateProgress", list(
+                            percent = 30,
+                            text = "Removing leaf nodes...",
+                            status = "Cleaning graph structure"
+                        ))
 
-                    if (leaf_removal_result$success) {
-                        dag_to_use <- leaf_removal_result$dag
-                        cat(leaf_removal_result$message, "\n")
-                        showNotification(
-                            HTML(paste0("Leaf removal complete:<br/>",
-                                       "Removed ", leaf_removal_result$removed_nodes, " nodes and ",
-                                       leaf_removal_result$removed_edges, " edges in ",
-                                       leaf_removal_result$iterations, " iterations")),
-                            type = "message",
-                            duration = 5
-                        )
-                    } else {
-                        showNotification(
-                            paste("Leaf removal failed:", leaf_removal_result$message),
-                            type = "warning",
-                            duration = 5
-                        )
+                        filter_result <- remove_leaf_nodes(result$dag, preserve_exposure_outcome = TRUE)
+                        filter_type_name <- "leaf_removed"
+
+                        if (filter_result$success) {
+                            dag_to_use <- filter_result$dag
+                            cat(filter_result$message, "\n")
+                            showNotification(
+                                HTML(paste0("Leaf removal complete:<br/>",
+                                           "Removed ", filter_result$removed_nodes, " nodes and ",
+                                           filter_result$removed_edges, " edges in ",
+                                           filter_result$iterations, " iterations")),
+                                type = "message",
+                                duration = 5
+                            )
+                        } else {
+                            showNotification(
+                                paste("Leaf removal failed:", filter_result$message),
+                                type = "warning",
+                                duration = 5
+                            )
+                        }
+
+                    } else if (input$filter_type == "path") {
+                        # Path-based filtering (includes leaf removal)
+                        session$sendCustomMessage("updateProgress", list(
+                            percent = 30,
+                            text = "Filtering paths between exposure and outcome...",
+                            status = "Analyzing causal paths"
+                        ))
+
+                        filter_result <- filter_exposure_outcome_paths(result$dag)
+                        filter_type_name <- "filtered"
+
+                        if (filter_result$success) {
+                            dag_to_use <- filter_result$dag
+                            cat(filter_result$message, "\n")
+
+                            # Also apply leaf removal to the path-filtered graph
+                            session$sendCustomMessage("updateProgress", list(
+                                percent = 40,
+                                text = "Removing leaf nodes from filtered paths...",
+                                status = "Cleaning up leaf nodes"
+                            ))
+
+                            leaf_result <- remove_leaf_nodes(dag_to_use, preserve_exposure_outcome = TRUE)
+
+                            if (leaf_result$success) {
+                                dag_to_use <- leaf_result$dag
+                                cat("After leaf removal: ", leaf_result$final_nodes, " nodes remaining\n")
+
+                                showNotification(
+                                    HTML(paste0("Path filtering + leaf removal complete:<br/>",
+                                               "Kept ", leaf_result$final_nodes, " nodes (",
+                                               round(leaf_result$final_nodes/filter_result$original_nodes*100, 1), "%) ",
+                                               "and ", leaf_result$final_edges, " edges<br/>",
+                                               "Removed ", filter_result$removed_nodes, " non-path nodes + ",
+                                               leaf_result$removed_nodes, " leaf nodes")),
+                                    type = "message",
+                                    duration = 6
+                                )
+                            } else {
+                                showNotification(
+                                    HTML(paste0("Path filtering complete (leaf removal failed):<br/>",
+                                               "Kept ", filter_result$final_nodes, " nodes (",
+                                               round(filter_result$final_nodes/filter_result$original_nodes*100, 1), "%) ",
+                                               "and ", filter_result$final_edges, " edges")),
+                                    type = "message",
+                                    duration = 5
+                                )
+                            }
+                        } else {
+                            showNotification(
+                                paste("Path filtering failed:", filter_result$message),
+                                type = "warning",
+                                duration = 5
+                            )
+                        }
                     }
                 }
 
@@ -1119,7 +1212,15 @@ server <- function(input, output, session) {
                     }
 
                     if (!is.null(causal_file)) {
-                        assertions_result <- load_causal_assertions_unified(causal_file)
+                        # If filtering was applied, pass the filtered edges to the loader
+                        # This allows the loader to only expand the assertions we need
+                        filtered_edges_df <- NULL
+                        if (!is.null(filter_result) && filter_result$success) {
+                            filtered_edges_df <- as.data.frame(dagitty::edges(dag_to_use))
+                            cat("Passing", nrow(filtered_edges_df), "filtered edges to assertion loader\n")
+                        }
+
+                        assertions_result <- load_causal_assertions_unified(causal_file, filtered_edges = filtered_edges_df)
                     } else {
                         assertions_result <- list(
                             success = FALSE,
@@ -1130,12 +1231,22 @@ server <- function(input, output, session) {
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
                         current_data$lazy_loader <- assertions_result$lazy_loader
+                        current_data$compact_data <- assertions_result$compact_data  # Store compact data for lazy loading
                         current_data$assertions_loaded <- TRUE
                         current_data$loading_strategy <- assertions_result$loading_strategy
 
                         cat("Loaded causal assertions for degree =", result$degree, "\n")
                         cat("Strategy used:", assertions_result$loading_strategy, "\n")
                         cat("Load time:", round(assertions_result$load_time_seconds %||% 0, 2), "seconds\n")
+
+                        # Show additional info for lazy loading
+                        if (assertions_result$loading_strategy == "optimized_lazy") {
+                            cat("Lazy loading enabled: assertions will be expanded on-demand\n")
+                            cat("Total assertions available:", assertions_result$total_assertions %||% length(assertions_result$assertions), "\n")
+                            if (!is.null(assertions_result$filtered_assertions)) {
+                                cat("Filtered assertions:", assertions_result$filtered_assertions, "\n")
+                            }
+                        }
 
                         # Show simple success notification
                         load_time_msg <- if (!is.null(assertions_result$load_time_seconds)) {
@@ -1144,18 +1255,23 @@ server <- function(input, output, session) {
                             ""
                         }
 
-                        # Special message for large graphs
-                        success_msg <- if (node_count > 8000) {
-                            paste0("Large graph (", node_count, " nodes) loaded successfully!", load_time_msg,
+                        # Special message for large graphs or lazy loading
+                        if (assertions_result$loading_strategy == "optimized_lazy") {
+                            success_msg <- paste0(
+                                "Graph loaded successfully!", load_time_msg,
+                                "<br/>✨ <b>Lazy loading enabled</b> - edge details will load instantly when clicked!"
+                            )
+                        } else if (node_count > 8000) {
+                            success_msg <- paste0("Large graph (", node_count, " nodes) loaded successfully!", load_time_msg,
                                   "<br/>The interactive visualization may take a moment to render.")
                         } else {
-                            paste0("Graph loaded successfully!", load_time_msg)
+                            success_msg <- paste0("Graph loaded successfully!", load_time_msg)
                         }
 
                         showNotification(
                             HTML(success_msg),
                             type = "message",
-                            duration = if (node_count > 8000) 6 else 4
+                            duration = if (node_count > 8000 || assertions_result$loading_strategy == "optimized_lazy") 6 else 4
                         )
                     } else {
                         current_data$causal_assertions <- list()
@@ -1286,34 +1402,57 @@ server <- function(input, output, session) {
             result <- load_dag_from_file(new_filename)
 
             if (result$success) {
-                # Apply leaf removal if requested
+                # Apply filtering based on selected option
                 dag_to_use <- result$dag
-                if (!is.null(input$remove_leaf_nodes) && input$remove_leaf_nodes) {
-                    session$sendCustomMessage("updateProgress", list(
-                        percent = 60,
-                        text = "Removing leaf nodes...",
-                        status = "Cleaning graph structure"
-                    ))
+                filter_result <- NULL
+                filter_type_name <- "original"
 
-                    leaf_removal_result <- remove_leaf_nodes(result$dag, preserve_exposure_outcome = TRUE)
+                if (!is.null(input$filter_type) && input$filter_type != "none") {
+                    if (input$filter_type == "leaf") {
+                        # Leaf removal filtering
+                        session$sendCustomMessage("updateProgress", list(
+                            percent = 60,
+                            text = "Removing leaf nodes...",
+                            status = "Cleaning graph structure"
+                        ))
 
-                    if (leaf_removal_result$success) {
-                        dag_to_use <- leaf_removal_result$dag
-                        cat(leaf_removal_result$message, "\n")
-                        showNotification(
-                            HTML(paste0("Leaf removal complete:<br/>",
-                                       "Removed ", leaf_removal_result$removed_nodes, " nodes and ",
-                                       leaf_removal_result$removed_edges, " edges in ",
-                                       leaf_removal_result$iterations, " iterations")),
-                            type = "message",
-                            duration = 5
-                        )
-                    } else {
-                        showNotification(
-                            paste("Leaf removal failed:", leaf_removal_result$message),
-                            type = "warning",
-                            duration = 5
-                        )
+                        filter_result <- remove_leaf_nodes(result$dag, preserve_exposure_outcome = TRUE)
+                        filter_type_name <- "leaf_removed"
+
+                        if (filter_result$success) {
+                            dag_to_use <- filter_result$dag
+                            cat(filter_result$message, "\n")
+                        }
+
+                    } else if (input$filter_type == "path") {
+                        # Path-based filtering (includes leaf removal)
+                        session$sendCustomMessage("updateProgress", list(
+                            percent = 60,
+                            text = "Filtering paths between exposure and outcome...",
+                            status = "Analyzing causal paths"
+                        ))
+
+                        filter_result <- filter_exposure_outcome_paths(result$dag)
+                        filter_type_name <- "filtered"
+
+                        if (filter_result$success) {
+                            dag_to_use <- filter_result$dag
+                            cat(filter_result$message, "\n")
+
+                            # Also apply leaf removal to the path-filtered graph
+                            session$sendCustomMessage("updateProgress", list(
+                                percent = 65,
+                                text = "Removing leaf nodes from filtered paths...",
+                                status = "Cleaning up leaf nodes"
+                            ))
+
+                            leaf_result <- remove_leaf_nodes(dag_to_use, preserve_exposure_outcome = TRUE)
+
+                            if (leaf_result$success) {
+                                dag_to_use <- leaf_result$dag
+                                cat("After leaf removal: ", leaf_result$final_nodes, " nodes remaining\n")
+                            }
+                        }
                     }
                 }
 
