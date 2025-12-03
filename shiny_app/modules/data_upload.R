@@ -774,9 +774,128 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
         }
     }
 
-    # Check if we need to use lazy loading for full sentence data
+    # NEW: Check if we're using lazy loading with compact assertions
     use_lazy_loading <- !is.null(lazy_loader)
     if (use_lazy_loading) {
+        # Check if assertions_data contains compact format (has 'subj' and 'obj' fields)
+        is_compact_format <- FALSE
+        if (length(assertions_data) > 0) {
+            first_assertion <- assertions_data[[1]]
+            is_compact_format <- !is.null(first_assertion$subj) && !is.null(first_assertion$obj)
+        }
+
+        if (is_compact_format) {
+            # Working with compact assertions - use lazy expansion
+            cat("Using lazy loading for edge:", from_node, "->", to_node, "\n")
+
+            # Search for matching compact assertion
+            for (compact_assertion in assertions_data) {
+                # Try exact match first
+                if (compact_assertion$subj == from_node && compact_assertion$obj == to_node) {
+                    # Found it! Expand this assertion on-demand
+                    expanded <- lazy_loader(compact_assertion$subj, compact_assertion$obj)
+
+                    if (!is.null(expanded)) {
+                        # Extract PMID data from expanded assertion
+                        pmid_list <- if (!is.null(expanded$pmid_data)) {
+                            names(expanded$pmid_data)
+                        } else {
+                            character(0)
+                        }
+
+                        # Extract sentence data
+                        sentence_data <- list()
+                        if (!is.null(expanded$pmid_data)) {
+                            for (pmid in names(expanded$pmid_data)) {
+                                pmid_info <- expanded$pmid_data[[pmid]]
+                                if (!is.null(pmid_info$sentences)) {
+                                    sentence_data[[pmid]] <- pmid_info$sentences
+                                }
+                            }
+                        }
+
+                        cat("Lazy loaded", length(pmid_list), "PMIDs for edge\n")
+
+                        return(list(
+                            found = TRUE,
+                            message = "Edge found (lazy loaded)",
+                            pmid_list = pmid_list,
+                            sentence_data = sentence_data,
+                            evidence_count = expanded$evidence_count %||% length(pmid_list),
+                            predicate = expanded$predicate %||% "CAUSES",
+                            subject_cui = expanded$subject_cui %||% "",
+                            object_cui = expanded$object_cui %||% "",
+                            match_type = "exact_lazy"
+                        ))
+                    }
+                }
+
+                # Try CUI-based matching if exact match failed
+                if (!is.null(from_cuis) && !is.null(to_cuis)) {
+                    assertion_subj_cui <- compact_assertion$subj_cui
+                    assertion_obj_cui <- compact_assertion$obj_cui
+
+                    if (!is.null(assertion_subj_cui) && !is.null(assertion_obj_cui)) {
+                        assertion_subj_cuis <- strsplit(as.character(assertion_subj_cui), "\\|")[[1]]
+                        assertion_obj_cuis <- strsplit(as.character(assertion_obj_cui), "\\|")[[1]]
+
+                        subj_cui_match <- any(from_cuis %in% assertion_subj_cuis)
+                        obj_cui_match <- any(to_cuis %in% assertion_obj_cuis)
+
+                        if (subj_cui_match && obj_cui_match) {
+                            # Found via CUI match! Expand this assertion
+                            expanded <- lazy_loader(compact_assertion$subj, compact_assertion$obj)
+
+                            if (!is.null(expanded)) {
+                                pmid_list <- if (!is.null(expanded$pmid_data)) {
+                                    names(expanded$pmid_data)
+                                } else {
+                                    character(0)
+                                }
+
+                                sentence_data <- list()
+                                if (!is.null(expanded$pmid_data)) {
+                                    for (pmid in names(expanded$pmid_data)) {
+                                        pmid_info <- expanded$pmid_data[[pmid]]
+                                        if (!is.null(pmid_info$sentences)) {
+                                            sentence_data[[pmid]] <- pmid_info$sentences
+                                        }
+                                    }
+                                }
+
+                                cat("Lazy loaded", length(pmid_list), "PMIDs for edge (CUI match)\n")
+
+                                return(list(
+                                    found = TRUE,
+                                    message = "Edge found via CUI match (lazy loaded)",
+                                    pmid_list = pmid_list,
+                                    sentence_data = sentence_data,
+                                    evidence_count = expanded$evidence_count %||% length(pmid_list),
+                                    predicate = expanded$predicate %||% "CAUSES",
+                                    subject_cui = expanded$subject_cui %||% "",
+                                    object_cui = expanded$object_cui %||% "",
+                                    match_type = "cui_lazy"
+                                ))
+                            }
+                        }
+                    }
+                }
+            }
+
+            # Not found in compact assertions
+            return(list(
+                found = FALSE,
+                message = "Edge not found in compact assertions",
+                pmid_list = character(0),
+                sentence_data = list(),
+                evidence_count = 0,
+                predicate = "UNKNOWN",
+                subject_cui = "",
+                object_cui = ""
+            ))
+        }
+
+        # OLD lazy loading code for metadata-based loading (keep for backward compatibility)
         # First check metadata for the edge
         metadata_match <- find_edge_in_metadata(from_node, to_node, assertions_data)
         if (metadata_match$found) {
@@ -1593,3 +1712,249 @@ remove_leaf_nodes <- function(dag_object, preserve_exposure_outcome = TRUE) {
         ))
     })
 }
+
+#' Filter DAG to Keep Only Nodes on Paths Between Exposure and Outcome
+#'
+#' This function filters a DAG to keep only nodes that lie on directed paths
+#' connecting exposure and outcome nodes. Keeps nodes on ANY of these path types:
+#' 1. Forward paths: exposure → ... → outcome
+#' 2. Reverse paths: outcome → ... → exposure
+#' 3. Common descendants: node → ... → both exposure AND outcome
+#' 4. Common ancestors: both exposure AND outcome → ... → node
+#'
+#' This is more aggressive than leaf removal - nodes not on any connecting path are removed.
+#'
+#' @param dag_object dagitty object containing the DAG
+#' @return List containing success status, message, filtered DAG object, and statistics
+#' @export
+filter_exposure_outcome_paths <- function(dag_object) {
+    if (is.null(dag_object)) {
+        return(list(
+            success = FALSE,
+            message = "Input DAG object is NULL",
+            dag = NULL,
+            original_nodes = 0,
+            original_edges = 0,
+            final_nodes = 0,
+            final_edges = 0,
+            removed_nodes = 0,
+            removed_edges = 0,
+            kept_nodes = character(0)
+        ))
+    }
+
+    tryCatch({
+        # Get exposure and outcome nodes
+        exposure_nodes <- tryCatch(exposures(dag_object), error = function(e) character(0))
+        outcome_nodes <- tryCatch(outcomes(dag_object), error = function(e) character(0))
+
+        if (length(exposure_nodes) == 0 || length(outcome_nodes) == 0) {
+            return(list(
+                success = FALSE,
+                message = "DAG must have both exposure and outcome nodes defined",
+                dag = dag_object,
+                original_nodes = length(names(dag_object)),
+                original_edges = nrow(as.data.frame(dagitty::edges(dag_object))),
+                final_nodes = length(names(dag_object)),
+                final_edges = nrow(as.data.frame(dagitty::edges(dag_object))),
+                removed_nodes = 0,
+                removed_edges = 0,
+                kept_nodes = names(dag_object)
+            ))
+        }
+
+        # Extract edges from dagitty
+        edges_df <- as.data.frame(dagitty::edges(dag_object))
+
+        # Get all nodes
+        all_nodes <- names(dag_object)
+
+        # Create a data frame of nodes
+        nodes_df <- data.frame(name = all_nodes, stringsAsFactors = FALSE)
+
+        # Convert to igraph
+        ig <- graph_from_data_frame(edges_df[, c("v", "w")],
+                                    directed = TRUE,
+                                    vertices = nodes_df)
+
+        original_node_count <- vcount(ig)
+        original_edge_count <- ecount(ig)
+
+        cat("Starting path filtering with", original_node_count, "vertices and", original_edge_count, "edges\n")
+        cat("Exposure nodes:", paste(exposure_nodes, collapse = ", "), "\n")
+        cat("Outcome nodes:", paste(outcome_nodes, collapse = ", "), "\n")
+
+        # Strategy: Keep nodes on ANY directed path connecting exposure and outcome nodes
+        # This includes:
+        # 1. Paths from exposure → outcome (forward)
+        # 2. Paths from outcome → exposure (reverse)
+        # 3. Nodes that reach BOTH exposure and outcome (common descendants)
+        # 4. Nodes reachable from BOTH exposure and outcome (common ancestors)
+
+        # Find nodes reachable FROM exposure nodes (forward direction: exposure → X)
+        nodes_from_exposure <- character(0)
+        for (exp_node in exposure_nodes) {
+            if (exp_node %in% V(ig)$name) {
+                exp_idx <- which(V(ig)$name == exp_node)
+                reachable <- subcomponent(ig, exp_idx, mode = "out")
+                nodes_from_exposure <- union(nodes_from_exposure, V(ig)$name[reachable])
+            }
+        }
+
+        # Find nodes that can reach exposure nodes (backward from exposure: X → exposure)
+        nodes_to_exposure <- character(0)
+        for (exp_node in exposure_nodes) {
+            if (exp_node %in% V(ig)$name) {
+                exp_idx <- which(V(ig)$name == exp_node)
+                reachable <- subcomponent(ig, exp_idx, mode = "in")
+                nodes_to_exposure <- union(nodes_to_exposure, V(ig)$name[reachable])
+            }
+        }
+
+        # Find nodes reachable FROM outcome nodes (forward from outcome: outcome → X)
+        nodes_from_outcome <- character(0)
+        for (out_node in outcome_nodes) {
+            if (out_node %in% V(ig)$name) {
+                out_idx <- which(V(ig)$name == out_node)
+                reachable <- subcomponent(ig, out_idx, mode = "out")
+                nodes_from_outcome <- union(nodes_from_outcome, V(ig)$name[reachable])
+            }
+        }
+
+        # Find nodes that can reach outcome nodes (backward to outcome: X → outcome)
+        nodes_to_outcome <- character(0)
+        for (out_node in outcome_nodes) {
+            if (out_node %in% V(ig)$name) {
+                out_idx <- which(V(ig)$name == out_node)
+                reachable <- subcomponent(ig, out_idx, mode = "in")
+                nodes_to_outcome <- union(nodes_to_outcome, V(ig)$name[reachable])
+            }
+        }
+
+        cat("Nodes reachable from exposure (exposure → X):", length(nodes_from_exposure), "\n")
+        cat("Nodes that reach exposure (X → exposure):", length(nodes_to_exposure), "\n")
+        cat("Nodes reachable from outcome (outcome → X):", length(nodes_from_outcome), "\n")
+        cat("Nodes that reach outcome (X → outcome):", length(nodes_to_outcome), "\n")
+
+        # Keep nodes on ANY of these path types:
+        # Type 1: exposure → ... → outcome (forward paths)
+        forward_paths <- intersect(nodes_from_exposure, nodes_to_outcome)
+
+        # Type 2: outcome → ... → exposure (reverse paths)
+        reverse_paths <- intersect(nodes_from_outcome, nodes_to_exposure)
+
+        # Type 3: X → both exposure AND outcome (common descendants)
+        common_descendants <- intersect(nodes_to_exposure, nodes_to_outcome)
+
+        # Type 4: Both exposure AND outcome → X (common ancestors)
+        common_ancestors <- intersect(nodes_from_exposure, nodes_from_outcome)
+
+        # Union of all path types
+        nodes_on_paths <- union(forward_paths, reverse_paths)
+        nodes_on_paths <- union(nodes_on_paths, common_descendants)
+        nodes_on_paths <- union(nodes_on_paths, common_ancestors)
+
+        cat("\nPath analysis:\n")
+        cat("  Forward paths (exposure → outcome):", length(forward_paths), "nodes\n")
+        cat("  Reverse paths (outcome → exposure):", length(reverse_paths), "nodes\n")
+        cat("  Common descendants (X → both):", length(common_descendants), "nodes\n")
+        cat("  Common ancestors (both → X):", length(common_ancestors), "nodes\n")
+        cat("  Total nodes on paths:", length(nodes_on_paths), "nodes\n")
+
+        if (length(nodes_on_paths) == 0) {
+            return(list(
+                success = FALSE,
+                message = "No directed paths found connecting exposure and outcome nodes (checked forward, reverse, and common ancestor/descendant paths)",
+                dag = dag_object,
+                original_nodes = original_node_count,
+                original_edges = original_edge_count,
+                final_nodes = original_node_count,
+                final_edges = original_edge_count,
+                removed_nodes = 0,
+                removed_edges = 0,
+                kept_nodes = character(0)
+            ))
+        }
+
+        # Filter the graph to keep only these nodes
+        nodes_to_keep_idx <- which(V(ig)$name %in% nodes_on_paths)
+        ig_filtered <- induced_subgraph(ig, nodes_to_keep_idx)
+
+        final_node_count <- vcount(ig_filtered)
+        final_edge_count <- ecount(ig_filtered)
+
+        cat("Filtered graph has", final_node_count, "vertices and", final_edge_count, "edges\n")
+
+        # Convert back to dagitty
+        if (vcount(ig_filtered) > 0 && ecount(ig_filtered) > 0) {
+            edge_list <- as_edgelist(ig_filtered)
+            dag_edges <- paste(edge_list[,1], "->", edge_list[,2])
+            dag_filtered <- dagitty(paste0("dag {", paste(dag_edges, collapse = "; "), "}"))
+
+            # Restore exposure and outcome annotations
+            remaining_nodes <- V(ig_filtered)$name
+            remaining_exposures <- intersect(exposure_nodes, remaining_nodes)
+            remaining_outcomes <- intersect(outcome_nodes, remaining_nodes)
+
+            if (length(remaining_exposures) > 0) {
+                for (exp_node in remaining_exposures) {
+                    tryCatch({
+                        exposures(dag_filtered) <- exp_node
+                    }, error = function(e) {
+                        cat("Warning: Could not set exposure for node", exp_node, "\n")
+                    })
+                }
+            }
+
+            if (length(remaining_outcomes) > 0) {
+                for (out_node in remaining_outcomes) {
+                    tryCatch({
+                        outcomes(dag_filtered) <- out_node
+                    }, error = function(e) {
+                        cat("Warning: Could not set outcome for node", out_node, "\n")
+                    })
+                }
+            }
+        } else {
+            dag_filtered <- dagitty("dag {}")
+        }
+
+        removed_nodes <- original_node_count - final_node_count
+        removed_edges <- original_edge_count - final_edge_count
+
+        message <- paste0(
+            "Path filtering complete. ",
+            "Kept ", final_node_count, " nodes (", round(final_node_count/original_node_count*100, 1), "%) ",
+            "and ", final_edge_count, " edges. ",
+            "Removed ", removed_nodes, " nodes and ", removed_edges, " edges."
+        )
+
+        return(list(
+            success = TRUE,
+            message = message,
+            dag = dag_filtered,
+            original_nodes = original_node_count,
+            original_edges = original_edge_count,
+            final_nodes = final_node_count,
+            final_edges = final_edge_count,
+            removed_nodes = removed_nodes,
+            removed_edges = removed_edges,
+            kept_nodes = nodes_on_paths
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Error during path filtering:", e$message),
+            dag = dag_object,
+            original_nodes = length(names(dag_object)),
+            original_edges = 0,
+            final_nodes = length(names(dag_object)),
+            final_edges = 0,
+            removed_nodes = 0,
+            removed_edges = 0,
+            kept_nodes = character(0)
+        ))
+    })
+}
+
