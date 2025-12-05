@@ -5,7 +5,7 @@ pandas
 networkx
 scipy
 python-dotenv
-
+matplotlib
 # R integration packages
 rpy2
 
