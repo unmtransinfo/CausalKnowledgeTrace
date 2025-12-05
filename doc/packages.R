@@ -1,4 +1,17 @@
-# CausalKnowledgeTrace R Package Installation Scription
+# CausalKnowledgeTrace R Package Installation Script
+
+# Configure compiler
+makevars <- "CC=gcc
+CXX=g++
+CXX17=g++
+CC17=gcc
+FC=gfortran
+CFLAGS=-O2 -fPIC
+CXXFLAGS=-O2 -fPIC
+"
+dir.create("~/.R", showWarnings = FALSE, recursive = TRUE)
+cat(makevars, file = "~/.R/Makevars")
+
 # Set CRAN mirror
 options(repos = c(CRAN = "https://cran.rstudio.com/"))
 
@@ -8,6 +21,9 @@ if (!require("BiocManager", quietly = TRUE))
 
 # Install graph dependencies from Bioconductor (required for ggm and SEMgraph)
 BiocManager::install(c("graph", "RBGL", "Rgraphviz", "SEMgraph"), dependencies = TRUE, update = FALSE, ask = FALSE)
+
+# Verify SEMgraph installed
+if (!require("SEMgraph", quietly = TRUE)) quit(status = 1)
 
 # Install all required packages for CausalKnowledgeTrace application
 install.packages(c(
