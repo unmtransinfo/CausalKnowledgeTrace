@@ -67,7 +67,9 @@ if (!dir.exists(app_dir)) {
 args <- commandArgs(trailingOnly = TRUE)
 
 # Configure application parameters
-host <- "127.0.0.1"
+# Use environment variable or default to 0.0.0.0 for Docker compatibility
+# Set SHINY_HOST=127.0.0.1 for local development if needed
+host <- Sys.getenv("SHINY_HOST", unset = "0.0.0.0")
 default_port <- 3838
 
 # Find an available port (silently)
