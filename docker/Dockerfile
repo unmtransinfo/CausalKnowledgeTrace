@@ -6,6 +6,7 @@ WORKDIR /causalknowledgetrace
 RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libz-dev \
+    net-tools \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
