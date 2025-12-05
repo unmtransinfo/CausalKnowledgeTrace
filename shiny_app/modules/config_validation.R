@@ -208,10 +208,32 @@ validate_all_inputs <- function(input) {
         errors <- c(errors, paste("Predication Types:", predication_validation$message))
     }
     
-    # Validate numeric parameters
-    min_pmids_validation <- validate_numeric_param(input$min_pmids, "Minimum PMIDs", min_val = 1, max_val = 10000)
-    if (!min_pmids_validation$valid) {
-        errors <- c(errors, min_pmids_validation$message)
+    # Validate numeric parameters - support both old and new format
+    # Check if new format (degree-specific thresholds) is being used
+    if (!is.null(input$min_pmids_degree1)) {
+        # New format with degree-specific thresholds
+        min_pmids_d1_validation <- validate_numeric_param(input$min_pmids_degree1, "Minimum PMIDs (Degree 1)", min_val = 1, max_val = 10000)
+        if (!min_pmids_d1_validation$valid) {
+            errors <- c(errors, min_pmids_d1_validation$message)
+        }
+
+        min_pmids_d2_validation <- validate_numeric_param(input$min_pmids_degree2, "Minimum PMIDs (Degree 2)", min_val = 1, max_val = 10000)
+        if (!min_pmids_d2_validation$valid) {
+            errors <- c(errors, min_pmids_d2_validation$message)
+        }
+
+        min_pmids_d3_validation <- validate_numeric_param(input$min_pmids_degree3, "Minimum PMIDs (Degree 3)", min_val = 1, max_val = 10000)
+        if (!min_pmids_d3_validation$valid) {
+            errors <- c(errors, min_pmids_d3_validation$message)
+        }
+    } else if (!is.null(input$min_pmids)) {
+        # Old format with single threshold
+        min_pmids_validation <- validate_numeric_param(input$min_pmids, "Minimum PMIDs", min_val = 1, max_val = 10000)
+        if (!min_pmids_validation$valid) {
+            errors <- c(errors, min_pmids_validation$message)
+        }
+    } else {
+        errors <- c(errors, "Minimum PMIDs threshold is required")
     }
     
     pub_year_validation <- validate_numeric_param(input$pub_year_cutoff, "Publication Year Cutoff", 
