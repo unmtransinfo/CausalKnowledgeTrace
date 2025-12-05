@@ -289,21 +289,6 @@ graphConfigUI <- function(id) {
                             helpText("Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
                         ),
 
-                        # Squelch Threshold
-                        div(
-                            class = "form-group",
-                            numericInput(
-                                ns("min_pmids"),
-                                "Squelch Threshold (minimum unique pmids) *",
-                                value = 10,
-                                min = 1,
-                                max = 1000,
-                                step = 1,
-                                width = "100%"
-                            ),
-                            helpText("Minimum number of unique PMIDs required for inclusion (1-1000).")
-                        ),
-
                         # Degree
                         div(
                             class = "form-group",
@@ -319,6 +304,21 @@ graphConfigUI <- function(id) {
                                 width = "100%"
                             ),
                             helpText("Number of degrees for graph traversal (1-3). Controls the depth of relationships included in the graph.")
+                        ),
+
+                        # Squelch Threshold
+                        div(
+                            class = "form-group",
+                            numericInput(
+                                ns("min_pmids"),
+                                "Squelch Threshold (minimum unique pmids) *",
+                                value = 10,
+                                min = 1,
+                                max = 1000,
+                                step = 1,
+                                width = "100%"
+                            ),
+                            helpText("Minimum number of unique PMIDs required for inclusion (1-1000).")
                         ),
 
                         # Publication Year Cutoff
