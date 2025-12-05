@@ -16,3 +16,5 @@ semmed_database.tar.gz
 causalehr.dump
 dump/
 filtering/
+create_db/
+.github/
