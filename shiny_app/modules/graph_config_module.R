@@ -306,19 +306,46 @@ graphConfigUI <- function(id) {
                             helpText("Number of degrees for graph traversal (1-3). Controls the depth of relationships included in the graph.")
                         ),
 
-                        # Squelch Threshold
+                        # Squelch Thresholds (by degree)
                         div(
                             class = "form-group",
-                            numericInput(
-                                ns("min_pmids"),
-                                "Squelch Threshold (minimum unique pmids) *",
-                                value = 10,
-                                min = 1,
-                                max = 1000,
-                                step = 1,
-                                width = "100%"
+                            h5("Squelch Thresholds (minimum unique PMIDs by degree) *"),
+                            fluidRow(
+                                column(4,
+                                    numericInput(
+                                        ns("min_pmids_degree1"),
+                                        "Degree 1:",
+                                        value = 10,
+                                        min = 1,
+                                        max = 1000,
+                                        step = 1,
+                                        width = "100%"
+                                    )
+                                ),
+                                column(4,
+                                    numericInput(
+                                        ns("min_pmids_degree2"),
+                                        "Degree 2:",
+                                        value = 10,
+                                        min = 1,
+                                        max = 1000,
+                                        step = 1,
+                                        width = "100%"
+                                    )
+                                ),
+                                column(4,
+                                    numericInput(
+                                        ns("min_pmids_degree3"),
+                                        "Degree 3:",
+                                        value = 10,
+                                        min = 1,
+                                        max = 1000,
+                                        step = 1,
+                                        width = "100%"
+                                    )
+                                )
                             ),
-                            helpText("Minimum number of unique PMIDs required for inclusion (1-1000).")
+                            helpText("Minimum number of unique PMIDs required for each degree level (1-1000).")
                         ),
 
                         # Publication Year Cutoff
@@ -770,13 +797,29 @@ graphConfigServer <- function(id) {
                 errors <- c(errors, paste("Predication Types:", predication_validation$message))
             }
 
-            # Validate required fields
-            if (is.null(input$min_pmids) || is.na(input$min_pmids)) {
-                errors <- c(errors, "Squelch Threshold (minimum unique pmids) is required")
-            } else if (!is.numeric(input$min_pmids) || input$min_pmids < 1 || input$min_pmids > 1000) {
-                errors <- c(errors, "Squelch Threshold (minimum unique pmids) must be a number between 1 and 1000")
-            } else if (input$min_pmids != as.integer(input$min_pmids)) {
-                errors <- c(errors, "Squelch Threshold (minimum unique pmids) must be a whole number")
+            # Validate required fields - Squelch Thresholds for each degree
+            if (is.null(input$min_pmids_degree1) || is.na(input$min_pmids_degree1)) {
+                errors <- c(errors, "Squelch Threshold for Degree 1 is required")
+            } else if (!is.numeric(input$min_pmids_degree1) || input$min_pmids_degree1 < 1 || input$min_pmids_degree1 > 1000) {
+                errors <- c(errors, "Squelch Threshold for Degree 1 must be a number between 1 and 1000")
+            } else if (input$min_pmids_degree1 != as.integer(input$min_pmids_degree1)) {
+                errors <- c(errors, "Squelch Threshold for Degree 1 must be a whole number")
+            }
+
+            if (is.null(input$min_pmids_degree2) || is.na(input$min_pmids_degree2)) {
+                errors <- c(errors, "Squelch Threshold for Degree 2 is required")
+            } else if (!is.numeric(input$min_pmids_degree2) || input$min_pmids_degree2 < 1 || input$min_pmids_degree2 > 1000) {
+                errors <- c(errors, "Squelch Threshold for Degree 2 must be a number between 1 and 1000")
+            } else if (input$min_pmids_degree2 != as.integer(input$min_pmids_degree2)) {
+                errors <- c(errors, "Squelch Threshold for Degree 2 must be a whole number")
+            }
+
+            if (is.null(input$min_pmids_degree3) || is.na(input$min_pmids_degree3)) {
+                errors <- c(errors, "Squelch Threshold for Degree 3 is required")
+            } else if (!is.numeric(input$min_pmids_degree3) || input$min_pmids_degree3 < 1 || input$min_pmids_degree3 > 1000) {
+                errors <- c(errors, "Squelch Threshold for Degree 3 must be a number between 1 and 1000")
+            } else if (input$min_pmids_degree3 != as.integer(input$min_pmids_degree3)) {
+                errors <- c(errors, "Squelch Threshold for Degree 3 must be a whole number")
             }
             
             if (is.null(input$pub_year_cutoff) || input$pub_year_cutoff == "") {
@@ -876,7 +919,9 @@ graphConfigServer <- function(id) {
                     blacklist_cuis = validation_result$blacklist_cuis,
                     exposure_name = validation_result$exposure_name,
                     outcome_name = validation_result$outcome_name,
-                    min_pmids = as.integer(input$min_pmids),
+                    min_pmids_degree1 = as.integer(input$min_pmids_degree1),
+                    min_pmids_degree2 = as.integer(input$min_pmids_degree2),
+                    min_pmids_degree3 = as.integer(input$min_pmids_degree3),
                     pub_year_cutoff = as.integer(input$pub_year_cutoff),
                     degree = as.integer(input$degree),
                     predication_type = predication_types,
@@ -1067,11 +1112,34 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
         config <- read_yaml(yaml_file)
 
         # Validate loaded configuration
-        required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
+        # Support both old format (min_pmids) and new format (min_pmids_degree1/2/3)
+        required_fields_new <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
+                           "min_pmids_degree1", "min_pmids_degree2", "min_pmids_degree3",
+                           "pub_year_cutoff", "degree",
+                           "SemMedDBD_version", "predication_type")
+        required_fields_old <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
                            "min_pmids", "pub_year_cutoff", "degree",
                            "SemMedDBD_version", "predication_type")
         # Note: blacklist_cuis is optional, so not included in required_fields
 
+        # Check if it's new format or old format
+        has_new_format <- all(c("min_pmids_degree1", "min_pmids_degree2", "min_pmids_degree3") %in% names(config))
+        has_old_format <- "min_pmids" %in% names(config)
+
+        if (!has_new_format && !has_old_format) {
+            warning("Configuration must have either min_pmids or min_pmids_degree1/2/3 fields")
+            return(NULL)
+        }
+
+        # If old format, convert to new format
+        if (has_old_format && !has_new_format) {
+            config$min_pmids_degree1 <- config$min_pmids
+            config$min_pmids_degree2 <- config$min_pmids
+            config$min_pmids_degree3 <- config$min_pmids
+        }
+
+        # Validate required fields based on format
+        required_fields <- if (has_new_format) required_fields_new else required_fields_old
         missing_fields <- required_fields[!required_fields %in% names(config)]
         if (length(missing_fields) > 0) {
             warning(paste("Missing required fields in configuration:",
@@ -1103,7 +1171,9 @@ test_graph_config_module <- function() {
         blacklist_cuis = c("C0000001", "C0000002"),
         exposure_name = "Test Exposure",
         outcome_name = "Test Outcome",
-        min_pmids = 100,
+        min_pmids_degree1 = 100,
+        min_pmids_degree2 = 80,
+        min_pmids_degree3 = 60,
         pub_year_cutoff = 2010,
         degree = 2,
         predication_type = "CAUSES",
@@ -1192,12 +1262,18 @@ validate_graph_config <- function(config) {
 
     errors <- c()
 
-    # Check required fields
-    required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
-                        "min_pmids", "pub_year_cutoff", "degree",
-                        "SemMedDBD_version")
+    # Check required fields - support both old and new format
+    has_new_format <- all(c("min_pmids_degree1", "min_pmids_degree2", "min_pmids_degree3") %in% names(config))
+    has_old_format <- "min_pmids" %in% names(config)
 
-    missing_fields <- required_fields[!required_fields %in% names(config)]
+    if (!has_new_format && !has_old_format) {
+        errors <- c(errors, "Configuration must have either min_pmids or min_pmids_degree1/2/3 fields")
+    }
+
+    required_fields_base <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
+                        "pub_year_cutoff", "degree", "SemMedDBD_version")
+
+    missing_fields <- required_fields_base[!required_fields_base %in% names(config)]
     if (length(missing_fields) > 0) {
         errors <- c(errors, paste("Missing required fields:", paste(missing_fields, collapse = ", ")))
     }
@@ -1246,12 +1322,37 @@ validate_graph_config <- function(config) {
         }
     }
 
-    # Validate numeric ranges
+    # Validate numeric ranges - support both old and new format
     if ("min_pmids" %in% names(config)) {
         if (!is.numeric(config$min_pmids) || config$min_pmids < 1 || config$min_pmids > 1000) {
             errors <- c(errors, "min_pmids must be a number between 1 and 1000")
         } else if (config$min_pmids != as.integer(config$min_pmids)) {
             errors <- c(errors, "min_pmids must be a whole number")
+        }
+    }
+
+    # Validate new format thresholds
+    if ("min_pmids_degree1" %in% names(config)) {
+        if (!is.numeric(config$min_pmids_degree1) || config$min_pmids_degree1 < 1 || config$min_pmids_degree1 > 1000) {
+            errors <- c(errors, "min_pmids_degree1 must be a number between 1 and 1000")
+        } else if (config$min_pmids_degree1 != as.integer(config$min_pmids_degree1)) {
+            errors <- c(errors, "min_pmids_degree1 must be a whole number")
+        }
+    }
+
+    if ("min_pmids_degree2" %in% names(config)) {
+        if (!is.numeric(config$min_pmids_degree2) || config$min_pmids_degree2 < 1 || config$min_pmids_degree2 > 1000) {
+            errors <- c(errors, "min_pmids_degree2 must be a number between 1 and 1000")
+        } else if (config$min_pmids_degree2 != as.integer(config$min_pmids_degree2)) {
+            errors <- c(errors, "min_pmids_degree2 must be a whole number")
+        }
+    }
+
+    if ("min_pmids_degree3" %in% names(config)) {
+        if (!is.numeric(config$min_pmids_degree3) || config$min_pmids_degree3 < 1 || config$min_pmids_degree3 > 1000) {
+            errors <- c(errors, "min_pmids_degree3 must be a number between 1 and 1000")
+        } else if (config$min_pmids_degree3 != as.integer(config$min_pmids_degree3)) {
+            errors <- c(errors, "min_pmids_degree3 must be a whole number")
         }
     }
 
