@@ -309,12 +309,12 @@ graphConfigUI <- function(id) {
                         # Squelch Thresholds (by degree)
                         div(
                             class = "form-group",
-                            h5("Squelch Thresholds (minimum unique PMIDs by degree) *"),
+                            h5("Squelch Thresholds (minimum unique PMIDs) *"),
                             fluidRow(
                                 column(4,
                                     numericInput(
                                         ns("min_pmids_degree1"),
-                                        "Degree 1:",
+                                        "Threshold for 1st Degree:",
                                         value = 10,
                                         min = 1,
                                         max = 1000,
@@ -325,7 +325,7 @@ graphConfigUI <- function(id) {
                                 column(4,
                                     numericInput(
                                         ns("min_pmids_degree2"),
-                                        "Degree 2:",
+                                        "Threshold for 2nd Degree:",
                                         value = 10,
                                         min = 1,
                                         max = 1000,
@@ -336,7 +336,7 @@ graphConfigUI <- function(id) {
                                 column(4,
                                     numericInput(
                                         ns("min_pmids_degree3"),
-                                        "Degree 3:",
+                                        "Threshold for 3rd Degree:",
                                         value = 10,
                                         min = 1,
                                         max = 1000,
