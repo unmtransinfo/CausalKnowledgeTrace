@@ -69,20 +69,41 @@ if (file.exists(config_file)) {
         cat("  Outcome CUIs:", paste(config$outcome_cuis, collapse = ", "), "\n")
         cat("  Exposure Name:", config$exposure_name, "\n")
         cat("  Outcome Name:", config$outcome_name, "\n")
-        cat("  Min PMIDs:", config$min_pmids, "\n")
+
+        # Display thresholds - support both old and new format
+        if (!is.null(config$min_pmids_degree1)) {
+            cat("  Min PMIDs (Degree 1):", config$min_pmids_degree1, "\n")
+            cat("  Min PMIDs (Degree 2):", config$min_pmids_degree2, "\n")
+            cat("  Min PMIDs (Degree 3):", config$min_pmids_degree3, "\n")
+        } else if (!is.null(config$min_pmids)) {
+            cat("  Min PMIDs:", config$min_pmids, "\n")
+        }
+
         cat("  Degree:", config$degree, "\n")
         cat("  Predication Type:", config$predication_type, "\n")
-        
-        # Validate required fields
-        required_fields <- c("exposure_cuis", "outcome_cuis", "exposure_name", 
-                           "outcome_name", "min_pmids", "degree", "predication_type")
-        missing_fields <- required_fields[!required_fields %in% names(config)]
-        
-        if (length(missing_fields) == 0) {
+
+        # Validate required fields - support both old and new format
+        required_fields_base <- c("exposure_cuis", "outcome_cuis", "exposure_name",
+                                 "outcome_name", "degree", "predication_type")
+
+        # Check if either old or new threshold format is present
+        has_old_format <- "min_pmids" %in% names(config)
+        has_new_format <- all(c("min_pmids_degree1", "min_pmids_degree2", "min_pmids_degree3") %in% names(config))
+
+        missing_fields <- required_fields_base[!required_fields_base %in% names(config)]
+
+        if (length(missing_fields) == 0 && (has_old_format || has_new_format)) {
             record_test("All required configuration fields present", TRUE)
         } else {
-            record_test("All required configuration fields present", FALSE, 
-                       paste("Missing fields:", paste(missing_fields, collapse = ", ")))
+            error_parts <- c()
+            if (length(missing_fields) > 0) {
+                error_parts <- c(error_parts, paste("Missing fields:", paste(missing_fields, collapse = ", ")))
+            }
+            if (!has_old_format && !has_new_format) {
+                error_parts <- c(error_parts, "Missing threshold fields (need either min_pmids or min_pmids_degree1/2/3)")
+            }
+            record_test("All required configuration fields present", FALSE,
+                       paste(error_parts, collapse = "; "))
         }
         
     }, error = function(e) {

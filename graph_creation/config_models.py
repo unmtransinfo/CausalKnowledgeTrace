@@ -73,8 +73,29 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         if not isinstance(blacklist_cuis, list):
             blacklist_cuis = [blacklist_cuis] if blacklist_cuis else []
         
-        # Extract threshold from min_pmids, default to 50 if not present
-        threshold = yaml_config.get('min_pmids', 50)
+        # Extract thresholds - support both old format (min_pmids) and new format (min_pmids_degree1/2/3)
+        has_new_format = all(key in yaml_config for key in ['min_pmids_degree1', 'min_pmids_degree2', 'min_pmids_degree3'])
+        has_old_format = 'min_pmids' in yaml_config
+
+        if has_new_format:
+            # New format with degree-specific thresholds
+            threshold_degree1 = yaml_config.get('min_pmids_degree1', 50)
+            threshold_degree2 = yaml_config.get('min_pmids_degree2', 50)
+            threshold_degree3 = yaml_config.get('min_pmids_degree3', 50)
+            threshold = threshold_degree1  # For backward compatibility, use degree1 as default
+            thresholds_by_degree = {
+                1: threshold_degree1,
+                2: threshold_degree2,
+                3: threshold_degree3
+            }
+        elif has_old_format:
+            # Old format with single threshold for all degrees
+            threshold = yaml_config.get('min_pmids', 50)
+            thresholds_by_degree = {1: threshold, 2: threshold, 3: threshold}
+        else:
+            # No threshold specified, use default
+            threshold = 50
+            thresholds_by_degree = {1: 50, 2: 50, 3: 50}
 
         # Extract degree with default and validation - now supports any positive integer
         degree = yaml_config.get('degree', yaml_config.get('k_hops', 3))  # Support both new and old names for backward compatibility
@@ -111,6 +132,7 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
             'outcome_cuis': outcome_cuis,
             'blacklist_cuis': blacklist_cuis,
             'threshold': threshold,
+            'thresholds_by_degree': thresholds_by_degree,  # New: degree-specific thresholds
             'degree': degree,
             'predication_type': predication_type,
             'predication_types': predication_types,  # parsed list for SQL queries
