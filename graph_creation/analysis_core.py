@@ -81,8 +81,13 @@ class GraphAnalyzer:
         if yaml_config_data and 'blocklist_cuis' in yaml_config_data:
             blocklist_cuis = yaml_config_data['blocklist_cuis']
 
-        # Initialize database operations with predication types, degree, and blocklist_cuis
-        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, degree, blocklist_cuis)
+        # Extract degree-specific thresholds from YAML config if available
+        thresholds_by_degree = None
+        if yaml_config_data and 'thresholds_by_degree' in yaml_config_data:
+            thresholds_by_degree = yaml_config_data['thresholds_by_degree']
+
+        # Initialize database operations with predication types, degree, blocklist_cuis, and thresholds_by_degree
+        self.db_ops = DatabaseOperations(self.config, threshold, self.timing_data, predication_types, degree, blocklist_cuis, thresholds_by_degree)
 
         # Create output directory
         self.output_dir.mkdir(parents=True, exist_ok=True)

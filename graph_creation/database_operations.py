@@ -107,13 +107,20 @@ def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = 
 class DatabaseOperations:
     """Helper class for database operations and queries."""
 
-    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, degree: int = 3, blocklist_cuis: List[str] = None):
+    def __init__(self, config, threshold: int, timing_data: Dict, predication_types: List[str] = None, degree: int = 3, blocklist_cuis: List[str] = None, thresholds_by_degree: Dict[int, int] = None):
         self.config = config
         self.threshold = threshold
         self.timing_data = timing_data
         self.predication_types = predication_types or ['CAUSES']
         self.degree = degree
         self.blocklist_cuis = blocklist_cuis or []
+
+        # Support degree-specific thresholds
+        if thresholds_by_degree:
+            self.thresholds_by_degree = thresholds_by_degree
+        else:
+            # Fallback to single threshold for all degrees
+            self.thresholds_by_degree = {i: threshold for i in range(1, degree + 1)}
 
         # Load database schema and table names from environment variables
         # Each table can have its own schema for maximum flexibility
@@ -127,6 +134,12 @@ class DatabaseOperations:
         if self.blocklist_cuis:
             print(f"Blocklist filtering enabled: {len(self.blocklist_cuis)} CUI(s) will be excluded from graph creation")
             print(f"Blocklisted CUIs: {', '.join(self.blocklist_cuis)}")
+
+        # Log threshold information
+        if thresholds_by_degree:
+            print(f"Using degree-specific thresholds: {self.thresholds_by_degree}")
+        else:
+            print(f"Using single threshold for all degrees: {threshold}")
     
     def _create_cui_array_condition(self, field_name: str) -> str:
         """Create SQL condition for CUI array using ANY operator (optimized)"""
@@ -389,6 +402,9 @@ class DatabaseOperations:
         # Create predication condition for multiple predication types
         predication_condition = self._create_predication_condition()
 
+        # Get degree-specific threshold
+        degree_threshold = self.thresholds_by_degree.get(1, self.threshold)
+
         # Optimized query using ANY operator with arrays instead of IN clauses
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
@@ -413,7 +429,7 @@ class DatabaseOperations:
         params = (self.predication_types +  # Use all predication types
                  [self.config.exposure_cui_list, self.config.exposure_cui_list,
                   self.config.outcome_cui_list, self.config.outcome_cui_list] +
-                 [self.threshold] + blocklist_params)
+                 [degree_threshold] + blocklist_params)
 
         execute_query_with_logging(cursor, query, params)
 
@@ -434,6 +450,9 @@ class DatabaseOperations:
         predication_condition = self._create_predication_condition()
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
+        # Get degree-specific threshold
+        degree_threshold = self.thresholds_by_degree.get(2, self.threshold)
+
         # Optimized query using ANY operator with arrays instead of IN clauses
         query = f"""
         SELECT cp.subject_name, cp.object_name, COUNT(DISTINCT cp.pmid) AS evidence,
@@ -451,7 +470,7 @@ class DatabaseOperations:
         """
 
         # Parameters: predication_types + previous_hop_list array (twice) + blocklist_params + threshold
-        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [self.threshold]
+        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [degree_threshold]
 
         execute_query_with_logging(cursor, query, params)
 
@@ -472,6 +491,9 @@ class DatabaseOperations:
         predication_condition = self._create_predication_condition()
         blocklist_condition, blocklist_params = self._create_blocklist_conditions()
 
+        # Get degree-specific threshold
+        degree_threshold = self.thresholds_by_degree.get(hop_level, self.threshold)
+
         # Simplified query using ANY operator directly - no CTE needed
         # This finds relationships where either subject or object is in the previous hop nodes
         query = f"""
@@ -488,7 +510,7 @@ class DatabaseOperations:
         """
 
         # Parameters: predication_types + previous_hop_list array (twice) + blocklist_params + threshold
-        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [self.threshold]
+        params = self.predication_types + [previous_hop_list, previous_hop_list] + blocklist_params + [degree_threshold]
 
         execute_query_with_logging(cursor, query, params)
 

@@ -20,13 +20,13 @@ if (!require(yaml)) {
 #' @param validated_params List of validated configuration parameters
 #' @return Character string containing YAML content
 create_yaml_config <- function(validated_params) {
+    # Support both old format (min_pmids) and new format (min_pmids_degree1/2/3)
     config_list <- list(
         exposure_cuis = validated_params$exposure_cuis,
         outcome_cuis = validated_params$outcome_cuis,
         blacklist_cuis = validated_params$blacklist_cuis,
         exposure_name = validated_params$exposure_name,
         outcome_name = validated_params$outcome_name,
-        min_pmids = validated_params$min_pmids,
         pub_year_cutoff = validated_params$pub_year_cutoff,
         degree = validated_params$degree,
         predication_type = validated_params$predication_types,
@@ -34,7 +34,17 @@ create_yaml_config <- function(validated_params) {
         created_timestamp = Sys.time(),
         created_by = "Causal Web Shiny Application"
     )
-    
+
+    # Add threshold fields - prefer new format if available
+    if (!is.null(validated_params$min_pmids_degree1)) {
+        config_list$min_pmids_degree1 = validated_params$min_pmids_degree1
+        config_list$min_pmids_degree2 = validated_params$min_pmids_degree2
+        config_list$min_pmids_degree3 = validated_params$min_pmids_degree3
+    } else if (!is.null(validated_params$min_pmids)) {
+        # Backward compatibility - save as old format
+        config_list$min_pmids = validated_params$min_pmids
+    }
+
     # Convert to YAML
     yaml_content <- yaml::as.yaml(config_list, indent = 2)
     return(yaml_content)
@@ -250,7 +260,14 @@ create_config_summary <- function(validated_params) {
         } else {
             "Blacklist CUIs: None\n"
         },
-        "Minimum PMIDs: ", validated_params$min_pmids, "\n",
+        # Support both old and new format for thresholds
+        if (!is.null(validated_params$min_pmids_degree1)) {
+            paste0("Minimum PMIDs (Degree 1): ", validated_params$min_pmids_degree1, "\n",
+                   "Minimum PMIDs (Degree 2): ", validated_params$min_pmids_degree2, "\n",
+                   "Minimum PMIDs (Degree 3): ", validated_params$min_pmids_degree3, "\n")
+        } else {
+            paste0("Minimum PMIDs: ", validated_params$min_pmids, "\n")
+        },
         "Publication Year Cutoff: ", validated_params$pub_year_cutoff, "\n",
         "Degree: ", validated_params$degree, "\n",
         "SemMedDB Version: ", validated_params$semmeddb_version, "\n",
