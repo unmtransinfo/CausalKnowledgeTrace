@@ -82,10 +82,9 @@ CausalKnowledgeTrace/
 │
 ├── furtherAnalysis/             # Analytic code and features that haven't been worked into the main body of code
 │   ├── classifyVariables.R      # Classifies each variable by its causal role, e.g., confounder, collider, mediator, IV, and the like.
-│   ├── cleanByRemovingLeaves.R  # Removes leaves (singly-connected nodes) from the causal graph from initial search
-│   ├── cleanButterflyReport-CausalGraph.R    # code for identifying minimally sufficient adjustment sets in context of butterfly bias 
-│   ├── cleanButterflyReport-CausalGraph_compiled.R #compiled version of above
-│   ├── mBiasReport-CausalGraph.R# identifying variables implicated in M-bias from causal graph
+│   ├── cleanButterflyReport-CausalGraph.R    # (work-in-progress) code for identifying minimally sufficient adjustment sets in the context of butterfly bias 
+│   ├── cleanButterflyReport-CausalGraph_compiled.R # (work-in-progress) compiled version of above
+│   ├── mBiasReport-CausalGraph.R # (work-in-progress) identifying variables implicated in M-bias from causal graph
 │   └── utils/                   # Utility functions
 │
 └── graph_creation/              # Graph Creation Engine Component
@@ -113,19 +112,29 @@ CausalKnowledgeTrace/
 
 ## Prerequisites
 
-### System Requirements
+### UMLS Metathesaurus License (Required)
+CausalKnowledgeTrace uses SemMedDB, a database derived from the UMLS Metathesaurus. A free UMLS license is required before installation.
 
-- **Git**: Version control system (required for cloning the repository)
-- **PostgreSQL** database with modified SemMEDdb data (for graph creation) in postgres
-- **Conda/Miniconda**: For environment management (required)
-- **Python** (version 3.11 or higher)
-- **R** (version 4.0 or higher): Download from [https://cran.r-project.org/](https://cran.r-project.org/)
+**Why is this required?**  
+CausalKnowledgeTrace extracts causal relationships from SemMedDB, which is derived from the UMLS (Unified Medical Language System) Metathesaurus maintained by the National Library of Medicine. The NLM requires users to obtain a free license to access UMLS-derived resources.
 
-### Database Requirements
+**How to obtain your license:**
+1. Visit the [UMLS Metathesaurus License Agreement](https://www.nlm.nih.gov/research/umls/knowledge_sources/metathesaurus/release/license_agreement.html)
+2. Create an account or sign in with existing credentials
+3. Complete the license application (takes ~5 minutes)
+4. Wait for approval (typically 1-2 business days)
+5. You'll receive confirmation via email
 
-- PostgreSQL database with SemMedDB schema
-- Database connection parameters (host, port, username, password, database name)
-- **CUI Search Index Table**: Automatically created by the application on first use
+**Installation note:** You can complete Steps 1, 2, and 4 (software installation) while waiting for license approval. However, you'll need your approved license before proceeding with Step 3 (database setup).
+
+#### System Requirements
+- _Git_: Version control system
+- _PostgreSQL_: Database system
+- _Conda_ or _Miniconda_: Environment management
+- Python 3.11 or higher
+- _R_ v4.0 or higher: [Download from CRAN](https://cran.r-project.org/)
+- Disk space: 50GB+ recommended
+- RAM: 8GB+ recommended
 
 ## Installation
 
@@ -137,20 +146,18 @@ You can download the repository directly from GitHub (without installing _Git_):
 
 **Download Link**: [Download ZIP from GitHub](https://github.com/unmtransinfo/CausalKnowledgeTrace/archive/refs/heads/main.zip)
 
-Extract the ZIP file and navigate to the extracted directory.
+You can just extract the ZIP file and navigate to the extracted directory.
 
-#### Option 2: Clone with Git (Recommended)
+#### Option 2: Clone with _Git_ (Recommended)
 
-Installing Git is recommended as it allows you to easily pull future updates to the project.
+**_Git_ Installation Guide**
 
-**Installation Guide**
+_Git_ is a version control system that simplifies updating the software. If _Git_ is not already installed on your system, follow these instructions: [_Git_ Installation Instructions](https://chatgpt.com/share/69249639-630c-800e-9936-7d052643edb7)
 
-_Git_ is a version control system that makes updating the software simple. If _Git_ is not already installed on your system, follow these instructions:: [_Git_ Installation Instructions](https://chatgpt.com/share/69249639-630c-800e-9936-7d052643edb7)
-
-After installation, verify that _Git_ is installed correctly:
-
+After installation, verify Git is installed correctly:
 ```bash
 git --version
+# Should display: git version 2 .x .x or higher
 ```
 
 Clone the repository:
@@ -160,7 +167,7 @@ git clone git@github.com:unmtransinfo/CausalKnowledgeTrace.git
 cd CausalKnowledgeTrace
 ```
 
-To get future updates, simply run:
+To get future updates, run:
 
 ```bash
 git pull origin main
@@ -168,14 +175,14 @@ git pull origin main
 
 ### Step 2: Install PostgreSQL
 
-PostgreSQL is required for storing and querying the SemMedDB data. If you don't have PostgreSQL installed, please follow the installation instructions:
+PostgreSQL is required to store and query SemMedDB data. If you don't have PostgreSQL installed, please follow the installation instructions:
 
 **Installation Guide**: [PostgreSQL Installation Instructions](https://chatgpt.com/share/692494d4-269c-800e-a5a1-96a9e469670b)
 
 After installation, verify that PostgreSQL is installed correctly:
-
 ```bash
 psql --version
+# Should display: psql (PostgreSQL) 14.x or higher
 ```
 
 ### Step 3: PostgreSQL Database Setup for SemMedDB
@@ -192,7 +199,7 @@ We created a modified version of [SemMedDB](https://skr3.nlm.nih.gov/SemMedDB/) 
 
 **Prerequisites:**
 
-- PostgreSQL must be installed on your system (see Step 1 above)
+- PostgreSQL must be installed on your system (see the PostgreSQL installation instructions in Step 2 above)
 - Sufficient disk space (at least 50GB recommended for extraction and setup)
 
 **Create the Database:**
@@ -213,11 +220,10 @@ This project requires Conda for environment management. If you don't have Conda/
 
 **Installation Guide**: [https://www.anaconda.com/docs/getting-started/miniconda/install](https://www.anaconda.com/docs/getting-started/miniconda/install)
 
-After installation, verify that conda is installed correctly:
-
+After installation, verify Conda is installed correctly:
 ```bash
 conda --version
-conda info
+# Should display: conda 25.x.x or higher
 ```
 
 #### Setup Steps
@@ -225,11 +231,11 @@ conda info
 Once Miniconda is installed, follow these steps to set up the project environment:
 
 ```bash
-# 1. Setup environment configuration
+# 1. Set up environment configuration
 cp doc/sample.env .env
 # Edit .env with your database credentials
 
-# 2. Create conda environment from the YAML file
+# 2. Create a conda environment from the YAML file
 conda env create -f doc/environment.yaml
 
 # 3. Activate the environment
@@ -256,14 +262,24 @@ cp doc/sample.env .env
 nano .env  # or use your preferred editor
 ```
 
-The `.env` file should contain:
-
+Edit the `.env` file with your actual PostgreSQL database credentials. Replace `your_username` and `your_password` with the credentials you created during PostgreSQL installation:
 ```bash
 # Database Configuration
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=your_username #change to your username
-DB_PASSWORD=your_password #change to your password
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=causalehr
+DB_SCHEMA=causalehr
+```
+
+**Example:**
+```bash
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=samalec
+DB_PASSWORD=$hibboleth365!!!
 DB_NAME=causalehr
 DB_SCHEMA=causalehr
 ```
@@ -271,15 +287,31 @@ DB_SCHEMA=causalehr
 **Important**:
 
 - Replace the placeholder values with your actual database credentials
-- The `.env` file is ignored by git for security (contains sensitive information)
-- Make sure your database contains the SemMedDB schema with causalpredication table
+- The `.env` file is listed in .gitignore to protect sensitive information. Changes to it are ignored by _Git_ for security purposes (since it contains sensitive information)
+- Make sure your database contains the SemMedDB schema with the _causalpredication_ table
+
+##Verify database installation:##
+
+Open a new terminal window:
+```bash
+psql -U your_username
+
+# Connect to database
+\c causalehr
+
+# Test the query
+SELECT * FROM causalpredication LIMIT 5;
+
+# Quit out of psql (PostgreSQL)
+\q
+```
 
 ### Step 6: Run the Application
 
 Once all the prerequisites are installed and configured, you can launch the Shiny web application:
 
 ```bash
-# Make sure you're in the project directory and the conda environment is activated
+# Make sure you're in the project directory, and the conda environment is activated
 conda activate causalknowledgetrace
 
 # Run the Shiny application
@@ -299,3 +331,134 @@ The application includes an advanced CUI (Concept Unique Identifier) search syst
 #### How to Use
 
 Type at least 3 characters and press Enter to search. Click on search results to select CUIs, or manually enter them in the format C followed by 7 digits (e.g., C0020538). Selected CUIs appear as a comma-separated list that can be edited directly.
+
+For more detail, see Usage instructions: [CKT Usage Instructions](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
+
+## Troubleshooting
+
+### Common Issues
+
+#### Database Connection Errors
+**Problem:** Application fails to connect to PostgreSQL database
+
+**Solutions:**
+1. Verify PostgreSQL is running:
+```bash
+   # On macOS/Linux
+   pg_ctl status
+   
+   # On Windows
+   pg_isready
+```
+
+2. Check your `.env` credentials match your PostgreSQL settings
+3. Ensure the `causalehr` database exists:
+```bash
+   psql -U your_username -l | grep causalehr
+```
+
+#### Conda Environment Issues
+**Problem:** `conda activate causalknowledgetrace` fails
+
+**Solutions:**
+1. Initialize conda for your shell:
+```bash
+   conda init bash  # or zsh, fish, etc.
+```
+2. Close and reopen your terminal
+3. Try activating again
+
+**Problem:** Package installation fails in conda environment
+
+**Solution:**
+```bash
+# Remove and recreate the environment
+conda deactivate
+conda env remove -n causalknowledgetrace
+conda env create -f doc/environment.yaml
+```
+
+#### R Package Installation Errors
+**Problem:** `Rscript doc/packages.R` fails
+
+**Solutions:**
+1. Ensure R is installed and accessible:
+```bash
+   R --version
+```
+2. Install packages manually in R console:
+```r
+   install.packages(c("shiny", "visNetwork", "DT", "shinyjs"))
+```
+
+#### Application Won't Start
+**Problem:** `Rscript run_app.R` fails or crashes
+
+**Solutions:**
+1. Check all prerequisites are installed (see verification commands above)
+2. Ensure conda environment is activated:
+```bash
+   conda activate causalknowledgetrace
+```
+3. Check for port conflicts (default: 8080):
+```bash
+   # On macOS/Linux
+   lsof -ti:8080
+   
+   # If a process is using port 8080, kill it or specify a different port
+```
+
+#### Database Download Issues
+**Problem:** 25GB download fails or is very slow
+
+**Solutions:**
+1. Use a stable internet connection
+2. If download fails partway, try the OneDrive web interface instead of direct download
+3. Verify file integrity after download:
+```bash
+   # File should be approximately 25GB
+   ls -lh causalehr_backup.tar.gz
+```
+
+#### CUI Search Not Working
+**Problem:** CUI search returns no results
+
+**Solutions:**
+1. Ensure the CUI search index table was created (check application logs on first run)
+2. Try searching with different terms (at least 3 characters required)
+3. Manually verify database connection in psql:
+```bash
+   psql -U your_username -d causalehr -c "SELECT COUNT(*) FROM causalehr.cui_search_index;"
+```
+
+### Getting Help
+
+If you encounter issues not covered here:
+
+1. **Check the logs:** The application outputs detailed error messages to the console
+2. **GitHub Issues:** [Open an issue](https://github.com/unmtransinfo/CausalKnowledgeTrace/issues) with:
+   - Your operating system and version
+   - Error messages (copy the full text)
+   - Steps you've already tried
+3. **Email support:** Contact Scott Malec (SMalec@salud.unm.edu) or Rajesh Upadhayaya (RAJESHUPADHAYAYA@salud.unm.edu) to schedule a walk-through session
+
+### System-Specific Notes
+
+**macOS Users:**
+- May need to install Xcode Command Line Tools:
+```bash
+  xcode-select --install
+```
+
+**Windows Users:**
+- Use Git Bash or PowerShell for commands
+- PostgreSQL service may need manual start from the Services panel
+
+**Linux Users:**
+- Ensure PostgreSQL service is enabled:
+```bash
+  sudo systemctl enable postgresql
+  sudo systemctl start postgresql
+```
+
+
