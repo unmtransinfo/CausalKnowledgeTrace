@@ -2,7 +2,7 @@
 
 ## Overview
 
-This R script provides tools for identifying and addressing two common sources of bias in causal inference from observational data: butterfly bias and M-bias. The functions analyze directed acyclic graphs (DAGs) representing causal relationships and generate adjustment sets that avoid introducing bias through inappropriate conditioning.
+This R script provides tools for identifying and addressing two common sources of bias in causal inference from observational data: butterfly bias and M-bias. The functions analyze directed acyclic graphs (DAGs) representing causal relationships and generate adjustment sets that avoid bias introduced by inappropriate conditioning.
 
 ## Dependencies
 ```r
@@ -13,7 +13,7 @@ library(dagitty)
 
 ### Butterfly Bias
 
-Butterfly bias is a form of sample selection bias that occurs when conditioning on a variable (the "butterfly node") that has two or more common causes that are themselves confounders. Conditioning on the butterfly node can open spurious paths between the exposure and outcome, introducing bias even when adjusting for confounders.
+Butterfly bias is a form of sample selection bias that occurs when conditioning on a variable (the "butterfly node") that has two or more common causes, each of which is itself a confounder. Conditioning on the butterfly node can open spurious paths between the exposure and outcome, introducing bias even when adjusting for confounders.
 
 **Example structure:**
 ```
@@ -207,7 +207,7 @@ Generates a comprehensive report analyzing butterfly bias and M-bias in the prov
 3. Valid minimal sufficient adjustment sets (butterfly-safe)
 4. Comparison with dagitty minimal sets
 5. M-bias variables to avoid
-6. Path verification showing effect of adjustment
+6. Path verification showing the effect of adjustment
 
 ---
 
@@ -258,7 +258,7 @@ mbias_vars <- mbias_analysis$mbias_vars
 
 ### Variable Roles
 
-- **Instrumental variables**: Can potentially be used for instrumental variable analysis but should not be included in standard adjustment sets
+- **Instrumental variables**: Can potentially be used for instrumental variable analysis, but should not be included in standard adjustment sets
 - **Precision variables**: Optional to include; improve statistical precision without introducing bias
 - **Confounders**: Must be addressed through adjustment, restriction, or matching
 - **Mediators**: Should not be adjusted if estimating total causal effect; adjust only for direct effects
@@ -296,10 +296,3 @@ This script is part of the `furtherAnalysis` module in CausalKnowledgeTrace. Aft
 - Ding, P., & Miratrix, L. W. (2015). To adjust or not to adjust? Sensitivity analysis of M-bias and butterfly-bias. Journal of Causal Inference, 3(1), 41-57.
 - VanderWeele, T. J. (2019). Principles of confounder selection. European Journal of Epidemiology, 34, 211-219.
 
-## License
-
-[Specify license information]
-
-## Contact
-
-[Specify contact information for questions or issues]
