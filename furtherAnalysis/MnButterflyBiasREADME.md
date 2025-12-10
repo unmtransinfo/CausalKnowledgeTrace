@@ -2,7 +2,7 @@
 
 ## Overview
 
-This R script provides tools for identifying and addressing two common sources of bias in causal inference from observational data: butterfly bias and M-bias. The functions analyze directed acyclic graphs (DAGs) representing causal relationships and generate adjustment sets that avoid bias introduced by inappropriate conditioning.
+This R script provides tools for identifying the roles of third-factor variables, e.g., confounders, colliders, mediators, precision variables, instrumental variables, in the graph and for addressing two common sources of bias in causal inference from observational data: butterfly bias and M-bias. The functions analyze directed acyclic graphs (DAGs) representing causal relationships and generate adjustment sets that avoid bias introduced by inappropriate conditioning.
 
 ## Dependencies
 ```r
@@ -263,6 +263,15 @@ mbias_vars <- mbias_analysis$mbias_vars
 - **Confounders**: Must be addressed through adjustment, restriction, or matching
 - **Mediators**: Should not be adjusted if estimating total causal effect; adjust only for direct effects
 - **Colliders**: Generally should not be adjusted unless part of M-bias structure
+
+### TODO
+Add sections for hybrid-type variables: 
+- **Confounder/Mediators**: Also called confounders affected by prior treatment (CAPT[s])
+- **Confounder/Mediator/Colliders**: an inherently problematic bunch
+- **Mediator/Colliders**: --
+
+Process from the raw initial graph to get Precision Variables (PVs) and Instrumental Variables (IVs): 
+- **Add in remove leaves code, etc. PRIOR to running identifiers for PVs and IVs:** PVs and IVs are removed in graph preprocessing
 
 ### Adjustment Set Selection
 
