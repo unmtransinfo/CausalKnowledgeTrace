@@ -1,14 +1,66 @@
-# CausalKnowledgeTrace: Interactive Literature-Based Causal Structure Mapping, Graph Generation, Visualization, and Refinement 
+# CausalKnowledgeTrace: Interactive Literature-Based Causal Structure Mapping, Graph Generation, Visualization, and Refinement
 
-CausalKnowledgeTrace (CKT) automates causal knowledge graph generation from biomedical literature. The system extracts causal relationships from SemMedDB, a database of semantic predications derived from PubMed abstracts.
+## Overview
 
-CKT has two main components. A Python engine handles graph construction and causal identification algorithms. A Shiny web application provides interactive visualization and user configuration.
+CausalKnowledgeTrace (CKT) helps researchers build causal knowledge graphs from published biomedical literature. The system automatically extracts and organizes causal relationships between biological concepts (genes, proteins, diseases, drugs, etc.) to support hypothesis generation and study design in observational research.
 
-Users specify an exposure and outcome of interest. They can constrain the search by publication year, causal predicate type, and minimum number of supporting articles per relationship. CKT constructs initial partially directed acyclic graphs (PDAGs) representing causal structures between biomedical concepts. Users then edit these graphs interactively to remove unnecessary nodes and edges. CKT can export graphs and evidence from the literature for downstream analysis. 
+## Data Source
 
-Additional tools in the furtherAnalysis folder refine the exported graphs. These tools classify variables by their causal role relative to the exposure and outcome. They identify nodes within three causal steps of the exposure or outcome. The tools also remove extraneous variables and detect minimal adjustment sets for unbiased effect estimation. This includes adjustment sets that address butterfly bias, a form of sample selection bias in causal graphs.
+CKT queries SemMedDB, a database containing subject-predicate-object triples (e.g., "Smoking CAUSES Lung Cancer") extracted from 33+ million PubMed abstracts using the SemRep natural language processing system. Each relationship is linked to its supporting literature, allowing users to trace claims back to primary evidence.
 
-The adjustment sets account for confounding while avoiding collider bias and selection bias. This architecture supports systematic causal inference in observational biomedical research. Researchers can explore alternative causal structures and test different assumptions about edge directionality. The tool facilitates hypothesis generation and study design for epidemiological analyses.
+## System Architecture
+
+CKT consists of two integrated components:
+
+- **Python engine**: Implements graph construction, causal structure learning algorithms, and exports results for statistical analysis
+- **Shiny web application**: Provides interactive visualization, parameter configuration, and iterative graph refinement
+
+## Workflow
+
+1. **Query Configuration**: Users specify an exposure and outcome of interest using UMLS (Unified Medical Language System) identifiers or free text search. Configurable parameters include publication year range, causal predicate types (CAUSES, INHIBITS, STIMULATES, PREVENTS, DISRUPTS), minimum article support thresholds, and degrees of separation (currently limited to 3 degrees between exposure and outcome).
+
+2. **Graph Construction**: CKT builds initial partially directed acyclic graphs (PDAGs) representing potential causal pathways connecting the exposure to the outcome. Edge directions are inferred from temporal precedence, biological plausibility, and semantic predicate types extracted from the literature.
+
+3. **Interactive Refinement**: Users iteratively remove spurious associations, biologically implausible relationships, or irrelevant variables through the web interface. This step incorporates domain expertise to improve graph quality.
+
+4. **Export and Documentation**: Refined graphs and supporting evidence (PubMed IDs, semantic predicates, citation counts) are exported for downstream causal analysis and documentation.
+
+## Advanced Causal Analysis Module
+
+*In development*
+
+The furtherAnalysis module performs systematic causal variable classification to support rigorous epidemiological analysis. Tools in this module:
+
+- Classify variables as confounders, mediators, or colliders relative to the exposure-outcome relationship
+- Apply graph traversal algorithms to retain variables within the causal vicinity while removing extraneous nodes
+- Compute minimal sufficient adjustment sets satisfying the back-door criterion for unbiased causal effect estimation
+- Identify adjustment strategies that block confounding paths while avoiding collider bias, M-bias, and butterfly bias
+- Providing suggestions, given user input of measured variables, of best-match, minimally sufficient adjustment sets that may include proxy confounders
+
+## Current Limitations and Development Roadmap
+
+The advanced analysis tools currently function on small example graphs but encounter computational challenges on literature-derived graphs due to:
+
+1. **Cyclic relationships**: Extracted literature relationships may contain feedback loops that violate the acyclic assumption required for standard causal inference algorithms. Biological systems often exhibit true bidirectional causation (e.g., inflammation causes oxidative stress, which further exacerbates inflammation).
+
+2. **Markov equivalence classes**: Many edge orientations in literature-derived graphs are ambiguous, resulting in equivalence classes of graphs that encode identical conditional independence relationships but different causal interpretations. The number of possible orientations grows exponentially (2^k for k ambiguous edges), making computation intractable for large graphs.
+
+Planned solutions include:
+
+- **Cycle detection and resolution**: Implementing algorithms to identify feedback loops and apply domain-guided strategies for cycle breaking or collapsing cyclic components into latent variables
+- **Constraint-based orientation**: Using temporal information, intervention evidence, and biological knowledge to reduce the equivalence class search space
+- **Approximate inference methods**: Developing heuristic algorithms that identify near-optimal adjustment sets without exhaustive enumeration of all possible graph orientations
+- **User-guided disambiguation**: Enabling interactive edge orientation based on expert knowledge to progressively reduce uncertainty
+
+## Applications
+
+This framework supports rigorous causal inference from observational biomedical data by enabling:
+
+- Systematic exploration of alternative causal hypotheses represented in published literature
+- Identification of potential confounders requiring measurement and adjustment in epidemiological studies
+- Sensitivity analyses examining how conclusions change under different assumptions about causal directionality
+- Hypothesis generation for experimental validation of putative causal relationships
+- Literature-based justification for variable selection in statistical models
 
 Usage instructions (*a veritable work-in-progress*) are available here: [Usage Instructions](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
 
@@ -290,7 +342,7 @@ DB_SCHEMA=causalehr
 - The `.env` file is listed in .gitignore to protect sensitive information. Changes to it are ignored by _Git_ for security purposes (since it contains sensitive information)
 - Make sure your database contains the SemMedDB schema with the _causalpredication_ table
 
-##Verify database installation:##
+##Verify database installation:
 
 Open a new terminal window:
 ```bash
@@ -299,8 +351,23 @@ psql -U your_username
 # Connect to database
 \c causalehr
 
+# See what tables are available
+\dt
+
+
 # Test the query
-SELECT * FROM causalpredication LIMIT 5;
+SELECT * FROM predication LIMIT 5;
+
+# You should see something like this: 
+
+ predication_id | sentence_id |   pmid   |    predicate    |  subject_cui  |       subject_name        | subject_semtype | subject_novelty | object_cui |    object_name     | object_semtype | object_novelty 
+----------------+-------------+----------+-----------------+---------------+---------------------------+-----------------+-----------------+------------+--------------------+----------------+----------------
+ 212709934      | 412553888   | 38238753 | PROCESS_OF      | C1319304      | Breastfeeding performance | fndg            | 1               | C0028661   | Nurses             | humn           | 1
+ 212709935      | 412553890   | 38238753 | PROCESS_OF      | C1319304      | Breastfeeding performance | fndg            | 1               | C0028661   | Nurses             | humn           | 1
+ 212709936      | 412553892   | 38238754 | PROCESS_OF      | C0017952      | Glycolysis                | moft            | 1               | C0014257   | Endothelium        | tisu           | 1
+ 212709937      | 412553892   | 38238754 | AUGMENTS        | C1418222|5033 | P4HA1 gene|P4HA1          | gngm            | 1               | C0302600   | Angiogenic Process | ortf           | 1
+ 212709938      | 412553893   | 38238754 | ASSOCIATED_WITH | C0043240      | Wound Healing             | orgf            | 1               | C0012634   | Disease            | dsyn           | 0
+(5 rows)
 
 # Quit out of psql (PostgreSQL)
 \q
