@@ -6,7 +6,7 @@ CausalKnowledgeTrace (CKT) helps researchers build causal knowledge graphs from 
 
 ## Data Source
 
-CKT queries SemMedDB, a database containing subject-predicate-object triples (e.g., "Smoking CAUSES Lung Cancer") extracted from 33+ million PubMed abstracts using the SemRep natural language processing system. Each relationship is linked to its supporting literature, allowing users to trace claims back to primary evidence.
+CKT queries SemMedDB, a database containing subject-predicate-object triples (e.g., "Smoking CAUSES Lung Cancer") extracted from 37+ million PubMed titles and abstracts using the SemRep natural language processing system. Each relationship is linked to its supporting literature, allowing users to trace claims back to primary evidence.
 
 ## System Architecture
 
@@ -41,7 +41,7 @@ The furtherAnalysis module performs systematic causal variable classification to
 
 The advanced analysis tools currently function on small example graphs but encounter computational challenges on literature-derived graphs due to:
 
-1. **Cyclic relationships**: Extracted literature relationships may contain feedback loops that violate the acyclic assumption required for standard causal inference algorithms. Biological systems often exhibit true bidirectional causation (e.g., inflammation causes oxidative stress, which further exacerbates inflammation).
+1. **Cyclic relationships**: Extracted literature relationships may contain feedback loops that violate the acyclic assumption required for standard causal inference algorithms. Biological systems often exhibit genuine bidirectional causation (e.g., inflammation causes oxidative stress, which further exacerbates inflammation).
 
 2. **Markov equivalence classes**: Many edge orientations in literature-derived graphs are ambiguous, resulting in equivalence classes of graphs that encode identical conditional independence relationships but different causal interpretations. The number of possible orientations grows exponentially (2^k for k ambiguous edges), making computation intractable for large graphs.
 
