@@ -24,6 +24,10 @@ services:
     container_name: cwt-app
     ports:
       - "3838:3838"
+    env_file:
+      - .env
+    environment:
+      - DB_HOST=db  # This overrides the DB_HOST from .env file
     depends_on:
       db:
         condition: service_healthy

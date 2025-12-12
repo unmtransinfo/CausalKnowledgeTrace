@@ -12,6 +12,7 @@ Date: February 2025
 import argparse
 import sys
 import time
+import os
 
 # Import configuration and database operations from separate modules
 from config_models import (
@@ -69,7 +70,7 @@ Example usage:
     
     # Database connection parameters
     db_group = parser.add_argument_group("Database Connection")
-    db_group.add_argument("--host", default="localhost", help="Database host (default: localhost)")
+    db_group.add_argument("--host", default=os.getenv("DB_HOST", "localhost"), help="Database host (default: localhost)")
     db_group.add_argument("--port", default="5432", help="Database port (default: 5432)")
     db_group.add_argument("--dbname", required=True, help="Database name")
     db_group.add_argument("--user", required=True, help="Database user")
