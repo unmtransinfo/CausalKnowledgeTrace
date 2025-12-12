@@ -360,23 +360,24 @@ tabItems(
                             )
                         ),
 
-                        # Progress indication section
-                        conditionalPanel(
-                            condition = "input.load_selected_dag > 0 || input.upload_and_load > 0",
-                            div(id = "loading_section", style = "margin: 20px 0;",
-                                h4(icon("spinner", class = "fa-spin"), " Loading Graph File..."),
-                                div(
-                                    style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;",
-                                    p("Please wait while your graph file is being processed and loaded."),
-                                    div(class = "progress", style = "height: 25px;",
-                                        div(id = "loading_progress", class = "progress-bar progress-bar-striped progress-bar-animated",
-                                            role = "progressbar", style = "width: 0%; background-color: #007bff;",
-                                            span(id = "progress_text", "Initializing...")
+                        # Progress indication section (visibility controlled by JavaScript)
+                        fluidRow(
+                            column(12,
+                                div(id = "loading_section", style = "margin: 20px 0; display: none;",
+                                    h4(icon("spinner", class = "fa-spin"), " Loading Graph File..."),
+                                    div(
+                                        style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;",
+                                        p("Please wait while your graph file is being processed and loaded."),
+                                        div(class = "progress", style = "height: 25px;",
+                                            div(id = "loading_progress", class = "progress-bar progress-bar-striped progress-bar-animated",
+                                                role = "progressbar", style = "width: 0%; background-color: #007bff;",
+                                                span(id = "progress_text", "Initializing...")
+                                            )
+                                        ),
+                                        br(),
+                                        div(id = "loading_status", style = "font-size: 14px; color: #6c757d;",
+                                            "Status: Ready to load..."
                                         )
-                                    ),
-                                    br(),
-                                    div(id = "loading_status", style = "font-size: 14px; color: #6c757d;",
-                                        "Status: Ready to load..."
                                     )
                                 )
                             )

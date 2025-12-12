@@ -239,7 +239,7 @@ get_app_javascript <- function() {
         Shiny.addCustomMessageHandler('hideLoadingSection', function(data) {
             setTimeout(function() {
                 hideLoadingSection();
-            }, 1000); // Brief delay to show completion
+            }, 1000); // Brief delay to show completion (1 second)
         });
     "))
 }
