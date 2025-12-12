@@ -54,62 +54,6 @@
                                 duration = 5
                             )
                         }
-
-                    } else if (input$filter_type == "path") {
-                        # Path-based filtering (includes leaf removal)
-                        session$sendCustomMessage("updateProgress", list(
-                            percent = 30,
-                            text = "Filtering paths between exposure and outcome...",
-                            status = "Analyzing causal paths"
-                        ))
-
-                        filter_result <- filter_exposure_outcome_paths(result$dag)
-                        filter_type_name <- "filtered"
-
-                        if (filter_result$success) {
-                            dag_to_use <- filter_result$dag
-                            cat(filter_result$message, "\n")
-
-                            # Also apply leaf removal to the path-filtered graph
-                            session$sendCustomMessage("updateProgress", list(
-                                percent = 40,
-                                text = "Removing leaf nodes from filtered paths...",
-                                status = "Cleaning up leaf nodes"
-                            ))
-
-                            leaf_result <- remove_leaf_nodes(dag_to_use, preserve_exposure_outcome = TRUE)
-
-                            if (leaf_result$success) {
-                                dag_to_use <- leaf_result$dag
-                                cat("After leaf removal: ", leaf_result$final_nodes, " nodes remaining\n")
-
-                                showNotification(
-                                    HTML(paste0("Path filtering + leaf removal complete:<br/>",
-                                               "Kept ", leaf_result$final_nodes, " nodes (",
-                                               round(leaf_result$final_nodes/filter_result$original_nodes*100, 1), "%) ",
-                                               "and ", leaf_result$final_edges, " edges<br/>",
-                                               "Removed ", filter_result$removed_nodes, " non-path nodes + ",
-                                               leaf_result$removed_nodes, " leaf nodes")),
-                                    type = "message",
-                                    duration = 6
-                                )
-                            } else {
-                                showNotification(
-                                    HTML(paste0("Path filtering complete (leaf removal failed):<br/>",
-                                               "Kept ", filter_result$final_nodes, " nodes (",
-                                               round(filter_result$final_nodes/filter_result$original_nodes*100, 1), "%) ",
-                                               "and ", filter_result$final_edges, " edges")),
-                                    type = "message",
-                                    duration = 5
-                                )
-                            }
-                        } else {
-                            showNotification(
-                                paste("Path filtering failed:", filter_result$message),
-                                type = "warning",
-                                duration = 5
-                            )
-                        }
                     }
                 }
 
@@ -396,36 +340,6 @@
                         if (filter_result$success) {
                             dag_to_use <- filter_result$dag
                             cat(filter_result$message, "\n")
-                        }
-
-                    } else if (input$filter_type == "path") {
-                        # Path-based filtering (includes leaf removal)
-                        session$sendCustomMessage("updateProgress", list(
-                            percent = 60,
-                            text = "Filtering paths between exposure and outcome...",
-                            status = "Analyzing causal paths"
-                        ))
-
-                        filter_result <- filter_exposure_outcome_paths(result$dag)
-                        filter_type_name <- "filtered"
-
-                        if (filter_result$success) {
-                            dag_to_use <- filter_result$dag
-                            cat(filter_result$message, "\n")
-
-                            # Also apply leaf removal to the path-filtered graph
-                            session$sendCustomMessage("updateProgress", list(
-                                percent = 65,
-                                text = "Removing leaf nodes from filtered paths...",
-                                status = "Cleaning up leaf nodes"
-                            ))
-
-                            leaf_result <- remove_leaf_nodes(dag_to_use, preserve_exposure_outcome = TRUE)
-
-                            if (leaf_result$success) {
-                                dag_to_use <- leaf_result$dag
-                                cat("After leaf removal: ", leaf_result$final_nodes, " nodes remaining\n")
-                            }
                         }
                     }
                 }
