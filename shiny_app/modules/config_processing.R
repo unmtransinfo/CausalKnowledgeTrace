@@ -110,11 +110,28 @@ execute_graph_creation <- function(config_file_path = "../graph_creation/user_in
             ))
         }
 
-        # Construct command
+        # Get database connection parameters from environment variables
+        db_host <- Sys.getenv("DB_HOST")
+        db_user <- Sys.getenv("DB_USER") 
+        db_password <- Sys.getenv("DB_PASSWORD")
+        db_name <- Sys.getenv("DB_NAME")
+        
+        # Validate required parameters
+        if (db_host == "" || db_user == "" || db_name == "") {
+            return(list(
+                success = FALSE,
+                message = "Database connection parameters missing. Ensure DB_HOST, DB_USER, and DB_NAME environment variables are set."
+            ))
+        }
+
+        # Construct command with environment variables
         cmd <- paste("cd", dirname(python_script_path), "&&",
                     "python", basename(python_script_path),
                     "--yaml-config", basename(config_file_path),
-                    "--host localhost --user myuser --password mypass --dbname causalehr")
+                    "--host", db_host,
+                    "--user", db_user,
+                    "--password", db_password,
+                    "--dbname", db_name)
 
         # Execute command and capture exit code
         # Note: We need to capture the exit code separately from the output
