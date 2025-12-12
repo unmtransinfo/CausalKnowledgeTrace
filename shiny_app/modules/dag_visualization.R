@@ -177,7 +177,11 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                 )
             ) %>%
             visOptions(
-                highlightNearest = list(enabled = TRUE, degree = 1),  # Enable but limit to 1 degree
+                highlightNearest = list(
+                    enabled = TRUE,
+                    degree = 1,
+                    algorithm = "hierarchical"
+                ),  # Enable but limit to 1 degree
                 nodesIdSelection = TRUE,  # Keep node selection enabled
                 collapse = list(enabled = FALSE)  # Disable clustering for clarity
             ) %>%
@@ -213,7 +217,11 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                 )
             ) %>%
             visOptions(
-                highlightNearest = list(enabled = TRUE, degree = 1),
+                highlightNearest = list(
+                    enabled = TRUE,
+                    degree = 1,
+                    algorithm = "hierarchical"
+                ),
                 nodesIdSelection = TRUE
             ) %>%
             visInteraction(
@@ -280,6 +288,24 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                     animation: {
                         duration: 500,
                         easingFunction: 'easeInOutQuad'
+                    }
+                });
+
+                // Store original colors for exposure and outcome nodes
+                var allNodes = network.body.data.nodes.get();
+                window.exposureOutcomeNodes = {};
+
+                allNodes.forEach(function(node) {
+                    var isExposure = (node.color === '#FF6B6B' || node.color === '#FF4500');
+                    var isOutcome = (node.color === '#4ECDC4' || node.color === '#0066CC');
+
+                    if (isExposure || isOutcome) {
+                        window.exposureOutcomeNodes[node.id] = {
+                            color: node.color,
+                            fontColor: node.font && node.font.color ? node.font.color : 'black',
+                            fontSize: node.font && node.font.size ? node.font.size : 14,
+                            type: isExposure ? 'exposure' : 'outcome'
+                        };
                     }
                 });
 
@@ -372,11 +398,47 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
         ) %>%
         visEvents(
             selectNode = "function(params) {
+                var network = this;
+
                 // Send selected node to Shiny for removal functionality
                 if (params.nodes.length > 0) {
                     Shiny.onInputChange('network_selected', params.nodes[0]);
                     // Also send for information display
                     Shiny.onInputChange('clicked_node_info', params.nodes[0]);
+
+                    // Custom highlighting: preserve exposure and outcome node colors
+                    // Use setTimeout to apply after visNetwork's default highlighting
+                    setTimeout(function() {
+                        if (!window.exposureOutcomeNodes) return;
+
+                        var updates = [];
+
+                        // Restore exposure and outcome nodes to full visibility
+                        Object.keys(window.exposureOutcomeNodes).forEach(function(nodeId) {
+                            var nodeInfo = window.exposureOutcomeNodes[nodeId];
+                            updates.push({
+                                id: nodeId,
+                                color: {
+                                    background: nodeInfo.color,
+                                    border: nodeInfo.color,
+                                    highlight: {
+                                        background: nodeInfo.color,
+                                        border: nodeInfo.color
+                                    }
+                                },
+                                opacity: 1.0,
+                                font: {
+                                    color: nodeInfo.fontColor,
+                                    size: nodeInfo.fontSize
+                                }
+                            });
+                        });
+
+                        // Apply updates to keep exposure/outcome nodes visible
+                        if (updates.length > 0) {
+                            network.body.data.nodes.update(updates);
+                        }
+                    }, 10);
                 } else {
                     Shiny.onInputChange('network_selected', null);
                     Shiny.onInputChange('clicked_node_info', null);
@@ -396,8 +458,41 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
                 }
             }",
             deselectNode = "function(params) {
+                var network = this;
+
                 if (params.previousSelection.nodes.length > 0) {
                     Shiny.onInputChange('clicked_node_info', null);
+
+                    // Restore exposure and outcome nodes when deselecting
+                    setTimeout(function() {
+                        if (!window.exposureOutcomeNodes) return;
+
+                        var updates = [];
+
+                        Object.keys(window.exposureOutcomeNodes).forEach(function(nodeId) {
+                            var nodeInfo = window.exposureOutcomeNodes[nodeId];
+                            updates.push({
+                                id: nodeId,
+                                color: {
+                                    background: nodeInfo.color,
+                                    border: nodeInfo.color,
+                                    highlight: {
+                                        background: nodeInfo.color,
+                                        border: nodeInfo.color
+                                    }
+                                },
+                                opacity: 1.0,
+                                font: {
+                                    color: nodeInfo.fontColor,
+                                    size: nodeInfo.fontSize
+                                }
+                            });
+                        });
+
+                        if (updates.length > 0) {
+                            network.body.data.nodes.update(updates);
+                        }
+                    }, 10);
                 }
             }"
         )
