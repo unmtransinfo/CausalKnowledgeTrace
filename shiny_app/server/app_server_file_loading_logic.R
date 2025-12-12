@@ -2,7 +2,6 @@
     observeEvent(input$load_selected_dag, {
         if (is.null(input$dag_file_selector) || input$dag_file_selector == "No DAG files found") {
             showNotification("Please select a valid graph file", type = "error")
-            session$sendCustomMessage("hideLoadingSection", list())
             return()
         }
 
@@ -276,7 +275,7 @@
                     status = "Graph loaded successfully"
                 ))
 
-                # Hide loading section after a brief delay
+                # Hide loading section (JavaScript will handle the delay)
                 session$sendCustomMessage("hideLoadingSection", list())
 
                 # Update DAG status to show it's ready to save

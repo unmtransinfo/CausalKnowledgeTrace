@@ -155,11 +155,17 @@ graphConfigServer <- function(id, db_connection = NULL) {
         # Reactive values for validation
         validation_state <- reactiveValues(
             is_valid = FALSE,
-            errors = c()
+            errors = c(),
+            graph_just_created = FALSE  # Flag to track if graph was just created
         )
 
         # Validation feedback output
         output$validation_feedback <- renderUI({
+            # Don't show validation feedback if graph was just created
+            if (validation_state$graph_just_created) {
+                return(NULL)
+            }
+
             if (validation_state$is_valid) {
                 div(
                     class = "alert alert-success",
@@ -200,6 +206,10 @@ graphConfigServer <- function(id, db_connection = NULL) {
 
             validation_state$is_valid <- validation_result$valid
             validation_state$errors <- validation_result$errors
+
+            # Reset the "graph just created" flag when inputs change
+            # This allows validation messages to show again
+            validation_state$graph_just_created <- FALSE
         })
 
         # Create Graph button event handler
@@ -344,12 +354,15 @@ graphConfigServer <- function(id, db_connection = NULL) {
                 ))
 
                 showNotification(
-                    "Graph created successfully! Check the output directory for results.",
+                    "Graph creation completed successfully! You can now load the graph from the Data Upload tab.",
                     type = "message",
                     duration = 10
                 )
 
-                # Hide progress section after brief delay
+                # Set flag to hide validation messages after successful creation
+                validation_state$graph_just_created <- TRUE
+
+                # Hide progress section (with delay handled by JavaScript if needed)
                 session$sendCustomMessage(paste0("hideGraphProgressSection_", id), list())
 
             }, error = function(e) {
