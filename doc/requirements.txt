@@ -1,7 +1,7 @@
 # Core dependencies
 psycopg2-binary
-PyYAML
 pandas
+PyYAML
 networkx
 scipy
 python-dotenv
