@@ -325,8 +325,7 @@ tabItems(
                                                 label = "Select filtering method:",
                                                 choices = list(
                                                     "No filtering - Load original graph" = "none",
-                                                    "Remove leaf nodes only (degree = 1)" = "leaf",
-                                                    "Keep only paths between exposure and outcome" = "path"
+                                                    "Remove leaf nodes only (degree = 1)" = "leaf"
                                                 ),
                                                 selected = "none"),
 
@@ -337,23 +336,6 @@ tabItems(
                                             icon("info-circle"),
                                             strong(" Leaf Removal:"),
                                             p("Iteratively removes nodes with only one connection (degree = 1). Exposure and outcome nodes are preserved.")
-                                        )
-                                    ),
-
-                                    conditionalPanel(
-                                        condition = "input.filter_type == 'path'",
-                                        div(style = "margin-left: 25px; padding: 10px; background-color: #d1ecf1; border-radius: 5px;",
-                                            icon("info-circle"),
-                                            strong(" Path-Based Filtering + Leaf Removal:"),
-                                            p("Keeps only nodes on directed paths connecting exposure and outcome. This includes:"),
-                                            tags$ul(
-                                                tags$li("Forward paths: exposure → ... → outcome"),
-                                                tags$li("Reverse paths: outcome → ... → exposure"),
-                                                tags$li("Common descendants: node → both exposure AND outcome"),
-                                                tags$li("Common ancestors: both exposure AND outcome → node")
-                                            ),
-                                            p(strong("Then removes leaf nodes"), " (degree = 1) from the filtered graph."),
-                                            p("This creates the most focused graph showing only well-connected bidirectional causal relationships.")
                                         )
                                     )
                                 )
