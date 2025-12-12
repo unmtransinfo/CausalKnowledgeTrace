@@ -1,13 +1,12 @@
 library(dagitty)
 
-# causal analysis
-# IV Report
-# Clean
-#### consolidation, 
-# butterfly-bias Report (etc.)
-# M-bias Report
-# Data-on-Hand Assessment, Proxy Variables, ANANKE integration, Comparison with Reported Literature, Study Quality/Transferrability Assessment
-#
+# 
+# 
+# 
+#### 
+# 
+# 
+# 
 
 
 # Main function using backdoor criterion for valid adjustment
