@@ -6,6 +6,11 @@ This guide provides step-by-step instructions for setting up CausalKnowledgeTrac
 
 Docker provides a containerized environment with all dependencies pre-configured, making setup quick and consistent across different systems. This is the **recommended installation method** for most users.
 
+**Included Software Versions:**
+- PostgreSQL 16 (database server)
+- R 4.5.1 (statistical computing)
+- Python 3.11 (graph creation engine)
+
 ## Prerequisites
 
 ### Before You Begin

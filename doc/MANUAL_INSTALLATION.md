@@ -20,10 +20,10 @@ This guide provides step-by-step instructions for manually setting up CausalKnow
 
 ### Required Software
 
-1. **PostgreSQL** - Database server (version 12 or higher)
+1. **PostgreSQL** - Database server (version 16)
 2. **Conda/Miniconda** - Environment management
-3. **Python** - Version 3.11 or higher (installed via Conda)
-4. **R** - Version 4.0 or higher
+3. **Python** - Version 3.11 (installed via Conda)
+4. **R** - Version 4.5.1
 
 ## Manual Installation Steps
 
@@ -31,11 +31,13 @@ This guide provides step-by-step instructions for manually setting up CausalKnow
 
 PostgreSQL is required for storing and querying the SemMedDB data.
 
+**Required Version**: PostgreSQL 16 (tested with PostgreSQL 16.11)
+
 #### Linux (Ubuntu/Debian)
 
 ```bash
 sudo apt-get update
-sudo apt-get install postgresql postgresql-contrib
+sudo apt-get install postgresql-16 postgresql-contrib-16
 sudo systemctl start postgresql
 sudo systemctl enable postgresql
 ```
@@ -50,12 +52,15 @@ brew services start postgresql@16
 
 #### Windows
 
-Download and install from [https://www.postgresql.org/download/windows/](https://www.postgresql.org/download/windows/)
+Download and install PostgreSQL 16 from [https://www.postgresql.org/download/windows/](https://www.postgresql.org/download/windows/)
 
 #### Verify Installation
 
+After installation, verify the PostgreSQL version:
+
 ```bash
 psql --version
+# Should show: psql (PostgreSQL) 16.x
 ```
 
 **Installation Guide**: For detailed instructions, see [PostgreSQL Installation Guide](https://www.postgresql.org/download/)
@@ -63,6 +68,8 @@ psql --version
 ### Step 2: Install R
 
 R is required for the Shiny web application and statistical analysis.
+
+**Required Version**: R 4.5.1 (as specified in environment.yaml)
 
 #### Linux (Ubuntu/Debian)
 
@@ -95,15 +102,86 @@ brew install r
 
 #### Windows
 
-Download and install from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
+Download and install R 4.5.1 from [https://cran.r-project.org/bin/windows/base/](https://cran.r-project.org/bin/windows/base/)
 
 #### Verify Installation
 
+After installation, verify the R version:
+
 ```bash
 R --version
+# Should show: R version 4.5.1
 ```
 
 **Download**: [https://cran.r-project.org/](https://cran.r-project.org/)
+
+#### Configure R Compiler Settings
+
+R packages often need to compile C/C++/Fortran code. Configure the compiler settings for optimal performance:
+
+**Linux (Ubuntu/Debian)**
+
+```bash
+# Create R configuration directory
+mkdir -p ~/.R
+
+# Create Makevars file with compiler settings
+cat > ~/.R/Makevars << 'EOF'
+CC=gcc
+CXX=g++
+CXX11=g++
+CXX14=g++
+CXX17=g++
+CC17=gcc
+FC=gfortran
+F77=gfortran
+CFLAGS=-O2 -fPIC
+CXXFLAGS=-O2 -fPIC
+EOF
+
+# Verify the file was created
+cat ~/.R/Makevars
+```
+
+**macOS**
+
+```bash
+# Create R configuration directory
+mkdir -p ~/.R
+
+# Create Makevars file with compiler settings
+cat > ~/.R/Makevars << 'EOF'
+CC=clang
+CXX=clang++
+CXX11=clang++
+CXX14=clang++
+CXX17=clang++
+CC17=clang
+FC=gfortran
+F77=gfortran
+CFLAGS=-O2 -fPIC
+CXXFLAGS=-O2 -fPIC
+EOF
+
+# Verify the file was created
+cat ~/.R/Makevars
+```
+
+**Windows**
+
+On Windows, R typically uses Rtools for compilation. Install Rtools:
+
+1. Download Rtools from [https://cran.r-project.org/bin/windows/Rtools/](https://cran.r-project.org/bin/windows/Rtools/)
+2. Install Rtools (use default settings)
+3. Verify installation in R:
+
+```r
+# In R console
+Sys.which("make")
+# Should show path to make.exe
+```
+
+No manual Makevars configuration is needed on Windows as Rtools handles this automatically.
 
 ### Step 3: Install Miniconda
 

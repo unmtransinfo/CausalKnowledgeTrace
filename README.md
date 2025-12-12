@@ -124,8 +124,11 @@ CausalKnowledgeTrace/
 - **RAM**: 8GB minimum, 16GB recommended
 - **Operating System**: Linux, macOS, or Windows
 
-### Database Requirements
+### Software Requirements
 
+- **PostgreSQL**: Version 16 (tested with PostgreSQL 16.11)
+- **R**: Version 4.5.1 (as specified in environment.yaml)
+- **Python**: Version 3.11 (installed via Conda)
 - Modified SemMedDB database (PostgreSQL format)
 - Database backup file (~25GB download)
 - **CUI Search Index Table**: Automatically created by the application on first use
@@ -231,7 +234,7 @@ docker-compose up -d
 
 **Time:** ~30 minutes (after common setup)
 
-**Prerequisites:** PostgreSQL, Conda, Python 3.11+, R 4.0+
+**Prerequisites:** PostgreSQL, Conda, Python 3.11.13, R 4.5.1
 
 Manual installation gives you full control over the environment and is recommended for development and production deployments.
 
