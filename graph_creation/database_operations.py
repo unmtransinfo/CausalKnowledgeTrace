@@ -250,19 +250,24 @@ class DatabaseOperations:
         return consolidated_mapping.get(node_name, node_name)
 
     def fetch_cui_name_mappings(self, cursor, cui_list: List[str]) -> Dict[str, str]:
-        """Fetch CUI-to-name mappings from the sentence table."""
+        """Fetch CUI-to-name mappings from the predication table."""
         if not cui_list:
             return {}
 
-        # Optimized query using ANY operator with array against the sentence table
+        # Query predication table for both subject and object CUIs
+        # Use UNION to get mappings from both subject and object columns
         query = f"""
-        SELECT DISTINCT cui, name
-        FROM {self.sentence_schema}.{self.sentence_table}
-        WHERE cui = ANY(%s)
+        SELECT DISTINCT subject_cui AS cui, subject_name AS name
+        FROM {self.predication_schema}.{self.predication_table}
+        WHERE subject_cui = ANY(%s)
+        UNION
+        SELECT DISTINCT object_cui AS cui, object_name AS name
+        FROM {self.predication_schema}.{self.predication_table}
+        WHERE object_cui = ANY(%s)
         """
 
         try:
-            execute_query_with_logging(cursor, query, [cui_list])
+            execute_query_with_logging(cursor, query, [cui_list, cui_list])
             results = cursor.fetchall()
 
             # Create mapping dictionary
