@@ -45,8 +45,8 @@
         }
 
         create_interactive_network(current_data$nodes, current_data$edges,
-                                 input$physics_strength, input$spring_length,
-                                 input$force_full_display)
+                                 input$physics_strength,
+                                 force_full_display = FALSE)
     })
 
     # Fit network to container after rendering

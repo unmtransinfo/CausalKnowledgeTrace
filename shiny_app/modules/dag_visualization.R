@@ -53,16 +53,18 @@ generate_legend_html <- function(nodes_df) {
 }
 
 #' Create Interactive Network Visualization
-#' 
+#'
 #' Creates a visNetwork object with specified physics and styling options
-#' 
+#'
 #' @param nodes_df Data frame containing node information
 #' @param edges_df Data frame containing edge information
 #' @param physics_strength Gravitational constant for physics simulation (default: -150)
-#' @param spring_length Spring length for physics simulation (default: 200)
+#' @param force_full_display Whether to force full display of all nodes/edges (default: FALSE)
 #' @return visNetwork object
 #' @export
-create_interactive_network <- function(nodes_df, edges_df, physics_strength = -150, spring_length = 200, force_full_display = FALSE) {
+create_interactive_network <- function(nodes_df, edges_df, physics_strength = -150, force_full_display = FALSE) {
+    # Use fixed spring length value
+    spring_length <- 200
     if (is.null(nodes_df) || nrow(nodes_df) == 0) {
         # Create empty network for error cases
         empty_nodes <- data.frame(
@@ -558,28 +560,19 @@ apply_network_styling <- function(nodes_df, edges_df, max_nodes_for_full_styling
 }
 
 #' Create Network Controls UI Elements
-#' 
+#'
 #' Generates UI elements for controlling network physics and appearance
-#' 
+#'
 #' @return List of Shiny UI elements for network controls
 #' @export
 create_network_controls_ui <- function() {
     default_settings <- get_default_physics_settings()
 
     return(list(
-        # Display mode control for large graphs
-        checkboxInput("force_full_display",
-                     "Force Full Display (Show All Nodes/Edges)",
-                     value = FALSE),
-        helpText("⚠️ For large graphs (>10k nodes), enabling this may cause slow performance"),
-        br(),
         sliderInput("physics_strength", "Physics Strength:",
                    min = -500, max = 0, value = default_settings$physics_strength, step = 25),
-        sliderInput("spring_length", "Spring Length:",
-                   min = 0, max = 400, value = default_settings$spring_length, step = 25),
-        actionButton("reset_physics", "Reset Physics", class = "btn-warning"),
-        br(), br(),
-        actionButton("reload_data", "Reload DAG Data", class = "btn-success")
+        helpText("Adjust node clustering: More negative = tighter, Less negative = spread out"),
+        actionButton("reset_physics", "Reset to Default", class = "btn-warning btn-sm", style = "margin-top: 5px;")
     ))
 }
 
@@ -592,7 +585,6 @@ create_network_controls_ui <- function() {
 reset_physics_controls <- function(session) {
     default_settings <- get_default_physics_settings()
     updateSliderInput(session, "physics_strength", value = default_settings$physics_strength)
-    updateSliderInput(session, "spring_length", value = default_settings$spring_length)
 }
 
 #' Remove Node and Connected Edges from Network
