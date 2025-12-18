@@ -30,7 +30,7 @@ load_graph_config <- function(yaml_file = "../user_input.yaml") {
         required_fields_old <- c("exposure_cuis", "outcome_cuis", "exposure_name", "outcome_name",
                            "min_pmids", "pub_year_cutoff", "degree",
                            "SemMedDBD_version", "predication_type")
-        # Note: blacklist_cuis is optional, so not included in required_fields
+        # Note: blocklist_cuis is optional, so not included in required_fields
 
         # Check if it's new format or old format
         has_new_format <- all(c("min_pmids_degree1", "min_pmids_degree2", "min_pmids_degree3") %in% names(config))
@@ -133,7 +133,7 @@ test_graph_config_module <- function() {
     test_config <- list(
         exposure_cuis = c("C0011849", "C0020538"),
         outcome_cuis = c("C0027051", "C0038454"),
-        blacklist_cuis = c("C0000001", "C0000002"),
+        blocklist_cuis = c("C0000001", "C0000002"),
         exposure_name = "Test_Exposure",
         outcome_name = "Test_Outcome",
         min_pmids_degree1 = 100,

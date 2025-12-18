@@ -430,11 +430,11 @@ class DatabaseOperations:
         ORDER BY cp.subject_name ASC;
         """
 
-        # Build parameters: predication_types + exposure array (twice) + outcome array (twice) + threshold + blocklist params
+        # Build parameters: predication_types + exposure array (twice) + outcome array (twice) + blocklist params + threshold
         params = (self.predication_types +  # Use all predication types
                  [self.config.exposure_cui_list, self.config.exposure_cui_list,
                   self.config.outcome_cui_list, self.config.outcome_cui_list] +
-                 [degree_threshold] + blocklist_params)
+                 blocklist_params + [degree_threshold])
 
         execute_query_with_logging(cursor, query, params)
 
