@@ -1,8 +1,17 @@
+# CausalKnowledgeTrace Conda Environment
+#
+# After creating this environment, load environment variables from .env file:
+# Linux/macOS: conda env config vars set $(cat .env | grep -v '^#' | xargs)
+# Windows (PowerShell): See MANUAL_INSTALLATION.md for detailed instructions
+# Then reactivate: conda deactivate && conda activate causalknowledgetrace
+#
+# Alternatively, the application can read .env directly using python-dotenv
+
 name: causalknowledgetrace
 channels:
   - conda-forge  # Community repo (preferred - newer versions)
   - defaults     # Anaconda official repo
-  
+
 dependencies:
   # Languages
   - python=3.11

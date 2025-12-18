@@ -249,18 +249,19 @@ Create a `.env` file with your database credentials:
 # Copy the sample environment file
 cp doc/sample.env .env
 
-# Edit the .env file
-nano .env  # or use your preferred editor
+# Edit the .env file with your preferred editor
+nano .env  # or use: vim .env, code .env, etc.
 ```
 
-Update the `.env` file with your database credentials:
+Update the `.env` file with your actual database credentials:
 
 ```bash
 # Database Configuration
+# For Manual Installation: Set DB_HOST=localhost
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=your_username  # Your PostgreSQL username
-DB_PASSWORD=your_password  # Your PostgreSQL password
+DB_USER=your_username  # Replace with your PostgreSQL username
+DB_PASSWORD=your_password  # Replace with your PostgreSQL password
 DB_NAME=causalehr
 DB_SCHEMA=causalehr
 
@@ -284,6 +285,7 @@ DB_OBJECT_SEARCH_TABLE=object_search
 - Replace `your_username` and `your_password` with your actual PostgreSQL credentials
 - For manual installation, `DB_HOST` should be `localhost`
 - The `.env` file is ignored by git for security
+- Keep this file secure and never commit it to version control
 
 ### Step 6: Setup Conda Environment
 
@@ -301,6 +303,78 @@ pip install -r doc/requirements.txt
 ```
 
 **Note**: Environment creation may take 5-10 minutes.
+
+### Step 6a: Load Environment Variables into Conda Environment
+
+After creating the conda environment, you need to load the environment variables from your `.env` file into the conda environment. Choose the method appropriate for your operating system:
+
+#### Linux / macOS
+
+```bash
+# Make sure the conda environment is activated
+conda activate causalknowledgetrace
+
+# Load environment variables from .env file
+conda env config vars set $(cat .env | grep -v '^#' | xargs)
+
+# Reactivate the environment for changes to take effect
+conda deactivate
+conda activate causalknowledgetrace
+
+# Verify environment variables are loaded
+conda env config vars list
+```
+
+#### Windows (PowerShell)
+
+```powershell
+# Make sure the conda environment is activated
+conda activate causalknowledgetrace
+
+# Load environment variables from .env file
+Get-Content .env | Where-Object { $_ -notmatch '^#' -and $_ -match '\S' } | ForEach-Object {
+    $name, $value = $_ -split '=', 2
+    conda env config vars set "$name=$value"
+}
+
+# Reactivate the environment for changes to take effect
+conda deactivate
+conda activate causalknowledgetrace
+
+# Verify environment variables are loaded
+conda env config vars list
+```
+
+#### Windows (Command Prompt)
+
+```cmd
+REM Make sure the conda environment is activated
+conda activate causalknowledgetrace
+
+REM Load environment variables manually (replace with your actual values)
+conda env config vars set DB_HOST=localhost
+conda env config vars set DB_PORT=5432
+conda env config vars set DB_USER=your_username
+conda env config vars set DB_PASSWORD=your_password
+conda env config vars set DB_NAME=causalehr
+conda env config vars set DB_SCHEMA=causalehr
+conda env config vars set DB_SENTENCE_SCHEMA=public
+conda env config vars set DB_SENTENCE_TABLE=sentence
+conda env config vars set DB_PREDICATION_SCHEMA=public
+conda env config vars set DB_PREDICATION_TABLE=predication
+conda env config vars set DB_SUBJECT_SEARCH_SCHEMA=filtered
+conda env config vars set DB_SUBJECT_SEARCH_TABLE=subject_search
+conda env config vars set DB_OBJECT_SEARCH_SCHEMA=filtered
+conda env config vars set DB_OBJECT_SEARCH_TABLE=object_search
+
+REM Reactivate the environment for changes to take effect
+conda deactivate
+conda activate causalknowledgetrace
+
+REM Verify environment variables are loaded
+conda env config vars list
+```
+
 
 ### Step 7: Install R Packages
 

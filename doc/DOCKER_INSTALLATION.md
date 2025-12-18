@@ -55,15 +55,16 @@ Create a `.env` file with your database credentials:
 # Copy the sample environment file
 cp doc/sample.env .env
 
-# Edit the .env file
-nano .env  # or use your preferred editor (vim, code, etc.)
+# Edit the .env file with your preferred editor
+nano .env  # or use: vim .env, code .env, etc.
 ```
 
 Update the `.env` file with your desired credentials:
 
 ```bash
 # Database Configuration
-DB_HOST=db  # Use 'db' for Docker (service name in docker-compose.yaml)
+# For Docker: Set DB_HOST=db (service name in docker-compose.yaml)
+DB_HOST=db
 DB_PORT=5432
 DB_USER=postgres  # Change to your preferred username
 DB_PASSWORD=your_secure_password  # Change to a secure password
@@ -90,6 +91,8 @@ DB_OBJECT_SEARCH_TABLE=object_search
 - For Docker setup, `DB_HOST` **must** be set to `db` (the PostgreSQL service name in docker-compose.yaml)
 - Choose a strong password for `DB_PASSWORD`
 - The `.env` file is ignored by git for security
+- Keep this file secure and never commit it to version control
+- Docker Compose automatically loads environment variables from the `.env` file
 
 ### Step 2: Build and Start the Application
 
@@ -143,6 +146,9 @@ docker-compose restart
 
 # Rebuild application (after code changes)
 docker-compose up -d --build cwt-app
+
+# Run start the container without building
+docker-compose up --no-build
 ```
 
 ### Checking Service Status
