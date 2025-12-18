@@ -166,6 +166,11 @@ tabItems(
 
                             tabPanel("Adjustment Sets",
                                 br(),
+                                div(style = "background-color: #e8f4f8; padding: 10px; border-radius: 5px; margin-bottom: 15px;",
+                                    h5(style = "margin-top: 0;", icon("info-circle"), " What are Adjustment Sets?"),
+                                    p(style = "margin-bottom: 0;",
+                                      strong("Definition:"), " A set of variables that, when controlled for (adjusted), blocks all confounding paths between exposure and outcome, allowing unbiased estimation of the causal effect.")
+                                ),
                                 verbatimTextOutput("adjustment_sets_result"),
                                 br(),
                                 h5("Quick Guide:"),
@@ -178,6 +183,11 @@ tabItems(
 
                             tabPanel("Instrumental Variables",
                                 br(),
+                                div(style = "background-color: #fff8e1; padding: 10px; border-radius: 5px; margin-bottom: 15px;",
+                                    h5(style = "margin-top: 0;", icon("info-circle"), " What are Instrumental Variables?"),
+                                    p(style = "margin-bottom: 0;",
+                                      strong("Definition:"), " A variable that (1) affects the exposure, (2) does not directly affect the outcome except through the exposure, and (3) is not associated with confounders.")
+                                ),
                                 verbatimTextOutput("instrumental_vars_result"),
                                 br(),
                                 h5("About Instrumental Variables:"),
