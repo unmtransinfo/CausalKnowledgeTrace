@@ -1,11 +1,11 @@
 # Core dependencies
 psycopg2-binary
-PyYAML
 pandas
+PyYAML
 networkx
 scipy
 python-dotenv
-
+matplotlib
 # R integration packages
 rpy2
 

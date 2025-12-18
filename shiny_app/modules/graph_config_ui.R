@@ -193,7 +193,7 @@ create_config_inputs <- function(ns, ui_config) {
     exposure_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$exposure_name)) {
         ui_config$exposure_name
     } else {
-        ""
+        "Hypertension"  # Changed from "" to "Hypertension"
     }
 
     outcome_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_name)) {
@@ -234,7 +234,7 @@ create_config_inputs <- function(ns, ui_config) {
             textInput(
                 ns("exposure_name"),
                 label = NULL,
-                value = "",
+                value = exposure_name_ui,  # Use the extracted value instead of hardcoded ""
                 placeholder = "e.g., Hypertension, Diabetes",
                 width = "100%"
             ),
@@ -248,8 +248,8 @@ create_config_inputs <- function(ns, ui_config) {
             textInput(
                 ns("outcome_name"),
                 label = NULL,
-                value = "Alzheimers",
-                placeholder = "Alzheimers",
+                value = outcome_name_ui,  # Use the extracted value instead of hardcoded ""
+                placeholder = "e.g., Alzheimers, Cancer",
                 width = "100%"
             ),
             helpText("Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")

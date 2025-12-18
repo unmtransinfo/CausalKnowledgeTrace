@@ -51,15 +51,15 @@ tryCatch({
 
 #' Initialize Database Connection Pool
 #' 
-#' Creates a connection pool to the PostgreSQL database using environment variables
-#' or default configuration
+#' Creates a connection pool to the PostgreSQL database using environment variables.
+#' All parameters are read from environment variables - no defaults provided.
 #' 
-#' @param host Database host (default: localhost)
-#' @param port Database port (default: 5432)
-#' @param dbname Database name (default: causalehr)
-#' @param user Database user
-#' @param password Database password
-#' @param schema Database schema (default: causalehr)
+#' @param host Database host (from DB_HOST env var)
+#' @param port Database port (from DB_PORT env var)
+#' @param dbname Database name (from DB_NAME env var)
+#' @param user Database user (from DB_USER env var)
+#' @param password Database password (from DB_PASSWORD env var)
+#' @param schema Database schema (from DB_SCHEMA env var)
 #' @param min_size Minimum pool size (default: 1)
 #' @param max_size Maximum pool size (default: 5)
 #' @return List with success status and connection pool
@@ -69,47 +69,58 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
                               min_size = 1, max_size = 5) {
     
     tryCatch({
-        # Load .env file if it exists
-        env_file <- file.path(getwd(), "..", ".env")
-        if (file.exists(env_file)) {
-            suppressWarnings({
-                env_vars <- readLines(env_file)
-            })
-            for (line in env_vars) {
-                line <- trimws(line)
-                if (grepl("^[A-Z_]+=", line) && !grepl("^#", line)) {
-                    parts <- strsplit(line, "=", fixed = TRUE)[[1]]
-                    if (length(parts) >= 2) {
-                        var_name <- trimws(parts[1])
-                        var_value <- trimws(paste(parts[-1], collapse = "="))
-                        # Set environment variable properly
-                        do.call(Sys.setenv, setNames(list(var_value), var_name))
-                        # Log to file instead of console
-                        if (exists("log_env_var")) {
-                            log_env_var(var_name, var_value)
-                        }
-                    }
-                }
-            }
+        # Read from environment variables (no defaults - force explicit configuration)
+        if (is.null(host)) host <- Sys.getenv("DB_HOST")
+        if (is.null(port)) port <- as.integer(Sys.getenv("DB_PORT"))
+        if (is.null(dbname)) dbname <- Sys.getenv("DB_NAME")
+        if (is.null(user)) user <- Sys.getenv("DB_USER")
+        if (is.null(password)) password <- Sys.getenv("DB_PASSWORD")
+
+        # Load individual schema and table names for CUI search
+        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA")
+        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE")
+
+        # Validate required parameters - no fallbacks
+        if (host == "" || is.na(host)) {
+            return(list(
+                success = FALSE,
+                message = "Database host is required. Set DB_HOST environment variable."
+            ))
         }
-
-        # Try to read from environment variables first
-        if (is.null(host)) host <- Sys.getenv("DB_HOST", "localhost")
-        if (is.null(port)) port <- as.integer(Sys.getenv("DB_PORT", "5432"))
-        if (is.null(dbname)) dbname <- Sys.getenv("DB_NAME", "causalehr")
-        if (is.null(user)) user <- Sys.getenv("DB_USER", "")
-        if (is.null(password)) password <- Sys.getenv("DB_PASSWORD", "")
-
-        # Load individual schema and table names for CUI search (sentence table)
-        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA", "public")
-        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE", "sentence")
-
-        # Fallback to working values if environment variables are not set
-        if (user == "") user <- "rajesh"
-        if (password == "") password <- ""
-        if (host == "localhost" && password == "") {
-            # Use Unix socket for peer authentication when no password
-            host <- "/var/run/postgresql"
+        
+        if (port == 0 || is.na(port)) {
+            return(list(
+                success = FALSE,
+                message = "Database port is required. Set DB_PORT environment variable."
+            ))
+        }
+        
+        if (dbname == "" || is.na(dbname)) {
+            return(list(
+                success = FALSE,
+                message = "Database name is required. Set DB_NAME environment variable."
+            ))
+        }
+        
+        if (user == "" || is.na(user)) {
+            return(list(
+                success = FALSE,
+                message = "Database user is required. Set DB_USER environment variable."
+            ))
+        }
+        
+        if (cui_search_schema == "" || is.na(cui_search_schema)) {
+            return(list(
+                success = FALSE,
+                message = "Database sentence schema is required. Set DB_SENTENCE_SCHEMA environment variable."
+            ))
+        }
+        
+        if (cui_search_table == "" || is.na(cui_search_table)) {
+            return(list(
+                success = FALSE,
+                message = "Database sentence table is required. Set DB_SENTENCE_TABLE environment variable."
+            ))
         }
         
         # Check if PostgreSQL driver is available
@@ -275,15 +286,32 @@ search_cui_entities <- function(search_term, search_type = "exposure", exact_mat
     tryCatch({
         # Load schema and table names from environment variables based on search type
         if (tolower(search_type) == "exposure") {
-            search_schema <- Sys.getenv("DB_SUBJECT_SEARCH_SCHEMA", "filtered")
-            search_table <- Sys.getenv("DB_SUBJECT_SEARCH_TABLE", "subject_search")
+            search_schema <- Sys.getenv("DB_SUBJECT_SEARCH_SCHEMA")
+            search_table <- Sys.getenv("DB_SUBJECT_SEARCH_TABLE")
         } else if (tolower(search_type) == "outcome") {
-            search_schema <- Sys.getenv("DB_OBJECT_SEARCH_SCHEMA", "filtered")
-            search_table <- Sys.getenv("DB_OBJECT_SEARCH_TABLE", "object_search")
+            search_schema <- Sys.getenv("DB_OBJECT_SEARCH_SCHEMA")
+            search_table <- Sys.getenv("DB_OBJECT_SEARCH_TABLE")
         } else {
             return(list(
                 success = FALSE,
                 message = paste("Invalid search_type:", search_type, ". Must be 'exposure' or 'outcome'."),
+                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            ))
+        }
+        
+        # Validate schema and table names
+        if (search_schema == "" || is.na(search_schema)) {
+            return(list(
+                success = FALSE,
+                message = paste("Database schema for", search_type, "search is required. Set appropriate environment variable."),
+                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            ))
+        }
+        
+        if (search_table == "" || is.na(search_table)) {
+            return(list(
+                success = FALSE,
+                message = paste("Database table for", search_type, "search is required. Set appropriate environment variable."),
                 results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
             ))
         }

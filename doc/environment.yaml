@@ -1,60 +1,43 @@
+# CausalKnowledgeTrace Conda Environment
+#
+# After creating this environment, load environment variables from .env file:
+# Linux/macOS: conda env config vars set $(cat .env | grep -v '^#' | xargs)
+# Windows (PowerShell): See MANUAL_INSTALLATION.md for detailed instructions
+# Then reactivate: conda deactivate && conda activate causalknowledgetrace
+#
+# Alternatively, the application can read .env directly using python-dotenv
+
 name: causalknowledgetrace
 channels:
-  - conda-forge
-  - defaults
+  - conda-forge  # Community repo (preferred - newer versions)
+  - defaults     # Anaconda official repo
+
 dependencies:
-  # Core dependencies
-  - python>=3.11
-  
-  # R integration packages
+  # Languages
+  - python=3.11
   - r-base=4.5.1
-  - rpy2
+  - rpy2  # Python-R bridge
   
-  # System libraries (CRITICAL for compilation)
-  - libcurl
-  - curl
-  - libuv  # Fixes httpuv compilation error
-  - postgresql  # Fixes RPostgres compilation error
-  - libpq  # PostgreSQL client library
-  - nodejs  # Required for V8 package
+  # System libraries that work well with conda
+  - libcurl     # HTTP requests
+  - libuv       # Async I/O (httpuv needs this)
+  - postgresql  # Database
+  - libpq       # PostgreSQL client
+  - nodejs      # JavaScript runtime (V8 needs this)
+  - openssl     # Secure connections
   
-  # Pre-compiled R packages from conda-forge (avoid compilation issues)
-  - r-essentials
-  - r-curl
-  - r-httr
-  - r-jsonlite
-  - r-devtools
-  - r-biocmanager
-  - r-shiny
-  - r-shinydashboard
-  - r-httpuv
-  - r-igraph
-  - r-dplyr
-  - r-ggplot2
-  - r-dt
-  - r-yaml
-  - r-shinyjs
-  - r-testthat
-  - r-knitr
-  - r-rmarkdown
-  - r-dbi
-  - r-htmltools
-  - r-visnetwork
+  # R packages (pre-compiled from conda-forge - fast install)
+  - r-essentials      # Common R packages bundle
+  - r-v8              # JavaScript engine (dagitty needs this)
   
-  # Compiler toolchain
-  - make
-  - cmake
-  - pkg-config
-  
-  # Python pip
+  # Python packages (installed via pip after conda setup)
   - pip
   - pip:
-    - psycopg2-binary
-    - pyyaml
-    - python-dotenv
-    - pandas
+    - psycopg2-binary  # PostgreSQL adapter
+    - pandas           # Data analysis
+    - PyYAML           # YAML parsing
     - networkx
-    - scipy
-    - numpy
-    - matplotlib
-    - jupyter
+    - scipy         
+    - python-dotenv    
+    - matplotlib       # Plotting
+    - rpy2             # Python-R bridge

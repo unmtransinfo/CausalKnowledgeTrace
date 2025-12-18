@@ -1,7 +1,5 @@
 #!/bin/bash
 
-source .env
-
 echo "🚀 Starting Graph Creation Pipeline..."
 echo "======================================"
 
