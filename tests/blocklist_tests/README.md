@@ -61,7 +61,22 @@ cd /home/rajesh/CausalKnowledgeTrace
 python tests/blocklist_tests/test_all_hops_parameter_order.py
 ```
 
-### 5. check_blocklist_cuis.sql
+### 5. test_ui_loading.R
+Tests that blocklist CUIs are correctly loaded and displayed in the Shiny app UI.
+
+**What it tests:**
+- YAML config loading
+- CUI extraction logic (exposure, outcome, blocklist)
+- Blocklist UI value is populated from config
+- All CUI fields load correctly
+
+**Run:**
+```bash
+cd /home/rajesh/CausalKnowledgeTrace
+Rscript tests/blocklist_tests/test_ui_loading.R
+```
+
+### 6. check_blocklist_cuis.sql
 SQL query to check what the blocklisted CUIs represent.
 
 **Usage:**
