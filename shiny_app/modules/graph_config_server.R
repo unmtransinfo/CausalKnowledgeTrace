@@ -56,8 +56,8 @@ graphConfigServer <- function(id, db_connection = NULL) {
             NULL
         }
 
-        initial_blocklist_cuis <- if (!is.null(config) && !is.null(config$blacklist_cuis)) {
-            paste(unlist(config$blacklist_cuis), collapse = ", ")
+        initial_blocklist_cuis <- if (!is.null(config) && !is.null(config$blocklist_cuis)) {
+            paste(unlist(config$blocklist_cuis), collapse = ", ")
         } else {
             NULL
         }
@@ -245,7 +245,7 @@ graphConfigServer <- function(id, db_connection = NULL) {
             config_data <- list(
                 exposure_cuis = validation_result$exposure_cuis,
                 outcome_cuis = validation_result$outcome_cuis,
-                blacklist_cuis = if (length(validation_result$blacklist_cuis) > 0) validation_result$blacklist_cuis else NULL,
+                blocklist_cuis = if (length(validation_result$blocklist_cuis) > 0) validation_result$blocklist_cuis else NULL,
                 exposure_name = validation_result$exposure_name,
                 outcome_name = validation_result$outcome_name,
                 min_pmids_degree1 = as.integer(input$min_pmids_degree1),

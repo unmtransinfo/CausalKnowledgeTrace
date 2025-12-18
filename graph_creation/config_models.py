@@ -4,9 +4,6 @@ Configuration Models and Data Structures for Epidemiological Analysis
 
 This module contains configuration classes, constants, YAML support,
 and validation functions for the Markov blanket analysis script.
-
-Author: Scott A. Malec PhD
-Date: February 2025
 """
 
 import time
@@ -64,14 +61,14 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         # Ensure CUIs are lists
         exposure_cuis = yaml_config['exposure_cuis']
         outcome_cuis = yaml_config['outcome_cuis']
-        blacklist_cuis = yaml_config.get('blacklist_cuis', [])  # Optional field
+        blocklist_cuis = yaml_config.get('blocklist_cuis', [])  # Optional field
 
         if not isinstance(exposure_cuis, list):
             exposure_cuis = [exposure_cuis]
         if not isinstance(outcome_cuis, list):
             outcome_cuis = [outcome_cuis]
-        if not isinstance(blacklist_cuis, list):
-            blacklist_cuis = [blacklist_cuis] if blacklist_cuis else []
+        if not isinstance(blocklist_cuis, list):
+            blocklist_cuis = [blocklist_cuis] if blocklist_cuis else []
         
         # Extract thresholds - support both old format (min_pmids) and new format (min_pmids_degree1/2/3)
         has_new_format = all(key in yaml_config for key in ['min_pmids_degree1', 'min_pmids_degree2', 'min_pmids_degree3'])
@@ -130,7 +127,7 @@ def load_yaml_config(yaml_file_path: str) -> Dict:
         return {
             'exposure_cuis': exposure_cuis,
             'outcome_cuis': outcome_cuis,
-            'blacklist_cuis': blacklist_cuis,
+            'blocklist_cuis': blocklist_cuis,
             'threshold': threshold,
             'thresholds_by_degree': thresholds_by_degree,  # New: degree-specific thresholds
             'degree': degree,

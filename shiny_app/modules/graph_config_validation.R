@@ -200,12 +200,12 @@ validate_inputs <- function(input, exposure_cui_search = NULL, outcome_cui_searc
         errors <- c(errors, paste("Outcome CUIs:", outcome_validation$message))
     }
 
-    # Validate blacklist CUIs if provided
-    blacklist_validation <- list(valid = TRUE, cuis = c())
+    # Validate blocklist CUIs if provided
+    blocklist_validation <- list(valid = TRUE, cuis = c())
     if (!is.null(blocklist_cui_string) && blocklist_cui_string != "") {
-        blacklist_validation <- validate_cui(blocklist_cui_string)
-        if (!blacklist_validation$valid) {
-            errors <- c(errors, paste("Blacklist CUIs:", blacklist_validation$message))
+        blocklist_validation <- validate_cui(blocklist_cui_string)
+        if (!blocklist_validation$valid) {
+            errors <- c(errors, paste("Blocklist CUIs:", blocklist_validation$message))
         }
     }
 
@@ -269,7 +269,7 @@ validate_inputs <- function(input, exposure_cui_search = NULL, outcome_cui_searc
         errors = errors,
         exposure_cuis = if (exposure_validation$valid) exposure_validation$cuis else NULL,
         outcome_cuis = if (outcome_validation$valid) outcome_validation$cuis else NULL,
-        blacklist_cuis = if (blacklist_validation$valid) blacklist_validation$cuis else c(),
+        blocklist_cuis = if (blocklist_validation$valid) blocklist_validation$cuis else c(),
         exposure_name = if (exposure_name_validation$valid) exposure_name_validation$name else NULL,
         outcome_name = if (outcome_name_validation$valid) outcome_name_validation$name else NULL,
         predication_types = if (predication_validation$valid) predication_validation$types else c("CAUSES")

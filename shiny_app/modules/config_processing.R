@@ -24,7 +24,7 @@ create_yaml_config <- function(validated_params) {
     config_list <- list(
         exposure_cuis = validated_params$exposure_cuis,
         outcome_cuis = validated_params$outcome_cuis,
-        blacklist_cuis = validated_params$blacklist_cuis,
+        blocklist_cuis = validated_params$blocklist_cuis,
         exposure_name = validated_params$exposure_name,
         outcome_name = validated_params$outcome_name,
         pub_year_cutoff = validated_params$pub_year_cutoff,
@@ -271,11 +271,11 @@ create_config_summary <- function(validated_params) {
         "Outcome CUIs: ", paste(validated_params$outcome_cuis, collapse = ", "),
         " (", length(validated_params$outcome_cuis), " CUIs)\n",
         "Outcome Name: ", validated_params$outcome_name, "\n",
-        if (length(validated_params$blacklist_cuis) > 0) {
-            paste0("Blacklist CUIs: ", paste(validated_params$blacklist_cuis, collapse = ", "),
-                   " (", length(validated_params$blacklist_cuis), " CUIs)\n")
+        if (length(validated_params$blocklist_cuis) > 0) {
+            paste0("Blocklist CUIs: ", paste(validated_params$blocklist_cuis, collapse = ", "),
+                   " (", length(validated_params$blocklist_cuis), " CUIs)\n")
         } else {
-            "Blacklist CUIs: None\n"
+            "Blocklist CUIs: None\n"
         },
         # Support both old and new format for thresholds
         if (!is.null(validated_params$min_pmids_degree1)) {
