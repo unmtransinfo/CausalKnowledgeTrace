@@ -406,7 +406,14 @@ create_causal_tab <- function() {
         fluidRow(
             column(4,
                 box(
-                    title = "Adjustment Sets",
+                    title = tagList(
+                        "Adjustment Sets",
+                        tags$span(
+                            style = "font-size: 12px; font-weight: normal; margin-left: 10px;",
+                            title = "Variables to control for to eliminate confounding bias",
+                            icon("question-circle")
+                        )
+                    ),
                     status = "info",
                     solidHeader = TRUE,
                     width = NULL,
@@ -419,7 +426,14 @@ create_causal_tab <- function() {
             ),
             column(4,
                 box(
-                    title = "Instrumental Variables",
+                    title = tagList(
+                        "Instrumental Variables",
+                        tags$span(
+                            style = "font-size: 12px; font-weight: normal; margin-left: 10px;",
+                            title = "Variables that affect exposure but not outcome directly, used for causal inference",
+                            icon("question-circle")
+                        )
+                    ),
                     status = "warning",
                     solidHeader = TRUE,
                     width = NULL,
