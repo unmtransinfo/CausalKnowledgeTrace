@@ -46,6 +46,25 @@ tabItems(
                                      style = "font-size: 12px; color: #666; margin-left: 10px;",
                                      textOutput("network_stats_text", inline = TRUE))
                             )
+                        ),
+
+                        hr(),
+
+                        # Physics controls and color coding
+                        fluidRow(
+                            column(8,
+                                create_network_controls_ui()
+                            ),
+                            column(4,
+                                div(style = "padding: 10px; background-color: #f8f9fa; border-radius: 4px;",
+                                    h5(style = "margin-top: 0; font-size: 14px;", icon("palette"), " Node Colors:"),
+                                    tags$div(style = "font-size: 12px;",
+                                        tags$span(style = "color: #FF6B6B; font-weight: bold;", "● Red"), " = Exposure | ",
+                                        tags$span(style = "color: #4ECDC4; font-weight: bold;", "● Cyan"), " = Outcome | ",
+                                        tags$span(style = "color: #95A5A6; font-weight: bold;", "● Gray"), " = Other"
+                                    )
+                                )
+                            )
                         )
                     )
                 ),
@@ -63,16 +82,6 @@ tabItems(
                                 DT::dataTableOutput("selection_info_table")
                             )
                         )
-                    )
-                ),
-                # Row 3: Network Controls (bottom)
-                fluidRow(
-                    box(
-                        title = "Network Controls",
-                        status = "info",
-                        solidHeader = TRUE,
-                        width = 12,
-                        create_network_controls_ui()
                     )
                 )
             ),
