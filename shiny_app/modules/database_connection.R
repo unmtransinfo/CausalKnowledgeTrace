@@ -69,30 +69,6 @@ init_database_pool <- function(host = NULL, port = NULL, dbname = NULL,
                               min_size = 1, max_size = 5) {
     
     tryCatch({
-        # Load .env file if it exists
-        env_file <- file.path(getwd(), "..", ".env")
-        if (file.exists(env_file)) {
-            suppressWarnings({
-                env_vars <- readLines(env_file)
-            })
-            for (line in env_vars) {
-                line <- trimws(line)
-                if (grepl("^[A-Z_]+=", line) && !grepl("^#", line)) {
-                    parts <- strsplit(line, "=", fixed = TRUE)[[1]]
-                    if (length(parts) >= 2) {
-                        var_name <- trimws(parts[1])
-                        var_value <- trimws(paste(parts[-1], collapse = "="))
-                        # Set environment variable properly
-                        do.call(Sys.setenv, setNames(list(var_value), var_name))
-                        # Log to file instead of console
-                        if (exists("log_env_var")) {
-                            log_env_var(var_name, var_value)
-                        }
-                    }
-                }
-            }
-        }
-
         # Read from environment variables (no defaults - force explicit configuration)
         if (is.null(host)) host <- Sys.getenv("DB_HOST")
         if (is.null(port)) port <- as.integer(Sys.getenv("DB_PORT"))
