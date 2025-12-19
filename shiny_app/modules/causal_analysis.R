@@ -307,6 +307,176 @@ format_adjustment_sets_display <- function(adjustment_result) {
     return(paste0(header, sets_text, interpretation))
 }
 
+#' Detect M-Bias Structures
+#'
+#' Identifies M-bias structures where colliders on backdoor paths should not be adjusted
+#'
+#' @param dag_object dagitty DAG object
+#' @param exposure Name of exposure variable
+#' @param outcome Name of outcome variable
+#' @return List containing M-bias detection results
+#' @export
+detect_m_bias <- function(dag_object, exposure = NULL, outcome = NULL) {
+    if (is.null(dag_object) || !inherits(dag_object, "dagitty")) {
+        return(list(
+            success = FALSE,
+            message = "Invalid or missing DAG object",
+            mbias_vars = character(0)
+        ))
+    }
+
+    tryCatch({
+        # Get minimal adjustment sets
+        minimal_sets <- adjustmentSets(dag_object, exposure, outcome, type = "minimal")
+
+        # Get all nodes except exposure and outcome
+        all_nodes <- setdiff(names(dag_object), c(exposure, outcome))
+
+        mbias_vars <- character(0)
+        mbias_details <- list()
+
+        # Get all paths between exposure and outcome
+        path_result <- paths(dag_object, from = exposure, to = outcome)
+        all_paths <- path_result$paths
+        path_status <- path_result$open
+
+        # Check each node for M-bias structure
+        for (v in all_nodes) {
+            pars <- parents(dag_object, v)
+
+            # Must have at least 2 parents (collider)
+            if (length(pars) < 2) next
+
+            # Check if it's in any minimal adjustment set
+            in_adjustment_set <- any(vapply(minimal_sets, function(s) v %in% s, logical(1)))
+            if (in_adjustment_set) next
+
+            # Find paths that go through this variable
+            paths_through_v <- character(0)
+            for (i in seq_along(all_paths)) {
+                path <- all_paths[i]
+                is_open <- path_status[i]
+
+                # Check if this is a backdoor path (starts with exposure <-)
+                is_backdoor <- grepl(paste0("^", exposure, " <-"), path)
+
+                # Check if path contains this variable
+                contains_v <- grepl(v, path)
+
+                # M-bias: backdoor path, currently closed, contains the collider
+                if (is_backdoor && !is_open && contains_v) {
+                    paths_through_v <- c(paths_through_v, path)
+                }
+            }
+
+            if (length(paths_through_v) > 0) {
+                mbias_vars <- c(mbias_vars, v)
+                mbias_details[[v]] <- list(
+                    parents = pars,
+                    paths = paths_through_v
+                )
+            }
+        }
+
+        valid_adjustment_set <- if (length(minimal_sets) > 0) minimal_sets[[1]] else character(0)
+
+        return(list(
+            success = TRUE,
+            message = if (length(mbias_vars) > 0)
+                paste("Found", length(mbias_vars), "M-bias variable(s)")
+                else "No M-bias detected",
+            exposure = exposure,
+            outcome = outcome,
+            minimal_sets = minimal_sets,
+            valid_adjustment_set = valid_adjustment_set,
+            mbias_vars = mbias_vars,
+            mbias_details = mbias_details,
+            count = length(mbias_vars)
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Error detecting M-bias:", e$message),
+            mbias_vars = character(0)
+        ))
+    })
+}
+
+#' Detect Butterfly Bias Structures
+#'
+#' Identifies butterfly bias where confounders have multiple confounder parents
+#'
+#' @param dag_object dagitty DAG object
+#' @param exposure Name of exposure variable
+#' @param outcome Name of outcome variable
+#' @return List containing butterfly bias detection results
+#' @export
+detect_butterfly_bias <- function(dag_object, exposure = NULL, outcome = NULL) {
+    if (is.null(dag_object) || !inherits(dag_object, "dagitty")) {
+        return(list(
+            success = FALSE,
+            message = "Invalid or missing DAG object",
+            butterfly_vars = character(0)
+        ))
+    }
+
+    tryCatch({
+        # Get all adjustment sets to identify confounders
+        all_adj_sets <- adjustmentSets(dag_object, exposure, outcome, type = "all")
+        confounders <- unique(unlist(all_adj_sets))
+
+        butterfly_vars <- character(0)
+        butterfly_parents <- list()
+
+        # Check each confounder for butterfly structure
+        if (length(confounders) > 0) {
+            for (v in confounders) {
+                # Get parents that are also confounders
+                pars <- intersect(parents(dag_object, v), confounders)
+
+                # Butterfly bias: confounder with 2+ confounder parents
+                if (length(pars) >= 2) {
+                    butterfly_vars <- c(butterfly_vars, v)
+                    butterfly_parents[[v]] <- pars
+                }
+            }
+        }
+
+        # Identify non-butterfly confounders
+        non_butterfly_confounders <- confounders
+        if (length(butterfly_vars) > 0) {
+            for (bfly in butterfly_vars) {
+                non_butterfly_confounders <- setdiff(
+                    non_butterfly_confounders,
+                    c(bfly, butterfly_parents[[bfly]])
+                )
+            }
+        }
+
+        return(list(
+            success = TRUE,
+            message = if (length(butterfly_vars) > 0)
+                paste("Found", length(butterfly_vars), "butterfly bias variable(s)")
+                else "No butterfly bias detected",
+            exposure = exposure,
+            outcome = outcome,
+            butterfly_vars = butterfly_vars,
+            butterfly_parents = butterfly_parents,
+            non_butterfly_confounders = non_butterfly_confounders,
+            all_confounders = confounders,
+            count = length(butterfly_vars)
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Error detecting butterfly bias:", e$message),
+            butterfly_vars = character(0)
+        ))
+    })
+}
+
 #' Create Causal Analysis Summary
 #'
 #' Creates a comprehensive summary of causal analysis results
@@ -339,12 +509,26 @@ create_causal_analysis_summary <- function(dag_object, exposure = NULL, outcome 
         paths_info <- analyze_causal_paths(dag_object, exposure, outcome)
     }
 
+    # Detect M-bias
+    mbias_info <- NULL
+    if (!is.null(exposure) && !is.null(outcome)) {
+        mbias_info <- detect_m_bias(dag_object, exposure, outcome)
+    }
+
+    # Detect Butterfly bias
+    butterfly_info <- NULL
+    if (!is.null(exposure) && !is.null(outcome)) {
+        butterfly_info <- detect_butterfly_bias(dag_object, exposure, outcome)
+    }
+
     return(list(
         success = TRUE,
         variables = vars_info,
         adjustment_sets = adj_sets,
         instrumental_variables = instruments,
         causal_paths = paths_info,
+        mbias = mbias_info,
+        butterfly_bias = butterfly_info,
         dag_summary = list(
             total_variables = length(vars_info$variables),
             has_exposures = length(vars_info$exposures) > 0,

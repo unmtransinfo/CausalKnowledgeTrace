@@ -114,34 +114,12 @@ tabItems(
 
                         br(),
 
-                        # Analysis buttons
-                        actionButton("calculate_adjustment_sets",
-                                   "Calculate Adjustment Sets",
-                                   class = "btn-primary btn-block",
-                                   icon = icon("calculator")),
-
-                        br(),
-
-                        actionButton("find_instruments",
-                                   "Find Instrumental Variables",
-                                   class = "btn-info btn-block",
-                                   icon = icon("search")),
-
-                        br(),
-
-                        actionButton("analyze_paths",
-                                   "Analyze Causal Paths",
-                                   class = "btn-success btn-block",
-                                   icon = icon("route")),
-
-                        br(),
-
-                        # Quick analysis button
+                        # Analysis button
                         actionButton("run_full_analysis",
-                                   "Run Complete Analysis",
-                                   class = "btn-warning btn-block",
-                                   icon = icon("magic"),
-                                   title = "Run all analyses at once"),
+                                   "Run Analysis",
+                                   class = "btn-success btn-block",
+                                   icon = icon("play"),
+                                   title = "Run comprehensive causal analysis"),
 
                         br(),
 
@@ -207,6 +185,40 @@ tabItems(
                                     tags$li("Shows all paths from exposure to outcome"),
                                     tags$li("Open paths create confounding"),
                                     tags$li("Blocked paths are already controlled")
+                                )
+                            ),
+
+                            tabPanel("M-Bias Detection",
+                                br(),
+                                div(style = "background-color: #fff3cd; padding: 10px; border-radius: 5px; margin-bottom: 15px;",
+                                    h5(style = "margin-top: 0;", icon("exclamation-triangle"), " What is M-Bias?"),
+                                    p(style = "margin-bottom: 0;",
+                                      strong("Definition:"), " M-bias occurs when a collider variable (with two or more parents) on a backdoor path is incorrectly adjusted for, opening a previously blocked path and introducing bias. These variables should NOT be included in adjustment sets.")
+                                ),
+                                verbatimTextOutput("mbias_result"),
+                                br(),
+                                h5("Key Points:"),
+                                tags$ul(
+                                    tags$li("M-bias variables are colliders that should NOT be adjusted"),
+                                    tags$li("Adjusting for these variables opens biasing paths"),
+                                    tags$li("Valid adjustment sets automatically exclude these variables")
+                                )
+                            ),
+
+                            tabPanel("Butterfly Bias Detection",
+                                br(),
+                                div(style = "background-color: #f8d7da; padding: 10px; border-radius: 5px; margin-bottom: 15px;",
+                                    h5(style = "margin-top: 0;", icon("exclamation-triangle"), " What is Butterfly Bias?"),
+                                    p(style = "margin-bottom: 0;",
+                                      strong("Definition:"), " Butterfly bias occurs when a confounder has two or more confounder parents, creating complex adjustment requirements. Adjusting for the butterfly variable without its parents, or vice versa, can introduce bias.")
+                                ),
+                                verbatimTextOutput("butterfly_result"),
+                                br(),
+                                h5("Key Points:"),
+                                tags$ul(
+                                    tags$li("Butterfly variables are confounders with multiple confounder parents"),
+                                    tags$li("Requires careful adjustment strategy"),
+                                    tags$li("Valid sets adjust for either the parents OR the butterfly variable with subsets of parents")
                                 )
                             )
                         )

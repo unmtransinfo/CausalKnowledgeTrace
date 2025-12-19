@@ -49,190 +49,7 @@
         )
     })
 
-    # Calculate adjustment sets
-    observeEvent(input$calculate_adjustment_sets, {
-        if (is.null(current_data$dag_object)) {
-            showNotification("Please load a DAG first", type = "error")
-            return()
-        }
 
-        if (is.null(input$causal_exposure) || is.null(input$causal_outcome)) {
-            showNotification("Please select both exposure and outcome variables", type = "warning")
-            return()
-        }
-
-        if (input$causal_exposure == input$causal_outcome) {
-            showNotification("Exposure and outcome must be different variables", type = "warning")
-            return()
-        }
-
-        # Show progress
-        shinyjs::show("causal_progress")
-
-        # Calculate adjustment sets
-        result <- calculate_adjustment_sets(
-            current_data$dag_object,
-            exposure = input$causal_exposure,
-            outcome = input$causal_outcome,
-            effect = input$causal_effect_type
-        )
-
-        # Hide progress
-        shinyjs::hide("causal_progress")
-
-        # Update results
-        output$adjustment_sets_result <- renderText({
-            format_adjustment_sets_display(result)
-        })
-
-        # Show notification
-        if (result$success) {
-            showNotification(
-                paste("Found", result$total_sets, "adjustment set(s)"),
-                type = "message"
-            )
-        } else {
-            showNotification(result$message, type = "error")
-        }
-    })
-
-    # Find instrumental variables
-    observeEvent(input$find_instruments, {
-        if (is.null(current_data$dag_object)) {
-            showNotification("Please load a DAG first", type = "error")
-            return()
-        }
-
-        if (is.null(input$causal_exposure) || is.null(input$causal_outcome)) {
-            showNotification("Please select both exposure and outcome variables", type = "warning")
-            return()
-        }
-
-        # Show progress
-        shinyjs::show("causal_progress")
-
-        # Find instruments
-        result <- find_instrumental_variables(
-            current_data$dag_object,
-            exposure = input$causal_exposure,
-            outcome = input$causal_outcome
-        )
-
-        # Hide progress
-        shinyjs::hide("causal_progress")
-
-        # Update results
-        output$instrumental_vars_result <- renderText({
-            if (!result$success) {
-                return(paste("Error:", result$message))
-            }
-
-            if (result$count == 0) {
-                return(paste0(
-                    "No instrumental variables found for:\n",
-                    "Exposure: ", input$causal_exposure, "\n",
-                    "Outcome: ", input$causal_outcome, "\n\n",
-                    "This means there are no variables in the DAG that:\n",
-                    "1. Affect the exposure variable\n",
-                    "2. Do not directly affect the outcome\n",
-                    "3. Are not affected by unmeasured confounders\n\n",
-                    "Consider using adjustment sets for causal identification."
-                ))
-            } else {
-                return(paste0(
-                    "Instrumental Variables Found\n",
-                    "============================\n",
-                    "Exposure: ", input$causal_exposure, "\n",
-                    "Outcome: ", input$causal_outcome, "\n",
-                    "Instruments: ", paste(result$instruments, collapse = ", "), "\n\n",
-                    "These variables can be used for instrumental variable analysis\n",
-                    "to estimate causal effects when adjustment is not sufficient."
-                ))
-            }
-        })
-
-        # Show notification
-        showNotification(result$message, type = if (result$success) "message" else "error")
-    })
-
-    # Analyze causal paths
-    observeEvent(input$analyze_paths, {
-        if (is.null(current_data$dag_object)) {
-            showNotification("Please load a DAG first", type = "error")
-            return()
-        }
-
-        if (is.null(input$causal_exposure) || is.null(input$causal_outcome)) {
-            showNotification("Please select both exposure and outcome variables", type = "warning")
-            return()
-        }
-
-        if (input$causal_exposure == input$causal_outcome) {
-            showNotification("Exposure and outcome must be different variables", type = "warning")
-            return()
-        }
-
-        # Show progress
-        shinyjs::show("causal_progress")
-
-        # Analyze paths
-        result <- analyze_causal_paths(
-            current_data$dag_object,
-            from = input$causal_exposure,
-            to = input$causal_outcome
-        )
-
-        # Hide progress
-        shinyjs::hide("causal_progress")
-
-        # Update results
-        output$causal_paths_result <- renderText({
-            if (!result$success) {
-                return(paste("Error:", result$message))
-            }
-
-            if (result$total_paths == 0) {
-                return(paste0(
-                    "No paths found from ", input$causal_exposure, " to ", input$causal_outcome, "\n\n",
-                    "This means there is no causal relationship between these variables\n",
-                    "according to the current DAG structure."
-                ))
-            }
-
-            # Format paths output
-            header <- paste0(
-                "Causal Paths Analysis\n",
-                "====================\n",
-                "From: ", result$from, "\n",
-                "To: ", result$to, "\n",
-                "Total Paths: ", result$total_paths, "\n\n"
-            )
-
-            paths_text <- ""
-            for (i in seq_along(result$paths)) {
-                path_info <- result$paths[[i]]
-                status <- if (path_info$is_open) "OPEN (creates confounding)" else "BLOCKED"
-                paths_text <- paste0(
-                    paths_text,
-                    "Path ", i, ": ", path_info$description, "\n",
-                    "Status: ", status, "\n",
-                    "Length: ", path_info$length, " variables\n\n"
-                )
-            }
-
-            interpretation <- paste0(
-                "Interpretation:\n",
-                "- OPEN paths create confounding and need to be blocked\n",
-                "- BLOCKED paths are already controlled by the DAG structure\n",
-                "- Use adjustment sets to block open confounding paths"
-            )
-
-            return(paste0(header, paths_text, interpretation))
-        })
-
-        # Show notification
-        showNotification(result$message, type = if (result$success) "message" else "error")
-    })
 
     # Run complete causal analysis
     observeEvent(input$run_full_analysis, {
@@ -343,6 +160,127 @@
                 )
 
                 return(paste0(header, paths_text, interpretation))
+            })
+
+            # M-bias detection results
+            output$mbias_result <- renderText({
+                result <- summary_result$mbias
+                if (is.null(result) || !result$success) {
+                    return("M-bias detection not available")
+                }
+
+                if (result$count == 0) {
+                    return(paste0(
+                        "M-Bias Detection Results\n",
+                        "========================\n",
+                        "Exposure: ", result$exposure, "\n",
+                        "Outcome: ", result$outcome, "\n\n",
+                        "✓ No M-bias detected!\n\n",
+                        "This is good news - there are no collider variables on backdoor paths\n",
+                        "that would introduce bias if incorrectly adjusted for.\n\n",
+                        "The minimal adjustment sets provided are safe to use."
+                    ))
+                }
+
+                # Format M-bias variables
+                header <- paste0(
+                    "M-Bias Detection Results\n",
+                    "========================\n",
+                    "Exposure: ", result$exposure, "\n",
+                    "Outcome: ", result$outcome, "\n\n",
+                    "⚠ Found ", result$count, " M-bias variable(s):\n\n"
+                )
+
+                mbias_text <- ""
+                for (v in result$mbias_vars) {
+                    details <- result$mbias_details[[v]]
+                    mbias_text <- paste0(
+                        mbias_text,
+                        "Variable: ", v, "\n",
+                        "  Parents: ", paste(details$parents, collapse = ", "), "\n",
+                        "  Paths through this variable:\n"
+                    )
+                    for (path in details$paths) {
+                        mbias_text <- paste0(mbias_text, "    - ", path, "\n")
+                    }
+                    mbias_text <- paste0(mbias_text, "\n")
+                }
+
+                warning_text <- paste0(
+                    "⚠ WARNING: Do NOT adjust for these variables!\n",
+                    "Adjusting for M-bias variables will OPEN previously blocked paths\n",
+                    "and introduce bias into your causal estimates.\n\n",
+                    "Recommended adjustment set (M-bias safe):\n",
+                    if (length(result$valid_adjustment_set) == 0) {
+                        "  ∅ (Empty set - no adjustment needed)"
+                    } else {
+                        paste0("  { ", paste(result$valid_adjustment_set, collapse = ", "), " }")
+                    }
+                )
+
+                return(paste0(header, mbias_text, warning_text))
+            })
+
+            # Butterfly bias detection results
+            output$butterfly_result <- renderText({
+                result <- summary_result$butterfly_bias
+                if (is.null(result) || !result$success) {
+                    return("Butterfly bias detection not available")
+                }
+
+                if (result$count == 0) {
+                    return(paste0(
+                        "Butterfly Bias Detection Results\n",
+                        "=================================\n",
+                        "Exposure: ", result$exposure, "\n",
+                        "Outcome: ", result$outcome, "\n\n",
+                        "✓ No butterfly bias detected!\n\n",
+                        "This means no confounders have multiple confounder parents,\n",
+                        "so standard adjustment strategies are appropriate.\n\n",
+                        "All confounders: ",
+                        if (length(result$all_confounders) == 0) {
+                            "None"
+                        } else {
+                            paste(result$all_confounders, collapse = ", ")
+                        }
+                    ))
+                }
+
+                # Format butterfly bias variables
+                header <- paste0(
+                    "Butterfly Bias Detection Results\n",
+                    "=================================\n",
+                    "Exposure: ", result$exposure, "\n",
+                    "Outcome: ", result$outcome, "\n\n",
+                    "⚠ Found ", result$count, " butterfly bias variable(s):\n\n"
+                )
+
+                butterfly_text <- ""
+                for (v in result$butterfly_vars) {
+                    parents <- result$butterfly_parents[[v]]
+                    butterfly_text <- paste0(
+                        butterfly_text,
+                        "Variable: ", v, "\n",
+                        "  Confounder parents: ", paste(parents, collapse = ", "), "\n\n"
+                    )
+                }
+
+                strategy_text <- paste0(
+                    "⚠ Adjustment Strategy:\n",
+                    "Butterfly bias requires careful adjustment. You should either:\n",
+                    "  1. Adjust for the parent confounders (recommended)\n",
+                    "  2. Adjust for the butterfly variable WITH some of its parents\n\n",
+                    "Non-butterfly confounders (safe to adjust): ",
+                    if (length(result$non_butterfly_confounders) == 0) {
+                        "None"
+                    } else {
+                        paste(result$non_butterfly_confounders, collapse = ", ")
+                    },
+                    "\n\n",
+                    "Consult the Adjustment Sets tab for valid adjustment combinations."
+                )
+
+                return(paste0(header, butterfly_text, strategy_text))
             })
 
             # Show success notification
