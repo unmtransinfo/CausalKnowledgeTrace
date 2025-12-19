@@ -399,6 +399,12 @@ create_interactive_network <- function(nodes_df, edges_df, physics_strength = -1
             }"
         ) %>%
         visEvents(
+            stabilizationIterationsDone = "function() {
+                // Notify Shiny that rendering is complete
+                Shiny.setInputValue('network_rendering_complete', Math.random(), {priority: 'event'});
+            }"
+        ) %>%
+        visEvents(
             selectNode = "function(params) {
                 var network = this;
 

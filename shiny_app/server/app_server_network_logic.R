@@ -34,15 +34,8 @@
         # Include force_refresh to trigger re-rendering for undo functionality
         current_data$force_refresh
 
-        # Show loading message for large graphs
-        if (!is.null(current_data$nodes) && nrow(current_data$nodes) > 8000) {
-            showNotification(
-                "Rendering large graph visualization... Please wait.",
-                type = "message",
-                duration = 3,
-                id = "large_graph_render"
-            )
-        }
+        # Set rendering flag to FALSE when starting to render
+        current_data$rendering_complete <- FALSE
 
         create_interactive_network(current_data$nodes, current_data$edges,
                                  input$physics_strength,
@@ -55,6 +48,21 @@
             visNetworkProxy("network") %>%
                 visFit(nodes = NULL, animation = list(duration = 500, easingFunction = "easeInOutQuad"))
         }
+    })
+
+    # Handle network rendering completion
+    observeEvent(input$network_rendering_complete, {
+        # Mark rendering as complete
+        current_data$rendering_complete <- TRUE
+
+        # Update Data Upload tab progress to 100% and hide loading
+        session$sendCustomMessage("updateProgress", list(
+            percent = 100,
+            text = "Complete!",
+            status = "Graph fully rendered and ready"
+        ))
+
+        session$sendCustomMessage("hideLoadingSection", list())
     })
 
     # Reset physics button using modular function

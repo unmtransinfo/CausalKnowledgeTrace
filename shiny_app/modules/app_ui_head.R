@@ -241,6 +241,14 @@ get_app_javascript <- function() {
                 hideLoadingSection();
             }, 1000); // Brief delay to show completion (1 second)
         });
+
+        Shiny.addCustomMessageHandler('showNetworkLoadingOverlay', function(data) {
+            showNetworkLoadingOverlay();
+        });
+
+        Shiny.addCustomMessageHandler('hideNetworkLoadingOverlay', function(data) {
+            hideNetworkLoadingOverlay();
+        });
     "))
 }
 

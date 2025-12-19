@@ -215,6 +215,15 @@ create_custom_javascript <- function() {
                 }
             });
         });
+
+        // Message handlers for network loading overlay
+        Shiny.addCustomMessageHandler('showNetworkLoadingOverlay', function(data) {
+            showNetworkLoadingOverlay();
+        });
+
+        Shiny.addCustomMessageHandler('hideNetworkLoadingOverlay', function(data) {
+            hideNetworkLoadingOverlay();
+        });
     "))
 }
 

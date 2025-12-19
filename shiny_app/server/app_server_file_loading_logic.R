@@ -212,15 +212,15 @@
                     cat("Error loading causal assertions:", e$message, "\n")
                 })
 
-                # Update progress: Complete
+                # Update progress: Data loaded, waiting for rendering
                 session$sendCustomMessage("updateProgress", list(
-                    percent = 100,
-                    text = "Complete!",
-                    status = "Graph loaded successfully"
+                    percent = 90,
+                    text = "Rendering visualization...",
+                    status = "Graph data loaded - rendering interactive network"
                 ))
 
-                # Hide loading section (JavaScript will handle the delay)
-                session$sendCustomMessage("hideLoadingSection", list())
+                # Note: Progress will complete to 100% when network rendering is done
+                # (handled by network_rendering_complete event in app_server_network_logic.R)
 
                 # Update DAG status to show it's ready to save
                 session$sendCustomMessage("updateDAGStatus", list(
