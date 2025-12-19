@@ -6,12 +6,29 @@
 # Author: Test for node click functionality
 # Date: December 2025
 
-# Set working directory
+# Set working directory to shiny_app for module loading
 original_wd <- getwd()
-if (basename(getwd()) == "shiny_app" && basename(dirname(getwd())) == "tests") {
-    setwd(file.path(dirname(dirname(getwd()))))
-} else if (basename(getwd()) == "tests") {
-    setwd(dirname(getwd()))
+current_dir <- basename(getwd())
+parent_dir <- basename(dirname(getwd()))
+
+if (current_dir == "shiny_app" && parent_dir == "tests") {
+    # Running from tests/shiny_app, go up two levels then into shiny_app
+    setwd(file.path(dirname(dirname(getwd())), "shiny_app"))
+} else if (current_dir == "tests") {
+    # Running from tests directory
+    setwd(file.path(dirname(getwd()), "shiny_app"))
+} else if (current_dir == "shiny_app" && dir.exists("modules")) {
+    # Already in the correct shiny_app directory
+    # Do nothing
+} else {
+    # Try to find and navigate to shiny_app directory
+    if (dir.exists("shiny_app") && dir.exists("shiny_app/modules")) {
+        setwd("shiny_app")
+    } else if (dir.exists("../../shiny_app")) {
+        setwd("../../shiny_app")
+    } else {
+        stop("Cannot find shiny_app directory with modules. Current dir: ", getwd())
+    }
 }
 
 cat("Working directory:", getwd(), "\n")
@@ -24,8 +41,8 @@ suppressPackageStartupMessages({
 })
 
 # Load required modules
-source("shiny_app/modules/optimized_loader.R")
-source("shiny_app/modules/data_upload.R")
+source("modules/optimized_loader.R")
+source("modules/data_upload.R")
 
 cat("\n=== TESTING NODE CLICK INFORMATION DISPLAY ===\n")
 cat("This test verifies the find_node_related_assertions() function\n")
@@ -35,7 +52,7 @@ cat("which is used when clicking on nodes in the Shiny app.\n\n")
 cat("\n--- Test 1: Loading Graph and Assertions ---\n")
 
 # Load the DAG
-dag_file <- "graph_creation/result/degree_1.R"
+dag_file <- "../graph_creation/result/degree_1.R"
 if (!file.exists(dag_file)) {
     cat("❌ FAILED: DAG file not found:", dag_file, "\n")
     quit(status = 1)
@@ -52,7 +69,7 @@ dag_object <- tryCatch({
 cat("✅ Loaded DAG object\n")
 
 # Load causal assertions
-assertions_file <- "graph_creation/result/causal_assertions_1.json"
+assertions_file <- "../graph_creation/result/causal_assertions_1.json"
 if (!file.exists(assertions_file)) {
     cat("❌ FAILED: Assertions file not found:", assertions_file, "\n")
     quit(status = 1)
