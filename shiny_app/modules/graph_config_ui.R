@@ -91,6 +91,12 @@ create_cui_inputs <- function(ns, ui_config, cui_search_available) {
         "C2677888, C0750901, C0494463, C0002395"
     }
 
+    blocklist_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$blocklist_cuis)) {
+        paste(unlist(ui_config$blocklist_cuis), collapse = ", ")
+    } else {
+        ""
+    }
+
     column(6,
         # Exposure CUIs
         div(
@@ -159,7 +165,8 @@ create_cui_inputs <- function(ns, ui_config, cui_search_available) {
                     ns("blocklist_cui_search"),
                     label = "Blocklist CUIs",
                     placeholder = "Search for concepts to exclude from analysis (e.g., demographics, age)...",
-                    height = "200px"
+                    height = "200px",
+                    initial_value = blocklist_cuis_ui
                 )
             } else {
                 # Fallback to manual entry
@@ -168,7 +175,7 @@ create_cui_inputs <- function(ns, ui_config, cui_search_available) {
                     textAreaInput(
                         ns("blocklist_cuis"),
                         label = NULL,
-                        value = "",
+                        value = blocklist_cuis_ui,
                         placeholder = "C0000000, C1111111, C2222222 (Press Enter to search)",
                         rows = 2,
                         width = "100%"
