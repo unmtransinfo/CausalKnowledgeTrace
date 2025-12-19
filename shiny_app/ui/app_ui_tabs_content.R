@@ -46,6 +46,25 @@ tabItems(
                                      style = "font-size: 12px; color: #666; margin-left: 10px;",
                                      textOutput("network_stats_text", inline = TRUE))
                             )
+                        ),
+
+                        hr(),
+
+                        # Physics controls and color coding
+                        fluidRow(
+                            column(8,
+                                create_network_controls_ui()
+                            ),
+                            column(4,
+                                div(style = "padding: 10px; background-color: #f8f9fa; border-radius: 4px;",
+                                    h5(style = "margin-top: 0; font-size: 14px;", icon("palette"), " Node Colors:"),
+                                    tags$div(style = "font-size: 12px;",
+                                        tags$span(style = "color: #FF6B6B; font-weight: bold;", "● Red"), " = Exposure | ",
+                                        tags$span(style = "color: #4ECDC4; font-weight: bold;", "● Cyan"), " = Outcome | ",
+                                        tags$span(style = "color: #95A5A6; font-weight: bold;", "● Gray"), " = Other"
+                                    )
+                                )
+                            )
                         )
                     )
                 ),
@@ -63,84 +82,6 @@ tabItems(
                                 DT::dataTableOutput("selection_info_table")
                             )
                         )
-                    )
-                ),
-                # Row 3: Controls, Navigation Guide, and Legend (bottom)
-                fluidRow(
-                    box(
-                        title = "Network Controls",
-                        status = "info",
-                        solidHeader = TRUE,
-                        width = 4,
-                        create_network_controls_ui(),
-                        br(),
-
-                        # Save DAG Section
-                        h5(icon("save"), " Save Modified DAG"),
-                        div(id = "dag_status_indicator",
-                            p("Status: ",
-                              span(id = "dag_status_text", "Ready to save",
-                                   style = "color: #28a745; font-weight: bold;"),
-                              style = "font-size: 12px; margin-bottom: 5px;")),
-                        p("Download your current graph as an R file:", style = "font-size: 12px; margin-bottom: 10px;"),
-                        downloadButton("save_dag_main", "Download DAG File",
-                                     class = "btn-success btn-block",
-                                     icon = icon("download"),
-                                     style = "margin-bottom: 10px; font-weight: bold;",
-                                     title = "Save your modified DAG as an R file"),
-                        downloadButton("save_html_main", "Download HTML Report",
-                                     class = "btn-warning btn-block",
-                                     icon = icon("file-text"),
-                                     style = "margin-bottom: 15px; font-weight: bold;",
-                                     title = "Convert JSON to readable HTML report"),
-
-                        hr(),
-
-                        # Add Graph Parameters button
-                        actionButton("graph_params_btn",
-                                   "Create Graph",
-                                   class = "btn-info btn-block",
-                                   icon = icon("cogs"),
-                                   onclick = "openCreateGraph()"),
-
-                        br(),
-
-                        # Quick access to causal analysis
-                        actionButton("quick_causal_analysis",
-                                   "Causal Analysis",
-                                   class = "btn-success btn-block",
-                                   icon = icon("search-plus"),
-                                   onclick = "openCausalAnalysis()",
-                                   title = "Go to causal analysis tab")
-                    ),
-                    box(
-                        title = "Navigation Guide",
-                        status = "warning",
-                        solidHeader = TRUE,
-                        width = 4,
-                        h5(icon("keyboard"), " Keyboard Controls:"),
-                        tags$ul(
-                            tags$li(HTML("<strong>Arrow Keys:</strong> Pan the graph (↑↓←→)")),
-                            tags$li(HTML("<strong>+ / =:</strong> Zoom in")),
-                            tags$li(HTML("<strong>-:</strong> Zoom out")),
-                            tags$li(HTML("<strong>0:</strong> Fit graph to view"))
-                        ),
-                        h5(icon("mouse-pointer"), " Mouse Controls:"),
-                        tags$ul(
-                            tags$li("Drag to pan the view"),
-                            tags$li("Scroll wheel to zoom"),
-                            tags$li("Click edges to view information"),
-                            tags$li("Use navigation buttons (bottom-right)")
-                        ),
-                        tags$small(class = "text-muted",
-                                  "Click on the graph area first to enable keyboard navigation.")
-                    ),
-                    box(
-                        title = "Legend",
-                        status = "success",
-                        solidHeader = TRUE,
-                        width = 4,
-                        htmlOutput("legend_html")
                     )
                 )
             ),
@@ -225,6 +166,11 @@ tabItems(
 
                             tabPanel("Adjustment Sets",
                                 br(),
+                                div(style = "background-color: #e8f4f8; padding: 10px; border-radius: 5px; margin-bottom: 15px;",
+                                    h5(style = "margin-top: 0;", icon("info-circle"), " What are Adjustment Sets?"),
+                                    p(style = "margin-bottom: 0;",
+                                      strong("Definition:"), " A set of variables that, when controlled for (adjusted), blocks all confounding paths between exposure and outcome, allowing unbiased estimation of the causal effect.")
+                                ),
                                 verbatimTextOutput("adjustment_sets_result"),
                                 br(),
                                 h5("Quick Guide:"),
@@ -237,6 +183,11 @@ tabItems(
 
                             tabPanel("Instrumental Variables",
                                 br(),
+                                div(style = "background-color: #fff8e1; padding: 10px; border-radius: 5px; margin-bottom: 15px;",
+                                    h5(style = "margin-top: 0;", icon("info-circle"), " What are Instrumental Variables?"),
+                                    p(style = "margin-bottom: 0;",
+                                      strong("Definition:"), " A variable that (1) affects the exposure, (2) does not directly affect the outcome except through the exposure, and (3) is not associated with confounders.")
+                                ),
                                 verbatimTextOutput("instrumental_vars_result"),
                                 br(),
                                 h5("About Instrumental Variables:"),
