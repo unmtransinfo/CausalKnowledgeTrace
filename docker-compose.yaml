@@ -9,6 +9,7 @@ services:
       PGPORT: ${DB_PORT}
     ports:
       - "${DB_PORT}:${DB_PORT}"
+    command: ["postgres", "-c", "port=${DB_PORT}", "-c", "listen_addresses=*"]
     volumes:
       - ./causalehr_backup:/causalehr_backup:ro
       - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh:ro
