@@ -378,7 +378,7 @@
             to_node <- edge$to
 
             # Find matching assertion in original data
-            pmid_data <- find_edge_pmid_data(from_node, to_node, assertions_data, current_data$lazy_loader)
+            pmid_data <- find_edge_pmid_data(from_node, to_node, assertions_data, current_data$lazy_loader, NULL, current_data$pmid_sentences)
 
             if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
                 # Create assertion entry in optimized format

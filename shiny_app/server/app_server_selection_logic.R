@@ -190,7 +190,8 @@
                     selection_data$selected_edge$to,
                     current_data$causal_assertions,
                     current_data$lazy_loader,
-                    current_data$edges  # Pass edges dataframe for CUI-based matching
+                    current_data$edges,  # Pass edges dataframe for CUI-based matching
+                    current_data$pmid_sentences  # Pass pmid_sentences for new format
                 )
             }, error = function(e) {
                 cat("ERROR in find_edge_pmid_data:", e$message, "\n")

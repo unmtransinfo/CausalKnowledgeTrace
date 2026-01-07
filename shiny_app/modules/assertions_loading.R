@@ -158,6 +158,22 @@ load_causal_assertions <- function(filename = NULL, degree = NULL,
             ))
         }
 
+        # NEW: Handle the two-level structure {pmid_sentences: {...}, assertions: [...]}
+        pmid_sentences <- NULL
+        if (is.list(assertions_data) && !is.null(assertions_data$assertions)) {
+            # New format with pmid_sentences and assertions at top level
+            cat("Detected new JSON format with pmid_sentences and assertions structure\n")
+
+            # Extract the assertions array
+            actual_assertions <- assertions_data$assertions
+
+            # Store pmid_sentences for later use
+            pmid_sentences <- assertions_data$pmid_sentences
+
+            # Use the assertions array
+            assertions_data <- actual_assertions
+        }
+        
         # Validate the structure
         if (!is.list(assertions_data) || length(assertions_data) == 0) {
             return(list(
@@ -169,13 +185,20 @@ load_causal_assertions <- function(filename = NULL, degree = NULL,
 
         # Check if first item has expected structure
         first_item <- assertions_data[[1]]
-        required_fields <- c("subject_name", "object_name", "pmid_data")
-        missing_fields <- setdiff(required_fields, names(first_item))
-
-        if (length(missing_fields) > 0) {
+        
+        # Support both old format (subject_name, object_name) and new format (subj, obj)
+        required_fields_old <- c("subject_name", "object_name")
+        required_fields_new <- c("subj", "obj")
+        
+        has_old_format <- all(required_fields_old %in% names(first_item))
+        has_new_format <- all(required_fields_new %in% names(first_item))
+        
+        if (!has_old_format && !has_new_format) {
             return(list(
                 success = FALSE,
-                message = paste("Missing required fields in assertions data:", paste(missing_fields, collapse = ", ")),
+                message = paste("Missing required fields in assertions data. Expected either",
+                              paste(required_fields_old, collapse = ", "), "or",
+                              paste(required_fields_new, collapse = ", ")),
                 assertions = list()
             ))
         }
@@ -184,6 +207,7 @@ load_causal_assertions <- function(filename = NULL, degree = NULL,
             success = TRUE,
             message = paste("Successfully loaded", length(assertions_data), "causal assertions from", basename(filename)),
             assertions = assertions_data,
+            pmid_sentences = pmid_sentences,
             filename = filename
         ))
 

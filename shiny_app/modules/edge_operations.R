@@ -1,3 +1,4 @@
+
 # Edge Operations Module
 # This module handles edge-related operations including PMID data lookup and edge matching
 # Author: Refactored from data_upload.R
@@ -114,11 +115,13 @@ find_edge_in_metadata <- function(from_node, to_node, metadata_data) {
 #' @param match_type Type of match that was found
 #' @return List with formatted PMID information
 process_full_assertion <- function(assertion, match_type) {
-    # Extract PMID list from pmid_data keys (optimized structure)
-    pmid_list <- if (!is.null(assertion$pmid_data)) {
-        names(assertion$pmid_data)
+    # Extract PMID list - NEW FORMAT uses pmid_refs
+    pmid_list <- if (!is.null(assertion$pmid_refs)) {
+        assertion$pmid_refs  # NEW FORMAT
+    } else if (!is.null(assertion$pmid_data)) {
+        names(assertion$pmid_data)  # OLD FORMAT
     } else if (!is.null(assertion$pmid_list)) {
-        assertion$pmid_list  # Backward compatibility
+        assertion$pmid_list  # BACKWARD COMPATIBILITY
     } else {
         character(0)
     }
@@ -157,9 +160,10 @@ process_full_assertion <- function(assertion, match_type) {
 #' @param assertions_data List of causal assertions loaded from JSON or lazy loader
 #' @param lazy_loader Optional lazy loader function for on-demand data loading
 #' @param edges_df Optional edges dataframe with CUI information for better matching
+#' @param pmid_sentences Optional dictionary mapping PMIDs to sentences (new format)
 #' @return List containing PMID information for the edge
 #' @export
-find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader = NULL, edges_df = NULL) {
+find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader = NULL, edges_df = NULL, pmid_sentences = NULL) {
     if (is.null(assertions_data) || length(assertions_data) == 0) {
         return(list(
             found = FALSE,
@@ -222,9 +226,12 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
             # Search for matching compact assertion
             for (compact_assertion in assertions_data) {
                 # Try exact match first
-                if (compact_assertion$subj == from_node && compact_assertion$obj == to_node) {
+                assertion_subject <- compact_assertion$subj %||% compact_assertion$subject_name
+                assertion_object <- compact_assertion$obj %||% compact_assertion$object_name
+
+                if (assertion_subject == from_node && assertion_object == to_node) {
                     # Found it! Expand this assertion on-demand
-                    expanded <- lazy_loader(compact_assertion$subj, compact_assertion$obj)
+                    expanded <- lazy_loader(assertion_subject, assertion_object)
 
                     if (!is.null(expanded)) {
                         # Extract PMID data from expanded assertion
@@ -353,60 +360,24 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
     matching_assertions <- list()
 
     for (assertion in assertions_data) {
-        if (!is.null(assertion$subject_name) && !is.null(assertion$object_name)) {
+        # Support both old and new field names
+        assertion_subject <- assertion$subject_name %||% assertion$subj
+        assertion_object <- assertion$object_name %||% assertion$obj
+        
+        if (!is.null(assertion_subject) && !is.null(assertion_object)) {
             # Strategy 1: Exact match (original logic)
-            exact_match <- (assertion$subject_name == from_node && assertion$object_name == to_node)
-
-            # Strategy 2: CUI-based matching (if CUIs are available)
-            cui_match <- FALSE
-            if (!exact_match && !is.null(from_cuis) && !is.null(to_cuis)) {
-                # Get assertion CUIs
-                assertion_subj_cui <- assertion$subj_cui %||% assertion$subject_cui
-                assertion_obj_cui <- assertion$obj_cui %||% assertion$object_cui
-
-                if (!is.null(assertion_subj_cui) && !is.null(assertion_obj_cui)) {
-                    # Split multiple CUIs if they exist
-                    assertion_subj_cuis <- strsplit(as.character(assertion_subj_cui), "\\|")[[1]]
-                    assertion_obj_cuis <- strsplit(as.character(assertion_obj_cui), "\\|")[[1]]
-
-                    # Check if any CUI matches
-                    subj_cui_match <- any(from_cuis %in% assertion_subj_cuis)
-                    obj_cui_match <- any(to_cuis %in% assertion_obj_cuis)
-
-                    cui_match <- (subj_cui_match && obj_cui_match)
-                }
-            }
-
-            # Strategy 3: Normalized name matching with medical variations
-            subject_match <- handle_medical_variations(from_node, assertion$subject_name)
-            object_match <- handle_medical_variations(to_node, assertion$object_name)
-            normalized_match <- (subject_match && object_match)
-
-            # Strategy 4: Partial matching for common transformations
-            partial_match <- FALSE
-            if (!exact_match && !cui_match && !normalized_match) {
-                # Get normalized versions for partial matching
-                subject_normalized <- normalize_name(assertion$subject_name)
-                object_normalized <- normalize_name(assertion$object_name)
-
-                # Check if the normalized names contain each other or have significant overlap
-                from_words <- strsplit(from_normalized, "_")[[1]]
-                to_words <- strsplit(to_normalized, "_")[[1]]
-                subject_words <- strsplit(subject_normalized, "_")[[1]]
-                object_words <- strsplit(object_normalized, "_")[[1]]
-
-                # Check for substantial word overlap (at least 50% of words match)
-                from_overlap <- length(intersect(from_words, subject_words)) / max(length(from_words), length(subject_words))
-                to_overlap <- length(intersect(to_words, object_words)) / max(length(to_words), length(object_words))
-
-                partial_match <- (from_overlap >= 0.5 && to_overlap >= 0.5)
-            }
-
-            if (exact_match || cui_match || normalized_match || partial_match) {
-                # Store this matching assertion
+            exact_match <- (assertion_subject == from_node && assertion_object == to_node)
+            
+            # Strategy 2: Normalized match
+            assertion_subject_norm <- normalize_name(assertion_subject)
+            assertion_object_norm <- normalize_name(assertion_object)
+            normalized_match <- (assertion_subject_norm == from_normalized && 
+                                assertion_object_norm == to_normalized)
+            
+            if (exact_match || normalized_match) {
                 matching_assertions[[length(matching_assertions) + 1]] <- list(
                     assertion = assertion,
-                    match_type = if (exact_match) "exact" else if (cui_match) "cui" else if (normalized_match) "normalized" else "partial"
+                    match_type = if(exact_match) "exact" else "normalized"
                 )
             }
         }
@@ -434,11 +405,13 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
                 all_predicates <- c(all_predicates, pred)
             }
 
-            # Extract PMID list from pmid_data keys (optimized structure)
-            pmid_list <- if (!is.null(assertion$pmid_data)) {
-                names(assertion$pmid_data)
+            # Extract PMID list - NEW FORMAT uses pmid_refs
+            pmid_list <- if (!is.null(assertion$pmid_refs)) {
+                assertion$pmid_refs  # NEW FORMAT
+            } else if (!is.null(assertion$pmid_data)) {
+                names(assertion$pmid_data)  # OLD FORMAT
             } else if (!is.null(assertion$pmid_list)) {
-                assertion$pmid_list  # Backward compatibility
+                assertion$pmid_list  # BACKWARD COMPATIBILITY
             } else {
                 character(0)
             }
@@ -465,20 +438,30 @@ find_edge_pmid_data <- function(from_node, to_node, assertions_data, lazy_loader
             }
 
             # Extract sentence data if available
-            pmid_data <- assertion$pmid_data
-            if (!is.null(pmid_data) && is.list(pmid_data)) {
+            # NEW FORMAT: Check pmid_sentences parameter first
+            if (!is.null(pmid_sentences) && is.list(pmid_sentences)) {
                 for (pmid in pmid_list) {
-                    tryCatch({
-                        if (!is.null(pmid_data[[pmid]]) && is.list(pmid_data[[pmid]]) && !is.null(pmid_data[[pmid]]$sentences)) {
-                            if (is.null(all_sentence_data[[pmid]])) {
-                                all_sentence_data[[pmid]] <- pmid_data[[pmid]]$sentences
+                    if (!is.null(pmid_sentences[[pmid]]) && is.null(all_sentence_data[[pmid]])) {
+                        all_sentence_data[[pmid]] <- pmid_sentences[[pmid]]
+                    }
+                }
+            } else {
+                # OLD FORMAT: Extract from assertion$pmid_data
+                pmid_data <- assertion$pmid_data
+                if (!is.null(pmid_data) && is.list(pmid_data)) {
+                    for (pmid in pmid_list) {
+                        tryCatch({
+                            if (!is.null(pmid_data[[pmid]]) && is.list(pmid_data[[pmid]]) && !is.null(pmid_data[[pmid]]$sentences)) {
+                                if (is.null(all_sentence_data[[pmid]])) {
+                                    all_sentence_data[[pmid]] <- pmid_data[[pmid]]$sentences
+                                }
                             }
-                        }
-                    }, error = function(e) {
-                        if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
-                            cat("Warning: Error accessing sentence data for PMID", pmid, ":", e$message, "\n")
-                        }
-                    })
+                        }, error = function(e) {
+                            if (exists("VERBOSE_LOGGING") && VERBOSE_LOGGING) {
+                                cat("Warning: Error accessing sentence data for PMID", pmid, ":", e$message, "\n")
+                            }
+                        })
+                    }
                 }
             }
 

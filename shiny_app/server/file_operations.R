@@ -78,6 +78,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                     assertions_result <- load_causal_assertions(degree = result$degree)
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
+                        current_data$pmid_sentences <- assertions_result$pmid_sentences  # Store pmid_sentences for new format
                         current_data$assertions_loaded <- TRUE
                         current_data$lazy_loader <- assertions_result$lazy_loader  # Store lazy loader if available
                         current_data$loading_strategy <- assertions_result$loading_strategy %||% "standard"
@@ -208,6 +209,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
                     assertions_result <- load_causal_assertions(degree = result$degree)
                     if (assertions_result$success) {
                         current_data$causal_assertions <- assertions_result$assertions
+                        current_data$pmid_sentences <- assertions_result$pmid_sentences  # Store pmid_sentences for new format
                         current_data$assertions_loaded <- TRUE
                         current_data$lazy_loader <- assertions_result$lazy_loader  # Store lazy loader if available
                         current_data$loading_strategy <- assertions_result$loading_strategy %||% "standard"
@@ -307,7 +309,7 @@ create_file_operations_server <- function(input, output, session, current_data) 
             to_node <- edge$to
 
             # Find matching assertion in original data
-            pmid_data <- find_edge_pmid_data(from_node, to_node, assertions_data, current_data$lazy_loader)
+            pmid_data <- find_edge_pmid_data(from_node, to_node, assertions_data, current_data$lazy_loader, NULL, current_data$pmid_sentences)
 
             if (pmid_data$found && length(pmid_data$pmid_list) > 0) {
                 # Create assertion entry in optimized format

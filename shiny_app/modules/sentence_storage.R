@@ -45,9 +45,19 @@ separate_sentences_from_assertions <- function(assertions_file, output_dir = NUL
         cat("Loading assertions file for sentence separation...\n")
         start_time <- Sys.time()
         
-        # Load the full assertions data
+        # Load the full assertions data - NEW FORMAT ONLY
         assertions_data <- jsonlite::fromJSON(assertions_file, simplifyDataFrame = FALSE)
-        
+
+        # Extract assertions from two-level structure
+        if (!is.list(assertions_data) || is.null(assertions_data$assertions)) {
+            return(list(
+                success = FALSE,
+                message = "Invalid JSON format. Expected: {pmid_sentences: {...}, assertions: [...]}"
+            ))
+        }
+
+        assertions_data <- assertions_data$assertions
+
         if (!is.list(assertions_data) || length(assertions_data) == 0) {
             return(list(
                 success = FALSE,
