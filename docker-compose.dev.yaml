@@ -1,0 +1,101 @@
+services:
+  db:
+    image: postgres:16
+    container_name: cwt-db-dev
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGPORT: ${DB_PORT}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    command:
+      - "postgres"
+      - "-c"
+      - "port=${DB_PORT}"
+      - "-c"
+      - "listen_addresses=*"
+      # Performance tuning based on PGTune recommendations
+      # DB Version: 16, OS: Linux, DB Type: web, CPU: 16, Memory: 64GB, Connections: 100, Storage: HDD
+      - "-c"
+      - "max_connections=100"
+      - "-c"
+      - "shared_buffers=16GB"
+      - "-c"
+      - "effective_cache_size=48GB"
+      - "-c"
+      - "maintenance_work_mem=2GB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "default_statistics_target=100"
+      - "-c"
+      - "random_page_cost=4"
+      - "-c"
+      - "effective_io_concurrency=2"
+      - "-c"
+      - "work_mem=144631kB"
+      - "-c"
+      - "huge_pages=try"
+      - "-c"
+      - "min_wal_size=1GB"
+      - "-c"
+      - "max_wal_size=4GB"
+      - "-c"
+      - "max_worker_processes=16"
+      - "-c"
+      - "max_parallel_workers_per_gather=4"
+      - "-c"
+      - "max_parallel_workers=16"
+      - "-c"
+      - "max_parallel_maintenance_workers=4"
+    volumes:
+      - ./causalehr_backup:/causalehr_backup:ro
+      - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh:ro
+      - pgdata-dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -p ${DB_PORT}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '16'
+          memory: 64G
+        reservations:
+          cpus: '8'
+          memory: 32G
+
+  cwt-app-dev:
+    image: causalknowledgetrace:dev
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: cwt-app-dev
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    env_file:
+      - .env.dev
+    environment:
+      - DB_HOST=db  # This overrides the DB_HOST from .env file
+      - ENVIRONMENT=development
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/causalknowledgetrace  # Mount source code for live reload in dev
+    deploy:
+      resources:
+        limits:
+          cpus: '16'
+          memory: 64G
+        reservations:
+          cpus: '8'
+          memory: 32G
+
+volumes:
+  pgdata-dev:
+
