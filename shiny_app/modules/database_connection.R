@@ -319,15 +319,12 @@ search_cui_entities <- function(search_term, search_type = "exposure", exact_mat
         # Clean and prepare search term
         clean_term <- trimws(search_term)
 
-        # Build query based on match type - WITH LIMIT for performance
-        # Limit to 500 results to prevent browser rendering slowdown
-        result_limit <- 500
-
+        # Build query based on match type - NO LIMIT to show all results
         if (exact_match) {
             # Exact match: use simple equality (can use index)
             query <- paste("SELECT cui, name, semtype, semtype_definition FROM",
                           paste0(search_schema, ".", search_table),
-                          "WHERE LOWER(name) = LOWER($1) ORDER BY name LIMIT", result_limit)
+                          "WHERE LOWER(name) = LOWER($1) ORDER BY name")
             params <- list(clean_term)
         } else {
             # Partial match: use trigram index for better performance
@@ -335,7 +332,7 @@ search_cui_entities <- function(search_term, search_type = "exposure", exact_mat
             search_pattern <- paste0(clean_term, "%")
             query <- paste("SELECT cui, name, semtype, semtype_definition FROM",
                           paste0(search_schema, ".", search_table),
-                          "WHERE name ILIKE $1 ORDER BY name LIMIT", result_limit)
+                          "WHERE name ILIKE $1 ORDER BY name")
             params <- list(search_pattern)
         }
 
@@ -366,18 +363,15 @@ search_cui_entities <- function(search_term, search_type = "exposure", exact_mat
             )
         }
 
-        # Check if we hit the limit
-        hit_limit <- nrow(results) >= result_limit
-        limit_message <- if(hit_limit) paste("(showing first", result_limit, "of many results)") else ""
-
+        # Return all results (no limit)
         return(list(
             success = TRUE,
-            message = paste("Found", nrow(results), "results in", search_type, "table", limit_message),
+            message = paste("Found", nrow(results), "results in", search_type, "table"),
             results = results,
             search_term = clean_term,
             search_type = search_type,
             total_results = nrow(results),
-            hit_limit = hit_limit
+            hit_limit = FALSE
         ))
 
     }, error = function(e) {
