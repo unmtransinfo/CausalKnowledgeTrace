@@ -18,14 +18,21 @@ if (basename(getwd()) != "shiny_app") {
 cat("=== CausalKnowledgeTrace Shiny App Launcher ===\n")
 cat("Starting Shiny application...\n\n")
 
+# Get port from environment variable or use default
+app_port_env <- Sys.getenv("APP_PORT", unset = "")
+if (app_port_env != "") {
+    app_port <- as.integer(app_port_env)
+} else {
+    app_port <- 3838
+}
 
-cat("Access the app at: http://localhost:3838\n\n")
+cat("Access the app at: http://localhost:", app_port, "\n\n", sep = "")
 
 # Launch the Shiny app
 tryCatch({
     # Check if app.R exists
     if (file.exists("app.R")) {
-        runApp("app.R", port = 3838, host = "0.0.0.0")
+        runApp("app.R", port = app_port, host = "0.0.0.0")
     } else {
         stop("app.R not found in current directory")
     }
