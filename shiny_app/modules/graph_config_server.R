@@ -152,6 +152,38 @@ graphConfigServer <- function(id, db_connection = NULL) {
             }
         })
 
+        # Enable/disable threshold inputs based on selected degree
+        observe({
+            selected_degree <- as.integer(input$degree)
+
+            if (!is.na(selected_degree)) {
+                # Use shinyjs if available, otherwise use custom JavaScript
+                if (exists("shinyjs_available") && shinyjs_available) {
+                    # Degree 1: Enable only threshold 1
+                    if (selected_degree == 1) {
+                        shinyjs::enable("min_pmids_degree1")
+                        shinyjs::disable("min_pmids_degree2")
+                        shinyjs::disable("min_pmids_degree3")
+                    }
+                    # Degree 2: Enable thresholds 1 and 2
+                    else if (selected_degree == 2) {
+                        shinyjs::enable("min_pmids_degree1")
+                        shinyjs::enable("min_pmids_degree2")
+                        shinyjs::disable("min_pmids_degree3")
+                    }
+                    # Degree 3: Enable all thresholds
+                    else if (selected_degree == 3) {
+                        shinyjs::enable("min_pmids_degree1")
+                        shinyjs::enable("min_pmids_degree2")
+                        shinyjs::enable("min_pmids_degree3")
+                    }
+                } else {
+                    # Fallback: Use custom JavaScript message
+                    session$sendCustomMessage("toggleThresholds", list(degree = selected_degree))
+                }
+            }
+        })
+
         # Reactive values for validation
         validation_state <- reactiveValues(
             is_valid = FALSE,
