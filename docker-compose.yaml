@@ -76,7 +76,7 @@ services:
       dockerfile: docker/Dockerfile
     container_name: cwt-app
     ports:
-      - "3838:3838"
+      - "${APP_PORT}:${APP_PORT}"
     env_file:
       - .env
     environment:

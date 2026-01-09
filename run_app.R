@@ -70,7 +70,14 @@ args <- commandArgs(trailingOnly = TRUE)
 # Use environment variable or default to 0.0.0.0 for Docker compatibility
 # Set SHINY_HOST=127.0.0.1 for local development if needed
 host <- Sys.getenv("SHINY_HOST", unset = "0.0.0.0")
-default_port <- 3838
+
+# Get port from environment variable or use default
+app_port_env <- Sys.getenv("APP_PORT", unset = "")
+if (app_port_env != "") {
+    default_port <- as.integer(app_port_env)
+} else {
+    default_port <- 3838
+}
 
 # Find an available port (silently)
 port_available <- is_port_available(default_port, host)
