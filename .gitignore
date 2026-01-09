@@ -8,7 +8,11 @@ user_input.yaml
 *__pycache__/
 *nohup.out
 
+# Environment files (keep sample files)
 .env
+.env.dev
+.env.prod
+
 .augment/
 logs/
 
