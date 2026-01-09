@@ -19,6 +19,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '16'
+          memory: 64G
+        reservations:
+          cpus: '8'
+          memory: 32G
 
   cwt-app:
     image: causalknowledgetrace:latest
@@ -37,6 +45,14 @@ services:
         condition: service_healthy
     volumes:
       - .:/causalknowledgetrace
+    deploy:
+      resources:
+        limits:
+          cpus: '16'
+          memory: 64G
+        reservations:
+          cpus: '8'
+          memory: 32G
 
 volumes:
   pgdata:
