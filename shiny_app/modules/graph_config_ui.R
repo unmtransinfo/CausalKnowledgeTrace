@@ -51,6 +51,32 @@ create_progress_javascript <- function(id, ns) {
             updateGraphProgress_", id, "(0, 'Initializing...', 'Ready to create graph...');
         }
 
+        // Function to toggle threshold inputs based on degree
+        function toggleThresholds_", id, "(degree) {
+            var degree1 = $('#", ns("min_pmids_degree1"), "');
+            var degree2 = $('#", ns("min_pmids_degree2"), "');
+            var degree3 = $('#", ns("min_pmids_degree3"), "');
+
+            // Degree 1: Enable only threshold 1
+            if (degree == 1) {
+                degree1.prop('disabled', false).parent().css('opacity', '1');
+                degree2.prop('disabled', true).parent().css('opacity', '0.5');
+                degree3.prop('disabled', true).parent().css('opacity', '0.5');
+            }
+            // Degree 2: Enable thresholds 1 and 2
+            else if (degree == 2) {
+                degree1.prop('disabled', false).parent().css('opacity', '1');
+                degree2.prop('disabled', false).parent().css('opacity', '1');
+                degree3.prop('disabled', true).parent().css('opacity', '0.5');
+            }
+            // Degree 3: Enable all thresholds
+            else if (degree == 3) {
+                degree1.prop('disabled', false).parent().css('opacity', '1');
+                degree2.prop('disabled', false).parent().css('opacity', '1');
+                degree3.prop('disabled', false).parent().css('opacity', '1');
+            }
+        }
+
         // Message handlers for server communication
         Shiny.addCustomMessageHandler('updateGraphProgress_", id, "', function(data) {
             updateGraphProgress_", id, "(data.percent, data.text, data.status);
@@ -64,6 +90,24 @@ create_progress_javascript <- function(id, ns) {
             setTimeout(function() {
                 hideGraphProgressSection_", id, "();
             }, 2000); // Brief delay to show completion
+        });
+
+        Shiny.addCustomMessageHandler('toggleThresholds', function(data) {
+            toggleThresholds_", id, "(data.degree);
+        });
+
+        // Initialize threshold states on page load
+        $(document).ready(function() {
+            var initialDegree = $('#", ns("degree"), "').val();
+            if (initialDegree) {
+                toggleThresholds_", id, "(parseInt(initialDegree));
+            }
+        });
+
+        // Listen for degree changes
+        $(document).on('change', '#", ns("degree"), "', function() {
+            var selectedDegree = parseInt($(this).val());
+            toggleThresholds_", id, "(selectedDegree);
         });
     ")))
 }
