@@ -24,3 +24,9 @@ causalehr_backup/
 create_db/
 .github/
 
+# Ignore all files in jbi_paper/ directory and its subdirectories
+jbi_paper/overleaf_temp/main.aux
+jbi_paper/overleaf_temp/main.bbl
+jbi_paper/overleaf_temp/main.blg
+jbi_paper/overleaf_temp/main.log
+jbi_paper/overleaf_temp/main.spl
