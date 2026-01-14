@@ -184,13 +184,9 @@ The remainder of this paper describes the technical implementation of CausalKnow
 See Subsection \ref{subsec1}.
 
 \section{Methods}
-\label{sec1}
+\label{sec:methods}
 
-\subsection{System Architecture and Overall Design}
-
-CausalKnowledgeTrace operates as a modular computational framework that seamlessly integrates R, Python, and JavaScript components within an interactive Shiny web application interface. The system architecture follows a three-tier design where a PostgreSQL backend houses SemMedDB data and custom indexes, a middle-tier processing engine handles graph construction and analysis algorithms, and a front-end interface provides interactive visualization and user controls. The core processing pipeline consists of five interconnected modules that handle input validation and preprocessing, subgraph construction, evidence aggregation and filtering, semantic consolidation, and output generation. Each module is designed for independent testing and containerized deployment, ensuring scalability and maintainability.
-
-\subsection{Data Sources and Knowledge Base Construction}
+\subsection{Data Sources and Knowledge Base}
 
 \subsubsection{SemMedDB Integration and Preprocessing}
 
@@ -199,6 +195,11 @@ The foundation of our approach rests on the Semantic MEDLINE Database (SemMedDB)
 \subsubsection{Knowledge Quality Filtering Pipeline}
 
 Given that raw SemMedDB contains numerous non-informative predications, we implemented a comprehensive multi-stage filtering pipeline to improve knowledge quality. This filtering process begins by excluding overly generic concepts based on UMLS semantic types, removing 847 semantic types identified as non-informative for causal inference, such as "Functional Concept" and "Idea or Concept." We then eliminate approximately 15,000 non-specific biomedical terms using a curated GENERICunderscoreCONCEPTS table, followed by predicate type selection that focuses on causally relevant relationships, including CAUSES, PREDISPOSES, PREVENTS, TREATS, and their variations. Ultimately, we retain 23 predicate types from the original 74 SemMedDB predicates. Finally, we apply configurable publication quality thresholds with minimum citation requirements ranging from 10 to 5,000 supporting PMIDs, as well as temporal filtering that restricts publications to those from 2000 onward to ensure evidence adequacy (ascertained from the threshold of the number of distinct PubMed IDs [PMIDs]) and recency (ascertained from the publication year for the source article citation containing the source sentence from which  the causal predication was mapped).
+
+\subsection{System Architecture and Implementation}
+
+CausalKnowledgeTrace operates as a modular computational framework that seamlessly integrates R, Python, and JavaScript components within an interactive Shiny web application interface. The system architecture follows a three-tier design where a PostgreSQL backend houses SemMedDB data and custom indexes, a middle-tier processing engine handles graph construction and analysis algorithms, and a front-end interface provides interactive visualization and user controls. The core processing pipeline consists of five interconnected modules that handle input validation and preprocessing, subgraph construction, evidence aggregation and filtering, semantic consolidation, and output generation. Each module is designed for independent testing and containerized deployment, ensuring scalability and maintainability.
+
 
 \subsection{User Input Processing and Validation}
 
@@ -292,8 +293,8 @@ In parallel, we recruited a panel of five subject matter experts representing di
 For the CausalKnowledgeTrace analysis, we specified depression-related CUIs including Major Depressive Disorder (C1269683), Depressive Disorder (C0011581), Treatment Resistant Depression (C0871546), and Unipolar Depression (C0041696) as exposure concepts, while Alzheimer's disease was represented using CUIs for Alzheimer's Disease (C0002395), Dementia Alzheimer Type (C0494463), and Alzheimer Dementia (C0750901) as outcome concepts. We configured the system to search within a 3-hop neighborhood using evidence from publications spanning 2000 to 2024, with a minimum threshold of 25 supporting citations per causal edge and squelch thresholds set to exclude relationships supported by fewer than 50 unique PMIDs. The semantic consolidation module was enabled to merge synonymous concepts related to depression and Alzheimer's disease, while preserving complete provenance tracking.
 
 %% Use \subsection commands to start a subsection.
-\subsection{Results}
-% \label{subsec1}
+\section{Results}
+\label{sec:results}
 
 \subsection{Graph Construction and Variable Identification}
 
