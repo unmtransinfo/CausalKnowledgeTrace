@@ -4,7 +4,8 @@
 
 CausalKnowledgeTrace (CKT) helps researchers build causal knowledge graphs from published biomedical literature. The system automatically extracts and organizes causal relationships between biological concepts (genes, proteins, diseases, drugs, etc.) to support hypothesis generation and study design in observational research.
 
-Users specify an exposure and outcome of interest. They can constrain the search by publication year, causal predicate type, and minimum number of supporting articles per relationship. CKT constructs initial partially directed acyclic graphs (PDAGs) representing causal structures between biomedical concepts. Users then edit these graphs interactively to remove unnecessary nodes and edges. CKT can export graphs and evidence from the literature for downstream analysis.
+Users specify an exposure and outcome of interest. They can constrain the search by publication year, causal predicate type, and minimum number of supporting articles per relationship. CKT constructs initial partially directed acyclic graphs (PDAGs) representing causal structures between biomedical concepts. Users then edit these graphs interactively to remove unnecessary nodes and edges. CKT can export graphs and evidence from the literature for downstream analysis. A user manual is available at [this link](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing). 
+
 ## Data Source
 
 CKT queries SemMedDB, a database containing subject-predicate-object triples (e.g., "Smoking CAUSES Lung Cancer") extracted from 37+ million PubMed titles and abstracts using the SemRep natural language processing system. Each relationship is linked to its supporting literature, allowing users to trace claims back to primary evidence.
