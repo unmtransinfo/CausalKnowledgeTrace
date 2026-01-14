@@ -1,51 +1,10 @@
-%% 
-%% Copyright 2007-2025 Elsevier Ltd
-%% 
-%% This file is part of the 'Elsarticle Bundle'.
-%% ---------------------------------------------
-%% 
-%% It may be distributed under the conditions of the LaTeX Project Public
-%% License, either version 1.3 of this license or (at your option) any
-%% later version.  The latest version of this license is in
-%%    http://www.latex-project.org/lppl.txt
-%% and version 1.3 or later is part of all distributions of LaTeX
-%% version 1999/12/01 or later.
-%% 
-%% The list of all files belonging to the 'Elsarticle Bundle' is
-%% given in the file `manifest.txt'.
-%% 
-%% Template article for Elsevier's document class `elsarticle'
-%% with harvard style bibliographic references
-
 \documentclass[preprint,12pt,numbers]{elsarticle}
-
-%% Use the option review to obtain double line spacing
-%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
-
-%% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
-%% for a journal layout:
-%% \documentclass[final,1p,times,authoryear]{elsarticle}
-%% \documentclass[final,1p,times,twocolumn,authoryear]{elsarticle}
-%% \documentclass[final,3p,times,authoryear]{elsarticle}
-%% \documentclass[final,3p,times,twocolumn,authoryear]{elsarticle}
-%% \documentclass[final,5p,times,authoryear]{elsarticle}
-%% \documentclass[final,5p,times,twocolumn,authoryear]{elsarticle}
-
-%% For including figures, graphicx.sty has been loaded in
-%% elsarticle.cls. If you prefer to use the old commands
-%% please give \usepackage{epsfig}
-
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
 %% The amsmath package provides various useful equation environments.
 \usepackage{amsmath}
 %% The amsthm package provides extended theorem environments
-%% \usepackage{amsthm}
 
-%% The lineno packages adds line numbers. Start line numbering with
-%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
-%% for the whole article with \linenumbers.
-%% \usepackage{lineno}
 
 \journal{Nuclear Physics B}
 
@@ -53,58 +12,7 @@
 
 \begin{frontmatter}
 
-%% Title, authors and addresses
-
-%% use the tnoteref command within \title for footnotes;
-%% use the tnotetext command for theassociated footnote;
-%% use the fnref command within \author or \affiliation for footnotes;
-%% use the fntext command for theassociated footnote;
-%% use the corref command within \author for corresponding author footnotes;
-%% use the cortext command for theassociated footnote;
-%% use the ead command for the email address,
-%% and the form \ead[url] for the home page:
-%% \title{Title\tnoteref{label1}}
-%% \tnotetext[label1]{}
-%% \author{Name\corref{cor1}\fnref{label2}}
-%% \ead{email address}
-%% \ead[url]{home page}
-%% \fntext[label2]{}
-%% \cortext[cor1]{}
-%% \affiliation{organization={},
-%%            addressline={}, 
-%%            city={},
-%%            postcode={}, 
-%%            state={},
-%%            country={}}
-%% \fntext[label3]{}
-
-\title{CausalKnowledgeTrace: Automated Literature-Derived Causal Graph Construction for Evidence-Based Variable Selection in Biomedical Research} %% Article title
-
-%% use optional labels to link authors explicitly to addresses:
-%% \author[label1,label2]{}
-%% \affiliation[label1]{organization={},
-%%             addressline={},
-%%             city={},
-%%             postcode={},
-%%             state={},
-%%             country={}}
-%%
-%% \affiliation[label2]{organization={},
-%%             addressline={},
-%%             city={},
-%%             postcode={},
-%%             state={},
-%%             country={}}
-
-% \author{} %% Author name
-
-%% Author affiliation
-% \affiliation{organization={},%Department and Organization
-%             addressline={}, 
-%             city={},
-%             postcode={}, 
-%             state={},
-%             country={}}
+\title{CausalKnowledgeTrace: Automated Literature-Derived Causal Graph Construction for Evidence-Based Variable Selection in Biomedical Research}
 
 %% Abstract
 \begin{abstract}
@@ -122,21 +30,12 @@ Conclusions: CausalKnowledgeTrace bridges the gap between vast biomedical litera
 \begin{keyword}
 %% keywords here, in the form: keyword \sep keyword
 Causal inference \sep variable selection \sep biomedical informatics \sep directed acyclic graphs \sep confounding \sep knowledge extraction
-%% PACS codes here, in the form: \PACS code \sep code
-
-%% MSC codes here, in the form: \MSC code \sep code
-%% or \MSC[2008] code \sep code (2000 is the default)
+e (2000 is the default)
 
 \end{keyword}
 
 \end{frontmatter}
 
-%% Add \usepackage{lineno} before \begin{document} and uncomment 
-%% following line to enable line numbers
-%% \linenumbers
-
-%% main text
-%%
 
 %% Use \section commands to start a section
 \section*{Statement of Significance}
@@ -157,9 +56,9 @@ Epidemiologists, biomedical researchers, informaticians, and clinical investigat
 \label{sec:introduction}
 %% Labels are used to cross-reference an item using \ref command.
 
-\paragraph Causal inference from observational data has become increasingly critical in biomedical research as the scale and complexity of available datasets continue to expand \cite{hernan2020causal}. Electronic health records, genomic databases, and large-scale epidemiological studies offer unprecedented opportunities to understand disease mechanisms, evaluate therapeutic interventions, and inform clinical decision-making \cite{hernan2016using}. However, the validity of causal conclusions drawn from these observational data sources fundamentally depends on appropriate control for confounding variables—factors that influence both the exposure and the outcome of interest \cite{pearl2009causality}.
+Causal inference from observational data has become increasingly critical in biomedical research as the scale and complexity of available datasets continue to expand \cite{hernan2020causal}. Electronic health records, genomic databases, and large-scale epidemiological studies offer unprecedented opportunities to understand disease mechanisms, evaluate therapeutic interventions, and inform clinical decision-making \cite{hernan2016using}. However, the validity of causal conclusions drawn from these observational data sources fundamentally depends on appropriate control for confounding variables—factors that influence both the exposure and the outcome of interest \cite{pearl2009causality}.
 
-The challenge of variable selection for confounding control represents one of the most persistent and consequential problems in observational research \cite{vanderweele2019principles}. Inadequate confounder adjustment can lead to severely biased effect estimates, potentially resulting in incorrect therapeutic recommendations, misguided public health policies, or flawed mechanistic understanding. Conversely, inappropriate conditioning on variables that act as colliders or mediators can introduce bias even when none existed in the crude analysis \cite{greenland1999confounding, griffith2020collider}. The consequences of these methodological errors extend beyond individual studies, as systematic biases in the literature can compound to create misleading bodies of evidence that influence clinical practice guidelines and regulatory decisions.
+The challenge of variable selection for confounding control represents one of the most persistent and consequential problems in observational research \cite{vanderweele2019principles}. Inadequate confounder adjustment can lead to severely biased effect estimates, potentially resulting in incorrect therapeutic recommendations, misguided public health policies, or flawed mechanistic understanding. Conversely, inappropriate conditioning on variables that act as colliders or mediators can introduce bias even when none existed in the crude analysis \cite{griffith2020collider}. The consequences of these methodological errors extend beyond individual studies, as systematic biases in the literature can compound to create misleading bodies of evidence that influence clinical practice guidelines and regulatory decisions.
 
 Traditional approaches to variable selection have relied primarily on three strategies: statistical screening methods, domain expertise, and hybrid approaches combining both \cite{shortreed2017outcome}. Statistical methods, including change-in-estimate criteria, stepwise selection algorithms, and various penalized regression techniques, offer systematic and reproducible procedures but often lack theoretical justification for causal inference. These methods may select variables that improve prediction without addressing confounding or, conversely, may exclude important confounders that do not substantially alter effect estimates in the specific sample under study \cite{austin2011introduction}.
 
@@ -181,8 +80,6 @@ The primary objectives of this work are threefold. First, we aim to develop a sc
 
 The remainder of this paper describes the technical implementation of CausalKnowledgeTrace, evaluates its performance across multiple biomedical domains, and discusses the implications for causal inference practice in biomedical research. We believe this work represents a significant step toward more systematic, transparent, and evidence-based approaches to variable selection in observational biomedical research.
 
-See Subsection \ref{subsec1}.
-
 \section{Methods}
 \label{sec:methods}
 
@@ -194,7 +91,7 @@ The foundation of our approach rests on the Semantic MEDLINE Database (SemMedDB)
 
 \subsubsection{Knowledge Quality Filtering Pipeline}
 
-Given that raw SemMedDB contains numerous non-informative predications, we implemented a comprehensive multi-stage filtering pipeline to improve knowledge quality. This filtering process begins by excluding overly generic concepts based on UMLS semantic types, removing 847 semantic types identified as non-informative for causal inference, such as "Functional Concept" and "Idea or Concept." We then eliminate approximately 15,000 non-specific biomedical terms using a curated GENERICunderscoreCONCEPTS table, followed by predicate type selection that focuses on causally relevant relationships, including CAUSES, PREDISPOSES, PREVENTS, TREATS, and their variations. Ultimately, we retain 23 predicate types from the original 74 SemMedDB predicates. Finally, we apply configurable publication quality thresholds with minimum citation requirements ranging from 10 to 5,000 supporting PMIDs, as well as temporal filtering that restricts publications to those from 2000 onward to ensure evidence adequacy (ascertained from the threshold of the number of distinct PubMed IDs [PMIDs]) and recency (ascertained from the publication year for the source article citation containing the source sentence from which  the causal predication was mapped).
+Given that raw SemMedDB contains numerous non-informative predications, we implemented a comprehensive multi-stage filtering pipeline to improve knowledge quality. This filtering process begins by excluding overly generic concepts based on UMLS semantic types, removing 847 semantic types identified as non-informative for causal inference, such as "Functional Concept" and "Idea or Concept." We then eliminate approximately 15,000 non-specific biomedical terms using a curated GENERIC\_CONCEPTS table, followed by predicate type selection that focuses on causally relevant relationships, including CAUSES, PREDISPOSES, PREVENTS, TREATS, and their variations. Ultimately, we retain 23 predicate types from the original 74 SemMedDB predicates. Finally, we apply configurable publication quality thresholds with minimum citation requirements ranging from 10 to 5,000 supporting PMIDs, as well as temporal filtering that restricts publications to those from 2000 onward to ensure evidence adequacy (ascertained from the threshold of the number of distinct PubMed IDs [PMIDs]) and recency (ascertained from the publication year for the source article citation containing the source sentence from which the causal predication was mapped).
 
 \subsection{System Architecture and Implementation}
 
@@ -205,7 +102,7 @@ CausalKnowledgeTrace operates as a modular computational framework that seamless
 
 \subsubsection{Structured Input Specification}
 
-User interaction begins with the specification of structured input, where researchers define their research questions using the Unified Medical Language Sytem (UMLS) Concept Unique Identifiers (or CUIs) for exposure and outcome variables \cite{bodenreider2004unified}, along with evidence parameters such as minimum citation thresholds, publication year cutoffs, and squelch thresholds that determine the minimum number of citations required per edge. Additional search parameters include the k-hop neighborhood size, ranging from one to three degrees, and constraints on prediction types that allow users to focus on specific types of causal relationships. The interface provides guided input validation with real-time concept lookup and suggestion capabilities to ensure accurate CUI specification.
+User interaction begins with the specification of structured input, where researchers define their research questions using the Unified Medical Language System (UMLS) Concept Unique Identifiers (or CUIs) for exposure and outcome variables \cite{bodenreider2004unified}, along with evidence parameters such as minimum citation thresholds, publication year cutoffs, and squelch thresholds that determine the minimum number of citations required per edge. Additional search parameters include the k-hop neighborhood size, ranging from one to three degrees, and constraints on predicate types that allow users to focus on specific types of causal relationships. The interface provides guided input validation with real-time concept lookup and suggestion capabilities to ensure accurate CUI specification.
 
 \subsubsection{Input Validation and Semantic Verification}
 
@@ -233,7 +130,7 @@ When multiple synonymous concepts are identified, our concept consolidation algo
 
 \subsection{Large Language Model Integration and Validation}
 
-\subsection{Relationship Validation Pipeline}
+\subsubsection{Relationship Validation Pipeline}
 
 To address limitations inherent in purely text-mining approaches, CausalKnowledgeTrace incorporates large language model-based validation through a sophisticated relationship validation pipeline. This process retrieves original sentences containing each semantic predication. It uses GPT-4 to evaluate whether the extracted relationships support the claimed causal directions, addressing common issues with automated predication extraction, such as negation, hypothetical statements, and context-dependent assertions. The system generates numerical confidence scores ranging from zero to one for relationship validity, providing quantitative assessments that can be integrated with other quality metrics. API cost optimization is achieved through intelligent batching strategies that group related validation tasks and implement caching mechanisms to prevent redundant evaluations of frequently encountered relationships.
 
@@ -283,7 +180,7 @@ The system underwent extensive evaluation by domain experts across multiple biom
 
 This comprehensive methodological framework enables CausalKnowledgeTrace to systematically leverage biomedical literature for evidence-based causal graph construction while maintaining the quality, transparency, and usability standards necessary for rigorous causal inference applications in biomedical research.
 
-\subsection{Evaluation}
+\subsection{Evaluation Framework}
 
 To demonstrate the practical utility and validate the performance of CausalKnowledgeTrace, we conducted a comprehensive evaluation focusing on the well-studied relationship between Alzheimer's disease and depression, a domain where extensive expert knowledge and published literature provide robust benchmarks for comparison \cite{green2003depression, speck1995history}. Our evaluation strategy employed a three-pronged approach that compared CausalKnowledgeTrace-generated causal graphs with published systematic reviews, expert-constructed causal models, and established epidemiological knowledge about confounding relationships in Alzheimer's disease research.
 
@@ -358,11 +255,7 @@ CausalKnowledgeTrace occupies a unique position by systematically extracting cau
 
 While our system excels with comorbidities and clinical risk factors (cardiovascular disease, diabetes, hypertension, APOE genotype), a major limitation of our approach is that it misses demographic factors (age, sex, education, socioeconomic status; XYZ citations each) and social determinants of health, correctly classifying them as confounders rather than mediators based on their graph positions.
 
-In parallel work, we are extracting how exposures, outcomes, and covariates are defined, along with details on the statistical models reported in the epidemiological literature. Our approach uses machine learning and large language models/ generative AI to screen the literature to partially automate systematic reviews and semi-automate meta-analyses, and then to extract information on metadata about study variables (how ascertained, biomedical terminologies) and details reported on the statistical approach focusing on strategies for handling structural biases such as selection and confounding ... from full-text articles in PubMed Central. 
-
-This will make it easier to 
-
-This will also enable the creation of a field-specific database of confounding variables and set a template for others to apply these methods in the fields of their choice.  
+In parallel work, we are extracting how exposures, outcomes, and covariates are defined, along with details on the statistical models reported in the epidemiological literature. Our approach uses machine learning and large language models/generative AI to screen the literature to partially automate systematic reviews and semi-automate meta-analyses, and then to extract information on metadata about study variables (how ascertained, biomedical terminologies) and details reported on the statistical approach focusing on strategies for handling structural biases such as selection and confounding from full-text articles in PubMed Central. This will enable the creation of a field-specific database of confounding variables and set a template for others to apply these methods in the fields of their choice.
 
 \subsection{Technical Innovations and Limitations}
 
@@ -413,133 +306,6 @@ CausalKnowledgeTrace represents a novel computational framework that systematica
 \bibliographystyle{elsarticle-num}
 \bibliography{references}
 
-
-%% Use \subsection commands to start a subsection.
-% \subsection{Example Subsection}
-% \label{subsec1}
-
-
-% %% Use \subsubsection, \paragraph, \subparagraph commands to 
-% %% start 3rd, 4th and 5th level sections.
-% %% Refer following link for more details.
-% %% https://en.wikibooks.org/wiki/LaTeX/Document_Structure#Sectioning_commands
-
-% \subsubsection{Mathematics}
-% %% Inline mathematics is tagged between $ symbols.
-% This is an example for the symbol $\alpha$ tagged as inline mathematics.
-
-% %% Displayed equations can be tagged using various environments. 
-% %% Single line equations can be tagged using the equation environment.
-% \begin{equation}
-% f(x) = (x+a)(x+b)
-% \end{equation}
-
-% %% Unnumbered equations are tagged using starred versions of the environment.
-% %% amsmath package needs to be loaded for the starred version of equation environment.
-% \begin{equation*}
-% f(x) = (x+a)(x+b)
-% \end{equation*}
-
-% %% align or eqnarray environments can be used for multi line equations.
-% %% & is used to mark alignment points in equations.
-% %% \\ is used to end a row in a multiline equation.
-% \begin{align}
-%  f(x) &= (x+a)(x+b) \\
-%       &= x^2 + (a+b)x + ab
-% \end{align}
-
-% \begin{eqnarray}
-%  f(x) &=& (x+a)(x+b) \nonumber\\ %% If equation numbering is not needed for a row use \nonumber.
-%       &=& x^2 + (a+b)x + ab
-% \end{eqnarray}
-
-% %% Unnumbered versions of align and eqnarray
-% \begin{align*}
-%  f(x) &= (x+a)(x+b) \\
-%       &= x^2 + (a+b)x + ab
-% \end{align*}
-
-% \begin{eqnarray*}
-%  f(x)&=& (x+a)(x+b) \\
-%      &=& x^2 + (a+b)x + ab
-% \end{eqnarray*}
-
-% %% Refer following link for more details.
-% %% https://en.wikibooks.org/wiki/LaTeX/Mathematics
-% %% https://en.wikibooks.org/wiki/LaTeX/Advanced_Mathematics
-
-% %% Use a table environment to create tables.
-% %% Refer following link for more details.
-% %% https://en.wikibooks.org/wiki/LaTeX/Tables
-% \begin{table}[t]%% placement specifier
-% %% Use tabular environment to tag the tabular data.
-% %% https://en.wikibooks.org/wiki/LaTeX/Tables#The_tabular_environment
-% \centering%% For centre alignment of tabular.
-% \begin{tabular}{l c r}%% Table column specifiers
-% %% Tabular cells are separated by &
-%   1 & 2 & 3 \\ %% A tabular row ends with \\
-%   4 & 5 & 6 \\
-%   7 & 8 & 9 \\
-% \end{tabular}
-% %% Use \caption command for table caption and label.
-% \caption{Table Caption}\label{fig1}
-% \end{table}
-
-
-% %% Use figure environment to create figures
-% %% Refer following link for more details.
-% %% https://en.wikibooks.org/wiki/LaTeX/Floats,_Figures_and_Captions
-% \begin{figure}[t]%% placement specifier
-% %% Use \includegraphics command to insert graphic files. Place graphics files in 
-% %% working directory.
-% \centering%% For centre alignment of image.
-% \includegraphics{example-image-a}
-% %% Use \caption command for figure caption and label.
-% \caption{Figure Caption}\label{fig1}
-% %% https://en.wikibooks.org/wiki/LaTeX/Importing_Graphics#Importing_external_graphics
-% \end{figure}
-
-
-% %% The Appendices part is started with the command \appendix;
-% %% appendix sections are then done as normal sections
-% \appendix
-% \section{Example Appendix Section}
-% \label{app1}
-
-% Appendix text.
-
-% %% For citations use: 
-% %%       \citet{<label>} ==> Lamport (1994)
-% %%       \cite{<label>} ==> (Lamport, 1994)
-% %%
-% Example citation, See \citet{lamport94}.
-
-% %% If you have bib database file and want bibtex to generate the
-% %% bibitems, please use
-% %%
-% %%  \bibliographystyle{elsarticle-harv} 
-% %%  \bibliography{<your bibdatabase>}
-
-% %% else use the following coding to input the bibitems directly in the
-% %% TeX file.
-
-% %% Refer following link for more details about bibliography and citations.
-% %% https://en.wikibooks.org/wiki/LaTeX/Bibliography_Management
-
-% \begin{thebibliography}{00}
-
-% %% For authoryear reference style
-% %% \bibitem[Author(year)]{label}
-% %% Text of bibliographic item
-
-% \bibitem[Lamport(1994)]{lamport94}
-%   Leslie Lamport,
-%   \textit{\LaTeX: a document preparation system},
-%   Addison Wesley, Massachusetts,
-%   2nd edition,
-%   1994.
-
-% \end{thebibliography}
 \end{document}
 
 \endinput
