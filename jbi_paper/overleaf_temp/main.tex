@@ -1,4 +1,4 @@
-\documentclass[preprint,12pt,numbers]{elsarticle}
+\documentclass[preprint,12pt,authoryear]{elsarticle}
 
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
@@ -11,7 +11,7 @@
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
 %% for the whole article with \linenumbers.
-%% \usepackage{lineno}
+\usepackage{lineno}
 
 \journal{Journal of Biomedical Informatics}
 
@@ -58,14 +58,13 @@
 
 %% Abstract
 \begin{abstract}
-%% Text of abstract
-Background: Variable selection for causal inference from observational biomedical data remains challenging, as overlooking key confounders or inadvertently conditioning on colliders can lead to severely biased estimates. While vast causal knowledge exists in biomedical literature, manually extracting and synthesizing this information for principled variable selection is impractical at scale. Current approaches primarily rely on domain expertise or statistical methods, which may overlook critical confounding relationships documented in the literature.
+\textbf{Background:} Variable selection for causal inference from observational biomedical data remains challenging, as overlooking key confounders or inadvertently conditioning on colliders can lead to severely biased estimates. While vast causal knowledge exists in biomedical literature, manually extracting and synthesizing this information for principled variable selection is impractical at scale. Current approaches primarily rely on domain expertise or statistical methods, which may overlook critical confounding relationships documented in the literature.
 
-Methods: We developed CausalKnowledgeTrace, an interactive computational tool that systematically leverages structured causal knowledge from the Semantic MEDLINE Database (SemMedDB) to inform variable selection decisions in causal studies. The system integrates R, Python, and large language models within a Shiny application framework. Users specify exposures and outcomes using Concept Unique Identifiers (CUIs) from the Unified Medical Language System (UMLS), a metathesaurus of medical terminologies, along with evidence strength thresholds and publication timeframes. The tool constructs literature-derived directed acyclic graphs (DAGs) by searching k-hop causal neighborhoods around exposure-outcome pairs, identifying minimal sufficient adjustment sets through structured queries of semantic predications. A novel semantic consolidation module aggregates synonymous concepts while preserving provenance tracking. Large language model-based validation assesses the directionality and veracity of extracted relationships, addressing limitations of purely text-mining approaches.
+\textbf{Methods:} We developed CausalKnowledgeTrace, an interactive computational tool that systematically leverages structured causal knowledge from the Semantic MEDLINE Database (SemMedDB) to inform variable selection decisions in causal studies. The system integrates R, Python, and large language models within a Shiny application framework. Users specify exposures and outcomes using Concept Unique Identifiers (CUIs) from the Unified Medical Language System (UMLS), a metathesaurus of medical terminologies, along with evidence strength thresholds and publication timeframes. The tool constructs literature-derived directed acyclic graphs (DAGs) by searching k-hop causal neighborhoods around exposure-outcome pairs, identifying minimal sufficient adjustment sets through structured queries of semantic predications. A novel semantic consolidation module aggregates synonymous concepts while preserving provenance tracking. Large language model-based validation assesses the directionality and veracity of extracted relationships, addressing limitations of purely text-mining approaches.
 
-Results: CausalKnowledgeTrace successfully identifies complex causal structures often missed by conventional approaches, including proxy confounders, potential instrumental variables, and problematic bias configurations such as M-bias and butterfly-bias patterns. The system generates DAGitty-compatible R scripts, structured JSON outputs with complete citation traceability, and interactive visualizations that enable the systematic exploration of causal pathways. Automated classification of variable roles (confounders, mediators, colliders, precision variables) is achieved through structural analysis of literature-derived causal graphs. The tool demonstrates robust performance across diverse biomedical domains, with query processing completing within 5 minutes for datasets containing up to 1000 supporting publications.
+\textbf{Results:} CausalKnowledgeTrace successfully identifies complex causal structures often missed by conventional approaches, including proxy confounders, potential instrumental variables, and problematic bias configurations such as M-bias and butterfly-bias patterns. The system generates DAGitty-compatible R scripts, structured JSON outputs with complete citation traceability, and interactive visualizations that enable the systematic exploration of causal pathways. Automated classification of variable roles (confounders, mediators, colliders, precision variables) is achieved through structural analysis of literature-derived causal graphs. The tool demonstrates robust performance across diverse biomedical domains, with query processing completing within 5 minutes for datasets containing up to 1000 supporting publications.
 
-Conclusions: CausalKnowledgeTrace bridges the gap between vast biomedical literature and rigorous causal inference practice by automating the extraction and synthesis of causal knowledge for variable selection. The tool empowers researchers to make principled, evidence-based decisions about confounding control while maintaining complete transparency about the evidentiary basis underlying each causal relationship. This approach represents a significant advance in computational support for causal inference in biomedical research, enabling more reliable causal estimation by leveraging the collective knowledge embedded in scientific literature.
+\textbf{Conclusions:} CausalKnowledgeTrace bridges the gap between vast biomedical literature and rigorous causal inference practice by automating the extraction and synthesis of causal knowledge for variable selection. The tool empowers researchers to make principled, evidence-based decisions about confounding control while maintaining complete transparency about the evidentiary basis underlying each causal relationship. This approach represents a significant advance in computational support for causal inference in biomedical research, enabling more reliable causal estimation by leveraging the collective knowledge embedded in scientific~literature.
 \end{abstract}
 
 %% Keywords
@@ -124,7 +123,7 @@ The remainder of this paper describes the technical implementation of CausalKnow
 \section{Methods}
 \label{sec:methods}
 
-\subsection{Data Sources and Knowledge Base}
+\subsection{Data Sources and Knowledge Base Construction}
 
 \subsubsection{SemMedDB Integration and Preprocessing}
 
@@ -233,6 +232,20 @@ For the CausalKnowledgeTrace analysis, we specified depression-related CUIs incl
 %% Use \subsection commands to start a subsection.
 \section{Results}
 \label{sec:results}
+
+\begin{figure}[htbp]
+\centering
+% \includegraphics[width=0.8\textwidth]{..}
+\caption{CausalKnowledgeTrace workflow and system architecture.}
+\label{fig:workflow}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Performance metrics and validation results.}
+\label{tab:results}
+% Table content here
+\end{table}
 
 \subsection{Graph Construction and Variable Identification}
 
@@ -367,7 +380,7 @@ The authors declare that they have no known competing financial interests or per
 \section*{Author Contributions}
 [FILLER: Describe each author's contribution using CRediT taxonomy if possible. For example: "F.A.: Conceptualization, Methodology, Software, Writing - Original Draft. S.A.: Data Curation, Validation, Writing - Review \& Editing. T.A.: Formal Analysis, Visualization. S.A.: Supervision, Funding Acquisition, Writing - Review \& Editing."]
 
-\bibliographystyle{elsarticle-num}
+\bibliographystyle{elsarticle-harv}
 \bibliography{references}
 
 \end{document}
