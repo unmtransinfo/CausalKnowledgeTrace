@@ -15,23 +15,21 @@
 %% given in the file `manifest.txt'.
 %% 
 %% Template article for Elsevier's document class `elsarticle'
-%% with numbered style bibliographic references
-%% SP 2008/03/01
-%% $Id: elsarticle-template-num.tex 289 2026-01-09 06:13:01Z rishi $
-%%
-\documentclass[preprint,12pt]{elsarticle}
+%% with harvard style bibliographic references
+
+\documentclass[preprint,12pt,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
 %% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
 
 %% Use the options 1p,twocolumn; 3p; 3p,twocolumn; 5p; or 5p,twocolumn
 %% for a journal layout:
-%% \documentclass[final,1p,times]{elsarticle}
-%% \documentclass[final,1p,times,twocolumn]{elsarticle}
-%% \documentclass[final,3p,times]{elsarticle}
-%% \documentclass[final,3p,times,twocolumn]{elsarticle}
-%% \documentclass[final,5p,times]{elsarticle}
-%% \documentclass[final,5p,times,twocolumn]{elsarticle}
+%% \documentclass[final,1p,times,authoryear]{elsarticle}
+%% \documentclass[final,1p,times,twocolumn,authoryear]{elsarticle}
+%% \documentclass[final,3p,times,authoryear]{elsarticle}
+%% \documentclass[final,3p,times,twocolumn,authoryear]{elsarticle}
+%% \documentclass[final,5p,times,authoryear]{elsarticle}
+%% \documentclass[final,5p,times,twocolumn,authoryear]{elsarticle}
 
 %% For including figures, graphicx.sty has been loaded in
 %% elsarticle.cls. If you prefer to use the old commands
@@ -73,14 +71,14 @@
 %% \fntext[label2]{}
 %% \cortext[cor1]{}
 %% \affiliation{organization={},
-%%             addressline={},
-%%             city={},
-%%             postcode={},
-%%             state={},
-%%             country={}}
+%%            addressline={}, 
+%%            city={},
+%%            postcode={}, 
+%%            state={},
+%%            country={}}
 %% \fntext[label3]{}
 
-\title{}
+\title{} %% Article title
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -248,15 +246,15 @@ f(x) = (x+a)(x+b)
 Appendix text.
 
 %% For citations use: 
-%%       \cite{<label>} ==> [1]
-
+%%       \citet{<label>} ==> Lamport (1994)
+%%       \citep{<label>} ==> (Lamport, 1994)
 %%
-Example citation, See \cite{lamport94}.
+Example citation, See \citet{lamport94}.
 
 %% If you have bib database file and want bibtex to generate the
 %% bibitems, please use
 %%
-%%  \bibliographystyle{elsarticle-num} 
+%%  \bibliographystyle{elsarticle-harv} 
 %%  \bibliography{<your bibdatabase>}
 
 %% else use the following coding to input the bibitems directly in the
@@ -267,11 +265,11 @@ Example citation, See \cite{lamport94}.
 
 \begin{thebibliography}{00}
 
-%% For numbered reference style
-%% \bibitem{label}
+%% For authoryear reference style
+%% \bibitem[Author(year)]{label}
 %% Text of bibliographic item
 
-\bibitem{lamport94}
+\bibitem[Lamport(1994)]{lamport94}
   Leslie Lamport,
   \textit{\LaTeX: a document preparation system},
   Addison Wesley, Massachusetts,
@@ -283,4 +281,6 @@ Example citation, See \cite{lamport94}.
 
 \endinput
 %%
-%% End of file `elsarticle-template-num.tex'.
+%% End of file `elsarticle-template-harv.tex'.
+
+
