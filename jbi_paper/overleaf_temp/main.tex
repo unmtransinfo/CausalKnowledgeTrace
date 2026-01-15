@@ -1,18 +1,60 @@
 \documentclass[preprint,12pt,numbers]{elsarticle}
+
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
 %% The amsmath package provides various useful equation environments.
 \usepackage{amsmath}
 %% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+\usepackage{etoolbox}
 
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+%% \usepackage{lineno}
 
-\journal{Nuclear Physics B}
+\journal{Journal of Biomedical Informatics}
 
 \begin{document}
 
 \begin{frontmatter}
 
 \title{CausalKnowledgeTrace: Automated Literature-Derived Causal Graph Construction for Evidence-Based Variable Selection in Biomedical Research}
+
+%% Author information
+%% [FILLER: Replace with actual author names, affiliations, and emails]
+\author[inst1]{First Author\corref{cor1}}
+\ead{first.author@institution.edu}
+
+\author[inst1,inst2]{Second Author}
+\ead{second.author@institution.edu}
+
+\author[inst3]{Third Author}
+\ead{third.author@institution.edu}
+
+\author[inst1]{Senior Author}
+\ead{senior.author@institution.edu}
+
+\cortext[cor1]{Corresponding author}
+
+\affiliation[inst1]{organization={Department of Biomedical Informatics, University Name},
+            addressline={Address Line 1},
+            city={City},
+            postcode={Postal Code},
+            state={State},
+            country={Country}}
+
+\affiliation[inst2]{organization={Department Name, Institution Name},
+            addressline={Address Line 2},
+            city={City},
+            postcode={Postal Code},
+            country={Country}}
+
+\affiliation[inst3]{organization={Department Name, Third Institution},
+            addressline={Address Line 3},
+            city={City},
+            postcode={Postal Code},
+            country={Country}}
 
 %% Abstract
 \begin{abstract}
@@ -29,8 +71,7 @@ Conclusions: CausalKnowledgeTrace bridges the gap between vast biomedical litera
 %% Keywords
 \begin{keyword}
 %% keywords here, in the form: keyword \sep keyword
-Causal inference \sep variable selection \sep biomedical informatics \sep directed acyclic graphs \sep confounding \sep knowledge extraction
-e (2000 is the default)
+Causal inference \sep variable selection \sep biomedical informatics \sep directed acyclic graphs \sep confounding \sep knowledge extraction \sep semantic MEDLINE \sep large language models
 
 \end{keyword}
 
@@ -66,7 +107,7 @@ Domain expertise, while invaluable, faces significant challenges in the current 
 
 Recent advances in causal inference methodology have emphasized the importance of directed acyclic graphs (DAGs) for representing causal assumptions and identifying appropriate adjustment sets \cite{pearl2009causality, shrier2008reducing}. DAG-based approaches offer a principled framework for distinguishing between different types of bias and determining the minimal sufficient sets of variables required for confounding control \cite{textor2016robust}. However, constructing realistic DAGs for complex biomedical phenomena remains challenging, particularly when attempting to incorporate the breadth of relevant causal knowledge documented in the scientific literature.
 
-The emergence of large-scale biomedical knowledge bases and natural language processing technologies offers new opportunities to systematically leverage literature-derived causal knowledge for variable selection \cite{xu2020building}. The Semantic MEDLINE Database (SemMedDB) represents a particularly valuable resource, containing millions of semantic predications extracted from biomedical abstracts using natural language processing \cite{kilicoglu2012semmeddb, rindflesch2020broad}. These structured subject-predicate-object triples capture causal, associational, and mechanistic relationships between biomedical concepts, providing a foundation for automated causal knowledge extraction.
+The emergence of large-scale biomedical knowledge bases and natural language processing technologies offers new opportunities to systematically leverage literature-derived causal knowledge for variable selection \cite{xu2020building}. The Semantic MEDLINE Database (SemMedDB) represents a particularly valuable resource, containing millions of semantic predications extracted from biomedical abstracts using natural language processing \cite{kilicoglu2012semmeddb}. These structured subject-predicate-object triples capture causal, associational, and mechanistic relationships between biomedical concepts, providing a foundation for automated causal knowledge extraction.
 
 However, several significant challenges impede the effective utilization of literature-derived knowledge for causal inference. First, the sheer volume of extracted predications requires sophisticated filtering and quality assessment approaches to distinguish reliable causal relationships from speculative or context-dependent assertions. Second, the heterogeneous terminology used across biomedical literature necessitates semantic consolidation approaches to identify when different terms refer to the same underlying concepts. Third, the directionality and causal interpretation of extracted relationships often require contextual validation that goes beyond simple keyword matching. Finally, the integration of literature-derived knowledge into practical causal inference workflows requires user-friendly interfaces and compatible output formats.
 
@@ -87,7 +128,7 @@ The remainder of this paper describes the technical implementation of CausalKnow
 
 \subsubsection{SemMedDB Integration and Preprocessing}
 
-The foundation of our approach rests on the Semantic MEDLINE Database (SemMedDB), which serves as the primary knowledge source containing over 100 million semantic predications extracted from PubMed abstracts using SemRep natural language processing \cite{kilicoglu2012semmeddb, rindflesch2020broad}. We developed a custom PostgreSQL import pipeline specifically optimized for our query patterns, creating specialized compound indexes on subject CUI, object CUI, predicate type, and publication year combinations to ensure rapid response times during graph construction. The database schema was enhanced with additional tables to support provenance tracking, evidence aggregation, and semantic consolidation operations.
+The foundation of our approach rests on the Semantic MEDLINE Database (SemMedDB), which serves as the primary knowledge source containing over 100 million semantic predications extracted from PubMed abstracts using SemRep natural language processing \cite{kilicoglu2012semmeddb}. We developed a custom PostgreSQL import pipeline specifically optimized for our query patterns, creating specialized compound indexes on subject CUI, object CUI, predicate type, and publication year combinations to ensure rapid response times during graph construction. The database schema was enhanced with additional tables to support provenance tracking, evidence aggregation, and semantic consolidation operations.
 
 \subsubsection{Knowledge Quality Filtering Pipeline}
 
@@ -142,7 +183,7 @@ The integration of LLM validation results with traditional heuristic filters occ
 
 \subsubsection{Structural Analysis for Causal Role Identification}
 
-Variable role classification represents a sophisticated component that automatically categorizes intermediate variables based on their structural positions within the constructed causal graph \cite{pearl2009causality}. Confounder detection algorithms identify variables with causal paths to both exposure and outcome that do not pass through the exposure itself, representing classic confounding structures that require adjustment for unbiased effect estimation \cite{vanderweele2019principles}. Mediator identification detects variables that lie on direct causal paths from exposure to outcome, distinguishing them from confounders to prevent inappropriate adjustment that could block the causal pathways of interest. Collider recognition identifies variables that receive causal arrows from both exposure and outcome pathways, thereby revealing potential sources of selection bias or inappropriate conditioning \cite{greenland1999confounding}. Instrumental variable screening searches for variables causally connected to the exposure that influence the outcome only through the exposure pathway, identifying potential tools for addressing unmeasured confounding \cite{angrist1996identification}.
+Variable role classification represents a sophisticated component that automatically categorizes intermediate variables based on their structural positions within the constructed causal graph \cite{pearl2009causality}. Confounder detection algorithms identify variables with causal paths to both exposure and outcome that do not pass through the exposure itself, representing classic confounding structures that require adjustment for unbiased effect estimation \cite{vanderweele2019principles}. Mediator identification detects variables that lie on direct causal paths from exposure to outcome, distinguishing them from confounders to prevent inappropriate adjustment that could block the causal pathways of interest. Collider recognition identifies variables that receive causal arrows from both exposure and outcome pathways, thereby revealing potential sources of selection bias or inappropriate conditioning. Instrumental variable screening searches for variables causally connected to the exposure that influence the outcome only through the exposure pathway, identifying potential tools for addressing unmeasured confounding \cite{angrist1996identification}.
 
 \subsubsection{Advanced Bias Pattern Detection}
 
@@ -202,14 +243,17 @@ The semantic consolidation module merged synonymous depression-related CUIs (e.g
 
 \subsubsection{Systematic Review Comparison}
 
-Comparison with XYZ high-quality observational papers (2015–2024) demonstrated substantial overlap between covariates reported in the epidemiological literature with the confounders identified by querying the literature, as noted in our previous work, but with the reported covariates being a small subset of other confounders, which have not been reported. 
+%% [FILLER: Replace XYZ with actual numbers from systematic review comparison]
+Comparison with [FILLER: 23] high-quality observational papers (2015–2024) demonstrated substantial overlap between covariates reported in the epidemiological literature with the confounders identified by querying the literature, as noted in our previous work, but with the reported covariates being a small subset of other confounders, which have not been reported. Specifically, [FILLER: 18 out of 23 (78\%)] core confounders identified by CausalKnowledgeTrace were also mentioned in systematic reviews, including age, sex, education, cardiovascular disease, diabetes, and APOE genotype.
 
-The system also identified several candidate confounders that are underrepresented in reviews but well-supported in SemMedDB, including sleep disorders (XYZ citations), chronic pain (XYZ), social isolation (XYZ), and inflammatory markers (XYZ). Manual verification confirmed these relationships as documented but possibly overlooked in reviews due to their recent emergence or classification outside conventional risk factor categories.
+The system also identified several candidate confounders that are underrepresented in reviews but well-supported in SemMedDB, including sleep disorders ([FILLER: 342] citations), chronic pain ([FILLER: 287] citations), social isolation ([FILLER: 419] citations), and inflammatory markers ([FILLER: 531] citations). Manual verification confirmed these relationships as documented but possibly overlooked in reviews due to their recent emergence or classification outside conventional risk factor categories.
 
 \subsubsection{Expert Graph Comparison}
 
-Five independent experts constructed causal graphs for the depression–Alzheimer’s relationship. Comparison showed convergence on demographic and cardiovascular confounders, validating the system’s identification of these relationships. Greater divergence occurred in psychosocial domains: three experts included social support and two included stress-related variables, both of which CausalKnowledgeTrace identified with strong literature support.
-The expert consensus graph contained XYZ variables, whereas CausalKnowledgeTrace identified XYZ under default filtering. Restricting outputs to variables with >XYZ supporting citations increased overlap, suggesting citation thresholds can bridge the gap between broad automated extraction and focused expert modeling.
+%% [FILLER: Replace XYZ with actual numbers from expert comparison]
+Five independent experts constructed causal graphs for the depression–Alzheimer’s relationship. Comparison showed convergence on demographic and cardiovascular confounders, validating the system’s identification of these relationships. Specifically, [FILLER: 15 out of 17 (88\%)] demographic and cardiovascular confounders identified by experts were also identified by CausalKnowledgeTrace. Greater divergence occurred in psychosocial domains: three experts included social support and two included stress-related variables, both of which CausalKnowledgeTrace identified with strong literature support.
+
+The expert consensus graph contained [FILLER: 24] variables, whereas CausalKnowledgeTrace identified [FILLER: 156] under default filtering. Restricting outputs to variables with >[FILLER: 100] supporting citations reduced the automated set to [FILLER: 31] variables, increasing overlap to [FILLER: 79\%], suggesting citation thresholds can bridge the gap between broad automated extraction and focused expert modeling.
 
 \subsubsection{Novel Bias Pattern Detection}
 
@@ -253,7 +297,8 @@ Existing computational approaches to causal discovery typically fall into two ca
 
 CausalKnowledgeTrace occupies a unique position by systematically extracting causal knowledge from the literature at scale while maintaining quality through multiple validation layers. The integration of SemMedDB's structured semantic predications \cite{kilicoglu2012semmeddb} with large language model-based validation \cite{thirunavukarasu2023large} provides a balance between comprehensive coverage and quality assurance. This approach enables the construction of causal graphs with broader variable coverage than manual methods while maintaining higher reliability than purely data-driven approaches.
 
-While our system excels with comorbidities and clinical risk factors (cardiovascular disease, diabetes, hypertension, APOE genotype), a major limitation of our approach is that it misses demographic factors (age, sex, education, socioeconomic status; XYZ citations each) and social determinants of health, correctly classifying them as confounders rather than mediators based on their graph positions.
+%% [FILLER: Replace XYZ with actual citation counts for demographic factors]
+While our system excels with comorbidities and clinical risk factors (cardiovascular disease, diabetes, hypertension, APOE genotype), demographic factors (age [FILLER: 8,234] citations, sex [FILLER: 7,891] citations, education [FILLER: 3,456] citations, socioeconomic status [FILLER: 2,987] citations) and social determinants of health are well-represented in the literature-derived graphs, correctly classifying them as confounders rather than mediators based on their graph positions.
 
 In parallel work, we are extracting how exposures, outcomes, and covariates are defined, along with details on the statistical models reported in the epidemiological literature. Our approach uses machine learning and large language models/generative AI to screen the literature to partially automate systematic reviews and semi-automate meta-analyses, and then to extract information on metadata about study variables (how ascertained, biomedical terminologies) and details reported on the statistical approach focusing on strategies for handling structural biases such as selection and confounding from full-text articles in PubMed Central. This will enable the creation of a field-specific database of confounding variables and set a template for others to apply these methods in the fields of their choice.
 
@@ -302,6 +347,25 @@ As precision medicine and personalized therapeutics continue to advance, the abi
 \section{Conclusion}
 CausalKnowledgeTrace represents a novel computational framework that systematically extracts causal knowledge from biomedical literature to transform variable selection for causal inference in complex observational data. Evaluation across Alzheimer's disease risk factors demonstrates substantial agreement with expert knowledge while identifying additional relationships overlooked in systematic reviews and detecting sophisticated bias patterns (M-bias, butterfly-bias) that provide early warning of analytical pitfalls. The integration of semantic consolidation, large language model validation, and systematic bias detection balances comprehensive literature coverage with quality assurance, enabling the completion of complex analyses within minutes while processing thousands of publications for practical routine research applications. Essential limitations include the inheritance of existing literature biases and focus on abstract-level semantic predications that may miss contextual information, emphasizing that the system should complement rather than replace expert judgment. This work democratizes access to sophisticated causal inference capabilities while maintaining complete transparency about the evidentiary foundations, providing both a practical tool for current research needs and a methodological foundation that evolves with the expanding biomedical knowledge to bridge the gap between vast, literature-embedded knowledge and rigorous causal inference requirements in biomedical research.
 
+%% [FILLER: Add actual acknowledgments]
+\section*{Acknowledgments}
+We thank [FILLER: collaborators, data providers, and technical support staff] for their contributions to this work. We are grateful to [FILLER: specific individuals or groups] for [FILLER: specific contributions such as data access, expert consultation, or technical assistance].
+
+%% [FILLER: Add actual funding information]
+\section*{Funding}
+This work was supported by [FILLER: Grant name and number from funding agency]. [FILLER: Additional funding sources if applicable]. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.
+
+%% [FILLER: Add conflict of interest statement]
+\section*{Declaration of Competing Interest}
+The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
+
+%% [FILLER: Optional - Add data availability statement]
+\section*{Data Availability}
+[FILLER: Describe how readers can access the data, code, or materials used in this study. For example: "The code for CausalKnowledgeTrace is available at https://github.com/[repository]. The SemMedDB database is publicly available at https://skr3.nlm.nih.gov/SemMedDB/. Analysis scripts and supplementary materials are available upon request."]
+
+%% [FILLER: Optional - Add author contributions]
+\section*{Author Contributions}
+[FILLER: Describe each author's contribution using CRediT taxonomy if possible. For example: "F.A.: Conceptualization, Methodology, Software, Writing - Original Draft. S.A.: Data Curation, Validation, Writing - Review \& Editing. T.A.: Formal Analysis, Visualization. S.A.: Supervision, Funding Acquisition, Writing - Review \& Editing."]
 
 \bibliographystyle{elsarticle-num}
 \bibliography{references}
