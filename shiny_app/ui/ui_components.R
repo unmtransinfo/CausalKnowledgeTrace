@@ -7,18 +7,17 @@
 # Date: February 2025
 
 #' Create Dashboard Header
-#' 
+#'
 #' Creates the main dashboard header with title and styling
-#' 
+#'
 #' @return dashboardHeader object
 create_dashboard_header <- function() {
     dashboardHeader(
-        title = span(
-            icon("project-diagram", style = "margin-right: 10px;"),
-            "Causal Web",
-            style = "font-size: 24px; font-weight: bold;"
+        title = tags$div(
+            tags$img(src = "www/hsclogo.png", height = "40px", style = "margin-right: 10px; vertical-align: middle;"),
+            tags$span("CKT - Causal Knowledge Trace", style = "vertical-align: middle; font-size: 20px; font-weight: bold;")
         ),
-        titleWidth = 300
+        titleWidth = 350
     )
 }
 
@@ -273,8 +272,8 @@ create_dag_tab <- function() {
         
         fluidRow(
             box(
-                title = "Interactive DAG Visualization",
-                status = "primary", 
+                title = "CKT - Causal Knowledge Trace",
+                status = "primary",
                 solidHeader = TRUE,
                 width = 12,
                 
@@ -533,7 +532,7 @@ create_dashboard_body <- function() {
     dashboardBody(
         useShinyjs(),  # Enable shinyjs functionality
         tags$head(
-            tags$title("Causal Web"),
+            tags$title("CKT - Causal Knowledge Trace"),
             create_custom_styles(),
             create_custom_javascript()
         ),

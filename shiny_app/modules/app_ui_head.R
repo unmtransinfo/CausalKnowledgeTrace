@@ -357,7 +357,7 @@ get_dag_resize_javascript <- function() {
 #' @export
 get_app_head <- function() {
     tags$head(
-        tags$title("Causal Web"),
+        tags$title("CKT - Causal Knowledge Trace"),
         get_app_css_styles(),
         get_app_javascript(),
         get_dag_resize_javascript()

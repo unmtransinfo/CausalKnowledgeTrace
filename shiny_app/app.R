@@ -52,6 +52,9 @@ source("server/app_server_definition.R", local = TRUE)
 # CREATE AND RETURN SHINY APP
 # ============================================================================
 
+# Add resource path for static files (images, etc.)
+addResourcePath("www", "www")
+
 # Create and return the Shiny application object
 shinyApp(ui = ui, server = server)
 
