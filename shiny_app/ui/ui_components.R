@@ -9,13 +9,20 @@
 #' Create Dashboard Header
 #'
 #' Creates the main dashboard header with title and styling
+#' Layout: Hamburger menu (left) | Text (center) | Logo (right)
 #'
 #' @return dashboardHeader object
 create_dashboard_header <- function() {
     dashboardHeader(
         title = tags$div(
-            tags$img(src = "www/hsclogo.png", height = "40px", style = "margin-right: 10px; vertical-align: middle;"),
-            tags$span("CKT - Causal Knowledge Trace", style = "vertical-align: middle; font-size: 20px; font-weight: bold;")
+            class = "custom-header-title",
+            tags$span("CKT - Causal Knowledge Trace",
+                     style = "vertical-align: middle; font-size: 20px; font-weight: bold;")
+        ),
+        tags$li(
+            class = "dropdown custom-logo-container",
+            tags$img(src = "www/hsclogo.png", height = "40px",
+                    style = "margin-right: 15px; margin-top: 5px; vertical-align: middle;")
         ),
         titleWidth = 350
     )
@@ -40,12 +47,49 @@ create_dashboard_sidebar <- function() {
 }
 
 #' Create Custom CSS Styles
-#' 
+#'
 #' Creates custom CSS styling for the application
-#' 
+#'
 #' @return tags$style object with CSS
 create_custom_styles <- function() {
     tags$style(HTML("
+        /* Header Layout: Hamburger (left) | Text (center) | Logo (right) */
+        .main-header .navbar {
+            margin-left: 0 !important;
+        }
+
+        /* Position hamburger menu on the left */
+        .main-header .sidebar-toggle {
+            float: left !important;
+            order: 1;
+        }
+
+        /* Center the title text */
+        .main-header .logo {
+            float: none !important;
+            width: auto !important;
+            text-align: center !important;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            order: 2;
+        }
+
+        .custom-header-title {
+            display: inline-block;
+        }
+
+        /* Position logo on the right */
+        .custom-logo-container {
+            float: right !important;
+            order: 3;
+            margin-right: 10px;
+        }
+
+        .main-header .navbar-custom-menu {
+            float: right !important;
+        }
+
         .content-wrapper, .right-side {
             background-color: #f4f4f4;
         }
