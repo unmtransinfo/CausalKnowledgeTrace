@@ -7,8 +7,14 @@ source("modules/app_ui_head.R")
 
 # Define UI
 ui <- dashboardPage(
-    dashboardHeader(title = "Interactive DAG Visualization"),
-    
+    dashboardHeader(
+        title = tags$div(
+            tags$img(src = "www/hsclogo.png", height = "40px", style = "margin-right: 10px; vertical-align: middle;"),
+            tags$span("CKT - Causal Knowledge Trace", style = "vertical-align: middle;")
+        ),
+        titleWidth = 350
+    ),
+
     dashboardSidebar(
         sidebarMenu(
             id = "sidebar",
