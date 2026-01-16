@@ -6,11 +6,18 @@
 source("modules/app_ui_head.R")
 
 # Define UI
+# Layout: Hamburger menu (left) | Text (center) | Logo (right)
 ui <- dashboardPage(
     dashboardHeader(
         title = tags$div(
-            tags$img(src = "www/hsclogo.png", height = "40px", style = "margin-right: 10px; vertical-align: middle;"),
-            tags$span("CKT - Causal Knowledge Trace", style = "vertical-align: middle;")
+            class = "custom-header-title",
+            tags$span("CKT - Causal Knowledge Trace",
+                     style = "vertical-align: middle; font-size: 20px; font-weight: bold;")
+        ),
+        tags$li(
+            class = "dropdown custom-logo-container",
+            tags$img(src = "www/hsclogo.png", height = "40px",
+                    style = "margin-right: 15px; margin-top: 5px; vertical-align: middle;")
         ),
         titleWidth = 350
     ),

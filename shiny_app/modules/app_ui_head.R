@@ -9,6 +9,43 @@
 #' @export
 get_app_css_styles <- function() {
     tags$style(HTML("
+        /* Header Layout: Hamburger (left) | Text (center) | Logo (right) */
+        .main-header .navbar {
+            margin-left: 0 !important;
+        }
+
+        /* Position hamburger menu on the left */
+        .main-header .sidebar-toggle {
+            float: left !important;
+            order: 1;
+        }
+
+        /* Center the title text */
+        .main-header .logo {
+            float: none !important;
+            width: auto !important;
+            text-align: center !important;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            order: 2;
+        }
+
+        .custom-header-title {
+            display: inline-block;
+        }
+
+        /* Position logo on the right */
+        .custom-logo-container {
+            float: right !important;
+            order: 3;
+            margin-right: 10px;
+        }
+
+        .main-header .navbar-custom-menu {
+            float: right !important;
+        }
+
         .content-wrapper, .right-side {
             background-color: #f4f4f4;
         }
