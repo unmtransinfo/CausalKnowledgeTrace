@@ -115,6 +115,13 @@ The remainder of this paper describes the technical implementation of CausalKnow
 \section{Methods}
 \label{sec:methods}
 
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.8\textwidth]{cwt.png}
+\caption{CausalKnowledgeTrace workflow and system architecture. The system follows a five-stage pipeline integrating literature-based knowledge extraction, semantic consolidation, LLM-based validation, and automated bias detection to construct evidence-based causal graphs from biomedical literature.}
+\label{fig:workflow}
+\end{figure}
+
 \subsection{System Architecture and Data Sources}
 
 CausalKnowledgeTrace operates as a modular computational framework integrating R, Python, and JavaScript components within an interactive Shiny web application. The system follows a five-stage pipeline: (1) input validation and preprocessing, (2) literature-based subgraph construction, (3) evidence aggregation and quality assessment, (4) semantic consolidation, and (5) output generation with bias detection.
@@ -160,13 +167,6 @@ For the CausalKnowledgeTrace analysis, we specified depression-related CUIs incl
 %% Use \subsection commands to start a subsection.
 \section{Results}
 \label{sec:results}
-
-\begin{figure}[htbp]
-\centering
-\includegraphics[width=0.8\textwidth]{cwt.png}
-\caption{CausalKnowledgeTrace workflow and system architecture.}
-\label{fig:workflow}
-\end{figure}
 
 \begin{table}[htbp]
 \centering
