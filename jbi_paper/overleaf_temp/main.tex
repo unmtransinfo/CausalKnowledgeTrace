@@ -115,99 +115,46 @@ The remainder of this paper describes the technical implementation of CausalKnow
 \section{Methods}
 \label{sec:methods}
 
-\subsection{System Overview and Architecture}
+\subsection{System Architecture and Data Sources}
 
 CausalKnowledgeTrace operates as a modular computational framework integrating R, Python, and JavaScript components within an interactive Shiny web application. The system follows a five-stage pipeline: (1) input validation and preprocessing, (2) literature-based subgraph construction, (3) evidence aggregation and quality assessment, (4) semantic consolidation, and (5) output generation with bias detection.
 
-\subsection{Data Sources and Knowledge Base Construction}
+As our primary knowledge source, SemMedDB provides structured semantic predications extracted from PubMed abstracts \cite{kilicoglu2012semmeddb}. We developed a custom PostgreSQL import pipeline with specialized compound indexes on subject CUI, object CUI, predicate type, and publication year combinations to ensure rapid query response times. To address noise in raw SemMedDB data, we implemented comprehensive filtering that: (1) excludes 847 non-informative UMLS semantic types, (2) removes ~15,000 generic concepts via curated blocklists, (3) retains 23 causally-relevant predicates from the original 74 types, and (4) applies configurable citation thresholds (10-5,000 PMIDs) with temporal constraints (2000+ publication years).
 
-\subsubsection{SemMedDB Integration and Optimization}
+\subsection{Graph Construction and Evidence Assessment}
 
-As our primary knowledge source, SemMedDB provides structured semantic predications extracted from PubMed abstracts \cite{kilicoglu2012semmeddb}. We developed a custom PostgreSQL import pipeline with specialized compound indexes on subject CUI, object CUI, predicate type, and publication year combinations to ensure rapid query response times.
+Users specify research questions using UMLS Concept Unique Identifiers (CUIs) for exposures and outcomes, along with search parameters including k-hop neighborhood size (1-3 degrees), minimum citation thresholds, and predicate type constraints. Real-time validation ensures CUI accuracy through UMLS Metathesaurus lookup with fuzzy string matching for error correction. The core algorithm performs bidirectional breadth-first search from exposure and outcome concepts within the filtered predication network. Starting from seed nodes, the system iteratively expands outward for k-hop levels, identifies all paths $\leq$k connecting exposures to outcomes, and extracts subgraphs containing all participating nodes and edges.
 
-\subsubsection{Multi-Stage Quality Filtering Pipeline}
+For each extracted relationship, we aggregate evidence across multiple dimensions: citation counts (unique PMIDs), sentence diversity (distinct contexts), temporal distribution (publication years), journal impact weighting, and cross-study consistency metrics. To address terminological inconsistencies, our semantic consolidation leverages: (1) UMLS synonym relationships (SY, SIB, RB, RN types), (2) Jaro-Winkler string similarity for lexical variants, and (3) biomedical language model embeddings (BioBERT, ClinicalBERT) for semantic similarity. Consolidation preserves complete provenance while selecting the most frequently cited terms as canonical representations.
 
-To address noise in raw SemMedDB data, we implemented comprehensive filtering that: (1) excludes 847 non-informative UMLS semantic types, (2) removes ~15,000 generic concepts via curated blocklists, (3) retains 23 causally-relevant predicates from the original 74 types, and (4) applies configurable citation thresholds (10-5,000 PMIDs) with temporal constraints (2000+ publication years).
-
-\subsection{Input Processing and Graph Construction}
-
-\subsubsection{User Input Specification and Validation}
-
-Users specify research questions using UMLS Concept Unique Identifiers (CUIs) for exposures and outcomes, along with search parameters including k-hop neighborhood size (1-3 degrees), minimum citation thresholds, and predicate type constraints. Real-time validation ensures CUI accuracy through UMLS Metathesaurus lookup with fuzzy string matching for error correction.
-
-\subsubsection{Bidirectional Graph Construction Algorithm}
-
-The core algorithm performs bidirectional breadth-first search from exposure and outcome concepts within the filtered predication network. Starting from seed nodes, the system iteratively expands outward for k-hop levels, identifies all paths $\leq$k connecting exposures to outcomes, and extracts subgraphs containing all participating nodes and edges.
-
-\subsection{Evidence Assessment and Semantic Consolidation}
-
-\subsubsection{Multi-Dimensional Evidence Scoring}
-
-For each extracted relationship, we aggregate evidence across: citation counts (unique PMIDs), sentence diversity (distinct contexts), temporal distribution (publication years), journal impact weighting, and cross-study consistency metrics.
-
-\subsubsection{Automated Synonym Detection and Consolidation}
-
-To address terminological inconsistencies, our semantic consolidation leverages: (1) UMLS synonym relationships (SY, SIB, RB, RN types), (2) Jaro-Winkler string similarity for lexical variants, and (3) biomedical language model embeddings (BioBERT, ClinicalBERT) for semantic similarity. Consolidation preserves complete provenance while selecting the most frequently cited terms as canonical representations.
-
-\subsection{Large Language Model Integration and Validation}
-
-\subsubsection{Relationship Validation Pipeline}
+\subsection{LLM-Based Validation and Bias Detection}
 
 To address limitations in purely text-mining approaches, CausalKnowledgeTrace incorporates large language model-based validation. This process retrieves original sentences containing each semantic predication and uses GPT-4 to evaluate whether the extracted relationships support the claimed causal directions, addressing common issues such as negation, hypothetical statements, and context-dependent assertions. The system generates numerical confidence scores (0-1) for relationship validity that can be integrated with other quality metrics. API cost optimization is achieved through intelligent batching strategies and caching mechanisms to prevent redundant evaluations.
 
-\subsubsection{Quality Filter Integration and Ensemble Scoring}
-
 LLM validation results are integrated with traditional heuristic filters through ensemble scoring that combines multiple quality assessment approaches. Heuristic scores incorporate bibliometric indicators including citation count, journal impact factors, and temporal consistency of evidence. Neural model assessments provide contextual understanding of relationship validity through natural language understanding capabilities that identify linguistic cues indicating causal versus associational relationships. The final combined scores utilize weighted averages that allow user-configurable emphasis on different quality dimensions, enabling researchers to balance computational efficiency with thorough validation based on their specific requirements.
-
-\subsection{Variable Role Classification and Bias Detection}
-
-\subsubsection{Structural Analysis for Causal Role Identification}
 
 Variable role classification automatically categorizes intermediate variables based on their structural positions within the constructed causal graph \cite{pearl2009causality}. Confounder detection algorithms identify variables with causal paths to both exposure and outcome that do not pass through the exposure itself \cite{vanderweele2019principles}. Mediator identification detects variables that lie on direct causal paths from exposure to outcome, distinguishing them from confounders to prevent inappropriate adjustment that could block the causal pathways of interest. Collider recognition identifies variables that receive causal arrows from both exposure and outcome pathways, revealing potential sources of selection bias or inappropriate conditioning. Instrumental variable screening searches for variables causally connected to the exposure that influence the outcome only through the exposure pathway \cite{angrist1996identification}.
 
-\subsubsection{Advanced Bias Pattern Detection}
-
 Advanced algorithms systematically screen the constructed graphs for complex bias configurations that could compromise causal inference if not properly recognized \cite{ding2015adjust}. M-bias detection algorithms identify potential instrumental variables and precision variables within the graph structure, check for common descendants that serve as colliders connecting these variables, and flag complete M-structures that could induce bias if standard conditioning strategies are applied. Butterfly-bias identification searches for more complex structures where conditioning on certain variables creates spurious causal pathways by implementing graph-theoretic algorithms specifically designed to detect butterfly-shaped subgraphs \cite{ding2015adjust}. The system generates detailed warnings about potential bias from various conditioning strategies, providing researchers with early alerts about causal structures that require sophisticated analytical approaches.
 
-\subsection{Output Generation and Visualization}
-
-\subsubsection{Multiple Export Format Generation}
+\subsection{Visualization and Performance Optimization}
 
 The system generates multiple output formats to support diverse analytical workflows. DAGitty-compatible R script generation produces fully functional code that researchers can directly execute for causal analysis \cite{textor2016robust}, including proper syntax for defining directed acyclic graphs and automated generation of adjustment set calculations. Structured JSON export provides complete graph representations, including node metadata, edge properties, and complete provenance information linking each relationship back to its supporting literature evidence. CSV evidence tables provide tabular representations of all identified relationships with full citation details, enabling seamless integration with spreadsheet-based analysis workflows. GraphML export offers network formats compatible with specialized graph analysis tools including Cytoscape, NetworkX, and other computational network analysis platforms.
 
-\subsubsection{Interactive Visualization and User Interface}
-
 The interactive visualization interface within the Shiny application offers comprehensive capabilities for exploring and refining the automatically generated causal graphs. Dynamic graph rendering utilizes the vis.js network library to provide real-time visualization with customizable layout algorithms, node sizing based on evidence strength, and edge thickness reflecting citation support levels. Evidence exploration features enable click-through access to supporting sentences and direct PubMed links, allowing researchers to examine the original literature context for each identified relationship. Interactive filter controls enable real-time adjustment of evidence thresholds and temporal constraints, allowing researchers to explore how different quality criteria impact the resulting causal structure. Export integration provides one-click export capabilities to multiple formats with custom naming options.
 
-\subsection{Performance Optimization and System Scalability}
-
-\subsubsection{Database and Query Optimization}
-
-Performance optimization ensures the system remains responsive when processing large knowledge graphs through strategic database and computational approaches. Custom PostgreSQL optimization utilizes compound indexes on frequently queried column combinations, materialized views for pre-computed aggregations of common query patterns, and connection pooling mechanisms that efficiently manage database connections during concurrent user sessions. Query optimization strategies include intelligent predicate pushdown, selective index usage based on query characteristics, and result set limitation techniques that balance comprehensiveness with response time requirements.
-
-\subsubsection{Computational Efficiency and Scalability}
-
-Computational efficiency strategies address the inherent complexity of large-scale graph construction and analysis through multiple complementary approaches. Incremental graph construction builds causal graphs progressively, providing users with preliminary results while continually expanding the search space, enabling interactive exploration even for complex queries. Intelligent pruning algorithms remove low-evidence edges during the construction process, significantly reducing memory requirements and computational overhead. Parallel processing capabilities distribute computationally intensive operations, including LLM validation calls, across multiple processing cores and API endpoints. Comprehensive result caching stores computed graph components for frequently requested exposure-outcome combinations, dramatically reducing response times for common queries.
-
-\subsection{Quality Assurance and Validation Framework}
-
-\subsubsection{Automated Testing and System Reliability}
-
-Quality assurance is ensured through a comprehensive automated testing framework that verifies system reliability and accuracy across various usage scenarios. Graph construction validation verifies correct path identification and evidence aggregation through systematic comparison with manually verified test cases covering multiple complexity levels and domain areas. Semantic consolidation testing ensures proper synonym handling and complete provenance preservation through detailed examination of consolidation mappings and evidence traceability. Output format verification ensures compatibility with downstream analysis tools through automated testing against DAGitty, NetworkX, and other common causal analysis platforms. Performance regression testing continuously monitors query response times, memory usage patterns, and system stability under various load conditions.
-
-\subsubsection{Expert Evaluation and Validation Protocol}
-
-The system underwent extensive evaluation by domain experts across multiple biomedical research areas through a structured validation protocol designed to assess both technical accuracy and practical utility. Graph completeness assessment involved expert review of automatically generated graphs for missing relationships that should have been identified based on domain knowledge, providing insights into the coverage and limitations of literature-based extraction approaches. Evidence quality evaluation focused on expert assessment of citation relevance and relationship strength, examining whether the automatically identified literature support accurately reflected the causal assertions being made. Usability testing conducted interface evaluations with researchers from diverse methodological backgrounds, ensuring the system remains accessible to users with varying levels of causal inference expertise. Comparative analysis systematically compared automatically generated graphs with manually constructed expert graphs, quantifying agreement levels and identifying systematic differences between computational and expert approaches.
-
-This comprehensive methodological framework enables CausalKnowledgeTrace to systematically leverage biomedical literature for evidence-based causal graph construction while maintaining the quality, transparency, and usability standards necessary for rigorous causal inference applications in biomedical research.
+Performance optimization ensures the system remains responsive when processing large knowledge graphs through strategic database and computational approaches. Custom PostgreSQL optimization utilizes compound indexes on frequently queried column combinations, materialized views for pre-computed aggregations of common query patterns, and connection pooling mechanisms that efficiently manage database connections during concurrent user sessions. Query optimization strategies include intelligent predicate pushdown, selective index usage based on query characteristics, and result set limitation techniques that balance comprehensiveness with response time requirements. Computational efficiency strategies include incremental graph construction that provides users with preliminary results while continually expanding the search space, intelligent pruning algorithms that remove low-evidence edges during construction, parallel processing capabilities that distribute computationally intensive operations across multiple cores and API endpoints, and comprehensive result caching that stores computed graph components for frequently requested exposure-outcome combinations.
 
 \subsection{Evaluation Framework}
+
+Quality assurance is ensured through a comprehensive automated testing framework that verifies system reliability and accuracy across various usage scenarios, including graph construction validation, semantic consolidation testing, output format verification, and performance regression testing. The system underwent extensive evaluation by domain experts across multiple biomedical research areas through a structured validation protocol designed to assess both technical accuracy and practical utility.
 
 To demonstrate the practical utility and validate the performance of CausalKnowledgeTrace, we conducted a comprehensive evaluation focusing on the well-studied relationship between Alzheimer's disease and depression, a domain where extensive expert knowledge and published literature provide robust benchmarks for comparison \cite{green2003depression, speck1995history}. Our evaluation strategy employed a three-pronged approach that compared CausalKnowledgeTrace-generated causal graphs with published systematic reviews, expert-constructed causal models, and established epidemiological knowledge about confounding relationships in Alzheimer's disease research.
 
 We began by systematically identifying published systematic reviews and meta-analyses that explicitly addressed confounding variables in studies examining the relationship between depression and Alzheimer's disease \cite{higgins2019cochrane}. Our literature search encompassed major databases including PubMed, Cochrane Library, and EMBASE, using search terms that combined concepts related to Alzheimer's disease, depression, confounding, causal inference, and variable selection. This search yielded 23 high-quality systematic reviews published between 2015 and 2024, from which we extracted all mentioned confounding variables, mediating factors, and effect modifiers discussed by the review authors. Each extracted variable was mapped to its corresponding UMLS Concept Unique Identifier \cite{bodenreider2004unified}, enabling direct comparison with CausalKnowledgeTrace outputs.
 
 In parallel, we recruited a panel of five subject matter experts representing diverse expertise areas including geriatric psychiatry, neuroepidemiology, biostatistics, and Alzheimer's disease research methodology. Each expert independently constructed a causal graph representing the relationship between depression and Alzheimer's disease using a standardized protocol that provided them with the research question but no guidance on specific variables to consider. The experts used DAGitty software \cite{textor2016robust} to create their graphs and were encouraged to include all variables they considered important for proper confounding control, mediator identification, or precision variable adjustment. After independent construction, the experts participated in a structured group discussion to identify areas of consensus and disagreement, resulting in individual expert graphs and a consensus graph that represented their collective judgment.
+
 For the CausalKnowledgeTrace analysis, we specified depression-related CUIs including Major Depressive Disorder (C1269683), Depressive Disorder (C0011581), Treatment Resistant Depression (C0871546), and Unipolar Depression (C0041696) as exposure concepts, while Alzheimer's disease was represented using CUIs for Alzheimer's Disease (C0002395), Dementia Alzheimer Type (C0494463), and Alzheimer Dementia (C0750901) as outcome concepts. We configured the system to search within a 3-hop neighborhood using evidence from publications spanning 2000 to 2024, with a minimum threshold of 25 supporting citations per causal edge and squelch thresholds set to exclude relationships supported by fewer than 50 unique PMIDs. The semantic consolidation module was enabled to merge synonymous concepts related to depression and Alzheimer's disease, while preserving complete provenance tracking.
 
 %% Use \subsection commands to start a subsection.
@@ -235,35 +182,31 @@ The semantic consolidation module merged synonymous depression-related CUIs (e.g
 
 \subsection{Validation Against Established Knowledge}
 
-\subsubsection{Systematic Review Comparison}
-
 %% [FILLER: Replace XYZ with actual numbers from systematic review comparison]
 Comparison with [FILLER: 23] high-quality observational papers (2015–2024) demonstrated substantial overlap between covariates reported in the epidemiological literature with the confounders identified by querying the literature, as noted in our previous work, but with the reported covariates being a small subset of other confounders, which have not been reported. Specifically, [FILLER: 18 out of 23 (78\%)] core confounders identified by CausalKnowledgeTrace were also mentioned in systematic reviews, including age, sex, education, cardiovascular disease, diabetes, and APOE genotype.
 
 The system also identified several candidate confounders that are underrepresented in reviews but well-supported in SemMedDB, including sleep disorders ([FILLER: 342] citations), chronic pain ([FILLER: 287] citations), social isolation ([FILLER: 419] citations), and inflammatory markers ([FILLER: 531] citations). Manual verification confirmed these relationships as documented but possibly overlooked in reviews due to their recent emergence or classification outside conventional risk factor categories.
-
-\subsubsection{Expert Graph Comparison}
 
 %% [FILLER: Replace XYZ with actual numbers from expert comparison]
 Five independent experts constructed causal graphs for the depression–Alzheimer’s relationship. Comparison showed convergence on demographic and cardiovascular confounders, validating the system’s identification of these relationships. Specifically, [FILLER: 15 out of 17 (88\%)] demographic and cardiovascular confounders identified by experts were also identified by CausalKnowledgeTrace. Greater divergence occurred in psychosocial domains: three experts included social support and two included stress-related variables, both of which CausalKnowledgeTrace identified with strong literature support.
 
 The expert consensus graph contained [FILLER: 24] variables, whereas CausalKnowledgeTrace identified [FILLER: 156] under default filtering. Restricting outputs to variables with >[FILLER: 100] supporting citations reduced the automated set to [FILLER: 31] variables, increasing overlap to [FILLER: 79\%], suggesting citation thresholds can bridge the gap between broad automated extraction and focused expert modeling.
 
-\subsubsection{Novel Bias Pattern Detection}
+
 
 CausalKnowledgeTrace identified complex bias structures that were not explicitly modeled by experts. For example, it detected M-bias configurations involving APOE genotype (instrumental variable), cognitive reserve (precision variable), and brain amyloid deposition (shared descendant). These patterns indicate that common adjustment strategies could inadvertently introduce bias. Four of five experts agreed these were plausible scenarios requiring consideration, underscoring the system’s capacity to surface sophisticated causal risks beyond manual detection.
 
-\subsubsection{Variable Role Classification}
+
 
 Automated role classification showed high concordance with expert judgment for unambiguous cases but revealed differences in borderline ones. Cognitive decline was classified as a mediator by CausalKnowledgeTrace, whereas experts disagreed on whether to treat it as a mediator or an intermediate outcome. Similarly, inflammatory markers were classified as both confounders and mediators, reflecting their dual role in depression and neurodegeneration. These findings highlight the system’s ability to capture causal complexity while also surfacing philosophical differences in model construction.
 
 \subsection{System Performance and Quality Assessment}
 
-\subsubsection{Computational Efficiency}
+
 
 The complete depression–Alzheimer’s analysis ran in 4.2 minutes, meeting the 5-minute performance benchmark while processing evidence from over 12,000 publications. Performance remained stable across graph construction, semantic consolidation, and bias detection phases.
 
-\subsection{Evidence Quality and Validation}
+
 
 Manual verification confirmed that 89\% of relationships labeled as high confidence by the integrated LLM validation pipeline represented legitimate causal or associative claims in the literature. False positives were more frequent among medium-confidence psychosocial constructs, reflecting challenges with terminology variation and context dependence.
 
