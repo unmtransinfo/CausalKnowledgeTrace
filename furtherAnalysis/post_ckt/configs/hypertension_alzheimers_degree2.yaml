@@ -1,0 +1,26 @@
+# Hypertension -> Alzheimer's Disease (Degree 1)
+# This config explores direct pathways between hypertension and Alzheimer's
+
+exposure_cuis:
+  - C0020538
+  - C4013784 
+  - C0221155
+  - C0745114
+  - C0745135
+
+outcome_cuis:
+  - C0002395 
+  - C2677888
+  - C0750901 
+  - CC0494463
+
+exposure_name: Hypertension
+outcome_name: Alzheimers
+
+min_pmids: 50
+degree: 2
+
+predication_types:
+  - CAUSES
+
+blocklist_cuis: []

@@ -1,0 +1,56 @@
+# YAML Configuration Template for CKT Graph Generation
+# Copy this file and modify for your use case
+
+# UMLS Concept Unique Identifiers (CUIs) for exposure variable(s)
+# You can find CUIs at: https://uts.nlm.nih.gov/uts/
+exposure_cuis:
+  - C0000000  # Replace with actual CUI
+
+# UMLS CUIs for outcome variable(s)
+outcome_cuis:
+  - C0000000  # Replace with actual CUI
+
+# Human-readable names for file naming
+# These are used to name the output files: {exposure_name}_{outcome_name}_degree_N.R
+exposure_name: ExposureName
+outcome_name: OutcomeName
+
+# Minimum number of PMIDs (publications) required for a relationship
+# Higher values = more evidence required = fewer but stronger relationships
+# Typical values: 10-50
+min_pmids: 50
+
+# Graph degree: how many "hops" from exposure/outcome to include
+# 1 = direct connections only
+# 2 = include intermediate nodes (neighbors of neighbors)
+# 3 = include 2nd-degree intermediates (less common, very large graphs)
+degree: 2
+
+# Types of semantic relationships to include
+# Common options:
+#   CAUSES - X causes Y (most important for causal analysis)
+#   STIMULATES - X stimulates/activates Y
+#   PREVENTS - X prevents Y
+#   INHIBITS - X inhibits/suppresses Y
+#   ASSOCIATED_WITH - X is associated with Y (weaker evidence)
+#   TREATS - X treats Y
+#   PREDISPOSES - X predisposes to Y
+predication_types:
+  - CAUSES
+  - STIMULATES
+  - PREVENTS
+  - INHIBITS
+
+# Optional: CUIs to exclude from the graph
+# Use this to block overly generic concepts that create noise
+# Common blocks:
+#   C0030705 - Patients
+#   C0439234 - Year
+#   C0039082 - Time
+#   C0025663 - Measurement
+blocklist_cuis: []
+
+# Optional: Publication year range
+# Uncomment to restrict to specific time periods
+# start_year: 2000
+# end_year: 2023
