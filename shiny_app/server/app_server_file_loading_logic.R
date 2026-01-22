@@ -174,7 +174,7 @@
                             ""
                         }
 
-                        # Show success modal with option to go to DAG Visualization
+                        # Show success modal with option to go to Graph Visualization
                         modal_content <- div(
                             style = "font-size: 16px;",
                             h4(paste0("Graph loaded successfully! (", node_count, " nodes, ", edge_count, " edges)")),
@@ -185,9 +185,9 @@
                                 p(icon("info-circle"), "Large graph - the interactive visualization may take a moment to render.")
                             },
                             hr(),
-                            p(strong("Next step:"), "Go to the", strong("DAG Visualization"), "tab to explore your graph interactively."),
+                            p(strong("Next step:"), "Go to the", strong("Graph Visualization"), "tab to explore your graph interactively."),
                             br(),
-                            actionButton("goto_dag_viz", "Go to DAG Visualization",
+                            actionButton("goto_dag_viz", "Go to Graph Visualization",
                                        icon = icon("project-diagram"),
                                        class = "btn-primary btn-lg")
                         )
@@ -434,7 +434,7 @@
                 node_count <- length(V(dag_to_use))
                 edge_count <- length(E(dag_to_use))
 
-                # Show success modal with option to go to DAG Visualization
+                # Show success modal with option to go to Graph Visualization
                 modal_content <- div(
                     style = "font-size: 16px;",
                     h4(paste0("Graph uploaded successfully! (", node_count, " nodes, ", edge_count, " edges)")),
@@ -446,9 +446,9 @@
                         p(icon("filter"), strong("Filtering applied:"), filter_result$message)
                     },
                     hr(),
-                    p(strong("Next step:"), "Go to the", strong("DAG Visualization"), "tab to explore your graph interactively."),
+                    p(strong("Next step:"), "Go to the", strong("Graph Visualization"), "tab to explore your graph interactively."),
                     br(),
-                    actionButton("goto_dag_viz_upload", "Go to DAG Visualization",
+                    actionButton("goto_dag_viz_upload", "Go to Graph Visualization",
                                icon = icon("project-diagram"),
                                class = "btn-primary btn-lg")
                 )
@@ -475,13 +475,13 @@
         HTML(generate_legend_html(current_data$nodes))
     })
 
-    # Observer for "Go to DAG Visualization" button from file loading modal
+    # Observer for "Go to Graph Visualization" button from file loading modal
     observeEvent(input$goto_dag_viz, {
         updateTabItems(session, "sidebar", "dag")
         removeModal()
     })
 
-    # Observer for "Go to DAG Visualization" button from file upload modal
+    # Observer for "Go to Graph Visualization" button from file upload modal
     observeEvent(input$goto_dag_viz_upload, {
         updateTabItems(session, "sidebar", "dag")
         removeModal()

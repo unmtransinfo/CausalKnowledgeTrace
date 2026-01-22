@@ -40,7 +40,7 @@ create_dashboard_sidebar <- function() {
             id = "tabs",
             menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
             menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
-            menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
+            menuItem("Graph Visualization", tabName = "dag", icon = icon("project-diagram")),
             menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus"))
         )
     )
@@ -97,7 +97,7 @@ create_custom_styles <- function() {
             border-radius: 5px;
         }
 
-        /* Resizable DAG visualization styles */
+        /* Resizable graph visualization styles */
         .resizable-dag-container {
             position: relative;
             min-height: 400px;
@@ -261,10 +261,10 @@ create_custom_javascript <- function() {
     "))
 }
 
-#' Create DAG Visualization Tab Content
-#' 
-#' Creates the content for the DAG visualization tab
-#' 
+#' Create Graph Visualization Tab Content
+#'
+#' Creates the content for the graph visualization tab
+#'
 #' @return tabItem object
 create_dag_tab <- function() {
     tabItem(
@@ -372,8 +372,8 @@ create_info_tab <- function() {
                 status = "primary",
                 solidHeader = TRUE,
                 width = 12,
-                
-                p("Click on a node in the DAG visualization to see detailed information here."),
+
+                p("Click on a node in the graph visualization to see detailed information here."),
                 
                 conditionalPanel(
                     condition = "output.has_node_selection",

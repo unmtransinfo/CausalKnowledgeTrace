@@ -3,7 +3,7 @@
 # Author: Extracted from app.R UI section
 
 tabItems(
-    # DAG Visualization Tab
+    # Graph Visualization Tab
     tabItem(tabName = "dag",
                 # Row 1: CKT - Causal Knowledge Trace (top)
                 fluidRow(
@@ -240,7 +240,7 @@ tabItems(
                             style = "background-color: #e8f4fd; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196F3;",
                             h4(icon("info-circle"), " Welcome to CKT - Causal Knowledge Trace"),
                             p("The application is now running at localhost and ready to use! To get started, please select or upload a graph file below."),
-                            p(strong("No graph file is currently loaded."), " Once you load a graph, you'll be able to explore it in the DAG Visualization tab.")
+                            p(strong("No graph file is currently loaded."), " Once you load a graph, you'll be able to explore it in the Graph Visualization tab.")
                         ),
 
                         # Current DAG status

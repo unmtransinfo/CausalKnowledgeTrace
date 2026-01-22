@@ -33,7 +33,7 @@ ui <- dashboardPage(
             id = "sidebar",
             menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
             menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
-            menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
+            menuItem("Graph Visualization", tabName = "dag", icon = icon("project-diagram")),
             menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus"))
         )
     ),

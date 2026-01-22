@@ -89,7 +89,7 @@ get_app_css_styles <- function() {
             padding: 0 !important;
         }
 
-        /* Resizable DAG visualization styles */
+        /* Resizable graph visualization styles */
         .resizable-dag-container {
             position: relative;
             min-height: 500px;
@@ -407,12 +407,12 @@ get_app_javascript <- function() {
 
 #' Get DAG Resize JavaScript
 #'
-#' Returns JavaScript for DAG visualization resize functionality
+#' Returns JavaScript for graph visualization resize functionality
 #' @return tags$script object
 #' @keywords internal
 get_dag_resize_javascript <- function() {
     tags$script(HTML("
-        // DAG Visualization Resize Functionality
+        // Graph Visualization Resize Functionality
         function initializeDAGResize() {
             var isResizing = false;
             var startY = 0;
