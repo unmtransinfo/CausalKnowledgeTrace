@@ -12,27 +12,36 @@ get_app_css_styles <- function() {
         /* Header Layout: Hamburger (left) | Text (center) | Logo (right) */
         .main-header .navbar {
             margin-left: 0 !important;
+            position: relative !important;
+        }
+
+        /* Hide the default logo element */
+        .main-header .logo {
+            display: none !important;
         }
 
         /* Position hamburger menu on the left */
         .main-header .sidebar-toggle {
             float: left !important;
-            order: 1;
         }
 
-        /* Center the title text */
-        .main-header .logo {
+        /* Center the custom title */
+        .navbar-title-center {
+            position: absolute !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
             float: none !important;
-            width: auto !important;
-            text-align: center !important;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            order: 2;
+            top: 0 !important;
+            z-index: 1000 !important;
         }
 
-        .custom-header-title {
-            display: inline-block;
+        .navbar-title-center span {
+            color: white !important;
+            font-size: 20px !important;
+            font-weight: bold !important;
+            line-height: 50px !important;
+            white-space: nowrap !important;
+            display: block !important;
         }
 
         /* Position logo on the right */
