@@ -237,6 +237,108 @@ get_app_css_styles <- function() {
             float: right;
             margin-top: 10px;
         }
+
+        /* Progress Section Styling - Make it prominent and visible */
+        /* Target both possible progress section IDs */
+        #config-graph_progress_section,
+        #config-progress_section {
+            position: fixed !important;
+            top: 60px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            z-index: 9999 !important;
+            width: 90% !important;
+            max-width: 800px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+            animation: slideDown 0.3s ease-out !important;
+        }
+
+        /* Backdrop overlay when progress is shown */
+        .progress-backdrop {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            z-index: 9998 !important;
+            display: none !important;
+        }
+
+        .progress-backdrop.active {
+            display: block !important;
+        }
+
+        /* Enhanced progress styling - Clean white box design */
+        #config-graph_progress_section > div,
+        #config-progress_section > div {
+            background-color: #ffffff !important;
+            padding: 25px 30px !important;
+            border-radius: 10px !important;
+            border: 4px solid #ff8c42 !important;
+            box-shadow: 0 4px 20px rgba(255, 140, 66, 0.3) !important;
+        }
+
+        #config-graph_progress_section h4,
+        #config-progress_section h4 {
+            color: #ff8c42 !important;
+            font-size: 22px !important;
+            font-weight: bold !important;
+            margin-top: 0 !important;
+            margin-bottom: 20px !important;
+            text-align: center !important;
+        }
+
+        #config-graph_progress_section .progress,
+        #config-progress_section .progress {
+            height: 40px !important;
+            margin-bottom: 15px !important;
+            font-size: 15px !important;
+            background-color: #e9ecef !important;
+            border: 2px solid #dee2e6 !important;
+            border-radius: 20px !important;
+            overflow: hidden !important;
+        }
+
+        #config-graph_progress_section .progress-bar,
+        #config-progress_section .progress-bar {
+            line-height: 40px !important;
+            font-size: 15px !important;
+            font-weight: bold !important;
+            background: linear-gradient(90deg, #ff8c42 0%, #ffa366 100%) !important;
+            color: white !important;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4) !important;
+            border-radius: 20px !important;
+        }
+
+        #config-graph_progress_section p,
+        #config-progress_section p,
+        #config-graph_progress_section div,
+        #config-progress_section div[id$='progress_status'] {
+            font-size: 15px !important;
+            margin: 8px 0 !important;
+        }
+
+        /* Slide down animation */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        /* Responsive adjustments for progress section */
+        @media (max-width: 768px) {
+            #config-graph_progress_section,
+            #config-progress_section {
+                width: 95% !important;
+                top: 10px !important;
+            }
+        }
     "))
 }
 
