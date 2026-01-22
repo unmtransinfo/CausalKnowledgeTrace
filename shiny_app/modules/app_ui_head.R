@@ -275,13 +275,13 @@ get_app_css_styles <- function() {
             background-color: #ffffff !important;
             padding: 25px 30px !important;
             border-radius: 10px !important;
-            border: 4px solid #ff8c42 !important;
-            box-shadow: 0 4px 20px rgba(255, 140, 66, 0.3) !important;
+            border: 4px solid #28a745 !important;
+            box-shadow: 0 4px 20px rgba(40, 167, 69, 0.3) !important;
         }
 
         #config-graph_progress_section h4,
         #config-progress_section h4 {
-            color: #ff8c42 !important;
+            color: #28a745 !important;
             font-size: 22px !important;
             font-weight: bold !important;
             margin-top: 0 !important;
@@ -305,7 +305,7 @@ get_app_css_styles <- function() {
             line-height: 40px !important;
             font-size: 15px !important;
             font-weight: bold !important;
-            background: linear-gradient(90deg, #ff8c42 0%, #ffa366 100%) !important;
+            background: linear-gradient(90deg, #28a745 0%, #34ce57 100%) !important;
             color: white !important;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.4) !important;
             border-radius: 20px !important;
