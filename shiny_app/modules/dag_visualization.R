@@ -7,10 +7,10 @@
 if (!require(visNetwork)) stop("visNetwork package is required")
 if (!require(dplyr)) stop("dplyr package is required")
 
-#' Generate Legend HTML for DAG Visualization
-#' 
+#' Generate Legend HTML for Graph Visualization
+#'
 #' Creates an HTML legend showing node groups, colors, and counts
-#' 
+#'
 #' @param nodes_df Data frame containing node information with group and color columns
 #' @return HTML string for the legend
 #' @export
