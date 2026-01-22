@@ -31,6 +31,7 @@ ui <- dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             id = "sidebar",
+            menuItem("About", tabName = "about", icon = icon("info-circle")),
             menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
             menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
             menuItem("Graph Visualization", tabName = "dag", icon = icon("project-diagram")),
