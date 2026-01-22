@@ -46,6 +46,19 @@ get_app_css_styles <- function() {
             float: right !important;
         }
 
+        /* Sidebar active menu item - only change the left border color to orange */
+        .skin-blue .main-sidebar .sidebar .sidebar-menu .active > a {
+            border-left-color: #ff8c42 !important;  /* Orange border instead of blue */
+            border-left-width: 4px !important;
+            border-left-style: solid !important;
+        }
+
+        /* General sidebar menu item styling */
+        .sidebar-menu > li.active > a {
+            border-left-color: #ff8c42 !important;  /* Orange border */
+            border-left-width: 4px !important;
+        }
+
         .content-wrapper, .right-side {
             background-color: #f4f4f4;
         }
