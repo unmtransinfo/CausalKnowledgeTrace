@@ -36,6 +36,24 @@ tabItems(
                     )
                 ),
 
+                # Resources
+                div(
+                    style = "background-color: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #6c757d;",
+                    h3(icon("link"), " Resources"),
+                    tags$ul(style = "font-size: 15px;",
+                        tags$li(icon("github"), " ", strong("GitHub Repository:"), " ",
+                            tags$a(href = "https://github.com/unmtransinfo/CausalKnowledgeTrace",
+                                   target = "_blank",
+                                   "https://github.com/unmtransinfo/CausalKnowledgeTrace",
+                                   style = "color: #0366d6;")),
+                        tags$li(icon("book"), " ", strong("User Manual:"), " ",
+                            tags$a(href = "https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing",
+                                   target = "_blank",
+                                   "View detailed user guide",
+                                   style = "color: #0366d6;"))
+                    )
+                ),
+
                 hr(),
 
                 # User Guide
