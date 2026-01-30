@@ -1,0 +1,15 @@
+=== GRAPH STATISTICS ===
+Nodes: 174 
+Edges: 197 
+Density: 0.006544416 
+Weakly connected: TRUE 
+Strongly connected: FALSE 
+
+Exposure: Atrial_Fibrillation 
+Outcome: Alzheimers 
+
+Degree Statistics:
+Mean in-degree: 1.132184 
+Mean out-degree: 1.132184 
+Max in-degree: 121 
+Max out-degree: 23 

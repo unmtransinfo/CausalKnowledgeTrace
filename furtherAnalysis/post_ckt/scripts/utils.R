@@ -3,11 +3,35 @@
 #
 # This file provides:
 #   - Automatic project root detection
-#   - Standard path getters for all directories
+#   - Stage-based path getters for all directories
 #   - CLI argument parsing helpers
 #   - Directory creation utilities
 #
+# Directory Structure:
+#   post_ckt/
+#   ├── scripts/
+#   ├── input/                          # Original CKT input files
+#   └── data/
+#       └── {Exposure}_{Outcome}/
+#           ├── s1_graph/               # Parsed graph
+#           ├── s2_semantic/            # Semantic type analysis
+#           ├── s3_cycles/              # Cycle detection & analysis
+#           ├── s4_node_removal/        # Generic node removal
+#           └── s5_post_removal/        # Post-removal analysis
+#
 # Usage: source("utils.R") at the top of each script (after config.R)
+
+# ============================================
+# STAGE DEFINITIONS
+# ============================================
+
+STAGES <- list(
+  S1_GRAPH = "s1_graph",
+  S2_SEMANTIC = "s2_semantic",
+  S3_CYCLES = "s3_cycles",
+  S4_NODE_REMOVAL = "s4_node_removal",
+  S5_POST_REMOVAL = "s5_post_removal"
+)
 
 # ============================================
 # PROJECT ROOT DETECTION
@@ -42,7 +66,6 @@ get_project_root <- function() {
   }
 
   # Method 2: Check if current working directory is in the project
-
   current <- normalizePath(getwd())
 
   # If we're in the scripts directory
@@ -58,9 +81,7 @@ get_project_root <- function() {
 
   while (check_dir != dirname(check_dir) && level < max_levels) {
     # Check if this is the post_ckt directory
-    if (file.exists(file.path(check_dir, "scripts", "config.R")) &&
-        file.exists(file.path(check_dir, "input")) &&
-        file.exists(file.path(check_dir, "output"))) {
+    if (file.exists(file.path(check_dir, "scripts", "config.R"))) {
       return(check_dir)
     }
 
@@ -91,10 +112,10 @@ get_project_root <- function() {
 }
 
 # ============================================
-# STANDARD PATH GETTERS
+# BASE PATH GETTERS
 # ============================================
 
-#' Get the input directory path
+#' Get the input directory path (for original CKT files)
 #' @param root Project root (default: auto-detect)
 #' @return Path to input directory
 get_input_dir <- function(root = NULL) {
@@ -102,44 +123,12 @@ get_input_dir <- function(root = NULL) {
   file.path(root, "input")
 }
 
-#' Get the output directory path
+#' Get the data directory path
 #' @param root Project root (default: auto-detect)
-#' @return Path to output directory
-get_output_dir <- function(root = NULL) {
+#' @return Path to data directory
+get_data_dir <- function(root = NULL) {
   if (is.null(root)) root <- get_project_root()
-  file.path(root, "output")
-}
-
-#' Get the parsed graphs directory path
-#' @param root Project root (default: auto-detect)
-#' @return Path to parsed_graphs directory
-get_parsed_graphs_dir <- function(root = NULL) {
-  if (is.null(root)) root <- get_project_root()
-  file.path(root, "output", "parsed_graphs")
-}
-
-#' Get the analysis results directory path
-#' @param root Project root (default: auto-detect)
-#' @return Path to analysis_results directory
-get_analysis_dir <- function(root = NULL) {
-  if (is.null(root)) root <- get_project_root()
-  file.path(root, "output", "analysis_results")
-}
-
-#' Get the cycle subgraph directory path
-#' @param root Project root (default: auto-detect)
-#' @return Path to cycle_subgraph directory
-get_cycle_dir <- function(root = NULL) {
-  if (is.null(root)) root <- get_project_root()
-  file.path(root, "output", "cycle_subgraph")
-}
-
-#' Get the plots directory path
-#' @param root Project root (default: auto-detect)
-#' @return Path to plots directory
-get_plots_dir <- function(root = NULL) {
-  if (is.null(root)) root <- get_project_root()
-  file.path(root, "output", "plots")
+  file.path(root, "data")
 }
 
 #' Get the configs directory path
@@ -151,55 +140,209 @@ get_configs_dir <- function(root = NULL) {
 }
 
 # ============================================
-# EXPOSURE/OUTCOME PATH HELPERS
+# EXPOSURE/OUTCOME HELPERS
 # ============================================
 
 #' Build subdirectory name from exposure and outcome
 #' @param exposure Exposure name
 #' @param outcome Outcome name
-#' @return Subdirectory name (e.g., "Depression_Alzheimers")
+#' @return Subdirectory name (e.g., "Hypertension_Alzheimers")
 get_subdir_name <- function(exposure, outcome) {
   paste0(exposure, "_", outcome)
 }
 
-#' Get the parsed graph file path for a specific exposure/outcome
+#' Get the base data directory for a specific exposure/outcome
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to exposure/outcome data directory
+get_pair_dir <- function(exposure, outcome, root = NULL) {
+  subdir <- get_subdir_name(exposure, outcome)
+  file.path(get_data_dir(root), subdir)
+}
+
+# ============================================
+# STAGE-BASED PATH GETTERS
+# ============================================
+
+#' Get stage directory for a specific exposure/outcome
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param stage Stage name (use STAGES constants)
+#' @param root Project root (default: auto-detect)
+#' @return Full path to stage directory
+get_stage_dir <- function(exposure, outcome, stage, root = NULL) {
+  file.path(get_pair_dir(exposure, outcome, root), stage)
+}
+
+# --- Stage 1: Graph ---
+
+#' Get s1_graph directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s1_graph directory
+get_s1_graph_dir <- function(exposure, outcome, root = NULL) {
+  get_stage_dir(exposure, outcome, STAGES$S1_GRAPH, root)
+}
+
+#' Get the parsed graph file path
 #' @param exposure Exposure name
 #' @param outcome Outcome name
 #' @param root Project root (default: auto-detect)
 #' @return Full path to parsed_graph.rds
 get_parsed_graph_path <- function(exposure, outcome, root = NULL) {
-  subdir <- get_subdir_name(exposure, outcome)
-  file.path(get_parsed_graphs_dir(root), subdir, "parsed_graph.rds")
+  file.path(get_s1_graph_dir(exposure, outcome, root), "parsed_graph.rds")
 }
 
-#' Get the analysis output directory for a specific exposure/outcome
+# --- Stage 2: Semantic Analysis ---
+
+#' Get s2_semantic directory
 #' @param exposure Exposure name
 #' @param outcome Outcome name
 #' @param root Project root (default: auto-detect)
-#' @return Full path to analysis output directory
+#' @return Full path to s2_semantic directory
+get_s2_semantic_dir <- function(exposure, outcome, root = NULL) {
+  get_stage_dir(exposure, outcome, STAGES$S2_SEMANTIC, root)
+}
+
+#' Get s2_semantic plots directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s2_semantic/plots directory
+get_s2_plots_dir <- function(exposure, outcome, root = NULL) {
+  file.path(get_s2_semantic_dir(exposure, outcome, root), "plots")
+}
+
+# --- Stage 3: Cycle Detection ---
+
+#' Get s3_cycles directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s3_cycles directory
+get_s3_cycles_dir <- function(exposure, outcome, root = NULL) {
+  get_stage_dir(exposure, outcome, STAGES$S3_CYCLES, root)
+}
+
+#' Get s3_cycles plots directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s3_cycles/plots directory
+get_s3_plots_dir <- function(exposure, outcome, root = NULL) {
+  file.path(get_s3_cycles_dir(exposure, outcome, root), "plots")
+}
+
+#' Get s3_cycles subgraphs directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s3_cycles/subgraphs directory
+get_s3_subgraphs_dir <- function(exposure, outcome, root = NULL) {
+  file.path(get_s3_cycles_dir(exposure, outcome, root), "subgraphs")
+}
+
+# --- Stage 4: Node Removal ---
+
+#' Get s4_node_removal directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s4_node_removal directory
+get_s4_node_removal_dir <- function(exposure, outcome, root = NULL) {
+  get_stage_dir(exposure, outcome, STAGES$S4_NODE_REMOVAL, root)
+}
+
+#' Get s4_node_removal plots directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s4_node_removal/plots directory
+get_s4_plots_dir <- function(exposure, outcome, root = NULL) {
+  file.path(get_s4_node_removal_dir(exposure, outcome, root), "plots")
+}
+
+#' Get reduced graph path (after removing generic nodes)
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to reduced_graph.rds
+get_reduced_graph_path <- function(exposure, outcome, root = NULL) {
+  file.path(get_s4_node_removal_dir(exposure, outcome, root), "reduced_graph.rds")
+}
+
+# --- Stage 5: Post Removal Analysis ---
+
+#' Get s5_post_removal directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s5_post_removal directory
+get_s5_post_removal_dir <- function(exposure, outcome, root = NULL) {
+  get_stage_dir(exposure, outcome, STAGES$S5_POST_REMOVAL, root)
+}
+
+#' Get s5_post_removal plots directory
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param root Project root (default: auto-detect)
+#' @return Full path to s5_post_removal/plots directory
+get_s5_plots_dir <- function(exposure, outcome, root = NULL) {
+  file.path(get_s5_post_removal_dir(exposure, outcome, root), "plots")
+}
+
+# ============================================
+# BACKWARD COMPATIBILITY (deprecated)
+# ============================================
+# These functions maintain compatibility with old scripts
+# They will be removed in future versions
+
+#' @deprecated Use get_s1_graph_dir instead
+get_parsed_graphs_dir <- function(root = NULL) {
+  warning("get_parsed_graphs_dir() is deprecated. Use get_s1_graph_dir() instead.")
+  if (is.null(root)) root <- get_project_root()
+  file.path(root, "data")
+}
+
+#' @deprecated Use get_s2_semantic_dir instead
+get_analysis_dir <- function(root = NULL) {
+  warning("get_analysis_dir() is deprecated. Use stage-specific functions instead.")
+  if (is.null(root)) root <- get_project_root()
+  file.path(root, "data")
+}
+
+#' @deprecated Use get_s3_cycles_dir instead
+get_cycle_dir <- function(root = NULL) {
+  warning("get_cycle_dir() is deprecated. Use get_s3_cycles_dir() instead.")
+  if (is.null(root)) root <- get_project_root()
+  file.path(root, "data")
+}
+
+#' @deprecated Use stage-specific plot directories instead
+get_plots_dir <- function(root = NULL) {
+  warning("get_plots_dir() is deprecated. Use stage-specific plot directories instead.")
+  if (is.null(root)) root <- get_project_root()
+  file.path(root, "data")
+}
+
+#' @deprecated Use get_s2_semantic_dir instead
 get_analysis_output_dir <- function(exposure, outcome, root = NULL) {
-  subdir <- get_subdir_name(exposure, outcome)
-  file.path(get_analysis_dir(root), subdir)
+  warning("get_analysis_output_dir() is deprecated. Use stage-specific functions instead.")
+  get_s2_semantic_dir(exposure, outcome, root)
 }
 
-#' Get the cycle subgraph directory for a specific exposure/outcome
-#' @param exposure Exposure name
-#' @param outcome Outcome name
-#' @param root Project root (default: auto-detect)
-#' @return Full path to cycle subgraph directory
+#' @deprecated Use get_s3_cycles_dir instead
 get_cycle_output_dir <- function(exposure, outcome, root = NULL) {
-  subdir <- get_subdir_name(exposure, outcome)
-  file.path(get_cycle_dir(root), subdir)
+  warning("get_cycle_output_dir() is deprecated. Use get_s3_cycles_dir() instead.")
+  get_s3_cycles_dir(exposure, outcome, root)
 }
 
-#' Get the plots directory for a specific exposure/outcome
-#' @param exposure Exposure name
-#' @param outcome Outcome name
-#' @param root Project root (default: auto-detect)
-#' @return Full path to plots directory
+#' @deprecated Use stage-specific plot directories instead
 get_plots_output_dir <- function(exposure, outcome, root = NULL) {
-  subdir <- get_subdir_name(exposure, outcome)
-  file.path(get_plots_dir(root), subdir)
+  warning("get_plots_output_dir() is deprecated. Use stage-specific plot directories.")
+  get_s4_plots_dir(exposure, outcome, root)
 }
 
 # ============================================
@@ -327,16 +470,28 @@ ensure_dir <- function(path) {
   invisible(path)
 }
 
-#' Create all standard output directories for an exposure/outcome pair
+#' Create all stage directories for an exposure/outcome pair
 #' @param exposure Exposure name
 #' @param outcome Outcome name
 #' @param root Project root (default: auto-detect)
-create_output_dirs <- function(exposure, outcome, root = NULL) {
-  ensure_dir(file.path(get_parsed_graphs_dir(root), get_subdir_name(exposure, outcome)))
-  ensure_dir(get_analysis_output_dir(exposure, outcome, root))
-  ensure_dir(get_cycle_output_dir(exposure, outcome, root))
-  ensure_dir(get_plots_output_dir(exposure, outcome, root))
+create_all_stage_dirs <- function(exposure, outcome, root = NULL) {
+  ensure_dir(get_s1_graph_dir(exposure, outcome, root))
+  ensure_dir(get_s2_semantic_dir(exposure, outcome, root))
+  ensure_dir(get_s2_plots_dir(exposure, outcome, root))
+  ensure_dir(get_s3_cycles_dir(exposure, outcome, root))
+  ensure_dir(get_s3_plots_dir(exposure, outcome, root))
+  ensure_dir(get_s3_subgraphs_dir(exposure, outcome, root))
+  ensure_dir(get_s4_node_removal_dir(exposure, outcome, root))
+  ensure_dir(get_s4_plots_dir(exposure, outcome, root))
+  ensure_dir(get_s5_post_removal_dir(exposure, outcome, root))
+  ensure_dir(get_s5_plots_dir(exposure, outcome, root))
   invisible(TRUE)
+}
+
+#' @deprecated Use create_all_stage_dirs instead
+create_output_dirs <- function(exposure, outcome, root = NULL) {
+  warning("create_output_dirs() is deprecated. Use create_all_stage_dirs() instead.")
+  create_all_stage_dirs(exposure, outcome, root)
 }
 
 # ============================================
@@ -385,13 +540,15 @@ print_complete <- function(script_name) {
 #' @param outcome Outcome name
 #' @param require_dagitty Check for DAGitty file
 #' @param require_json Check for JSON file
-#' @param require_parsed_graph Check for parsed graph
+#' @param require_parsed_graph Check for parsed graph (s1)
+#' @param require_reduced_graph Check for reduced graph (s4)
 #' @param root Project root (default: auto-detect)
 #' @return TRUE if all required files exist, stops with error otherwise
 validate_inputs <- function(exposure, outcome,
                            require_dagitty = FALSE,
                            require_json = FALSE,
                            require_parsed_graph = FALSE,
+                           require_reduced_graph = FALSE,
                            root = NULL) {
 
   if (require_dagitty) {
@@ -423,6 +580,17 @@ validate_inputs <- function(exposure, outcome,
         "Could not find parsed graph for ", exposure, "_", outcome, "\n",
         "Expected location: ", parsed_graph, "\n",
         "Please run 01_parse_dagitty.R first.\n"
+      ))
+    }
+  }
+
+  if (require_reduced_graph) {
+    reduced_graph <- get_reduced_graph_path(exposure, outcome, root)
+    if (!file.exists(reduced_graph)) {
+      stop(paste0(
+        "Could not find reduced graph for ", exposure, "_", outcome, "\n",
+        "Expected location: ", reduced_graph, "\n",
+        "Please run 05_node_removal_impact.R first.\n"
       ))
     }
   }

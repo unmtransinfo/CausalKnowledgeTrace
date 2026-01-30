@@ -1,0 +1,180 @@
+=== CYCLE EXTRACTION SUMMARY ===
+
+Exposure: Hypertension 
+Outcome: Alzheimers 
+Max cycles to save per SCC: 50 
+
+Total cycles found (ALL): 9,907,817 
+Total cycles saved (sampled): 53 
+Total nodes in cycles: 64 
+
+Saved cycles by SCC:
+
+804 815 
+  3  50 
+
+Cycle length distribution (ALL cycles):
+   cycle_length   count
+2             2      56
+3             3     121
+4             4     491
+5             5    1521
+6             6    4537
+7             7   12787
+8             8   32316
+9             9   74853
+10           10  154864
+11           11  289864
+12           12  491244
+13           13  747168
+14           14 1023245
+15           15 1251117
+16           16 1367016
+17           17 1314966
+18           18 1115568
+19           19  842108
+20           20  563209
+21           21  335386
+22           22  175367
+23           23   75807
+24           24   25766
+25           25    6814
+26           26    1433
+27           27     193
+
+
+Top 20 nodes by cycle participation (based on ALL cycles):
+# A tibble: 20 × 3
+   node                                    num_cycles scc_ids
+   <chr>                                        <dbl> <chr>  
+ 1 Disease                                    9863237 815    
+ 2 Functional_disorder                        9558060 815    
+ 3 Inflammation                               9083804 815    
+ 4 Hypertension                               8667845 815    
+ 5 Complication                               8513676 815    
+ 6 Obesity                                    8499663 815    
+ 7 Infection                                  8186648 815    
+ 8 Ischemia                                   8078078 815    
+ 9 Atherosclerosis                            8060081 815    
+10 Insulin_Resistance                         7959350 815    
+11 Endothelial_dysfunction                    7864395 815    
+12 Syndrome                                   6741431 815    
+13 Diabetes                                   6250388 815    
+14 Diabetes_Mellitus_Non_Insulin_Dependent    5685067 815    
+15 Cerebrovascular_accident                   5491800 815    
+16 Obstruction                                4472701 815    
+17 Hypoxia                                    3670881 815    
+18 Hyperglycemia                              3374694 815    
+19 Sleep_Apnea_Obstructive                    3255761 815    
+20 Fibrosis                                   2791802 815    
+
+
+Sampled cycles saved:
+   scc_id cycle_id cycle_length
+1     804        1            2
+2     804        2            2
+3     804        3            2
+4     815        1            2
+5     815        2            4
+6     815        3            6
+7     815        4            8
+8     815        5            8
+9     815        6            9
+10    815        7           11
+11    815        8           11
+12    815        9           11
+13    815       10           12
+14    815       11           14
+15    815       12           14
+16    815       13            6
+17    815       14            8
+18    815       15           10
+19    815       16           10
+20    815       17           11
+21    815       18           13
+22    815       19           13
+23    815       20           13
+24    815       21           14
+25    815       22           16
+26    815       23           16
+27    815       24            9
+28    815       25           11
+29    815       26           11
+30    815       27           12
+31    815       28           14
+32    815       29           14
+33    815       30           14
+34    815       31           15
+35    815       32           17
+36    815       33           17
+37    815       34            8
+38    815       35           10
+39    815       36           10
+40    815       37           11
+41    815       38           13
+42    815       39           13
+43    815       40           13
+44    815       41           14
+45    815       42           16
+46    815       43           16
+47    815       44            8
+48    815       45            8
+49    815       46           10
+50    815       47            8
+51    815       48            9
+52    815       49           10
+53    815       50           12
+                                                                                                                                                                                                                                                                                                      nodes
+1                                                                                                                                                                                                                                                                           Neoplasm -> Malignant_Neoplasms
+2                                                                                                                                                                                                                                                                           Neoplasm -> Neoplasm_Metastasis
+3                                                                                                                                                                                                                                                                                  Neoplasm -> tumor_growth
+4                                                                                                                                                                                                                                                                                   Complication -> Disease
+5                                                                                                                                                                                                                                                       Complication -> Disease -> Inflammation -> Syndrome
+6                                                                                                                                                                                                                Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension
+7                                                                                                                                                                             Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Fibrosis -> Hypertension_Portal
+8                                                                                                                                                                  Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis
+9                                                                                                                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+10                                                                                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+11                                                                                                               Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+12                                                                                                            Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis
+13                                                                                                Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+14                                                                 Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+15                                                          Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+16                                                                                                                                                                                                                   Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes
+17                                                                                                                                                                                Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension
+18                                                                                                                                             Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Fibrosis -> Hypertension_Portal
+19                                                                                                                                  Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis
+20                                                                                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+21                                                                                       Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+22                                                                                Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+23                                                                             Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis
+24                                                                 Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+25                                  Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+26                           Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+27                                                                                                                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension
+28                                                                                                                   Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Fibrosis -> Hypertension_Portal
+29                                                                                                        Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis
+30                                                                                            Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+31                                                             Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+32                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+33                                                   Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis
+34                                       Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+35        Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+36 Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+37                                                                                                                                                                         Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension
+38                                                                                                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Fibrosis -> Hypertension_Portal
+39                                                                                                                           Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis
+40                                                                                                               Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+41                                                                                Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+42                                                                         Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+43                                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis
+44                                                          Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+45                           Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Pancreatitis
+46                    Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Kidney_Failure_Chronic -> Hypertension -> Hypertrophy -> Sleep_Apnea_Obstructive -> Hypoxia -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Obstruction -> Hypertension_Portal
+47                                                                                                                                                                                Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Fibrosis -> Hypertension_Portal
+48                                                                                                                                                                        Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Endothelial_dysfunction -> Hypertension
+49                                                                                                                                     Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Endothelial_dysfunction -> Hypertension -> Fibrosis -> Hypertension_Portal
+50                                                                                                                                                                     Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Endothelial_dysfunction -> Atherosclerosis
+51                                                                                                                                                         Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia
+52                                                                                                                                         Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Hypertension
+53                                                                                                      Complication -> Disease -> Inflammation -> Syndrome -> Functional_disorder -> Diabetes -> Endothelial_dysfunction -> Atherosclerosis -> Ischemia -> Hypertension -> Fibrosis -> Hypertension_Portal

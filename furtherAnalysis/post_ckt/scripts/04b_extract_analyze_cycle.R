@@ -1,6 +1,14 @@
 # 04b_extract_analyze_cycle.R
 # Extract ALL cycles from the graph for accurate node participation counts
 # Save only a sample of cycle subgraphs for detailed analysis
+#
+# Input: data/{Exposure}_{Outcome}/s1_graph/parsed_graph.rds
+# Output: data/{Exposure}_{Outcome}/s3_cycles/
+#   - node_cycle_participation.csv
+#   - cycle_summary.csv
+#   - cycle_length_distribution.csv
+#   - extraction_summary.txt
+#   - scc{N}_cycle{NNN}.rds (sampled cycle subgraphs)
 
 # ---- Load configuration and utilities ----
 get_script_dir <- function() {
@@ -24,7 +32,7 @@ MAX_CYCLES_TO_SAVE <- CYCLE_CONFIG$max_cycles_to_save
 
 # ---- Argument handling ----
 args <- parse_exposure_outcome_args(
-  default_exposure = "Depression",
+  default_exposure = "Hypertension",
   default_outcome = "Alzheimers"
 )
 exposure_name <- args$exposure
@@ -32,13 +40,13 @@ outcome_name <- args$outcome
 
 # ---- Set paths using utility functions ----
 input_file <- get_parsed_graph_path(exposure_name, outcome_name)
-output_dir <- get_cycle_output_dir(exposure_name, outcome_name)
+output_dir <- get_s3_cycles_dir(exposure_name, outcome_name)
 
 # ---- Validate inputs and create output directory ----
 validate_inputs(exposure_name, outcome_name, require_parsed_graph = TRUE)
 ensure_dir(output_dir)
 
-print_header("Cycle Extraction and Subgraph Analysis", exposure_name, outcome_name)
+print_header("Cycle Extraction and Subgraph Analysis (Stage 3)", exposure_name, outcome_name)
 cat("Max cycles to save per SCC:", MAX_CYCLES_TO_SAVE, "\n\n")
 
 # ==========================================

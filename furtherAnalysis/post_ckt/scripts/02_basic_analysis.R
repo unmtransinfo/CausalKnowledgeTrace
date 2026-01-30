@@ -1,5 +1,10 @@
 # 02_basic_analysis.R
 # Basic graph analysis: statistics, exposure/outcome connections, and node characteristics
+#
+# Input: data/{Exposure}_{Outcome}/s1_graph/parsed_graph.rds
+# Output: data/{Exposure}_{Outcome}/s2_semantic/
+#   - node_degrees.csv
+#   - graph_statistics.txt
 
 # ---- Load configuration and utilities ----
 get_script_dir <- function() {
@@ -19,7 +24,7 @@ library(igraph)
 
 # ---- Argument handling ----
 args <- parse_exposure_outcome_args(
-  default_exposure = "Depression",
+  default_exposure = "Hypertension",
   default_outcome = "Alzheimers"
 )
 exposure_name <- args$exposure
@@ -27,13 +32,17 @@ outcome_name <- args$outcome
 
 # ---- Set paths using utility functions ----
 input_file <- get_parsed_graph_path(exposure_name, outcome_name)
-output_dir <- get_analysis_output_dir(exposure_name, outcome_name)
+output_dir <- get_s2_semantic_dir(exposure_name, outcome_name)
 
 # ---- Validate inputs ----
 validate_inputs(exposure_name, outcome_name, require_parsed_graph = TRUE)
 
-print_header("Basic Graph Analysis", exposure_name, outcome_name)
-cat("Loading graph from:", input_file, "\n\n")
+# Create output directory
+ensure_dir(output_dir)
+
+print_header("Basic Graph Analysis (Stage 2)", exposure_name, outcome_name)
+cat("Input:", input_file, "\n")
+cat("Output:", output_dir, "\n\n")
 
 # Load the parsed graph
 graph <- readRDS(input_file)
@@ -194,9 +203,6 @@ cat("\n")
 # ==========================================
 cat("=== 4. SAVING RESULTS ===\n")
 
-# Create output directory if needed
-ensure_dir(output_dir)
-
 # Save degree data
 degree_data <- data.frame(
   Node = V(graph)$name,
@@ -230,4 +236,4 @@ cat("Max out-degree:", max(out_degree), "\n")
 sink()
 cat("Saved graph statistics to:", stats_file, "\n")
 
-print_complete("Basic Graph Analysis")
+print_complete("Basic Graph Analysis (Stage 2)")

@@ -1,5 +1,9 @@
 # 04c_visualize_cycles.R
 # Visualize saved cycle subgraphs and save as image files
+#
+# Input: data/{Exposure}_{Outcome}/s3_cycles/scc*_cycle*.rds
+# Output: data/{Exposure}_{Outcome}/s3_cycles/plots/
+#   - scc{N}_cycle{NNN}.png (cycle visualizations)
 
 # ---- Load configuration and utilities ----
 get_script_dir <- function() {
@@ -21,20 +25,20 @@ library(ggplot2)
 
 # ---- Argument handling ----
 args <- parse_exposure_outcome_args(
-  default_exposure = "Depression",
+  default_exposure = "Hypertension",
   default_outcome = "Alzheimers"
 )
 exposure_name <- args$exposure
 outcome_name <- args$outcome
 
 # ---- Set paths using utility functions ----
-cycle_dir <- get_cycle_output_dir(exposure_name, outcome_name)
-images_dir <- file.path(cycle_dir, "images")
+cycle_dir <- get_s3_cycles_dir(exposure_name, outcome_name)
+images_dir <- file.path(cycle_dir, "plots")
 
 # Create images directory
 ensure_dir(images_dir)
 
-print_header("Cycle Subgraph Visualization", exposure_name, outcome_name)
+print_header("Cycle Subgraph Visualization (Stage 3)", exposure_name, outcome_name)
 cat("Cycle directory:", cycle_dir, "\n")
 cat("Images directory:", images_dir, "\n\n")
 
