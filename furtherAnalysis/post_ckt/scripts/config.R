@@ -2,19 +2,111 @@
 # Central configuration file for Post-CKT Analysis Pipeline
 #
 # Users can modify this file to change default parameters.
-# Database credentials should be set via environment variables for security.
+# Database credentials should be set in a .env file (see below).
 #
 # Usage: source("config.R") at the top of each script
 
 # ============================================
+# DIRECTORY STRUCTURE
+# ============================================
+# post_ckt/
+# ├── scripts/                          # R scripts
+# ├── input/                            # Original CKT input files (.R, .json)
+# ├── .env                              # Database credentials (create from .env.example)
+# └── data/
+#     └── {Exposure}_{Outcome}/
+#         ├── s1_graph/                 # Parsed igraph object
+#         ├── s2_semantic/              # Semantic type analysis
+#         │   └── plots/
+#         ├── s3_cycles/                # Cycle detection & analysis
+#         │   ├── plots/
+#         │   └── subgraphs/
+#         ├── s4_node_removal/          # Generic node removal analysis
+#         │   └── plots/
+#         └── s5_post_removal/          # Post-removal cycle analysis
+#             └── plots/
+
+# ============================================
+# LOAD .ENV FILE
+# ============================================
+# Look for .env file in post_ckt directory (parent of scripts)
+load_env_file <- function() {
+  env_file <- NULL
+
+  # Method 1: Check relative to script location (for Rscript execution)
+  args <- commandArgs(trailingOnly = FALSE)
+  file_arg <- grep("--file=", args, value = TRUE)
+  if (length(file_arg) > 0) {
+    script_path <- normalizePath(sub("--file=", "", file_arg))
+    script_dir <- dirname(script_path)
+    # .env should be in parent of scripts directory
+    env_file <- file.path(dirname(script_dir), ".env")
+    if (!file.exists(env_file)) env_file <- NULL
+  }
+
+  # Method 2: Check relative to working directory
+  if (is.null(env_file)) {
+    cwd <- getwd()
+
+    # If we're in scripts directory
+    if (basename(cwd) == "scripts") {
+      candidate <- file.path(dirname(cwd), ".env")
+      if (file.exists(candidate)) env_file <- candidate
+    }
+
+    # If we're in post_ckt directory
+    if (is.null(env_file)) {
+      candidate <- file.path(cwd, ".env")
+      if (file.exists(candidate)) env_file <- candidate
+    }
+
+    # If we're in project root
+    if (is.null(env_file)) {
+      candidate <- file.path(cwd, "furtherAnalysis", "post_ckt", ".env")
+      if (file.exists(candidate)) env_file <- candidate
+    }
+  }
+
+  if (!is.null(env_file) && file.exists(env_file)) {
+    cat("Loading environment from:", env_file, "\n")
+    lines <- readLines(env_file, warn = FALSE)
+    for (line in lines) {
+      # Skip empty lines and comments
+      line <- trimws(line)
+      if (nchar(line) == 0 || startsWith(line, "#")) next
+
+      # Parse KEY=VALUE
+      if (grepl("=", line)) {
+        parts <- strsplit(line, "=", fixed = TRUE)[[1]]
+        key <- trimws(parts[1])
+        value <- trimws(paste(parts[-1], collapse = "="))
+        # Remove surrounding quotes if present
+        value <- gsub("^[\"']|[\"']$", "", value)
+        # Set environment variable
+        do.call(Sys.setenv, setNames(list(value), key))
+      }
+    }
+    return(TRUE)
+  } else {
+    cat("Warning: .env file not found. Checking environment variables...\n")
+    return(FALSE)
+  }
+}
+
+# Load .env file if it exists
+env_loaded <- load_env_file()
+
+# ============================================
 # DATABASE CONFIGURATION
 # ============================================
-# Set these environment variables before running scripts:
-#   export CKT_DB_HOST="localhost"
-#   export CKT_DB_PORT="5432"
-#   export CKT_DB_NAME="causalehr_db"
-#   export CKT_DB_USER="your_username"
-#   export CKT_DB_PASSWORD="your_password"
+# Create a .env file in the post_ckt directory with:
+#   CKT_DB_HOST=localhost
+#   CKT_DB_PORT=5432
+#   CKT_DB_NAME=causalehr_db
+#   CKT_DB_USER=your_username
+#   CKT_DB_PASSWORD=your_password
+#
+# Or set environment variables directly before running scripts.
 
 DB_CONFIG <- list(
   host     = Sys.getenv("CKT_DB_HOST", "localhost"),
@@ -52,14 +144,37 @@ SEMANTIC_CONFIG <- list(
 )
 
 # ============================================
+# NODE REMOVAL PARAMETERS
+# ============================================
+# Generic/non-specific biomedical terms to consider for removal
+# These nodes often create many cycles by connecting unrelated concepts
+GENERIC_NODES <- c(
+  "Disease",
+  "Functional_disorder",
+  "Complication",
+  "Syndrome",
+  "Symptoms",
+  "Diagnosis",
+  "Obstruction",
+  "Physical_findings",
+  "Adverse_effects"
+)
+
+NODE_REMOVAL_CONFIG <- list(
+  top_n_nodes_report = 20,             # Number of top nodes to report by cycle participation
+  graph_viz_threshold = 1000,          # Max nodes for full graph visualization
+  cycle_subgraph_viz_threshold = 150   # Max nodes for cycle subgraph visualization
+)
+
+# ============================================
 # VISUALIZATION PARAMETERS
 # ============================================
 VIZ_CONFIG <- list(
-  dpi = 300,
+  dpi = 150,
   default_width = 10,
   default_height = 8,
   max_fig_width = 16,
-  max_fig_height = 12
+  max_fig_height = 14
 )
 
 # ============================================
@@ -69,7 +184,7 @@ VIZ_CONFIG <- list(
 # Output subdirectory: {Exposure}_{Outcome}/
 
 FILE_CONFIG <- list(
-  input_pattern = "%s_%s_degree_%d.R",           # exposure, outcome, degree
+  input_pattern = "%s_%s_degree_%d.R",              # exposure, outcome, degree
   json_pattern = "%s_%s_causal_assertions_%d.json"  # exposure, outcome, degree
 )
 
@@ -121,6 +236,15 @@ print_config <- function() {
   cat("\nSemantic Analysis:\n")
   cat("  Cycle participation threshold:", SEMANTIC_CONFIG$cycle_participation_threshold, "%\n")
   cat("  Min nodes for problematic:", SEMANTIC_CONFIG$min_nodes_for_problematic, "\n")
+
+  cat("\nNode Removal:\n")
+  cat("  Generic nodes to remove:", length(GENERIC_NODES), "\n")
+  cat("    ", paste(GENERIC_NODES, collapse = ", "), "\n")
+  cat("  Top N nodes to report:", NODE_REMOVAL_CONFIG$top_n_nodes_report, "\n")
+
+  cat("\nVisualization:\n")
+  cat("  DPI:", VIZ_CONFIG$dpi, "\n")
+  cat("  Graph viz threshold:", NODE_REMOVAL_CONFIG$graph_viz_threshold, "nodes\n")
 
   cat("\n")
 }

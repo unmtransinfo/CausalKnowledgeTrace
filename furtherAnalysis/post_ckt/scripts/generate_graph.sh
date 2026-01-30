@@ -15,8 +15,8 @@ set -e  # Exit on any error
 DB_HOST="localhost"
 DB_PORT="5434"
 DB_NAME="causalehr_db"
-DB_USER=""
-DB_PASSWORD=""
+DB_USER="mpradhan"
+DB_PASSWORD="Software292$"
 VERBOSE=""
 
 # ============================================

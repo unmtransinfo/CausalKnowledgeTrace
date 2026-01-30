@@ -1,5 +1,12 @@
 # 04a_cycle_detection.R
 # Detect cycles in the graph and analyze nodes participating in cycles
+#
+# Input: data/{Exposure}_{Outcome}/s1_graph/parsed_graph.rds
+# Output: data/{Exposure}_{Outcome}/s2_semantic/
+#   - node_centrality_and_cycles.csv
+#   - nodes_in_cycles.txt
+#   - strongly_connected_components.csv
+#   - cycle_detection_summary.txt
 
 # ---- Load configuration and utilities ----
 get_script_dir <- function() {
@@ -19,7 +26,7 @@ library(igraph)
 
 # ---- Argument handling ----
 args <- parse_exposure_outcome_args(
-  default_exposure = "Depression",
+  default_exposure = "Hypertension",
   default_outcome = "Alzheimers"
 )
 exposure_name <- args$exposure
@@ -27,12 +34,12 @@ outcome_name <- args$outcome
 
 # ---- Set paths using utility functions ----
 input_file <- get_parsed_graph_path(exposure_name, outcome_name)
-output_dir <- get_analysis_output_dir(exposure_name, outcome_name)
+output_dir <- get_s2_semantic_dir(exposure_name, outcome_name)
 
 # ---- Validate inputs ----
 validate_inputs(exposure_name, outcome_name, require_parsed_graph = TRUE)
 
-print_header("Cycle Detection Analysis", exposure_name, outcome_name)
+print_header("Cycle Detection Analysis (Stage 2)", exposure_name, outcome_name)
 cat("Loading graph from:", input_file, "\n\n")
 
 # Load the parsed graph

@@ -1,5 +1,10 @@
 # 03b_semantic_distribution.R
 # Visualize semantic type distributions and cycle participation
+#
+# Input: data/{Exposure}_{Outcome}/s2_semantic/semantic_type_cycle_stats.csv
+# Output: data/{Exposure}_{Outcome}/s2_semantic/plots/
+#   - semantic_type_distribution.png
+#   - semantic_type_comparison.png
 
 # ---- Load configuration and utilities ----
 get_script_dir <- function() {
@@ -21,23 +26,23 @@ library(tidyr)
 
 # ---- Argument handling ----
 args <- parse_exposure_outcome_args(
-  default_exposure = "Depression",
+  default_exposure = "Hypertension",
   default_outcome = "Alzheimers"
 )
 exposure_name <- args$exposure
 outcome_name <- args$outcome
 
 # ---- Set paths using utility functions ----
-analysis_dir <- get_analysis_output_dir(exposure_name, outcome_name)
-plots_dir <- get_plots_output_dir(exposure_name, outcome_name)
+output_dir <- get_s2_semantic_dir(exposure_name, outcome_name)
+plots_dir <- file.path(output_dir, "plots")
 
 # Create plots directory if needed
 ensure_dir(plots_dir)
 
-print_header("Semantic Distribution Analysis", exposure_name, outcome_name)
+print_header("Semantic Distribution Analysis (Stage 2)", exposure_name, outcome_name)
 
 # Read the semantic type stats
-stats_file <- file.path(analysis_dir, "semantic_type_cycle_stats.csv")
+stats_file <- file.path(output_dir, "semantic_type_cycle_stats.csv")
 if (!file.exists(stats_file)) {
   stop("Could not find semantic_type_cycle_stats.csv. Run 03a_semantic_type_analysis.R first.")
 }

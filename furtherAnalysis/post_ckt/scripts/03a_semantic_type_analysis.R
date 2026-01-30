@@ -1,5 +1,15 @@
 # 03a_semantic_type_analysis.R
 # Extract semantic types from database and analyze their role in cycles
+#
+# Input:
+#   - data/{Exposure}_{Outcome}/s1_graph/parsed_graph.rds
+#   - data/{Exposure}_{Outcome}/s2_semantic/node_centrality_and_cycles.csv
+#   - input/{Exposure}_{Outcome}*.json
+# Output: data/{Exposure}_{Outcome}/s2_semantic/
+#   - nodes_with_semantic_types.csv
+#   - semantic_type_cycle_stats.csv
+#   - problematic_semantic_types.csv
+#   - semantic_type_summary.txt
 
 # ---- Load configuration and utilities ----
 get_script_dir <- function() {
@@ -22,7 +32,7 @@ library(dplyr)
 
 # ---- Argument handling ----
 args <- parse_exposure_outcome_args(
-  default_exposure = "Depression",
+  default_exposure = "Hypertension",
   default_outcome = "Alzheimers"
 )
 exposure_name <- args$exposure
@@ -38,7 +48,7 @@ if (is.null(json_file)) {
 
 # ---- Set paths using utility functions ----
 parsed_graph_file <- get_parsed_graph_path(exposure_name, outcome_name)
-output_dir <- get_analysis_output_dir(exposure_name, outcome_name)
+output_dir <- get_s2_semantic_dir(exposure_name, outcome_name)
 cycle_data_file <- file.path(output_dir, "node_centrality_and_cycles.csv")
 
 # ---- Database connection parameters from config ----
@@ -49,9 +59,14 @@ db_name <- DB_CONFIG$dbname
 db_user <- DB_CONFIG$user
 db_password <- DB_CONFIG$password
 
-print_header("Semantic Type Analysis", exposure_name, outcome_name)
+# Create output directory
+ensure_dir(output_dir)
+
+print_header("Semantic Type Analysis (Stage 2)", exposure_name, outcome_name)
 cat("This script extracts semantic types from the database and analyzes their distribution\n")
 cat("in nodes that participate in cycles vs. nodes that don't.\n\n")
+cat("Input graph:", parsed_graph_file, "\n")
+cat("Output:", output_dir, "\n\n")
 
 # ==========================================
 # 1. LOAD EXISTING ANALYSIS DATA
@@ -341,4 +356,4 @@ print(head(problematic_semtypes, 10))
 sink()
 cat("Saved summary to:", summary_file, "\n")
 
-print_complete("Semantic Type Analysis")
+print_complete("Semantic Type Analysis (Stage 2)")
