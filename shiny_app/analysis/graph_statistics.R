@@ -1,7 +1,7 @@
 # Graph Statistics Module
-# 
+#
 # This module contains basic graph metrics and statistical analysis functions
-# for DAG visualization and analysis.
+# for graph visualization and analysis.
 #
 # Author: Refactored from statistics.R
 # Date: February 2025

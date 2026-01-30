@@ -42,12 +42,23 @@ create_progress_javascript <- function(id, ns) {
         }
 
         function showGraphProgressSection_", id, "() {
+            // Show backdrop
+            if ($('#progress-backdrop').length === 0) {
+                $('body').append('<div id=\"progress-backdrop\" class=\"progress-backdrop\"></div>');
+            }
+            $('#progress-backdrop').addClass('active');
+            // Show progress section with animation
             $('#", ns("progress_section"), "').show();
+            // Scroll to top to ensure visibility
+            $('html, body').animate({ scrollTop: 0 }, 300);
             updateGraphProgress_", id, "(10, 'Starting...', 'Initializing graph creation process');
         }
 
         function hideGraphProgressSection_", id, "() {
+            // Hide progress section
             $('#", ns("progress_section"), "').hide();
+            // Hide backdrop
+            $('#progress-backdrop').removeClass('active');
             updateGraphProgress_", id, "(0, 'Initializing...', 'Ready to create graph...');
         }
 

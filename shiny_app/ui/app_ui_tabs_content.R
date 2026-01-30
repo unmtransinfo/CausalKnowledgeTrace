@@ -3,12 +3,224 @@
 # Author: Extracted from app.R UI section
 
 tabItems(
-    # DAG Visualization Tab
+    # About Tab
+    tabItem(tabName = "about",
+        fluidRow(
+            box(
+                title = "About CKT - Causal Knowledge Trace",
+                status = "primary",
+                solidHeader = TRUE,
+                width = 12,
+
+                # Application Overview
+                div(
+                    style = "background-color: #e8f4fd; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196F3;",
+                    h3(icon("info-circle"), " What is CKT?"),
+                    p(style = "font-size: 16px;",
+                      "CKT (Causal Knowledge Trace) is an interactive web application for exploring and analyzing causal relationships in knowledge graphs.
+                      It provides tools for visualizing graphs (which may contain cycles), performing causal inference analysis, and understanding
+                      complex relationships between variables extracted from biomedical literature."
+                    )
+                ),
+
+                # Key Features
+                div(
+                    style = "background-color: #f0f8ff; padding: 20px; margin-bottom: 20px; border-radius: 5px;",
+                    h3(icon("star"), " Key Features"),
+                    tags$ul(style = "font-size: 15px;",
+                        tags$li(strong("Interactive Graph Visualization:"), " Explore causal graphs with zoom, pan, and physics-based layouts"),
+                        tags$li(strong("Graph Editing:"), " Remove nodes and edges, undo changes, and save modified graphs"),
+                        tags$li(strong("Causal Analysis:"), " Calculate adjustment sets, find instrumental variables, and analyze causal paths"),
+                        tags$li(strong("Graph Configuration:"), " Generate knowledge graphs from biomedical databases with customizable parameters"),
+                        tags$li(strong("Multiple Export Options:"), " Save graphs as R files or HTML reports")
+                    )
+                ),
+
+                # Resources
+                div(
+                    style = "background-color: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #6c757d;",
+                    h3(icon("link"), " Resources"),
+                    tags$ul(style = "font-size: 15px;",
+                        tags$li(icon("github"), " ", strong("GitHub Repository:"), " ",
+                            tags$a(href = "https://github.com/unmtransinfo/CausalKnowledgeTrace",
+                                   target = "_blank",
+                                   "https://github.com/unmtransinfo/CausalKnowledgeTrace",
+                                   style = "color: #0366d6;")),
+                        tags$li(icon("book"), " ", strong("User Manual:"), " ",
+                            tags$a(href = "https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing",
+                                   target = "_blank",
+                                   "View detailed user guide",
+                                   style = "color: #0366d6;"))
+                    )
+                ),
+
+                hr(),
+
+                # User Guide
+                h3(icon("book"), " User Guide"),
+
+                # Step 1: Graph Configuration
+                div(
+                    style = "background-color: #fff9e6; padding: 15px; margin-bottom: 15px; border-radius: 5px; border-left: 4px solid #ffc107;",
+                    h4(icon("cogs"), " Step 1: Graph Configuration (Optional)"),
+                    p("If you want to generate a new knowledge graph from the SemMedDB database:"),
+                    tags$ol(
+                        tags$li("Navigate to the ", strong("Graph Configuration"), " tab"),
+                        tags$li("Enter the ", strong("Exposure CUI"), " (Concept Unique Identifier) - you can search for a word and select from available CUIs"),
+                        tags$li("Enter the ", strong("Outcome CUI"), " - you can search for a word and select from available CUIs"),
+                        tags$li("Configure optional parameters:"),
+                        tags$ul(
+                            tags$li(strong("Squelch Threshold:"), " Minimum number of unique PMIDs (publications) required for an edge"),
+                            tags$li(strong("Publication Year Cutoff:"), " Only include publications from this year onwards"),
+                            tags$li(strong("Degree:"), " Maximum distance from exposure/outcome nodes to include"),
+                            tags$li(strong("SemMedDB Version:"), " Select the database version to use")
+                        ),
+                        tags$li("Click ", strong("Generate Graph"), " to create your knowledge graph"),
+                        tags$li("Wait for the process to complete - this may take several minutes")
+                    ),
+                    p(style = "margin-top: 10px; font-style: italic; color: #856404;",
+                      icon("lightbulb"), " Tip: If you already have a graph file, you can skip this step and go directly to Data Upload.")
+                ),
+
+                # Step 2: Data Upload
+                div(
+                    style = "background-color: #e7f3ff; padding: 15px; margin-bottom: 15px; border-radius: 5px; border-left: 4px solid #2196F3;",
+                    h4(icon("upload"), " Step 2: Data Upload"),
+                    p("Load a graph file into the application:"),
+                    tags$ol(
+                        tags$li("Navigate to the ", strong("Data Upload"), " tab"),
+                        tags$li("Choose one of two methods:"),
+                        tags$ul(
+                            tags$li(strong("Method 1 - Select Existing File:"),
+                                   " Choose a file from the dropdown (files in graph_creation/result directory) and click 'Load Selected Graph'"),
+                            tags$li(strong("Method 2 - Upload New File:"),
+                                   " Use the file upload interface to upload an R file containing your DAG definition")
+                        ),
+                        tags$li("Optional: Apply filtering to remove leaf nodes (nodes with only one connection)"),
+                        tags$li("Wait for the graph to load - you'll see a progress indicator")
+                    ),
+                    p(style = "margin-top: 10px;",
+                      strong("Required File Format:"), " Your R file must contain a dagitty graph definition assigned to variable 'g'")
+                ),
+
+                # Step 3: Graph Visualization
+                div(
+                    style = "background-color: #e8f5e9; padding: 15px; margin-bottom: 15px; border-radius: 5px; border-left: 4px solid #4caf50;",
+                    h4(icon("project-diagram"), " Step 3: Graph Visualization"),
+                    p("Explore and modify your causal graph:"),
+                    tags$ol(
+                        tags$li("Navigate to the ", strong("Graph Visualization"), " tab"),
+                        tags$li("Interact with the graph:"),
+                        tags$ul(
+                            tags$li(strong("Zoom:"), " Use mouse wheel or pinch gesture"),
+                            tags$li(strong("Pan:"), " Click and drag the background"),
+                            tags$li(strong("Select Nodes/Edges:"), " Click on them to view details"),
+                            tags$li(strong("Move Nodes:"), " Drag nodes to reposition them")
+                        ),
+                        tags$li("View edge information in the table below the graph"),
+                        tags$li("Modify the graph:"),
+                        tags$ul(
+                            tags$li("Select a node and click ", strong("Remove Selected Node")),
+                            tags$li("Select an edge and click ", strong("Remove Selected Edge")),
+                            tags$li("Click ", strong("Undo Last Removal"), " to revert changes")
+                        ),
+                        tags$li("Adjust physics settings for better layout"),
+                        tags$li("Save your work:"),
+                        tags$ul(
+                            tags$li(strong("Save DAG:"), " Download modified graph as an R file"),
+                            tags$li(strong("Save HTML:"), " Export as a readable HTML report")
+                        )
+                    ),
+                    p(style = "margin-top: 10px;",
+                      strong("Node Colors:"),
+                      tags$span(style = "color: #FF6B6B; font-weight: bold;", " Red"), " = Exposure | ",
+                      tags$span(style = "color: #4ECDC4; font-weight: bold;", " Cyan"), " = Outcome | ",
+                      tags$span(style = "color: #95A5A6; font-weight: bold;", " Gray"), " = Other variables"
+                    )
+                ),
+
+                # Step 4: Causal Analysis
+                div(
+                    style = "background-color: #fff3e0; padding: 15px; margin-bottom: 15px; border-radius: 5px; border-left: 4px solid #ff9800;",
+                    h4(icon("search-plus"), " Step 4: Causal Analysis"),
+                    p("Perform statistical causal inference analysis:"),
+                    tags$ol(
+                        tags$li("Navigate to the ", strong("Causal Analysis"), " tab"),
+                        tags$li("Select your ", strong("Exposure Variable"), " from the dropdown"),
+                        tags$li("Select your ", strong("Outcome Variable"), " from the dropdown"),
+                        tags$li("Choose the ", strong("Effect Type"), " (Total Effect or Direct Effect)"),
+                        tags$li("Run analyses:"),
+                        tags$ul(
+                            tags$li(strong("Calculate Adjustment Sets:"), " Find variables to control for to estimate causal effects"),
+                            tags$li(strong("Find Instrumental Variables:"), " Identify variables for instrumental variable analysis"),
+                            tags$li(strong("Analyze Causal Paths:"), " Examine all paths between exposure and outcome"),
+                            tags$li(strong("Run Complete Analysis:"), " Execute all analyses at once")
+                        ),
+                        tags$li("Review results in the tabbed panels")
+                    )
+                ),
+
+                hr(),
+
+                # Understanding Causal Concepts
+                h3(icon("graduation-cap"), " Understanding Causal Concepts"),
+
+                fluidRow(
+                    column(6,
+                        div(
+                            style = "background-color: #f5f5f5; padding: 15px; border-radius: 5px; height: 100%;",
+                            h4(style = "color: #2196F3;", icon("adjust"), " Adjustment Sets"),
+                            p("A set of variables that, when controlled for in your analysis, blocks all confounding paths
+                              between exposure and outcome. This allows you to estimate the causal effect without bias."),
+                            p(strong("Example:"), " If you want to know if smoking causes lung cancer, you might need to
+                              adjust for age and genetics to block confounding paths.")
+                        )
+                    ),
+                    column(6,
+                        div(
+                            style = "background-color: #f5f5f5; padding: 15px; border-radius: 5px; height: 100%;",
+                            h4(style = "color: #ff9800;", icon("wrench"), " Instrumental Variables"),
+                            p("A variable that (1) affects the exposure, (2) does not directly affect the outcome except
+                              through the exposure, and (3) is not associated with confounders."),
+                            p(strong("Example:"), " Distance to a smoking cessation clinic might be an instrument for
+                              smoking behavior when studying health outcomes.")
+                        )
+                    )
+                ),
+
+                br(),
+
+                fluidRow(
+                    column(6,
+                        div(
+                            style = "background-color: #f5f5f5; padding: 15px; border-radius: 5px; height: 100%;",
+                            h4(style = "color: #4caf50;", icon("route"), " Causal Paths"),
+                            p("All directed paths from exposure to outcome in the graph. Paths can be 'open' (creating
+                              confounding) or 'blocked' (already controlled)."),
+                            p(strong("Example:"), " Smoking → Tar Deposits → Lung Cancer is a causal path.")
+                        )
+                    ),
+                    column(6,
+                        div(
+                            style = "background-color: #f5f5f5; padding: 15px; border-radius: 5px; height: 100%;",
+                            h4(style = "color: #9c27b0;", icon("project-diagram"), " Causal Graph"),
+                            p("A graphical representation of causal relationships where nodes represent variables and
+                              directed edges represent causal effects. The graph may contain cycles representing feedback loops."),
+                            p(strong("Example:"), " Education → Income → Health Status")
+                        )
+                    )
+                ),
+
+            )
+        )
+    ),
+
+    # Graph Visualization Tab
     tabItem(tabName = "dag",
-                # Row 1: Interactive DAG Network (top)
+                # Row 1: Interactive Causal Graph Explorer (top)
                 fluidRow(
                     box(
-                        title = "Interactive DAG Network",
+                        title = "Interactive Causal Graph Explorer",
                         status = "primary",
                         solidHeader = TRUE,
                         width = 12,
@@ -235,12 +447,10 @@ tabItems(
                         solidHeader = TRUE,
                         width = 12,
 
-                        # Welcome message for new users
+                        # Information message for users
                         div(
                             style = "background-color: #e8f4fd; padding: 15px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196F3;",
-                            h4(icon("info-circle"), " Welcome to the Interactive DAG Visualization"),
-                            p("The application is now running at localhost and ready to use! To get started, please select or upload a graph file below."),
-                            p(strong("No graph file is currently loaded."), " Once you load a graph, you'll be able to explore it in the DAG Visualization tab.")
+                            p(strong("No graph file is currently loaded."), " Please select or upload a graph file below to get started. Once loaded, you'll be able to explore it in the Graph Visualization tab.")
                         ),
 
                         # Current DAG status
