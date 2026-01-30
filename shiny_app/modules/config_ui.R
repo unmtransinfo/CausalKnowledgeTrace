@@ -17,17 +17,28 @@ graphConfigModuleUI <- function(id) {
     ns <- NS(id)
     
     tagList(
+        # Add backdrop div for progress overlay
+        tags$div(id = "progress-backdrop", class = "progress-backdrop"),
+
         # Add JavaScript for progress handling
         tags$script(HTML(paste0("
             // Progress bar control functions for graph configuration
             function showGraphProgressSection_", id, "() {
+                // Show backdrop
+                $('#progress-backdrop').addClass('active');
+                // Show progress section with animation
                 $('#", ns("graph_progress_section"), "').show();
+                // Scroll to top to ensure visibility
+                $('html, body').animate({ scrollTop: 0 }, 300);
             }
-            
+
             function hideGraphProgressSection_", id, "() {
+                // Hide progress section
                 $('#", ns("graph_progress_section"), "').hide();
+                // Hide backdrop
+                $('#progress-backdrop').removeClass('active');
             }
-            
+
             function updateGraphProgress_", id, "(data) {
                 $('#", ns("graph_progress"), "').css('width', data.percent + '%');
                 $('#", ns("progress_text"), "').text(data.text);

@@ -385,16 +385,31 @@ graphConfigServer <- function(id, db_connection = NULL) {
                     status = "Successfully created knowledge graph"
                 ))
 
-                showNotification(
-                    "Graph creation completed successfully! You can now load the graph from the Data Upload tab.",
-                    type = "message",
-                    duration = 10
-                )
+                # Show prominent success modal
+                showModal(modalDialog(
+                    title = div(icon("check-circle", style = "color: #28a745;"), " Success!"),
+                    div(
+                        style = "font-size: 16px;",
+                        h4("Graph creation completed successfully!"),
+                        p("Your knowledge graph has been created and is ready to use."),
+                        hr(),
+                        p(strong("Next step:"), "Go to the", strong("Data Upload"), "tab to load and visualize your graph."),
+                        br(),
+                        actionButton(NS(id, "goto_upload"), "Go to Data Upload",
+                                   icon = icon("arrow-right"),
+                                   class = "btn-success btn-lg",
+                                   onclick = "$('a[data-value=\"upload\"]').click(); $('#shiny-modal').modal('hide');")
+                    ),
+                    footer = modalButton("Close"),
+                    easyClose = TRUE,
+                    size = "m"
+                ))
 
                 # Set flag to hide validation messages after successful creation
                 validation_state$graph_just_created <- TRUE
 
-                # Hide progress section (with delay handled by JavaScript if needed)
+                # Hide progress section after a delay
+                Sys.sleep(2)
                 session$sendCustomMessage(paste0("hideGraphProgressSection_", id), list())
 
             }, error = function(e) {
