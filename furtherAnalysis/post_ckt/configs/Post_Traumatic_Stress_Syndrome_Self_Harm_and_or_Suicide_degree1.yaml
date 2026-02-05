@@ -1,0 +1,48 @@
+exposure_cuis:
+  - C0747767
+  - C0730525
+  - C1136393
+  - C0949042
+  - C0038436
+  - C0038441
+  - C0236816
+outcome_cuis:
+  - C0438698
+  - C0424359
+  - C0557944
+  - C0085271
+  - C0563664
+  - C0564920
+  - C0852733
+  - C0221745
+  - C0558442
+  - C0455386
+  - C0424000
+  - C1271074
+  - C1271076
+  - C1271075
+  - C0424001
+  - C0438696
+  - C0850335
+  - C0850336
+  - C0582496
+  - C0235196
+  - C0038661
+  - C0564930
+  - C0564931
+  - C0564928
+  - C0564929
+  - C0038663
+  - C0850637
+  - C0277664
+
+exposure_name:  Post_Traumatic_Stress_Syndrome
+outcome_name: Suicide
+
+min_pmids: 50
+degree: 1
+
+predication_types:
+  - CAUSES
+
+blocklist_cuis: []

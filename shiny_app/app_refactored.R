@@ -1,10 +1,10 @@
-# Causal Web - Interactive DAG Visualization and Analysis (Refactored)
-# 
+# CKT - Causal Knowledge Trace (Refactored)
+#
 # This Shiny application provides an interactive interface for visualizing
 # and analyzing Directed Acyclic Graphs (DAGs) for causal inference.
-# 
+#
 # Features:
-# - Interactive DAG visualization with visNetwork
+# - CKT - Causal Knowledge Trace visualization with visNetwork
 # - Causal analysis tools (adjustment sets, instrumental variables)
 # - Node information and statistics
 # - File upload and management

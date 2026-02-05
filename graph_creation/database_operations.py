@@ -83,25 +83,45 @@ def format_sql_query_for_logging(query: str, params: Union[List, Tuple]) -> str:
 
 def execute_query_with_logging(cursor, query: str, params: Union[List, Tuple] = None):
     """
-    Execute a database query with SQL logging.
+    Execute a database query with SQL logging and proper error handling.
 
     Args:
         cursor: Database cursor object
         query: SQL query string
         params: Query parameters (optional)
-    """
-    # Format and print the complete executable SQL query
-    if params:
-        formatted_query = format_sql_query_for_logging(query, params)
-        print("-" * 80)
-        print(formatted_query)
-        print("-" * 80)
 
-        # Execute the original parameterized query
-        cursor.execute(query, params)
-    else:
-        # Execute the query without parameters
-        cursor.execute(query)
+    Raises:
+        Exception: Re-raises any database errors after logging them
+    """
+    try:
+        # Format and print the complete executable SQL query
+        if params:
+            formatted_query = format_sql_query_for_logging(query, params)
+            print("-" * 80)
+            print(formatted_query)
+            print("-" * 80)
+
+            # Execute the original parameterized query
+            cursor.execute(query, params)
+        else:
+            # Execute the query without parameters
+            cursor.execute(query)
+    except Exception as e:
+        print("\n" + "=" * 80)
+        print("❌ DATABASE QUERY ERROR")
+        print("=" * 80)
+        print(f"Error Type: {type(e).__name__}")
+        print(f"Error Message: {str(e)}")
+        print("\nFailed Query:")
+        print("-" * 80)
+        if params:
+            print(format_sql_query_for_logging(query, params))
+        else:
+            print(query)
+        print("-" * 80)
+        print("=" * 80 + "\n")
+        # Re-raise the original exception - let the caller handle rollback
+        raise
 
 
 class DatabaseOperations:
@@ -293,7 +313,7 @@ class DatabaseOperations:
         """
 
         try:
-            cursor.execute(query, [pmid_list])
+            execute_query_with_logging(cursor, query, [pmid_list])
             results = cursor.fetchall()
 
             # Create mapping dictionary: PMID -> list of unique sentences
@@ -311,8 +331,13 @@ class DatabaseOperations:
 
             return pmid_sentences
 
+        except psycopg2.errors.InFailedSqlTransaction:
+            # Transaction already failed from a previous error - skip sentence fetching
+            print(f"⚠ Skipping sentence fetch due to failed transaction state")
+            return {}
         except Exception as e:
-            print(f"Warning: Error fetching causal sentences: {e}")
+            # Error already logged by execute_query_with_logging
+            print(f"⚠ Continuing analysis without sentence data for this batch...")
             return {}
 
     def fetch_causal_sentences_by_sentence_id(self, cursor, pmid_sentence_pairs: List[str]) -> Dict[str, List[str]]:
@@ -346,7 +371,7 @@ class DatabaseOperations:
         try:
             # Use concise logging for sentence fetching to avoid terminal clutter
             print(f"Fetching causal sentences for {len(pmid_list)} PMID-sentence_id pairs...")
-            cursor.execute(query, [pmid_list, sentence_id_list])
+            execute_query_with_logging(cursor, query, [pmid_list, sentence_id_list])
             results = cursor.fetchall()
 
             # Create mapping dictionary: PMID -> list of unique sentences
@@ -364,8 +389,13 @@ class DatabaseOperations:
 
             return pmid_sentences
 
+        except psycopg2.errors.InFailedSqlTransaction:
+            # Transaction already failed from a previous error - skip sentence fetching
+            print(f"⚠ Skipping sentence fetch due to failed transaction state")
+            return {}
         except Exception as e:
-            print(f"Warning: Error fetching causal sentences by sentence_id: {e}")
+            # Error already logged by execute_query_with_logging
+            print(f"⚠ Continuing analysis without sentence data for this batch...")
             return {}
 
 

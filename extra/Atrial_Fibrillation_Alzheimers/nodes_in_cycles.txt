@@ -1,0 +1,17 @@
+Alzheimers
+Atrial_Fibrillation
+Amyloid_deposition
+Atrophic
+Cerebral_atrophy
+Degenerative_abnormality
+Disease
+Functional_disorder
+Inflammation
+Neurodegenerative_Disorders
+Neurofibrillary_Tangles
+Parkinson_Disease
+Symptoms
+Atrial_Remodeling
+Cerebrovascular_accident
+Congestive_heart_failure
+Heart_failure
