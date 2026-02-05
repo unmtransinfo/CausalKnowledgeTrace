@@ -7,18 +7,24 @@
 # Date: February 2025
 
 #' Create Dashboard Header
-#' 
+#'
 #' Creates the main dashboard header with title and styling
-#' 
+#' Layout: Hamburger menu (left) | Text (center) | Logo (right)
+#'
 #' @return dashboardHeader object
 create_dashboard_header <- function() {
     dashboardHeader(
-        title = span(
-            icon("project-diagram", style = "margin-right: 10px;"),
-            "Causal Web",
-            style = "font-size: 24px; font-weight: bold;"
+        title = tags$div(
+            class = "custom-header-title",
+            tags$span("CKT - Causal Knowledge Trace",
+                     style = "vertical-align: middle; font-size: 20px; font-weight: bold;")
         ),
-        titleWidth = 300
+        tags$li(
+            class = "dropdown custom-logo-container",
+            tags$img(src = "www/hsclogo.png", height = "40px",
+                    style = "margin-right: 15px; margin-top: 5px; vertical-align: middle;")
+        ),
+        titleWidth = 350
     )
 }
 
@@ -34,19 +40,56 @@ create_dashboard_sidebar <- function() {
             id = "tabs",
             menuItem("Graph Configuration", tabName = "create_graph", icon = icon("cogs")),
             menuItem("Data Upload", tabName = "upload", icon = icon("upload")),
-            menuItem("DAG Visualization", tabName = "dag", icon = icon("project-diagram")),
+            menuItem("Graph Visualization", tabName = "dag", icon = icon("project-diagram")),
             menuItem("Causal Analysis", tabName = "causal", icon = icon("search-plus"))
         )
     )
 }
 
 #' Create Custom CSS Styles
-#' 
+#'
 #' Creates custom CSS styling for the application
-#' 
+#'
 #' @return tags$style object with CSS
 create_custom_styles <- function() {
     tags$style(HTML("
+        /* Header Layout: Hamburger (left) | Text (center) | Logo (right) */
+        .main-header .navbar {
+            margin-left: 0 !important;
+        }
+
+        /* Position hamburger menu on the left */
+        .main-header .sidebar-toggle {
+            float: left !important;
+            order: 1;
+        }
+
+        /* Center the title text */
+        .main-header .logo {
+            float: none !important;
+            width: auto !important;
+            text-align: center !important;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            order: 2;
+        }
+
+        .custom-header-title {
+            display: inline-block;
+        }
+
+        /* Position logo on the right */
+        .custom-logo-container {
+            float: right !important;
+            order: 3;
+            margin-right: 10px;
+        }
+
+        .main-header .navbar-custom-menu {
+            float: right !important;
+        }
+
         .content-wrapper, .right-side {
             background-color: #f4f4f4;
         }
@@ -54,7 +97,7 @@ create_custom_styles <- function() {
             border-radius: 5px;
         }
 
-        /* Resizable DAG visualization styles */
+        /* Resizable graph visualization styles */
         .resizable-dag-container {
             position: relative;
             min-height: 400px;
@@ -218,10 +261,10 @@ create_custom_javascript <- function() {
     "))
 }
 
-#' Create DAG Visualization Tab Content
-#' 
-#' Creates the content for the DAG visualization tab
-#' 
+#' Create Graph Visualization Tab Content
+#'
+#' Creates the content for the graph visualization tab
+#'
 #' @return tabItem object
 create_dag_tab <- function() {
     tabItem(
@@ -273,8 +316,8 @@ create_dag_tab <- function() {
         
         fluidRow(
             box(
-                title = "Interactive DAG Visualization",
-                status = "primary", 
+                title = "CKT - Causal Knowledge Trace",
+                status = "primary",
                 solidHeader = TRUE,
                 width = 12,
                 
@@ -329,8 +372,8 @@ create_info_tab <- function() {
                 status = "primary",
                 solidHeader = TRUE,
                 width = 12,
-                
-                p("Click on a node in the DAG visualization to see detailed information here."),
+
+                p("Click on a node in the graph visualization to see detailed information here."),
                 
                 conditionalPanel(
                     condition = "output.has_node_selection",
@@ -533,7 +576,7 @@ create_dashboard_body <- function() {
     dashboardBody(
         useShinyjs(),  # Enable shinyjs functionality
         tags$head(
-            tags$title("Causal Web"),
+            tags$title("CKT - Causal Knowledge Trace"),
             create_custom_styles(),
             create_custom_javascript()
         ),

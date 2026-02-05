@@ -1,0 +1,15 @@
+=== SEMANTIC TYPE ANALYSIS SUMMARY ===
+
+Total nodes in graph: 267 
+Nodes with semantic type mapping: 251 
+Nodes in cycles: 18 
+Nodes not in cycles: 249 
+
+Total unique semantic types: 45 
+Problematic semantic types (>50% in cycles): 0 
+
+Top 10 Problematic Semantic Types:
+# A tibble: 0 × 7
+# ℹ 7 variables: semtype <chr>, Total_Nodes <int>, Nodes_In_Cycles <int>,
+#   Nodes_Not_In_Cycles <int>, Cycle_Participation_Rate <dbl>,
+#   Mean_Degree <dbl>, Mean_Betweenness <dbl>

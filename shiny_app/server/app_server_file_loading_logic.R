@@ -73,6 +73,7 @@
 
                 # Process the loaded DAG (potentially with leaves removed)
                 network_data <- create_network_data(dag_to_use)
+                edge_count <- nrow(network_data$edges)
 
                 # Update progress: Network created
                 session$sendCustomMessage("updateProgress", list(
@@ -173,24 +174,31 @@
                             ""
                         }
 
-                        # Special message for large graphs or lazy loading
-                        if (assertions_result$loading_strategy == "optimized_lazy") {
-                            success_msg <- paste0(
-                                "Graph loaded successfully!", load_time_msg,
-                                "<br/>✨ <b>Lazy loading enabled</b> - edge details will load instantly when clicked!"
-                            )
-                        } else if (node_count > 8000) {
-                            success_msg <- paste0("Large graph (", node_count, " nodes) loaded successfully!", load_time_msg,
-                                  "<br/>The interactive visualization may take a moment to render.")
-                        } else {
-                            success_msg <- paste0("Graph loaded successfully!", load_time_msg)
-                        }
-
-                        showNotification(
-                            HTML(success_msg),
-                            type = "message",
-                            duration = if (node_count > 8000 || assertions_result$loading_strategy == "optimized_lazy") 6 else 4
+                        # Show success modal with option to go to Graph Visualization
+                        modal_content <- div(
+                            style = "font-size: 16px;",
+                            h4(paste0("Graph loaded successfully! (", node_count, " nodes, ", edge_count, " edges)")),
+                            if (!is.null(load_time_msg)) p(HTML(load_time_msg)),
+                            if (assertions_result$loading_strategy == "optimized_lazy") {
+                                p(icon("bolt"), strong("Lazy loading enabled"), "- edge details will load instantly when clicked!")
+                            } else if (node_count > 8000) {
+                                p(icon("info-circle"), "Large graph - the interactive visualization may take a moment to render.")
+                            },
+                            hr(),
+                            p(strong("Next step:"), "Go to the", strong("Graph Visualization"), "tab to explore your graph interactively."),
+                            br(),
+                            actionButton("goto_dag_viz", "Go to Graph Visualization",
+                                       icon = icon("project-diagram"),
+                                       class = "btn-primary btn-lg")
                         )
+
+                        showModal(modalDialog(
+                            title = div(icon("check-circle", style = "color: #28a745;"), " Graph Loaded Successfully!"),
+                            modal_content,
+                            footer = modalButton("Close"),
+                            easyClose = TRUE,
+                            size = "m"
+                        ))
                     } else {
                         current_data$causal_assertions <- list()
                         current_data$lazy_loader <- NULL
@@ -358,6 +366,39 @@
                 current_data$dag_object <- dag_to_use  # Use the potentially cleaned DAG
                 current_data$current_file <- new_filename
 
+                # Update progress: Loading causal assertions
+                session$sendCustomMessage("updateProgress", list(
+                    percent = 75,
+                    text = "Loading causal assertions...",
+                    status = "Loading edge information"
+                ))
+
+                # Load causal assertions
+                tryCatch({
+                    assertions_result <- load_causal_assertions(new_filename)
+
+                    if (assertions_result$success) {
+                        current_data$causal_assertions <- assertions_result$assertions
+                        current_data$lazy_loader <- assertions_result$lazy_loader
+                        current_data$assertions_loaded <- TRUE
+                        current_data$loading_strategy <- assertions_result$loading_strategy
+                        cat("Loaded causal assertions for uploaded file:", new_filename,
+                            "- Strategy:", assertions_result$loading_strategy, "\n")
+                    } else {
+                        current_data$causal_assertions <- list()
+                        current_data$lazy_loader <- NULL
+                        current_data$assertions_loaded <- FALSE
+                        current_data$loading_strategy <- "none"
+                        cat("Could not load causal assertions for uploaded file:", new_filename, "\n")
+                    }
+                }, error = function(e) {
+                    current_data$causal_assertions <- list()
+                    current_data$lazy_loader <- NULL
+                    current_data$assertions_loaded <- FALSE
+                    current_data$loading_strategy <- "none"
+                    cat("Error loading causal assertions for uploaded file:", e$message, "\n")
+                })
+
                 # Update progress: Updating file list
                 session$sendCustomMessage("updateProgress", list(
                     percent = 90,
@@ -389,7 +430,36 @@
                     color = "#28a745"
                 ))
 
-                showNotification(paste("Successfully uploaded and loaded graph from", new_filename), type = "message")
+                # Get graph stats
+                node_count <- length(V(dag_to_use))
+                edge_count <- length(E(dag_to_use))
+
+                # Show success modal with option to go to Graph Visualization
+                modal_content <- div(
+                    style = "font-size: 16px;",
+                    h4(paste0("Graph uploaded successfully! (", node_count, " nodes, ", edge_count, " edges)")),
+                    p(icon("file"), strong("File:"), new_filename),
+                    if (current_data$loading_strategy == "optimized_lazy") {
+                        p(icon("bolt"), strong("Lazy loading enabled"), "- edge details will load instantly when clicked!")
+                    },
+                    if (!is.null(filter_result) && filter_result$success) {
+                        p(icon("filter"), strong("Filtering applied:"), filter_result$message)
+                    },
+                    hr(),
+                    p(strong("Next step:"), "Go to the", strong("Graph Visualization"), "tab to explore your graph interactively."),
+                    br(),
+                    actionButton("goto_dag_viz_upload", "Go to Graph Visualization",
+                               icon = icon("project-diagram"),
+                               class = "btn-primary btn-lg")
+                )
+
+                showModal(modalDialog(
+                    title = div(icon("check-circle", style = "color: #28a745;"), " Graph Uploaded Successfully!"),
+                    modal_content,
+                    footer = modalButton("Close"),
+                    easyClose = TRUE,
+                    size = "m"
+                ))
             } else {
                 session$sendCustomMessage("hideLoadingSection", list())
                 showNotification(result$message, type = "error")
@@ -404,4 +474,16 @@
     output$legend_html <- renderUI({
         HTML(generate_legend_html(current_data$nodes))
     })
-    
+
+    # Observer for "Go to Graph Visualization" button from file loading modal
+    observeEvent(input$goto_dag_viz, {
+        updateTabItems(session, "sidebar", "dag")
+        removeModal()
+    })
+
+    # Observer for "Go to Graph Visualization" button from file upload modal
+    observeEvent(input$goto_dag_viz_upload, {
+        updateTabItems(session, "sidebar", "dag")
+        removeModal()
+    })
+

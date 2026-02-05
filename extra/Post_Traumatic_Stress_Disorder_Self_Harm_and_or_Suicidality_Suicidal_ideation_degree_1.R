@@ -1,0 +1,875 @@
+# Exported DAG from degree_1.R
+# Generated on 2026-01-12 02:39:25.735083
+
+library(dagitty)
+
+g <- dagitty('dag {
+20_hydroxy_5_8_11_14_eicosatetraenoic_acid
+APP_gene
+APP_protein_human
+ATM_gene_ATM
+Abdominal_compartment_syndrome
+Abnormal_renal_function
+Acetate
+Acetylcholinesterase
+Administration_Oral
+Adrenal_Cortex_Hormones
+Adrenal_Gland_Neoplasms
+Adrenergic_Receptor
+Adverse_effects
+Agent
+Aging
+Aldosterone
+Amyloid
+Amyloid_Fibrils
+Amyloid_beta
+Amyloid_beta_Peptides
+Amyloid_beta_Protein_Precursor
+Amyloid_deposition
+Amyloidosis
+Androgens
+Angiogenesis_Inhibitors
+Angiotensin_II_ANG
+Angiotensins
+Antihypertensive_Agents
+Antioxidants
+Aortic_coarctation
+Apolipoprotein_E4
+Apolipoprotein_E_APOE
+Arginine
+Argipressin
+Argipressin_AVP
+Arteriosclerosis
+Atherosclerosis
+Atherosclerotic_renal_artery_stenosis
+Atrial_Fibrillation
+Atrophic
+Autonomic_Dysreflexia
+Banding_procedure
+Bilateral_renal_artery_stenosis
+Blood_Pressure
+Blood_Pressure_Monitoring_Ambulatory
+Brain_Edema
+Brain_Injuries
+Brain_hemorrhage
+COVID_19
+Cadmium
+Calcineurin_inhibitor
+Calcium
+Candidate_Disease_Gene
+Cardiac_Hypertrophy
+Cardiac_complication
+Cardiomyopathies
+Cardiovascular_Diseases
+Cardiovascular_morbidity
+Catecholamines
+Cerebral_Amyloid_Angiopathy
+Cerebral_Edema
+Cerebral_Hemorrhage
+Cerebral_atrophy
+Cerebral_hemisphere_hemorrhage
+Cerebrospinal_Fluid
+Cerebrovascular_Disorders
+Cerebrovascular_accident
+Cessation_of_life
+Cholesterol
+Chronic_Kidney_Diseases
+Chronic_heart_failure
+Chronic_inflammation
+Chymosin_REN
+Clip
+Clipping
+Closure_by_clamp
+Cocaine
+Complication
+Compression_procedure
+Congenital_Abnormality
+Congestive_heart_failure
+Conn_Syndrome
+Constriction_procedure
+Contraceptives_Oral
+Contraction
+Copper
+Coronary_Arteriosclerosis
+Coronary_heart_disease
+Corticosterone
+Corticotropin
+Corticotropin_POMC
+Cushing_Syndrome
+Cyclosporine
+DNA_Mitochondrial
+DOCA
+Degenerative_abnormality
+Dementia
+Dementia_Vascular
+Denervation
+Deoxycorticosterone
+Deterioration
+Dexamethasone
+Diabetes
+Diabetes_Mellitus
+Diabetes_Mellitus_Non_Insulin_Dependent
+Diabetic_Nephropathy
+Diagnosis
+Diastolic_dysfunction
+Diet
+Diet_High_Fat
+Diet_Protein_Restricted
+Disability_NOS
+Disease
+Dissection_of_aorta
+Dopamine
+Dopamine_Receptor
+Down_Syndrome
+Drinking_Water
+ERCC8_CSH1_HSPA9
+Edema
+Embolism
+Emotional_Stress
+Encephalopathies
+End_stage_renal_failure
+Endocrine_System_Diseases
+Endopeptidases
+Endothelial_dysfunction
+Endothelin
+Endothelin_1
+Enzymes
+Epinephrine
+Erectile_dysfunction
+Erythropoietin
+Erythropoietin_EPO
+Essential_Hypertension
+Estrogens
+Ethanol
+Evaluation
+Evaluation_procedure
+Excision
+Extravasation
+FRAGMENTS
+Fetal_Growth_Retardation
+Fibromuscular_Dysplasia
+Fibrosis
+Fluid_overload
+Free_Radicals
+Functional_disorder
+Gene_Mutation
+Genes
+Glomerulosclerosis
+Glucocorticoid_remediable_aldosteronism
+Glucocorticoids
+Glycogen_Synthase_Kinase_3
+Glycosylation_End_Products_Advanced
+Glycyrrhizic_Acid
+Growth
+Headache
+Heart_Diseases
+Heart_failure
+Herpesvirus_1_Human
+Hormones
+Hospital_admission
+Hospitalization
+Hydrocortisone
+Hydronephrosis
+Hyperaldosteronism
+Hypercalcemia
+Hyperglycemia
+Hyperinsulinism
+Hypernatremia
+Hyperplasia
+Hypertension_Pulmonary
+Hypertension_Renovascular
+Hypertensive_heart_disease_NOS
+Hypertrophic_Cardiomyopathy
+Hypertrophy
+Hypertrophy_Left_Ventricular
+Hyperuricemia
+Hypoplasia
+Hypoxia
+IMPACT_gene
+Immobilization
+Immunosuppressive_Agents
+Impaired_cognition
+Infarction
+Inflammasomes
+Inflammation
+Inflammatory_Response
+Infusion_procedures
+Injection
+Injection_procedure
+Injury
+Insulin
+Insulin_Resistance
+Intestinal_Microbiome
+Intracranial_Hemorrhages
+Intubation_Intratracheal
+Ions
+Iron
+Ischemia
+Ischemic_stroke
+Juxtaglomerular_tumor
+Kidney_Diseases
+Kidney_Failure
+Kidney_Failure_Acute
+Kidney_Failure_Chronic
+Kidney_Transplantation
+Labor_Childbirth
+Lack_of_sensation
+Leptin
+Leptin_LEP
+Lewy_Body_Disease
+Licorice
+Ligation
+Lipids
+Lipopolysaccharides
+Liquid_substance
+MAPT
+MAPT_protein_human_MAPT
+Magnesium
+Malnutrition
+Memory_Loss
+Memory_impairment
+Mental_deterioration
+Metabolic_syndrome
+Metals
+MicroRNAs
+Mineralocorticoid_Receptor
+Mineralocorticoids
+Molecule
+Mutation
+Myocardial_Infarction
+Myocardial_Ischemia
+Myocardial_dysfunction
+Myocardial_fibrosis
+NG_Nitroarginine_Methyl_Ester
+NOS3_protein_human_NOS3
+Na_K_Exchanging_ATPase
+Neoplasm
+Neoplasm_Metastasis
+Nephrectomy
+Nephrosclerosis
+Nerve_Degeneration
+Neurodegenerative_Disorders
+Neurofibrillary_Tangles
+Neurotoxins
+Nicotine
+Nicotinic_Receptors
+Nitric_Oxide
+Nitric_Oxide_Synthase
+Nitroarginine
+Noise
+Norepinephrine
+Obesity
+Obstruction
+Okadaic_Acid
+Operative_Surgical_Procedures
+Ouabain
+Overweight
+Oxidation
+Oxidative_Stress
+PS2_protein_alzheimer_associated_PSEN2
+PSEN1
+Paraganglioma
+Parkinson_Disease
+Pathogenesis
+Pathologic_Processes
+Pathological_Dilatation
+Peptides
+Peptidyl_Dipeptidase_A
+Perinephritis
+Pharmaceutical_Preparations
+Pharmacotherapy
+Phenylephrine
+Pheochromocytoma
+Plasma
+Players
+Polymorphism_Genetic
+Post_Traumatic_Stress_Disorder [exposure]
+Posterior_reversible_encephalopathy_syndrome
+Potassium
+Pre_Eclampsia
+Pregnancy
+Premature_Birth
+Pressors
+Prions
+Process
+Prostaglandins
+Proteins
+Proteinuria
+Pulmonary_Edema
+Purpura_Thrombotic_Thrombocytopenic
+Rare_Diseases
+Reactive_Oxygen_Species
+Recombinant_Erythropoietin
+Renal_Artery_Stenosis
+Renal_Insufficiency
+Renal_artery_occlusion
+Renal_infarction
+Renal_ischaemia
+Renal_vascular_disorders_NOS
+Renin
+Renin_REN
+SUCLA2_gene_SUCLA2
+Saline
+Salts
+Self_Harm_and_or_Suicidality_Suicidal_ideation [outcome]
+Senile_Plaques
+Senile_dementia
+Sensory_denervation_disorder
+Serotonin
+Single_Nucleotide_Polymorphism
+Sleep_Apnea_Obstructive
+Sleep_Apnea_Syndromes
+Sodium
+Sodium_Chloride
+Sodium_Chloride_Dietary
+Spastic_syndrome
+Stenosis
+Stenosis_unspecified
+Steroids
+Stiffness
+Stimulus
+Streptozocin
+Study_models
+Substance
+Sugars
+Superoxides
+Symptoms
+Syndrome
+TNF_protein_human_TNF
+Tacrolimus
+Takayasu_s_Arteritis
+Testosterone
+Therapeutic_procedure
+Thrombosis
+Tourniquets
+Toxic_effect
+Transplantation
+Traumatic_Brain_Injury
+Unilateral_nephrectomy
+Unilateral_renal_artery_stenosis
+Uric_Acid
+Vascular_Diseases
+Vasoconstrictor_Agents
+Vasodilation_disorder
+Vasospasm
+Ventricular_Dysfunction_Left
+Ventricular_hypertrophy
+Virus
+Vitamin_D_Deficiency
+Water
+Wounds_and_Injuries
+Zinc
+adenoma
+agonists
+alanosine
+aluminum
+aluminum_chloride
+angiotensin_II
+aorta_constriction
+apolipoprotein_E_4_APOE
+arginine_methyl_ester
+beta_site_APP_cleaving_enzyme_1_BACE1
+bevacizumab
+cardiac_arrhythmia
+cytokine
+desoxycorticosterone_acetate
+end_organ_damage
+fructose
+galactose
+gamma_secretase
+gene_therapy
+homocysteine
+hydrochloride
+imbalance
+inhibitors
+neuron_loss
+neuronal
+presenilin
+presenilin_1
+presenilin_1_PSEN1
+receptor
+scopolamine
+sorafenib
+tau_Proteins
+tau_Proteins_MAPT
+vascular_factor
+20_hydroxy_5_8_11_14_eicosatetraenoic_acid -> Post_Traumatic_Stress_Disorder
+APP_gene -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+APP_protein_human -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+ATM_gene_ATM -> Post_Traumatic_Stress_Disorder
+Abnormal_renal_function -> Post_Traumatic_Stress_Disorder
+Acetate -> Post_Traumatic_Stress_Disorder
+Acetylcholinesterase -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Administration_Oral -> Post_Traumatic_Stress_Disorder
+Adrenal_Cortex_Hormones -> Post_Traumatic_Stress_Disorder
+Adrenal_Gland_Neoplasms -> Post_Traumatic_Stress_Disorder
+Adrenergic_Receptor -> Post_Traumatic_Stress_Disorder
+Adverse_effects -> Post_Traumatic_Stress_Disorder
+Adverse_effects -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Agent -> Post_Traumatic_Stress_Disorder
+Agent -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Aldosterone -> Post_Traumatic_Stress_Disorder
+Amyloid -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Amyloid_Fibrils -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Amyloid_beta -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Amyloid_beta_Peptides -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Amyloid_beta_Protein_Precursor -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Amyloid_deposition -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Amyloidosis -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Androgens -> Post_Traumatic_Stress_Disorder
+Angiogenesis_Inhibitors -> Post_Traumatic_Stress_Disorder
+Angiotensin_II_ANG -> Post_Traumatic_Stress_Disorder
+Angiotensins -> Post_Traumatic_Stress_Disorder
+Antihypertensive_Agents -> Post_Traumatic_Stress_Disorder
+Antioxidants -> Post_Traumatic_Stress_Disorder
+Antioxidants -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Aortic_coarctation -> Post_Traumatic_Stress_Disorder
+Apolipoprotein_E4 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Apolipoprotein_E_APOE -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Arginine -> Post_Traumatic_Stress_Disorder
+Argipressin -> Post_Traumatic_Stress_Disorder
+Argipressin_AVP -> Post_Traumatic_Stress_Disorder
+Atherosclerosis -> Post_Traumatic_Stress_Disorder
+Atherosclerotic_renal_artery_stenosis -> Post_Traumatic_Stress_Disorder
+Atrophic -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Autonomic_Dysreflexia -> Post_Traumatic_Stress_Disorder
+Banding_procedure -> Post_Traumatic_Stress_Disorder
+Bilateral_renal_artery_stenosis -> Post_Traumatic_Stress_Disorder
+Blood_Pressure_Monitoring_Ambulatory -> Post_Traumatic_Stress_Disorder
+Brain_Injuries -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+COVID_19 -> Post_Traumatic_Stress_Disorder
+Cadmium -> Post_Traumatic_Stress_Disorder
+Calcineurin_inhibitor -> Post_Traumatic_Stress_Disorder
+Calcium -> Post_Traumatic_Stress_Disorder
+Candidate_Disease_Gene -> Post_Traumatic_Stress_Disorder
+Cardiovascular_Diseases -> Post_Traumatic_Stress_Disorder
+Catecholamines -> Post_Traumatic_Stress_Disorder
+Cerebral_Amyloid_Angiopathy -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Cerebral_atrophy -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Cerebrospinal_Fluid -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Cerebrovascular_accident -> Post_Traumatic_Stress_Disorder
+Cholesterol -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Chronic_Kidney_Diseases -> Post_Traumatic_Stress_Disorder
+Chronic_inflammation -> Post_Traumatic_Stress_Disorder
+Chronic_inflammation -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Chymosin_REN -> Post_Traumatic_Stress_Disorder
+Clip -> Post_Traumatic_Stress_Disorder
+Clipping -> Post_Traumatic_Stress_Disorder
+Closure_by_clamp -> Post_Traumatic_Stress_Disorder
+Cocaine -> Post_Traumatic_Stress_Disorder
+Complication -> Post_Traumatic_Stress_Disorder
+Compression_procedure -> Post_Traumatic_Stress_Disorder
+Congenital_Abnormality -> Post_Traumatic_Stress_Disorder
+Conn_Syndrome -> Post_Traumatic_Stress_Disorder
+Constriction_procedure -> Post_Traumatic_Stress_Disorder
+Contraceptives_Oral -> Post_Traumatic_Stress_Disorder
+Contraction -> Post_Traumatic_Stress_Disorder
+Copper -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Corticosterone -> Post_Traumatic_Stress_Disorder
+Corticotropin -> Post_Traumatic_Stress_Disorder
+Corticotropin_POMC -> Post_Traumatic_Stress_Disorder
+Cushing_Syndrome -> Post_Traumatic_Stress_Disorder
+Cyclosporine -> Post_Traumatic_Stress_Disorder
+DNA_Mitochondrial -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+DOCA -> Post_Traumatic_Stress_Disorder
+Degenerative_abnormality -> Post_Traumatic_Stress_Disorder
+Degenerative_abnormality -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Dementia -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Denervation -> Post_Traumatic_Stress_Disorder
+Deoxycorticosterone -> Post_Traumatic_Stress_Disorder
+Deterioration -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Dexamethasone -> Post_Traumatic_Stress_Disorder
+Diabetes -> Post_Traumatic_Stress_Disorder
+Diabetes -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Diabetes_Mellitus -> Post_Traumatic_Stress_Disorder
+Diabetes_Mellitus_Non_Insulin_Dependent -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Diabetic_Nephropathy -> Post_Traumatic_Stress_Disorder
+Diet -> Post_Traumatic_Stress_Disorder
+Diet -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Diet_High_Fat -> Post_Traumatic_Stress_Disorder
+Diet_Protein_Restricted -> Post_Traumatic_Stress_Disorder
+Disease -> Post_Traumatic_Stress_Disorder
+Disease -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Dopamine -> Post_Traumatic_Stress_Disorder
+Dopamine_Receptor -> Post_Traumatic_Stress_Disorder
+Down_Syndrome -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Drinking_Water -> Post_Traumatic_Stress_Disorder
+ERCC8_CSH1_HSPA9 -> Post_Traumatic_Stress_Disorder
+Embolism -> Post_Traumatic_Stress_Disorder
+Emotional_Stress -> Post_Traumatic_Stress_Disorder
+Endocrine_System_Diseases -> Post_Traumatic_Stress_Disorder
+Endopeptidases -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Endothelial_dysfunction -> Post_Traumatic_Stress_Disorder
+Endothelin -> Post_Traumatic_Stress_Disorder
+Endothelin_1 -> Post_Traumatic_Stress_Disorder
+Enzymes -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Epinephrine -> Post_Traumatic_Stress_Disorder
+Erythropoietin -> Post_Traumatic_Stress_Disorder
+Erythropoietin_EPO -> Post_Traumatic_Stress_Disorder
+Essential_Hypertension -> Post_Traumatic_Stress_Disorder
+Estrogens -> Post_Traumatic_Stress_Disorder
+Ethanol -> Post_Traumatic_Stress_Disorder
+Excision -> Post_Traumatic_Stress_Disorder
+FRAGMENTS -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Fetal_Growth_Retardation -> Post_Traumatic_Stress_Disorder
+Fibromuscular_Dysplasia -> Post_Traumatic_Stress_Disorder
+Fibrosis -> Post_Traumatic_Stress_Disorder
+Fluid_overload -> Post_Traumatic_Stress_Disorder
+Free_Radicals -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Functional_disorder -> Post_Traumatic_Stress_Disorder
+Functional_disorder -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Gene_Mutation -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Genes -> Post_Traumatic_Stress_Disorder
+Genes -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Glucocorticoid_remediable_aldosteronism -> Post_Traumatic_Stress_Disorder
+Glucocorticoids -> Post_Traumatic_Stress_Disorder
+Glycogen_Synthase_Kinase_3 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Glycosylation_End_Products_Advanced -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Glycyrrhizic_Acid -> Post_Traumatic_Stress_Disorder
+Heart_failure -> Post_Traumatic_Stress_Disorder
+Herpesvirus_1_Human -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Hormones -> Post_Traumatic_Stress_Disorder
+Hydrocortisone -> Post_Traumatic_Stress_Disorder
+Hydronephrosis -> Post_Traumatic_Stress_Disorder
+Hyperaldosteronism -> Post_Traumatic_Stress_Disorder
+Hypercalcemia -> Post_Traumatic_Stress_Disorder
+Hyperglycemia -> Post_Traumatic_Stress_Disorder
+Hyperinsulinism -> Post_Traumatic_Stress_Disorder
+Hypernatremia -> Post_Traumatic_Stress_Disorder
+Hyperplasia -> Post_Traumatic_Stress_Disorder
+Hypertension_Renovascular -> Post_Traumatic_Stress_Disorder
+Hypertrophy -> Post_Traumatic_Stress_Disorder
+Hyperuricemia -> Post_Traumatic_Stress_Disorder
+Hypoplasia -> Post_Traumatic_Stress_Disorder
+Hypoxia -> Post_Traumatic_Stress_Disorder
+Hypoxia -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+IMPACT_gene -> Post_Traumatic_Stress_Disorder
+IMPACT_gene -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Immobilization -> Post_Traumatic_Stress_Disorder
+Immunosuppressive_Agents -> Post_Traumatic_Stress_Disorder
+Impaired_cognition -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Inflammasomes -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Inflammation -> Post_Traumatic_Stress_Disorder
+Inflammation -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Inflammatory_Response -> Post_Traumatic_Stress_Disorder
+Inflammatory_Response -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Infusion_procedures -> Post_Traumatic_Stress_Disorder
+Injection -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Injection_procedure -> Post_Traumatic_Stress_Disorder
+Injection_procedure -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Injury -> Post_Traumatic_Stress_Disorder
+Injury -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Insulin -> Post_Traumatic_Stress_Disorder
+Insulin_Resistance -> Post_Traumatic_Stress_Disorder
+Insulin_Resistance -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Intestinal_Microbiome -> Post_Traumatic_Stress_Disorder
+Intestinal_Microbiome -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Intubation_Intratracheal -> Post_Traumatic_Stress_Disorder
+Ions -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Iron -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Ischemia -> Post_Traumatic_Stress_Disorder
+Ischemia -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Juxtaglomerular_tumor -> Post_Traumatic_Stress_Disorder
+Kidney_Diseases -> Post_Traumatic_Stress_Disorder
+Kidney_Failure -> Post_Traumatic_Stress_Disorder
+Kidney_Failure_Chronic -> Post_Traumatic_Stress_Disorder
+Kidney_Transplantation -> Post_Traumatic_Stress_Disorder
+Leptin -> Post_Traumatic_Stress_Disorder
+Leptin_LEP -> Post_Traumatic_Stress_Disorder
+Licorice -> Post_Traumatic_Stress_Disorder
+Ligation -> Post_Traumatic_Stress_Disorder
+Lipids -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Lipopolysaccharides -> Post_Traumatic_Stress_Disorder
+Lipopolysaccharides -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Liquid_substance -> Post_Traumatic_Stress_Disorder
+MAPT -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+MAPT_protein_human_MAPT -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Magnesium -> Post_Traumatic_Stress_Disorder
+Malnutrition -> Post_Traumatic_Stress_Disorder
+Memory_impairment -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Mental_deterioration -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Metabolic_syndrome -> Post_Traumatic_Stress_Disorder
+Metals -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+MicroRNAs -> Post_Traumatic_Stress_Disorder
+MicroRNAs -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Mineralocorticoid_Receptor -> Post_Traumatic_Stress_Disorder
+Mineralocorticoids -> Post_Traumatic_Stress_Disorder
+Molecule -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Mutation -> Post_Traumatic_Stress_Disorder
+Mutation -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+NG_Nitroarginine_Methyl_Ester -> Post_Traumatic_Stress_Disorder
+NOS3_protein_human_NOS3 -> Post_Traumatic_Stress_Disorder
+Na_K_Exchanging_ATPase -> Post_Traumatic_Stress_Disorder
+Neoplasm -> Post_Traumatic_Stress_Disorder
+Neoplasm_Metastasis -> Post_Traumatic_Stress_Disorder
+Nephrectomy -> Post_Traumatic_Stress_Disorder
+Nerve_Degeneration -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Neurodegenerative_Disorders -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Neurofibrillary_Tangles -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Neurotoxins -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Nicotine -> Post_Traumatic_Stress_Disorder
+Nicotinic_Receptors -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Nitric_Oxide -> Post_Traumatic_Stress_Disorder
+Nitric_Oxide -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Nitric_Oxide_Synthase -> Post_Traumatic_Stress_Disorder
+Nitroarginine -> Post_Traumatic_Stress_Disorder
+Noise -> Post_Traumatic_Stress_Disorder
+Norepinephrine -> Post_Traumatic_Stress_Disorder
+Obesity -> Post_Traumatic_Stress_Disorder
+Obesity -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Obstruction -> Post_Traumatic_Stress_Disorder
+Okadaic_Acid -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Operative_Surgical_Procedures -> Post_Traumatic_Stress_Disorder
+Ouabain -> Post_Traumatic_Stress_Disorder
+Overweight -> Post_Traumatic_Stress_Disorder
+Oxidation -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Oxidative_Stress -> Post_Traumatic_Stress_Disorder
+Oxidative_Stress -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+PS2_protein_alzheimer_associated_PSEN2 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+PSEN1 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Paraganglioma -> Post_Traumatic_Stress_Disorder
+Parkinson_Disease -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Pathogenesis -> Post_Traumatic_Stress_Disorder
+Pathogenesis -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Pathologic_Processes -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Peptides -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Peptidyl_Dipeptidase_A -> Post_Traumatic_Stress_Disorder
+Perinephritis -> Post_Traumatic_Stress_Disorder
+Pharmaceutical_Preparations -> Post_Traumatic_Stress_Disorder
+Pharmaceutical_Preparations -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Pharmacotherapy -> Post_Traumatic_Stress_Disorder
+Phenylephrine -> Post_Traumatic_Stress_Disorder
+Pheochromocytoma -> Post_Traumatic_Stress_Disorder
+Plasma -> Post_Traumatic_Stress_Disorder
+Players -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Polymorphism_Genetic -> Post_Traumatic_Stress_Disorder
+Polymorphism_Genetic -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Post_Traumatic_Stress_Disorder -> Abdominal_compartment_syndrome
+Post_Traumatic_Stress_Disorder -> Abnormal_renal_function
+Post_Traumatic_Stress_Disorder -> Adverse_effects
+Post_Traumatic_Stress_Disorder -> Arteriosclerosis
+Post_Traumatic_Stress_Disorder -> Atherosclerosis
+Post_Traumatic_Stress_Disorder -> Atrial_Fibrillation
+Post_Traumatic_Stress_Disorder -> Blood_Pressure
+Post_Traumatic_Stress_Disorder -> Brain_Edema
+Post_Traumatic_Stress_Disorder -> Brain_hemorrhage
+Post_Traumatic_Stress_Disorder -> Cardiac_Hypertrophy
+Post_Traumatic_Stress_Disorder -> Cardiac_complication
+Post_Traumatic_Stress_Disorder -> Cardiomyopathies
+Post_Traumatic_Stress_Disorder -> Cardiovascular_Diseases
+Post_Traumatic_Stress_Disorder -> Cardiovascular_morbidity
+Post_Traumatic_Stress_Disorder -> Cerebral_Edema
+Post_Traumatic_Stress_Disorder -> Cerebral_Hemorrhage
+Post_Traumatic_Stress_Disorder -> Cerebral_hemisphere_hemorrhage
+Post_Traumatic_Stress_Disorder -> Cerebrovascular_Disorders
+Post_Traumatic_Stress_Disorder -> Cerebrovascular_accident
+Post_Traumatic_Stress_Disorder -> Cessation_of_life
+Post_Traumatic_Stress_Disorder -> Chronic_Kidney_Diseases
+Post_Traumatic_Stress_Disorder -> Chronic_heart_failure
+Post_Traumatic_Stress_Disorder -> Complication
+Post_Traumatic_Stress_Disorder -> Congestive_heart_failure
+Post_Traumatic_Stress_Disorder -> Contraction
+Post_Traumatic_Stress_Disorder -> Coronary_Arteriosclerosis
+Post_Traumatic_Stress_Disorder -> Coronary_heart_disease
+Post_Traumatic_Stress_Disorder -> Dementia_Vascular
+Post_Traumatic_Stress_Disorder -> Diabetes
+Post_Traumatic_Stress_Disorder -> Diabetes_Mellitus
+Post_Traumatic_Stress_Disorder -> Diabetes_Mellitus_Non_Insulin_Dependent
+Post_Traumatic_Stress_Disorder -> Diabetic_Nephropathy
+Post_Traumatic_Stress_Disorder -> Diagnosis
+Post_Traumatic_Stress_Disorder -> Diastolic_dysfunction
+Post_Traumatic_Stress_Disorder -> Disability_NOS
+Post_Traumatic_Stress_Disorder -> Disease
+Post_Traumatic_Stress_Disorder -> Dissection_of_aorta
+Post_Traumatic_Stress_Disorder -> Edema
+Post_Traumatic_Stress_Disorder -> Encephalopathies
+Post_Traumatic_Stress_Disorder -> End_stage_renal_failure
+Post_Traumatic_Stress_Disorder -> Endothelial_dysfunction
+Post_Traumatic_Stress_Disorder -> Erectile_dysfunction
+Post_Traumatic_Stress_Disorder -> Essential_Hypertension
+Post_Traumatic_Stress_Disorder -> Extravasation
+Post_Traumatic_Stress_Disorder -> Fetal_Growth_Retardation
+Post_Traumatic_Stress_Disorder -> Fibrosis
+Post_Traumatic_Stress_Disorder -> Functional_disorder
+Post_Traumatic_Stress_Disorder -> Glomerulosclerosis
+Post_Traumatic_Stress_Disorder -> Growth
+Post_Traumatic_Stress_Disorder -> Headache
+Post_Traumatic_Stress_Disorder -> Heart_Diseases
+Post_Traumatic_Stress_Disorder -> Heart_failure
+Post_Traumatic_Stress_Disorder -> Hospital_admission
+Post_Traumatic_Stress_Disorder -> Hospitalization
+Post_Traumatic_Stress_Disorder -> Hypertension_Pulmonary
+Post_Traumatic_Stress_Disorder -> Hypertensive_heart_disease_NOS
+Post_Traumatic_Stress_Disorder -> Hypertrophic_Cardiomyopathy
+Post_Traumatic_Stress_Disorder -> Hypertrophy
+Post_Traumatic_Stress_Disorder -> Hypertrophy_Left_Ventricular
+Post_Traumatic_Stress_Disorder -> Hypoxia
+Post_Traumatic_Stress_Disorder -> Infarction
+Post_Traumatic_Stress_Disorder -> Inflammation
+Post_Traumatic_Stress_Disorder -> Insulin_Resistance
+Post_Traumatic_Stress_Disorder -> Intracranial_Hemorrhages
+Post_Traumatic_Stress_Disorder -> Ischemia
+Post_Traumatic_Stress_Disorder -> Ischemic_stroke
+Post_Traumatic_Stress_Disorder -> Kidney_Diseases
+Post_Traumatic_Stress_Disorder -> Kidney_Failure
+Post_Traumatic_Stress_Disorder -> Kidney_Failure_Acute
+Post_Traumatic_Stress_Disorder -> Kidney_Failure_Chronic
+Post_Traumatic_Stress_Disorder -> Labor_Childbirth
+Post_Traumatic_Stress_Disorder -> Lack_of_sensation
+Post_Traumatic_Stress_Disorder -> Myocardial_Infarction
+Post_Traumatic_Stress_Disorder -> Myocardial_Ischemia
+Post_Traumatic_Stress_Disorder -> Myocardial_dysfunction
+Post_Traumatic_Stress_Disorder -> Myocardial_fibrosis
+Post_Traumatic_Stress_Disorder -> Nephrosclerosis
+Post_Traumatic_Stress_Disorder -> Obesity
+Post_Traumatic_Stress_Disorder -> Pathogenesis
+Post_Traumatic_Stress_Disorder -> Pathological_Dilatation
+Post_Traumatic_Stress_Disorder -> Posterior_reversible_encephalopathy_syndrome
+Post_Traumatic_Stress_Disorder -> Pre_Eclampsia
+Post_Traumatic_Stress_Disorder -> Pregnancy
+Post_Traumatic_Stress_Disorder -> Premature_Birth
+Post_Traumatic_Stress_Disorder -> Proteinuria
+Post_Traumatic_Stress_Disorder -> Pulmonary_Edema
+Post_Traumatic_Stress_Disorder -> Purpura_Thrombotic_Thrombocytopenic
+Post_Traumatic_Stress_Disorder -> Renal_Insufficiency
+Post_Traumatic_Stress_Disorder -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Post_Traumatic_Stress_Disorder -> Spastic_syndrome
+Post_Traumatic_Stress_Disorder -> Stiffness
+Post_Traumatic_Stress_Disorder -> Symptoms
+Post_Traumatic_Stress_Disorder -> Syndrome
+Post_Traumatic_Stress_Disorder -> Vascular_Diseases
+Post_Traumatic_Stress_Disorder -> Ventricular_Dysfunction_Left
+Post_Traumatic_Stress_Disorder -> Ventricular_hypertrophy
+Post_Traumatic_Stress_Disorder -> cardiac_arrhythmia
+Post_Traumatic_Stress_Disorder -> end_organ_damage
+Potassium -> Post_Traumatic_Stress_Disorder
+Pre_Eclampsia -> Post_Traumatic_Stress_Disorder
+Pressors -> Post_Traumatic_Stress_Disorder
+Prions -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Process -> Post_Traumatic_Stress_Disorder
+Process -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Prostaglandins -> Post_Traumatic_Stress_Disorder
+Proteins -> Post_Traumatic_Stress_Disorder
+Proteins -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Rare_Diseases -> Post_Traumatic_Stress_Disorder
+Reactive_Oxygen_Species -> Post_Traumatic_Stress_Disorder
+Reactive_Oxygen_Species -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Recombinant_Erythropoietin -> Post_Traumatic_Stress_Disorder
+Renal_Artery_Stenosis -> Post_Traumatic_Stress_Disorder
+Renal_Insufficiency -> Post_Traumatic_Stress_Disorder
+Renal_artery_occlusion -> Post_Traumatic_Stress_Disorder
+Renal_infarction -> Post_Traumatic_Stress_Disorder
+Renal_ischaemia -> Post_Traumatic_Stress_Disorder
+Renal_vascular_disorders_NOS -> Post_Traumatic_Stress_Disorder
+Renin -> Post_Traumatic_Stress_Disorder
+Renin_REN -> Post_Traumatic_Stress_Disorder
+SUCLA2_gene_SUCLA2 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Saline -> Post_Traumatic_Stress_Disorder
+Salts -> Post_Traumatic_Stress_Disorder
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Aging
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Amyloid_deposition
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Atrophic
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Cerebral_atrophy
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Cessation_of_life
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Degenerative_abnormality
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Dementia_Vascular
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Diagnosis
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Disability_NOS
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Disease
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Evaluation
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Evaluation_procedure
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Functional_disorder
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Inflammation
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Lewy_Body_Disease
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Memory_Loss
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Neurodegenerative_Disorders
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Neurofibrillary_Tangles
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Parkinson_Disease
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Senile_Plaques
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Senile_dementia
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Symptoms
+Self_Harm_and_or_Suicidality_Suicidal_ideation -> Syndrome
+Sensory_denervation_disorder -> Post_Traumatic_Stress_Disorder
+Serotonin -> Post_Traumatic_Stress_Disorder
+Single_Nucleotide_Polymorphism -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Sleep_Apnea_Obstructive -> Post_Traumatic_Stress_Disorder
+Sleep_Apnea_Syndromes -> Post_Traumatic_Stress_Disorder
+Sodium -> Post_Traumatic_Stress_Disorder
+Sodium_Chloride -> Post_Traumatic_Stress_Disorder
+Sodium_Chloride_Dietary -> Post_Traumatic_Stress_Disorder
+Stenosis -> Post_Traumatic_Stress_Disorder
+Stenosis_unspecified -> Post_Traumatic_Stress_Disorder
+Steroids -> Post_Traumatic_Stress_Disorder
+Stiffness -> Post_Traumatic_Stress_Disorder
+Stimulus -> Post_Traumatic_Stress_Disorder
+Streptozocin -> Post_Traumatic_Stress_Disorder
+Streptozocin -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Study_models -> Post_Traumatic_Stress_Disorder
+Study_models -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Substance -> Post_Traumatic_Stress_Disorder
+Sugars -> Post_Traumatic_Stress_Disorder
+Superoxides -> Post_Traumatic_Stress_Disorder
+Symptoms -> Post_Traumatic_Stress_Disorder
+Symptoms -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Syndrome -> Post_Traumatic_Stress_Disorder
+TNF_protein_human_TNF -> Post_Traumatic_Stress_Disorder
+Tacrolimus -> Post_Traumatic_Stress_Disorder
+Takayasu_s_Arteritis -> Post_Traumatic_Stress_Disorder
+Testosterone -> Post_Traumatic_Stress_Disorder
+Therapeutic_procedure -> Post_Traumatic_Stress_Disorder
+Therapeutic_procedure -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Thrombosis -> Post_Traumatic_Stress_Disorder
+Tourniquets -> Post_Traumatic_Stress_Disorder
+Toxic_effect -> Post_Traumatic_Stress_Disorder
+Toxic_effect -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Transplantation -> Post_Traumatic_Stress_Disorder
+Traumatic_Brain_Injury -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Unilateral_nephrectomy -> Post_Traumatic_Stress_Disorder
+Unilateral_renal_artery_stenosis -> Post_Traumatic_Stress_Disorder
+Uric_Acid -> Post_Traumatic_Stress_Disorder
+Vascular_Diseases -> Post_Traumatic_Stress_Disorder
+Vascular_Diseases -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Vasoconstrictor_Agents -> Post_Traumatic_Stress_Disorder
+Vasodilation_disorder -> Post_Traumatic_Stress_Disorder
+Vasospasm -> Post_Traumatic_Stress_Disorder
+Virus -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+Vitamin_D_Deficiency -> Post_Traumatic_Stress_Disorder
+Water -> Post_Traumatic_Stress_Disorder
+Wounds_and_Injuries -> Post_Traumatic_Stress_Disorder
+Zinc -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+adenoma -> Post_Traumatic_Stress_Disorder
+agonists -> Post_Traumatic_Stress_Disorder
+alanosine -> Post_Traumatic_Stress_Disorder
+aluminum -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+aluminum_chloride -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+angiotensin_II -> Post_Traumatic_Stress_Disorder
+aorta_constriction -> Post_Traumatic_Stress_Disorder
+apolipoprotein_E_4_APOE -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+arginine_methyl_ester -> Post_Traumatic_Stress_Disorder
+beta_site_APP_cleaving_enzyme_1_BACE1 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+bevacizumab -> Post_Traumatic_Stress_Disorder
+cytokine -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+desoxycorticosterone_acetate -> Post_Traumatic_Stress_Disorder
+fructose -> Post_Traumatic_Stress_Disorder
+galactose -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+gamma_secretase -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+gene_therapy -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+homocysteine -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+hydrochloride -> Post_Traumatic_Stress_Disorder
+imbalance -> Post_Traumatic_Stress_Disorder
+imbalance -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+inhibitors -> Post_Traumatic_Stress_Disorder
+neuron_loss -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+neuronal -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+presenilin -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+presenilin_1 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+presenilin_1_PSEN1 -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+receptor -> Post_Traumatic_Stress_Disorder
+receptor -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+scopolamine -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+sorafenib -> Post_Traumatic_Stress_Disorder
+tau_Proteins -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+tau_Proteins_MAPT -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+vascular_factor -> Self_Harm_and_or_Suicidality_Suicidal_ideation
+}
+')

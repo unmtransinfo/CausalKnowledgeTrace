@@ -1,0 +1,15 @@
+=== GRAPH STATISTICS ===
+Nodes: 389 
+Edges: 478 
+Density: 0.003166989 
+Weakly connected: TRUE 
+Strongly connected: FALSE 
+
+Exposure: Post_Traumatic_Stress_Disorder 
+Outcome: Self_Harm_and_or_Suicidality_Suicidal_ideation 
+
+Degree Statistics:
+Mean in-degree: 1.228792 
+Mean out-degree: 1.228792 
+Max in-degree: 237 
+Max out-degree: 98 
