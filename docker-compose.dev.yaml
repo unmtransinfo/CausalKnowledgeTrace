@@ -1,60 +1,25 @@
 services:
-  db:
+  db-dev:
     image: postgres:16
-    container_name: cwt-db-dev
+    container_name: db-dev
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PGPORT: ${DB_PORT}
+      POSTGRES_DB: causalehr
+      POSTGRES_USER: rajesh
+      POSTGRES_PASSWORD: Software292$
+      PGPORT: 5433
     ports:
-      - "0.0.0.0:${DB_PORT}:${DB_PORT}"
+      - "0.0.0.0:5433:5433"
     command:
       - "postgres"
       - "-c"
-      - "port=${DB_PORT}"
-      - "-c"
-      - "listen_addresses=*"
-      - "-c"
-      - "max_connections=100"
-      - "-c"
-      - "shared_buffers=16GB"
-      - "-c"
-      - "effective_cache_size=48GB"
-      - "-c"
-      - "maintenance_work_mem=2GB"
-      - "-c"
-      - "work_mem=256MB"
-      - "-c"
-      - "temp_buffers=256MB"
-      - "-c"
-      - "huge_pages=off"
-      - "-c"
-      - "checkpoint_completion_target=0.9"
-      - "-c"
-      - "wal_buffers=16MB"
-      - "-c"
-      - "min_wal_size=1GB"
-      - "-c"
-      - "max_wal_size=4GB"
-      - "-c"
-      - "max_worker_processes=16"
-      - "-c"
-      - "max_parallel_workers_per_gather=4"
-      - "-c"
-      - "max_parallel_workers=16"
-      - "-c"
-      - "max_parallel_maintenance_workers=4"
+      - "port=5433"
     shm_size: 17g
     volumes:
       - ./causalehr_backup:/causalehr_backup:ro
       - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh:ro
       - pgdata-dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -p ${DB_PORT}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U rajesh -d causalehr -p 5433"]
     deploy:
       resources:
         limits:
@@ -71,14 +36,25 @@ services:
       dockerfile: docker/Dockerfile
     container_name: cwt-app-dev
     ports:
-      - "0.0.0.0:${APP_PORT}:${APP_PORT}"
-    env_file:
-      - .env.dev
+      - "0.0.0.0:3837:3837"
     environment:
-      - DB_HOST=db  # This overrides the DB_HOST from .env file
+      - DB_HOST=db-dev
       - ENVIRONMENT=development
+      - APP_PORT=3837
+      - DB_PORT=5433
+      - DB_USER=rajesh
+      - DB_PASSWORD=Software292$
+      - DB_NAME=causalehr
+      - DB_SENTENCE_SCHEMA=public
+      - DB_SENTENCE_TABLE=sentence
+      - DB_PREDICATION_SCHEMA=public
+      - DB_PREDICATION_TABLE=predication
+      - DB_SUBJECT_SEARCH_SCHEMA=filtered
+      - DB_SUBJECT_SEARCH_TABLE=subject_search
+      - DB_OBJECT_SEARCH_SCHEMA=filtered
+      - DB_OBJECT_SEARCH_TABLE=object_search
     depends_on:
-      db:
+      db-dev:
         condition: service_healthy
     volumes:
       - .:/causalknowledgetrace  # Mount source code for live reload in dev
