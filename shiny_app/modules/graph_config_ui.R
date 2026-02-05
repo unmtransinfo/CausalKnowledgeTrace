@@ -300,7 +300,7 @@ create_config_inputs <- function(ns, ui_config) {
                 placeholder = "e.g., Hypertension, Diabetes",
                 width = "100%"
             ),
-            helpText("Required: Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
+            helpText("Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
         ),
 
         # Consolidated Outcome Name
@@ -314,7 +314,7 @@ create_config_inputs <- function(ns, ui_config) {
                 placeholder = "e.g., Alzheimers, Cancer",
                 width = "100%"
             ),
-            helpText("Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
+            helpText("Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
         ),
 
         # Degree
@@ -489,6 +489,7 @@ graphConfigUI <- function(id) {
                 # Instructions
                 div(
                     class = "alert alert-info",
+                    style = "background-color: #3c8dbc !important; color: #fff !important; border-color: #3c8dbc !important;",
                     icon("info-circle"),
                     strong("Instructions: "),
                     "Configure the parameters below to generate your knowledge graph. ",
@@ -511,9 +512,10 @@ graphConfigUI <- function(id) {
                         actionButton(
                             ns("create_graph"),
                             "Create Graph",
-                            class = "btn-primary btn-lg",
+                            class = "btn-lg",
                             icon = icon("cogs"),
-                            width = "100%"
+                            width = "100%",
+                            style = "background-color: #3c8dbc; color: white; border-color: #367fa9;"
                         )
                     ),
                     column(6,
