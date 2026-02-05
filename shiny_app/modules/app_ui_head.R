@@ -10,9 +10,11 @@
 get_app_css_styles <- function() {
     tags$style(HTML("
         /* Header Layout: Hamburger (left) | Text (center) | Logo (right) */
+        .skin-blue .main-header .navbar,
         .main-header .navbar {
             margin-left: 0 !important;
             position: relative !important;
+            background-color: #222d32 !important; /* background color */
         }
 
         /* Hide the default logo element */
@@ -55,21 +57,89 @@ get_app_css_styles <- function() {
             float: right !important;
         }
 
-        /* Sidebar active menu item - only change the left border color to orange */
-        .skin-blue .main-sidebar .sidebar .sidebar-menu .active > a {
-            border-left-color: #ff8c42 !important;  /* Orange border instead of blue */
-            border-left-width: 4px !important;
-            border-left-style: solid !important;
+        /* Hide sidebar completely */
+        .main-sidebar {
+            display: none !important;
         }
 
-        /* General sidebar menu item styling */
-        .sidebar-menu > li.active > a {
-            border-left-color: #ff8c42 !important;  /* Orange border */
-            border-left-width: 4px !important;
-        }
-
+        /* Adjust content wrapper to use full width */
         .content-wrapper, .right-side {
+            margin-left: 0 !important;
             background-color: #f4f4f4;
+        }
+
+        /* Horizontal Navigation Container - Second Row */
+        .horizontal-nav-container {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            background-color: #1a2226;
+            border-bottom: 1px solid #374850;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Horizontal Navigation Menu */
+        .horizontal-nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 50px;
+        }
+
+        /* Horizontal Navigation Items */
+        .horizontal-nav-item {
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
+        .horizontal-nav-item a {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #b8c7ce;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            height: 50px;
+        }
+
+        .horizontal-nav-item a i {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .horizontal-nav-item a:hover {
+            background-color: #243035;
+            color: #ffffff;
+        }
+
+        /* Active tab styling with orange border */
+        .horizontal-nav-item.active a {
+            color: #ffffff;
+            background-color: #2c3b41;
+            border-bottom-color: #ff8c42 !important;
+            border-bottom-width: 3px !important;
+            border-bottom-style: solid !important;
+        }
+
+        /* Adjust content wrapper to accommodate navigation bar */
+        .content-wrapper {
+            margin-top: 50px !important;
+            padding-top: 50px !important;
+        }
+
+        /* Ensure tab content appears below navigation */
+        .tab-content {
+            margin-top: 0 !important;
         }
         .box {
             border-radius: 5px;
@@ -349,15 +419,63 @@ get_app_css_styles <- function() {
 #' @export
 get_app_javascript <- function() {
     tags$script(HTML("
+        // Navigation function for horizontal tabs
+        function navigateToTab(tabName) {
+            console.log('Navigating to tab:', tabName);
+
+            // Remove active class from all nav items
+            $('.horizontal-nav-item').removeClass('active');
+
+            // Add active class to clicked nav item
+            $('.horizontal-nav-item[data-value=\"' + tabName + '\"]').addClass('active');
+
+            // Hide all tab content (shinydashboard uses .tab-pane class)
+            $('.tab-pane').removeClass('active').removeClass('in');
+
+            // Show selected tab content
+            var targetTab = $('#shiny-tab-' + tabName);
+            if (targetTab.length > 0) {
+                targetTab.addClass('active').addClass('in');
+            }
+
+            // Update Shiny input value to trigger server-side observers (if needed)
+            // Note: We don't set this anymore to avoid loops
+            // if (typeof Shiny !== 'undefined') {
+            //     Shiny.setInputValue('sidebar', tabName, {priority: 'event'});
+            // }
+        }
+
         function openCreateGraph() {
             // Navigate to the Graph Configuration tab
-            $('a[data-value=\"create_graph\"]').click();
+            navigateToTab('create_graph');
         }
 
         function openCausalAnalysis() {
             // Navigate to the Causal Analysis tab
-            $('a[data-value=\"causal\"]').click();
+            navigateToTab('causal');
         }
+
+        // Initialize navigation on page load
+        $(document).ready(function() {
+            // Set initial active tab (About)
+            navigateToTab('about');
+
+            // Hide sidebar toggle button since we don't have a sidebar
+            $('.sidebar-toggle').hide();
+        });
+
+        // Custom message handler for server-side navigation
+        $(document).on('shiny:connected', function() {
+            if (typeof Shiny !== 'undefined') {
+                // Handle custom navigateToTab messages from server
+                Shiny.addCustomMessageHandler('navigateToTab', function(message) {
+                    console.log('Received navigateToTab message:', message);
+                    if (message.tab) {
+                        navigateToTab(message.tab);
+                    }
+                });
+            }
+        });
 
         // Progress bar control functions
         function updateProgress(percent, text, status) {
@@ -385,11 +503,6 @@ get_app_javascript <- function() {
         $(document).on('click', '#upload_and_load', function() {
             showLoadingSection();
             updateProgress(20, 'Uploading file...', 'Processing uploaded graph file');
-        });
-
-        // Hide loading section on page load
-        $(document).ready(function() {
-            hideLoadingSection();
         });
 
         // Message handlers for server communication

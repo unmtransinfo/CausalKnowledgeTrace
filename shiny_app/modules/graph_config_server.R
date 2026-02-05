@@ -398,7 +398,7 @@ graphConfigServer <- function(id, db_connection = NULL) {
                         actionButton(NS(id, "goto_upload"), "Go to Data Upload",
                                    icon = icon("arrow-right"),
                                    class = "btn-success btn-lg",
-                                   onclick = "$('a[data-value=\"upload\"]').click(); $('#shiny-modal').modal('hide');")
+                                   onclick = "navigateToTab('upload'); $('#shiny-modal').modal('hide');")
                     ),
                     footer = modalButton("Close"),
                     easyClose = TRUE,

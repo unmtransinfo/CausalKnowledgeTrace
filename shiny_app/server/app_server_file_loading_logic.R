@@ -477,13 +477,15 @@
 
     # Observer for "Go to Graph Visualization" button from file loading modal
     observeEvent(input$goto_dag_viz, {
-        updateTabItems(session, "sidebar", "dag")
+        # Use custom message to navigate instead of updateTabItems
+        session$sendCustomMessage("navigateToTab", list(tab = "dag"))
         removeModal()
     })
 
     # Observer for "Go to Graph Visualization" button from file upload modal
     observeEvent(input$goto_dag_viz_upload, {
-        updateTabItems(session, "sidebar", "dag")
+        # Use custom message to navigate instead of updateTabItems
+        session$sendCustomMessage("navigateToTab", list(tab = "dag"))
         removeModal()
     })
 
