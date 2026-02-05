@@ -385,8 +385,8 @@
             return()
         }
 
-        # Navigate to causal analysis tab
-        updateTabItems(session, "sidebar", "causal")
+        # Navigate to causal analysis tab using custom message
+        session$sendCustomMessage("navigateToTab", list(tab = "causal"))
         showNotification(
             "Navigating to Causal Analysis tab...",
             type = "message",
