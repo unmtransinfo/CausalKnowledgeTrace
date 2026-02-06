@@ -457,48 +457,105 @@ tabItems(
                         h4(icon("chart-line"), " Current Graph Status"),
                         verbatimTextOutput("current_dag_status"),
 
-                        # File selection section
-                        h4(icon("folder-open"), " Load Graph from Existing File"),
-                        p("Select a graph file from the dropdown below:"),
-
+                        # Two-column layout for file selection and upload
                         fluidRow(
-                            column(8,
-                                selectInput("dag_file_selector",
-                                           "Choose Graph File:",
-                                           choices = NULL,
-                                           selected = NULL)
-                            ),
-                            column(4,
-                                br(),
-                                actionButton("load_selected_dag", "Load Selected Graph",
-                                           class = "btn-primary", style = "margin-top: 5px; width: 100%;")
-                            )
-                        ),
+                            # LEFT COLUMN: Load Graph from Existing File
+                            column(6,
+                                div(style = "padding: 15px; background-color: #f8f9fa; border-radius: 5px; border-left: 4px solid #3c8dbc; min-height: 500px;",
+                                    h4(icon("folder-open"), " Load Graph from Existing File"),
+                                    p("Select a graph file from the dropdown below:"),
 
-                        # Graph filtering options
-                        fluidRow(
-                            column(12,
-                                div(style = "margin-top: 15px; margin-bottom: 15px; padding: 15px; background-color: #f8f9fa; border-radius: 5px; border-left: 4px solid #28a745;",
-                                    h4(icon("filter"), " Graph Filtering Options"),
+                                    # File selection
+                                    selectInput("dag_file_selector",
+                                               "Choose Graph File:",
+                                               choices = NULL,
+                                               selected = NULL,
+                                               width = "100%"),
 
-                                    # Radio buttons for filter type
-                                    radioButtons("filter_type",
-                                                label = "Select filtering method:",
-                                                choices = list(
-                                                    "No filtering - Load original graph" = "none",
-                                                    "Remove leaf nodes only (degree = 1)" = "leaf"
-                                                ),
-                                                selected = "none"),
+                                    actionButton("load_selected_dag", "Load Selected Graph",
+                                               class = "btn-primary",
+                                               style = "width: 100%; margin-bottom: 15px;",
+                                               icon = icon("download")),
 
-                                    # Description for each option
-                                    conditionalPanel(
-                                        condition = "input.filter_type == 'leaf'",
-                                        div(style = "margin-left: 25px; padding: 10px; background-color: #fff3cd; border-radius: 5px;",
-                                            icon("info-circle"),
-                                            strong(" Leaf Removal:"),
-                                            p("Iteratively removes nodes with only one connection (degree = 1). Exposure and outcome nodes are preserved.")
+                                    # Graph filtering options
+                                    div(style = "margin-top: 20px; padding: 15px; background-color: #ffffff; border-radius: 5px; border: 1px solid #dee2e6;",
+                                        h5(icon("filter"), " Graph Filtering Options"),
+
+                                        # Radio buttons for filter type
+                                        radioButtons("filter_type",
+                                                    label = "Select filtering method:",
+                                                    choices = list(
+                                                        "No filtering - Load original graph" = "none",
+                                                        "Remove leaf nodes only (degree = 1)" = "leaf"
+                                                    ),
+                                                    selected = "none"),
+
+                                        # Description for each option
+                                        conditionalPanel(
+                                            condition = "input.filter_type == 'leaf'",
+                                            div(style = "margin-left: 10px; padding: 10px; background-color: #fff3cd; border-radius: 5px;",
+                                                icon("info-circle"),
+                                                strong(" Leaf Removal:"),
+                                                p("Iteratively removes nodes with only one connection (degree = 1). Exposure and outcome nodes are preserved.", style = "margin-bottom: 0;")
+                                            )
                                         )
                                     )
+                                )
+                            ),
+
+                            # RIGHT COLUMN: Upload New Graph File
+                            column(6,
+                                div(style = "padding: 15px; background-color: #f8f9fa; border-radius: 5px; border-left: 4px solid #3c8dbc; min-height: 500px;",
+                                    h4(icon("upload"), " Upload New Graph File"),
+                                    p("Upload a new R file containing your graph definition:"),
+
+                                    # File upload
+                                    fileInput("dag_file_upload", "Choose R File",
+                                             accept = c(".R", ".r"),
+                                             multiple = FALSE,
+                                             placeholder = "No file selected",
+                                             width = "100%"),
+
+                                    actionButton("upload_and_load", "Upload & Load",
+                                               class = "btn-primary",
+                                               style = "width: 100%; margin-bottom: 15px; background-color: #3c8dbc; border-color: #367fa9;",
+                                               icon = icon("upload"))
+
+                                    # Instructions - COMMENTED OUT FOR NOW
+                                    # div(style = "margin-top: 20px;",
+                                    #     h5("Instructions"),
+                                    #     tags$div(
+                                    #         tags$h6(strong("Method 1: Place files in graph_creation/result directory")),
+                                    #         tags$ul(style = "font-size: 13px;",
+                                    #             tags$li("Create an R file (e.g., 'degree_1.R', 'degree_2.R', 'degree_3.R', 'MarkovBlanket_Union.R') with your DAG definition"),
+                                    #             tags$li("Place it in the 'graph_creation/result' directory (generated graphs are automatically saved here)"),
+                                    #             tags$li("Click 'Refresh File List' and select your file"),
+                                    #             tags$li("Click 'Load Selected DAG'")
+                                    #         ),
+                                    #
+                                    #         tags$h6(strong("Method 2: Upload files through the interface")),
+                                    #         tags$ul(style = "font-size: 13px;",
+                                    #             tags$li("Use the file upload interface above"),
+                                    #             tags$li("Select your R file containing the DAG"),
+                                    #             tags$li("Click 'Upload & Load'")
+                                    #         ),
+                                    #
+                                    #         tags$h6(strong("DAG File Format")),
+                                    #         tags$p("Your R file should contain a dagitty graph definition like:", style = "font-size: 13px;"),
+                                    #         tags$pre(style = "background-color: #ffffff; padding: 10px; font-size: 11px; border: 1px solid #dee2e6;",
+                                    # 'g <- dagitty(\'dag {
+                                    #     Variable1 [exposure]
+                                    #     Variable2 [outcome]
+                                    #     Variable3
+                                    #     Variable4
+                                    #
+                                    #     Variable1 -> Variable2
+                                    #     Variable2 -> Variable3
+                                    #     Variable3 -> Variable4
+                                    # }\')'),
+                                    #         tags$p("The variable name must be 'g' for the app to recognize it.", style = "font-size: 13px; margin-bottom: 0;")
+                                    #     )
+                                    # )
                                 )
                             )
                         ),
@@ -524,60 +581,6 @@ tabItems(
                                     )
                                 )
                             )
-                        ),
-
-                        hr(),
-
-                        # File upload section
-                        h4(icon("upload"), " Upload New Graph File"),
-                        p("Upload a new R file containing your graph definition:"),
-
-                        fluidRow(
-                            column(8,
-                                fileInput("dag_file_upload", "Choose R File",
-                                         accept = c(".R", ".r"),
-                                         multiple = FALSE,
-                                         placeholder = "No file selected")
-                            ),
-                            column(4,
-                                br(),
-                                actionButton("upload_and_load", "Upload & Load",
-                                           class = "btn-success", style = "margin-top: 5px; width: 100%;")
-                            )
-                        ),
-                        
-                        # Instructions
-                        h4("Instructions"),
-                        tags$div(
-                            tags$h5("Method 1: Place files in graph_creation/result directory"),
-                            tags$ul(
-                                tags$li("Create an R file (e.g., 'degree_1.R', 'degree_2.R', 'degree_3.R', 'MarkovBlanket_Union.R') with your DAG definition"),
-                                tags$li("Place it in the 'graph_creation/result' directory (generated graphs are automatically saved here)"),
-                                tags$li("Click 'Refresh File List' and select your file"),
-                                tags$li("Click 'Load Selected DAG'")
-                            ),
-                            
-                            tags$h5("Method 2: Upload files through the interface"),
-                            tags$ul(
-                                tags$li("Use the file upload interface above"),
-                                tags$li("Select your R file containing the DAG"),
-                                tags$li("Click 'Upload & Load'")
-                            ),
-                            
-                            tags$h5("DAG File Format"),
-                            tags$p("Your R file should contain a dagitty graph definition like:"),
-                            tags$pre(style = "background-color: #f8f9fa; padding: 10px;",
-'g <- dagitty(\'dag {
-    Variable1 [exposure]
-    Variable2 [outcome]
-    Variable3
-    Variable4
-    
-    Variable1 -> Variable2
-    Variable2 -> Variable3
-    Variable3 -> Variable4
-}\')'),
-                            tags$p("The variable name must be 'g' for the app to recognize it.")
                         )
                     )
                 )
