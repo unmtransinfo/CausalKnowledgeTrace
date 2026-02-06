@@ -13,8 +13,15 @@ get_app_css_styles <- function() {
         .skin-blue .main-header .navbar,
         .main-header .navbar {
             margin-left: 0 !important;
+            margin-bottom: 0 !important;
             position: relative !important;
             background-color: #222d32 !important; /* background color */
+        }
+
+        /* Remove any margin/padding from main header */
+        .main-header {
+            margin-bottom: 0 !important;
+            background-color: #222d32 !important;
         }
 
         /* Hide the default logo element */
@@ -65,6 +72,7 @@ get_app_css_styles <- function() {
         /* Adjust content wrapper to use full width */
         .content-wrapper, .right-side {
             margin-left: 0 !important;
+            margin-top: 0 !important;
             background-color: #f4f4f4;
         }
 
@@ -74,6 +82,7 @@ get_app_css_styles <- function() {
             width: 100%;
             background-color: #1a2226;
             border-bottom: 1px solid #374850;
+            margin-top: 0 !important;
             z-index: 1000;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
@@ -131,12 +140,20 @@ get_app_css_styles <- function() {
         /* Adjust content wrapper to accommodate navigation bar */
         .content-wrapper {
             margin-top: 0 !important;
-            padding-top: 15px !important;
+            padding-top: 0 !important;
+        }
+
+        /* Remove spacing from content section */
+        .content {
+            min-height: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
         }
 
         /* Ensure tab content appears below navigation */
         .tab-content {
             margin-top: 0 !important;
+            padding-top: 15px !important;
         }
         .box {
             border-radius: 5px;
