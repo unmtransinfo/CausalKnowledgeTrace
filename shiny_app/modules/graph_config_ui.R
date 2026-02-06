@@ -123,16 +123,16 @@ create_progress_javascript <- function(id, ns) {
     ")))
 }
 
-#' Create CUI Input Fields
+#' Create Exposure Column (Column 1)
 #'
-#' Creates exposure, outcome, and blocklist CUI input fields
+#' Creates exposure CUIs and consolidated exposure name
 #'
 #' @param ns Namespace function
 #' @param ui_config Configuration loaded at UI time
 #' @param cui_search_available Boolean indicating if CUI search is available
-#' @return Column with CUI input fields
+#' @return Column with exposure inputs
 #' @keywords internal
-create_cui_inputs <- function(ns, ui_config, cui_search_available) {
+create_exposure_column <- function(ns, ui_config, cui_search_available) {
     # Extract CUI values from config
     exposure_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$exposure_cuis)) {
         paste(unlist(ui_config$exposure_cuis), collapse = ", ")
@@ -140,19 +140,20 @@ create_cui_inputs <- function(ns, ui_config, cui_search_available) {
         "C0020538, C4013784, C0221155, C0745114, C0745135"
     }
 
-    outcome_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_cuis)) {
-        paste(unlist(ui_config$outcome_cuis), collapse = ", ")
+    exposure_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$exposure_name)) {
+        ui_config$exposure_name
     } else {
-        "C2677888, C0750901, C0494463, C0002395"
+        "Hypertension"
     }
 
-    blocklist_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$blocklist_cuis)) {
-        paste(unlist(ui_config$blocklist_cuis), collapse = ", ")
+    # Extract predication type from config
+    predication_type_ui <- if (!is.null(ui_config) && !is.null(ui_config$predication_type)) {
+        ui_config$predication_type
     } else {
-        ""
+        "CAUSES"
     }
 
-    column(6,
+    column(4,
         # Exposure CUIs
         div(
             class = "form-group",
@@ -182,6 +183,80 @@ create_cui_inputs <- function(ns, ui_config, cui_search_available) {
             }
         ),
 
+        # Consolidated Exposure Name
+        div(
+            class = "form-group",
+            tags$label("Consolidated Exposure Name *", class = "control-label"),
+            textInput(
+                ns("exposure_name"),
+                label = NULL,
+                value = exposure_name_ui,
+                placeholder = "e.g., Hypertension, Diabetes",
+                width = "100%"
+            ),
+            helpText("Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
+        ),
+
+        # Predication Types
+        div(
+            class = "form-group",
+            selectInput(
+                ns("PREDICATION_TYPE"),
+                "Predication Types",
+                choices = list(
+                    "AFFECTS" = "AFFECTS",
+                    "AUGMENTS" = "AUGMENTS",
+                    "CAUSES" = "CAUSES",
+                    "COMPLICATES" = "COMPLICATES",
+                    "DISRUPTS" = "DISRUPTS",
+                    "INHIBITS" = "INHIBITS",
+                    "PRECEDES" = "PRECEDES",
+                    "PREDISPOSES" = "PREDISPOSES",
+                    "PREVENTS" = "PREVENTS",
+                    "PRODUCES" = "PRODUCES",
+                    "STIMULATES" = "STIMULATES",
+                    "TREATS" = "TREATS"
+                ),
+                selected = "CAUSES",
+                multiple = TRUE,
+                width = "100%"
+            ),
+            helpText("Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Will be saved as comma-separated values in YAML format.")
+        )
+    )
+}
+
+#' Create Outcome Column (Column 2)
+#'
+#' Creates outcome CUIs and consolidated outcome name
+#'
+#' @param ns Namespace function
+#' @param ui_config Configuration loaded at UI time
+#' @param cui_search_available Boolean indicating if CUI search is available
+#' @return Column with outcome inputs
+#' @keywords internal
+create_outcome_column <- function(ns, ui_config, cui_search_available) {
+    # Extract CUI values from config
+    outcome_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_cuis)) {
+        paste(unlist(ui_config$outcome_cuis), collapse = ", ")
+    } else {
+        "C2677888, C0750901, C0494463, C0002395"
+    }
+
+    outcome_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_name)) {
+        ui_config$outcome_name
+    } else {
+        "Alzheimers"
+    }
+
+    # Extract publication year cutoff from config
+    pub_year_cutoff_ui <- if (!is.null(ui_config) && !is.null(ui_config$pub_year_cutoff)) {
+        ui_config$pub_year_cutoff
+    } else {
+        2015
+    }
+
+    column(4,
         # Outcome CUIs
         div(
             class = "form-group",
@@ -211,6 +286,66 @@ create_cui_inputs <- function(ns, ui_config, cui_search_available) {
             }
         ),
 
+        # Consolidated Outcome Name
+        div(
+            class = "form-group",
+            tags$label("Consolidated Outcome Name *", class = "control-label"),
+            textInput(
+                ns("outcome_name"),
+                label = NULL,
+                value = outcome_name_ui,
+                placeholder = "e.g., Alzheimers, Cancer",
+                width = "100%"
+            ),
+            helpText("Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
+        ),
+
+        # Publication Year Cutoff
+        div(
+            class = "form-group",
+            selectInput(
+                ns("pub_year_cutoff"),
+                "Publication Year Cutoff *",
+                choices = setNames(1980:2025, 1980:2025),
+                selected = 2015,
+                width = "100%"
+            ),
+            helpText("Only include citations published on or after this year.")
+        )
+    )
+}
+
+#' Create Blocklist and Configuration Column (Column 3)
+#'
+#' Creates blocklist CUIs and other configuration parameters
+#'
+#' @param ns Namespace function
+#' @param ui_config Configuration loaded at UI time
+#' @param cui_search_available Boolean indicating if CUI search is available
+#' @return Column with blocklist and configuration inputs
+#' @keywords internal
+create_config_column <- function(ns, ui_config, cui_search_available) {
+    # Extract CUI values from config
+    blocklist_cuis_ui <- if (!is.null(ui_config) && !is.null(ui_config$blocklist_cuis)) {
+        paste(unlist(ui_config$blocklist_cuis), collapse = ", ")
+    } else {
+        ""
+    }
+
+    # Extract values from config
+    degree_ui <- if (!is.null(ui_config) && !is.null(ui_config$degree)) {
+        as.character(ui_config$degree)
+    } else {
+        "2"
+    }
+
+    predication_type_ui <- if (!is.null(ui_config) && !is.null(ui_config$predication_type)) {
+        ui_config$predication_type
+    } else {
+        "CAUSES"
+    }
+
+    column(4,
         # Blocklist CUIs
         div(
             class = "form-group",
@@ -238,83 +373,6 @@ create_cui_inputs <- function(ns, ui_config, cui_search_available) {
                     helpText("Optional: CUIs to exclude from the graph analysis. Enter comma-delimited CUI codes (format: C followed by 7 digits). These concepts will be filtered out during graph creation. Press Enter to search for concepts.")
                 )
             }
-        )
-    )
-}
-
-#' Create Configuration Parameter Inputs
-#'
-#' Creates configuration parameter input fields (names, thresholds, etc.)
-#'
-#' @param ns Namespace function
-#' @param ui_config Configuration loaded at UI time
-#' @return Column with configuration parameter fields
-#' @keywords internal
-create_config_inputs <- function(ns, ui_config) {
-    # Extract values from config
-    exposure_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$exposure_name)) {
-        ui_config$exposure_name
-    } else {
-        "Hypertension"  # Changed from "" to "Hypertension"
-    }
-
-    outcome_name_ui <- if (!is.null(ui_config) && !is.null(ui_config$outcome_name)) {
-        ui_config$outcome_name
-    } else {
-        "Alzheimers"
-    }
-
-    min_pmids_ui <- if (!is.null(ui_config) && !is.null(ui_config$min_pmids)) {
-        ui_config$min_pmids
-    } else {
-        10
-    }
-
-    pub_year_cutoff_ui <- if (!is.null(ui_config) && !is.null(ui_config$pub_year_cutoff)) {
-        ui_config$pub_year_cutoff
-    } else {
-        2015
-    }
-
-    degree_ui <- if (!is.null(ui_config) && !is.null(ui_config$degree)) {
-        as.character(ui_config$degree)
-    } else {
-        "2"
-    }
-
-    predication_type_ui <- if (!is.null(ui_config) && !is.null(ui_config$predication_type)) {
-        ui_config$predication_type
-    } else {
-        "CAUSES"
-    }
-
-    column(6,
-        # Consolidated Exposure Name
-        div(
-            class = "form-group",
-            tags$label("Consolidated Exposure Name *", class = "control-label"),
-            textInput(
-                ns("exposure_name"),
-                label = NULL,
-                value = exposure_name_ui,  # Use the extracted value instead of hardcoded ""
-                placeholder = "e.g., Hypertension, Diabetes",
-                width = "100%"
-            ),
-            helpText("Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.")
-        ),
-
-        # Consolidated Outcome Name
-        div(
-            class = "form-group",
-            tags$label("Consolidated Outcome Name *", class = "control-label"),
-            textInput(
-                ns("outcome_name"),
-                label = NULL,
-                value = outcome_name_ui,  # Use the extracted value instead of hardcoded ""
-                placeholder = "e.g., Alzheimers, Cancer",
-                width = "100%"
-            ),
-            helpText("Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.")
         ),
 
         # Degree
@@ -374,46 +432,6 @@ create_config_inputs <- function(ns, ui_config) {
                 )
             ),
             helpText("Minimum number of unique PMIDs required for each degree level (1-1000).")
-        ),
-
-        # Publication Year Cutoff
-        div(
-            class = "form-group",
-            selectInput(
-                ns("pub_year_cutoff"),
-                "Publication Year Cutoff *",
-                choices = setNames(1980:2025, 1980:2025),
-                selected = 2015,
-                width = "100%"
-            ),
-            helpText("Only include citations published on or after this year.")
-        ),
-
-        # Predication Types
-        div(
-            class = "form-group",
-            selectInput(
-                ns("PREDICATION_TYPE"),
-                "Predication Types",
-                choices = list(
-                    "AFFECTS" = "AFFECTS",
-                    "AUGMENTS" = "AUGMENTS",
-                    "CAUSES" = "CAUSES",
-                    "COMPLICATES" = "COMPLICATES",
-                    "DISRUPTS" = "DISRUPTS",
-                    "INHIBITS" = "INHIBITS",
-                    "PRECEDES" = "PRECEDES",
-                    "PREDISPOSES" = "PREDISPOSES",
-                    "PREVENTS" = "PREVENTS",
-                    "PRODUCES" = "PRODUCES",
-                    "STIMULATES" = "STIMULATES",
-                    "TREATS" = "TREATS"
-                ),
-                selected = "CAUSES",
-                multiple = TRUE,
-                width = "100%"
-            ),
-            helpText("Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Will be saved as comma-separated values in YAML format.")
         ),
 
         # SemMedDB Version
@@ -496,13 +514,16 @@ graphConfigUI <- function(id) {
                     "All fields marked with * are required."
                 ),
 
-                # Configuration Form - Two Column Layout
+                # Configuration Form - Three Column Layout
                 fluidRow(
-                    # Left Column: CUI-related components
-                    create_cui_inputs(ns, ui_config, exists("cui_search_available") && cui_search_available),
+                    # Column 1: Exposure CUIs and Consolidated Exposure Name
+                    create_exposure_column(ns, ui_config, exists("cui_search_available") && cui_search_available),
 
-                    # Right Column: Configuration parameters
-                    create_config_inputs(ns, ui_config)
+                    # Column 2: Outcome CUIs and Consolidated Outcome Name
+                    create_outcome_column(ns, ui_config, exists("cui_search_available") && cui_search_available),
+
+                    # Column 3: Blocklist CUIs and Other Configuration Parameters
+                    create_config_column(ns, ui_config, exists("cui_search_available") && cui_search_available)
                 ),
 
                 # Action Button and Status
