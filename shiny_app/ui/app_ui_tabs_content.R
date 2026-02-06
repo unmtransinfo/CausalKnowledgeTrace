@@ -217,81 +217,92 @@ tabItems(
 
     # Graph Visualization Tab
     tabItem(tabName = "dag",
-                # Row 1: Interactive Causal Graph Explorer (top)
+                # Responsive two-column layout: Graph (left) and Edge Info (right)
                 fluidRow(
-                    box(
-                        title = "Interactive Causal Graph Explorer",
-                        status = "primary",
-                        solidHeader = TRUE,
-                        width = 12,
-                        class = "dag-network-box",
-                        div(class = "resizable-dag-container",
-                            visNetworkOutput("network", height = "100%", width = "100%"),
-                            div(class = "dag-resize-handle")
-                        ),
-                        div(style = "margin-top: 10px;",
-                            helpText("Click on edges to view information below. Select nodes or edges and use removal buttons. Use 'Save DAG' to download your modified graph."),
-                            div(style = "margin-top: 5px;",
-                                actionButton("remove_node_btn", "Remove Selected Node",
-                                           class = "btn-danger btn-sm",
-                                           style = "margin-right: 5px;",
-                                           icon = icon("trash")),
-                                actionButton("remove_edge_btn", "Remove Selected Edge",
-                                           class = "btn-warning btn-sm",
-                                           style = "margin-right: 5px;",
-                                           icon = icon("scissors")),
-                                actionButton("undo_removal", "Undo Last Removal",
-                                           class = "btn-info btn-sm",
-                                           style = "margin-right: 10px;",
-                                           icon = icon("undo")),
-                                downloadButton("save_dag_btn", "Save DAG",
-                                             class = "btn-success btn-sm",
-                                             style = "margin-right: 5px; font-weight: bold;",
-                                             icon = icon("download"),
-                                             title = "Download your modified DAG as an R file"),
-                                downloadButton("save_html_btn", "Save HTML",
-                                             class = "btn-warning btn-sm",
-                                             style = "margin-right: 10px; font-weight: bold;",
-                                             icon = icon("file-text"),
-                                             title = "Convert JSON to readable HTML report"),
-                                span(id = "network_stats",
-                                     style = "font-size: 12px; color: #666; margin-left: 10px;",
-                                     textOutput("network_stats_text", inline = TRUE))
-                            )
-                        ),
+                    id = "dag-main-row",
+                    class = "dag-responsive-layout",
 
-                        hr(),
-
-                        # Physics controls and color coding
-                        fluidRow(
-                            column(8,
-                                create_network_controls_ui()
+                    # Left Column: Interactive Causal Graph Explorer
+                    column(8,
+                        id = "dag-graph-column",
+                        class = "dag-graph-col",
+                        box(
+                            title = "Interactive Causal Graph Explorer",
+                            status = "primary",
+                            solidHeader = TRUE,
+                            width = NULL,
+                            class = "dag-network-box",
+                            div(class = "resizable-dag-container",
+                                visNetworkOutput("network", height = "100%", width = "100%"),
+                                div(class = "dag-resize-handle")
                             ),
-                            column(4,
-                                div(style = "padding: 10px; background-color: #f8f9fa; border-radius: 4px;",
-                                    h5(style = "margin-top: 0; font-size: 14px;", icon("palette"), " Node Colors:"),
-                                    tags$div(style = "font-size: 12px;",
-                                        tags$span(style = "color: #FF6B6B; font-weight: bold;", "● Red"), " = Exposure | ",
-                                        tags$span(style = "color: #4ECDC4; font-weight: bold;", "● Cyan"), " = Outcome | ",
-                                        tags$span(style = "color: #95A5A6; font-weight: bold;", "● Gray"), " = Other"
+                            div(style = "margin-top: 10px;",
+                                helpText("Click on edges to view information. Select nodes or edges and use removal buttons. Use 'Save DAG' to download your modified graph."),
+                                div(style = "margin-top: 5px;",
+                                    actionButton("remove_node_btn", "Remove Selected Node",
+                                               class = "btn-danger btn-sm",
+                                               style = "margin-right: 5px;",
+                                               icon = icon("trash")),
+                                    actionButton("remove_edge_btn", "Remove Selected Edge",
+                                               class = "btn-warning btn-sm",
+                                               style = "margin-right: 5px;",
+                                               icon = icon("scissors")),
+                                    actionButton("undo_removal", "Undo Last Removal",
+                                               class = "btn-info btn-sm",
+                                               style = "margin-right: 10px;",
+                                               icon = icon("undo")),
+                                    downloadButton("save_dag_btn", "Save DAG",
+                                                 class = "btn-success btn-sm",
+                                                 style = "margin-right: 5px; font-weight: bold;",
+                                                 icon = icon("download"),
+                                                 title = "Download your modified DAG as an R file"),
+                                    downloadButton("save_html_btn", "Save HTML",
+                                                 class = "btn-warning btn-sm",
+                                                 style = "margin-right: 10px; font-weight: bold;",
+                                                 icon = icon("file-text"),
+                                                 title = "Convert JSON to readable HTML report"),
+                                    span(id = "network_stats",
+                                         style = "font-size: 12px; color: #666; margin-left: 10px;",
+                                         textOutput("network_stats_text", inline = TRUE))
+                                )
+                            ),
+
+                            hr(),
+
+                            # Physics controls and color coding
+                            fluidRow(
+                                column(8,
+                                    create_network_controls_ui()
+                                ),
+                                column(4,
+                                    div(style = "padding: 10px; background-color: #f8f9fa; border-radius: 4px;",
+                                        h5(style = "margin-top: 0; font-size: 14px;", icon("palette"), " Node Colors:"),
+                                        tags$div(style = "font-size: 12px;",
+                                            tags$span(style = "color: #FF6B6B; font-weight: bold;", "● Red"), " = Exposure | ",
+                                            tags$span(style = "color: #4ECDC4; font-weight: bold;", "● Cyan"), " = Outcome | ",
+                                            tags$span(style = "color: #95A5A6; font-weight: bold;", "● Gray"), " = Other"
+                                        )
                                     )
                                 )
                             )
                         )
-                    )
-                ),
-                # Row 2: Edge Information (directly below DAG)
-                fluidRow(
-                    box(
-                        title = "Edge Information",
-                        status = "info",
-                        solidHeader = TRUE,
-                        width = 12,
-                        class = "edge-info-box",
-                        div(id = "selection_info_panel",
-                            h5(textOutput("selected_item_title")),
-                            div(class = "edge-info-table-container",
-                                DT::dataTableOutput("selection_info_table")
+                    ),
+
+                    # Right Column: Edge Information
+                    column(4,
+                        id = "dag-edge-column",
+                        class = "dag-edge-col",
+                        box(
+                            title = "Edge Information",
+                            status = "info",
+                            solidHeader = TRUE,
+                            width = NULL,
+                            class = "edge-info-box",
+                            div(id = "selection_info_panel",
+                                h5(textOutput("selected_item_title")),
+                                div(class = "edge-info-table-container",
+                                    DT::dataTableOutput("selection_info_table")
+                                )
                             )
                         )
                     )
