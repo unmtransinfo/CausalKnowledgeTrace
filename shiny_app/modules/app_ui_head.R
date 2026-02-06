@@ -176,13 +176,15 @@ get_app_css_styles <- function() {
         /* Resizable graph visualization styles */
         .resizable-dag-container {
             position: relative;
-            min-height: 500px;
+            min-height: 400px;
             max-height: calc(100vh - 200px);
             height: calc(100vh - 300px);
+            min-width: 400px;
+            max-width: calc(100vw - 100px);
+            width: 100%;
             border: 1px solid #ddd;
             border-radius: 4px;
             overflow: visible;
-            width: 100%;
         }
 
         /* Fix for visNetwork nodesIdSelection dropdown */
@@ -212,40 +214,36 @@ get_app_css_styles <- function() {
 
         .dag-resize-handle {
             position: absolute;
-            bottom: -1px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 12px;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 6px 6px 0 0;
-            cursor: ns-resize;
+            right: 0;
+            bottom: 0;
+            width: 20px;
+            height: 20px;
+            background: #6c757d;
+            cursor: nwse-resize;
             z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             transition: all 0.2s ease;
+            opacity: 0.6;
         }
 
         .dag-resize-handle:before {
             content: '';
-            width: 30px;
-            height: 3px;
-            background: #6c757d;
-            border-radius: 2px;
-            box-shadow: 0 3px 0 #6c757d, 0 6px 0 #6c757d;
+            position: absolute;
+            right: 2px;
+            bottom: 2px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 14px 14px;
+            border-color: transparent transparent #ffffff transparent;
         }
 
         .dag-resize-handle:hover {
-            background: #e9ecef;
-            border-color: #007bff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            opacity: 1;
+            background: #007bff;
         }
 
         .dag-resize-handle:hover:before {
-            background: #007bff;
-            box-shadow: 0 3px 0 #007bff, 0 6px 0 #007bff;
+            border-color: transparent transparent #ffffff transparent;
         }
 
         .dag-network-output {
@@ -542,7 +540,9 @@ get_dag_resize_javascript <- function() {
         // Graph Visualization Resize Functionality
         function initializeDAGResize() {
             var isResizing = false;
+            var startX = 0;
             var startY = 0;
+            var startWidth = 0;
             var startHeight = 0;
             var container = null;
 
@@ -565,7 +565,9 @@ get_dag_resize_javascript <- function() {
 
                 handle.on('mousedown', function(e) {
                     isResizing = true;
+                    startX = e.clientX;
                     startY = e.clientY;
+                    startWidth = container.width();
                     startHeight = container.height();
 
                     // Prevent text selection during resize
@@ -576,17 +578,28 @@ get_dag_resize_javascript <- function() {
                 $(document).on('mousemove', function(e) {
                     if (!isResizing) return;
 
+                    var deltaX = e.clientX - startX;
                     var deltaY = e.clientY - startY;
+                    var newWidth = startWidth + deltaX;
                     var newHeight = startHeight + deltaY;
 
-                    // Enforce min and max height constraints
-                    newHeight = Math.max(400, Math.min(1200, newHeight));
+                    // Enforce min and max width constraints
+                    var maxWidth = $(window).width() - 100;
+                    newWidth = Math.max(400, Math.min(maxWidth, newWidth));
 
+                    // Enforce min and max height constraints
+                    var maxHeight = $(window).height() - 200;
+                    newHeight = Math.max(400, Math.min(maxHeight, newHeight));
+
+                    container.width(newWidth);
                     container.height(newHeight);
 
                     // Trigger resize event for visNetwork
                     if (window.Shiny && window.Shiny.onInputChange) {
-                        window.Shiny.onInputChange('dag_container_height', newHeight);
+                        window.Shiny.onInputChange('dag_container_dimensions', {
+                            width: newWidth,
+                            height: newHeight
+                        });
                     }
                 });
 
