@@ -270,6 +270,32 @@ get_app_css_styles <- function() {
             }
         }
 
+        /* Responsive Two-Column Layout for Graph Visualization */
+        .dag-responsive-layout {
+            display: flex;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+
+        .dag-graph-col {
+            flex: 1 1 66.666%;
+            min-width: 400px;
+            transition: all 0.3s ease;
+        }
+
+        .dag-edge-col {
+            flex: 1 1 33.333%;
+            min-width: 300px;
+            transition: all 0.3s ease;
+        }
+
+        /* When layout stacks (responsive breakpoint) */
+        .dag-responsive-layout.stacked .dag-graph-col,
+        .dag-responsive-layout.stacked .dag-edge-col {
+            flex: 1 1 100%;
+            max-width: 100%;
+        }
+
         /* Edge Information Panel Styling */
         .edge-info-box {
             height: auto !important;
@@ -318,6 +344,24 @@ get_app_css_styles <- function() {
         .edge-info-table-container .dataTables_paginate {
             float: right;
             margin-top: 10px;
+        }
+
+        /* Media query for narrow viewports - force stacking */
+        @media (max-width: 1200px) {
+            .dag-responsive-layout {
+                flex-direction: column;
+            }
+
+            .dag-graph-col,
+            .dag-edge-col {
+                flex: 1 1 100%;
+                max-width: 100%;
+                width: 100%;
+            }
+
+            .resizable-dag-container {
+                width: 100% !important;
+            }
         }
 
         /* Progress Section Styling - Make it prominent and visible */
@@ -537,7 +581,7 @@ get_app_javascript <- function() {
 #' @keywords internal
 get_dag_resize_javascript <- function() {
     tags$script(HTML("
-        // Graph Visualization Resize Functionality
+        // Graph Visualization Resize Functionality with Responsive Layout Support
         function initializeDAGResize() {
             var isResizing = false;
             var startX = 0;
@@ -545,13 +589,36 @@ get_dag_resize_javascript <- function() {
             var startWidth = 0;
             var startHeight = 0;
             var container = null;
+            var layoutRow = null;
 
             // Initialize resize functionality when DOM is ready
             $(document).ready(function() {
                 setTimeout(function() {
                     setupResizeHandlers();
+                    checkResponsiveLayout();
                 }, 1000); // Delay to ensure elements are rendered
             });
+
+            // Check and update responsive layout based on container width
+            function checkResponsiveLayout() {
+                layoutRow = $('#dag-main-row');
+                container = $('.resizable-dag-container');
+
+                if (layoutRow.length === 0 || container.length === 0) {
+                    setTimeout(checkResponsiveLayout, 500);
+                    return;
+                }
+
+                var containerWidth = container.width();
+                var windowWidth = $(window).width();
+
+                // Threshold: if container width exceeds 900px or window is narrow, stack the layout
+                if (containerWidth > 900 || windowWidth < 1200) {
+                    layoutRow.addClass('stacked');
+                } else {
+                    layoutRow.removeClass('stacked');
+                }
+            }
 
             function setupResizeHandlers() {
                 container = $('.resizable-dag-container');
@@ -594,6 +661,9 @@ get_dag_resize_javascript <- function() {
                     container.width(newWidth);
                     container.height(newHeight);
 
+                    // Check if layout should be responsive based on new width
+                    checkResponsiveLayout();
+
                     // Trigger resize event for visNetwork
                     if (window.Shiny && window.Shiny.onInputChange) {
                         window.Shiny.onInputChange('dag_container_dimensions', {
@@ -625,6 +695,11 @@ get_dag_resize_javascript <- function() {
                     }
                 });
             }
+
+            // Monitor window resize events
+            $(window).on('resize', function() {
+                checkResponsiveLayout();
+            });
         }
 
         // Initialize resize functionality
