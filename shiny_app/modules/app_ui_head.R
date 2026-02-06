@@ -70,10 +70,7 @@ get_app_css_styles <- function() {
 
         /* Horizontal Navigation Container - Second Row */
         .horizontal-nav-container {
-            position: fixed;
-            top: 50px;
-            left: 0;
-            right: 0;
+            position: relative;
             width: 100%;
             background-color: #1a2226;
             border-bottom: 1px solid #374850;
@@ -133,8 +130,8 @@ get_app_css_styles <- function() {
 
         /* Adjust content wrapper to accommodate navigation bar */
         .content-wrapper {
-            margin-top: 50px !important;
-            padding-top: 50px !important;
+            margin-top: 0 !important;
+            padding-top: 15px !important;
         }
 
         /* Ensure tab content appears below navigation */
