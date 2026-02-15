@@ -18,8 +18,10 @@ logs/
 
 semmed_database.tar.gz
 causalehr.dump
-furtherAnalysis/input
-furtherAnalysis/data
+furtherAnalysis/post_ckt/input
+furtherAnalysis/post_ckt/data
+extra/
+
 dump/
 filtering/
 causalehr_backup/
