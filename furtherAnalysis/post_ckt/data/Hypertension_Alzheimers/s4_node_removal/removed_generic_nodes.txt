@@ -1,9 +1,0 @@
-Disease
-Functional_disorder
-Complication
-Syndrome
-Symptoms
-Diagnosis
-Obstruction
-Physical_findings
-Adverse_effects

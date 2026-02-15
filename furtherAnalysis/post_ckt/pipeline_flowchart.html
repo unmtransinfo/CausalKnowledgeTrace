@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-CKT Analysis Pipeline - Workflow</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .pipeline-flow {
+            margin: 30px 0;
+        }
+
+        .stage {
+            margin-bottom: 40px;
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+        }
+
+        .stage-title {
+            font-size: 1.8em;
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .script-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .script-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .script-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .script-number {
+            background: #667eea;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-right: 15px;
+        }
+
+        .script-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .script-purpose {
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .io-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .io-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .io-box.output {
+            border-left-color: #764ba2;
+        }
+
+        .io-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .io-box.output .io-title {
+            color: #764ba2;
+        }
+
+        .io-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .io-list li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .io-list li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .io-box.output .io-list li:before {
+            content: "✓";
+            color: #764ba2;
+        }
+
+        .arrow-down {
+            text-align: center;
+            font-size: 2em;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .note-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Post-CKT Analysis Pipeline</h1>
+            <p>Comprehensive Workflow Visualization</p>
+        </header>
+
+        <div class="content">
+            <div class="note">
+                <div class="note-title">📌 Pipeline Overview</div>
+                This pipeline analyzes causal knowledge graphs to identify confounders, detect butterfly bias, and
+                extract evidence for causal relationships.
+                Input files are located in the <code>input/</code> directory, and outputs are generated in
+                <code>data/{Exposure}_{Outcome}/degree{N}/</code>.
+            </div>
+
+            <div class="pipeline-flow">
+                <!-- STAGE 1 -->
+                <div class="stage">
+                    <div class="stage-title">🔷 Stage 1: Graph Preparation & Pruning</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">01</div>
+                            <div class="script-name">Parse DAGitty (01_parse_dagitty.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Parses the DAGitty format causal graph and converts it to an igraph object for analysis.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>input/{Exposure}_{Outcome}_degree{N}.R</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/parsed_graph.rds</code> (Base Graph)</li>
+                                    <li><code>s1_graph/parsed_dag_raw.rds</code></li>
+                                    <li><code>s1_graph/metadata.rds</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">01a</div>
+                            <div class="script-name">Calculate Centrality (01a_calculate_centrality.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Calculates node centrality metrics (degree in/out, betweenness) to identify potential hub
+                            nodes.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/parsed_graph.rds</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/top_150_by_degree.csv</code></li>
+                                    <li><code>s1_graph/top_150_by_betweenness.csv</code></li>
+                                    <li><code>s1_graph/all_nodes_centrality.csv</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">01b</div>
+                            <div class="script-name">Node Removal Impact (01b_node_removal_impact.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Analyzes the impact of removing high-centrality generic nodes on graph structure (SCCs,
+                            edges).
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/parsed_graph.rds</code></li>
+                                    <li><code>s1_graph/top_150_*.csv</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/node_removal_impact.csv</code></li>
+                                    <li><code>s1_graph/node_removal_summary.csv</code></li>
+                                    <li><code>s1_graph/plots/node_removal_impact.png</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">01c</div>
+                            <div class="script-name">Prune Generic Hubs (01c_prune_generic_hubs.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Removes generic hub nodes (Disease, Symptoms, etc.) to simplify the graph for clearer
+                            analysis.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/parsed_graph.rds</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/pruned_graph.rds</code> (Main Graph)</li>
+                                    <li><code>s1_graph/pruned_nodes.txt</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">01d</div>
+                            <div class="script-name">Post-Pruning Analysis (01d_post_node_removal_analysis.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Analyzes the pruned graph structure, centrality, and Strongly Connected Components (SCCs).
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/pruned_graph.rds</code></li>
+                                    <li><code>s1_graph/pruned_nodes.txt</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/post_removal_centrality.csv</code></li>
+                                    <li><code>s1_graph/post_removal_summary.csv</code></li>
+                                    <li><code>s1_graph/plots/post_removal_*.png</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STAGE 2 -->
+                <div class="stage">
+                    <div class="stage-title">🔷 Stage 2: Graph Analysis</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">02</div>
+                            <div class="script-name">Basic Analysis (02_basic_analysis.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Computes graph statistics, node degrees, and semantic type distributions.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/pruned_graph.rds</code></li>
+                                    <li><code>input/{Exposure}_{Outcome}_*.json</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s2_semantic/graph_statistics.txt</code></li>
+                                    <li><code>s2_semantic/node_degrees.csv</code></li>
+                                    <li><code>s2_semantic/nodes_with_semantic_types.csv</code></li>
+                                    <li><code>s2_semantic/semantic_type_distribution.csv</code> (if DB semtype lookup succeeds)</li>
+                                    <li><code>s2_semantic/plots/*.png</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STAGE 3 -->
+                <div class="stage">
+                    <div class="stage-title">🔷 Stage 3: Confounder Analysis</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">03</div>
+                            <div class="script-name">Confounder Analysis (03_confounder_analysis.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Identifies confounders, classifies them (Pure/Feedback), and breaks cycles for strong
+                            confounders.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s1_graph/pruned_graph.rds</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s3_confounders/valid_confounders.csv</code></li>
+                                    <li><code>s3_confounders/graph_cycle_broken.rds</code></li>
+                                    <li><code>s3_confounders/reports/{confounder}/*</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">03b</div>
+                            <div class="script-name">Extract Evidence (03b_extract_confounder_evidence.R, optional)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Extracts PMIDs and sentences from JSON/HTML provenance files and matches them with
+                            confounder edges.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>input/{Exposure}_{Outcome}_*.json</code></li>
+                                    <li><code>s3_confounders/reports/{confounder}/edges.csv</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s3b_evidence/full_evidence_database.csv</code> (generated only if 03b is run)</li>
+                                    <li><code>s3b_evidence/all_evidence.csv</code></li>
+                                    <li><code>s3b_evidence/evidence_summary.csv</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">03c</div>
+                            <div class="script-name">Confounder Relationships (03c_confounder_relationships.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Analyzes relationships between confounders to identify potential butterfly bias candidates.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s3_confounders/graph_cycle_broken.rds</code></li>
+                                    <li><code>s3_confounders/valid_confounders.csv</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s3c_relationships/confounder_relationships_2nd.csv</code></li>
+                                    <li><code>s3c_relationships/relationship_summary.txt</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">04</div>
+                            <div class="script-name">Butterfly Bias Detection (04_butterfly_bias_analysis.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Uses dagitty to formally detect butterfly bias (confounders with 2+ confounder parents).
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s3_confounders/graph_cycle_broken.rds</code></li>
+                                    <li><code>s3_confounders/valid_confounders.csv</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s4_butterfly_bias/butterfly_nodes.csv</code></li>
+                                    <li><code>s4_butterfly_bias/independent_confounders.csv</code></li>
+                                    <li><code>s4_butterfly_bias/analysis_summary.txt</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arrow-down">↓</div>
+
+                    <div class="script-card">
+                        <div class="script-header">
+                            <div class="script-number">04b</div>
+                            <div class="script-name">Confounder Subgraphs (04b_confounder_subgraphs.R)</div>
+                        </div>
+                        <div class="script-purpose">
+                            Generates visual subgraphs for each confounder, highlighting butterfly vs. independent
+                            status.
+                        </div>
+                        <div class="io-section">
+                            <div class="io-box">
+                                <div class="io-title">Inputs</div>
+                                <ul class="io-list">
+                                    <li><code>s3_confounders/graph_cycle_broken.rds</code></li>
+                                    <li><code>s4_butterfly_bias/butterfly_analysis_results.csv</code></li>
+                                </ul>
+                            </div>
+                            <div class="io-box output">
+                                <div class="io-title">Outputs</div>
+                                <ul class="io-list">
+                                    <li><code>s4_butterfly_bias/graphs/BUTTERFLY_*.png</code></li>
+                                    <li><code>s4_butterfly_bias/graphs/INDEPENDENT_*.png</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

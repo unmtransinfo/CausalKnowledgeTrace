@@ -149,21 +149,48 @@ SEMANTIC_CONFIG <- list(
 # Generic/non-specific biomedical terms to consider for removal
 # These nodes often create many cycles by connecting unrelated concepts
 GENERIC_NODES <- c(
+  "Growth",
+  "Patients",
   "Disease",
-  "Functional_disorder",
-  "Complication",
-  "Syndrome",
   "Symptoms",
   "Diagnosis",
-  "Obstruction",
+  "Agent",
+  "Therapeutic_procedure",
+  "Adverse_effects",
   "Physical_findings",
-  "Adverse_effects"
+  "Obstruction",
+  "Complication",
+  "Functional_disorder",
+  "Syndrome",
+  "Injury",
+  "Genes",
+  "Study_models"
 )
 
 NODE_REMOVAL_CONFIG <- list(
   top_n_nodes_report = 20,             # Number of top nodes to report by cycle participation
   graph_viz_threshold = 1000,          # Max nodes for full graph visualization
   cycle_subgraph_viz_threshold = 150   # Max nodes for cycle subgraph visualization
+)
+
+# ============================================
+# STRONG CONFOUNDERS (CYCLE-BREAKING)
+# ============================================
+# These nodes are known confounders that get excluded because they form
+# cycles with Exposure/Outcome (i.e., they are BOTH parents AND children).
+#
+# For these nodes, we break the cycle by removing the "effect" edges:
+#   - Remove: Exposure → Confounder  (hypertension CAUSES diabetes)
+#   - Remove: Outcome  → Confounder  (alzheimers CAUSES degeneration)
+#   - KEEP:   Confounder → Exposure   (diabetes CAUSES hypertension)
+#   - KEEP:   Confounder → Outcome    (diabetes CAUSES alzheimers)
+#
+# This preserves the confounding relationship while eliminating the cycle.
+STRONG_CONFOUNDERS <- c(
+  "Diabetes",
+  "Obesity",
+  "Vascular_Diseases",
+  "Insulin_Resistance"
 )
 
 # ============================================
