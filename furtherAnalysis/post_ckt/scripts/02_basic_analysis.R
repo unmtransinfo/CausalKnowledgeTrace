@@ -1,10 +1,21 @@
 # 02_basic_analysis.R
-# Basic graph analysis: statistics, exposure/outcome connections, and node characteristics
+# Basic graph analysis & Semantic Type Analysis
 #
-# Input: data/{Exposure}_{Outcome}/s1_graph/parsed_graph.rds
-# Output: data/{Exposure}_{Outcome}/s2_semantic/
+# This script performs:
+# 1. Basic graph statistics (nodes, edges, density)
+# 2. Exposure/Outcome connection analysis
+# 3. Node degree analysis (hubs)
+# 4. Semantic type extraction from DB (if available)
+# 5. Semantic type distribution analysis
+#
+# Input: data/{Exposure}_{Outcome}/degree{N}/s1_graph/pruned_graph.rds
+#        input/{Exposure}_{Outcome}*.json (for semantic mapping)
+# Output: data/{Exposure}_{Outcome}/degree{N}/s2_semantic/
 #   - node_degrees.csv
 #   - graph_statistics.txt
+#   - nodes_with_semantic_types.csv
+#   - semantic_type_distribution.csv
+#   - plots/semantic_type_distribution.png
 
 # ---- Load configuration and utilities ----
 get_script_dir <- function() {
@@ -21,219 +32,233 @@ source(file.path(script_dir, "utils.R"))
 
 # ---- Load required libraries ----
 library(igraph)
+library(dplyr)
+library(ggplot2)
+library(jsonlite)
+# Create a conditional dependency for RPostgreSQL
+if (!require(RPostgreSQL, quietly = TRUE)) {
+  cat("WARNING: RPostgreSQL package not installed. Database functionality will be skipped.\n")
+}
 
 # ---- Argument handling ----
 args <- parse_exposure_outcome_args(
   default_exposure = "Hypertension",
-  default_outcome = "Alzheimers"
+  default_outcome = "Alzheimers",
+  default_degree = 2
 )
 exposure_name <- args$exposure
 outcome_name <- args$outcome
+degree <- args$degree
 
-# ---- Set paths using utility functions ----
-input_file <- get_parsed_graph_path(exposure_name, outcome_name)
-output_dir <- get_s2_semantic_dir(exposure_name, outcome_name)
+# ---- Set paths ----
+input_file <- get_pruned_graph_path(exposure_name, outcome_name, degree)
+output_dir <- get_s2_semantic_dir(exposure_name, outcome_name, degree)
+plots_dir <- file.path(output_dir, "plots")
 
 # ---- Validate inputs ----
-validate_inputs(exposure_name, outcome_name, require_parsed_graph = TRUE)
+if (!file.exists(input_file)) {
+  stop(paste0("Pruned graph not found at: ", input_file, "\nPlease run 01c_prune_generic_hubs.R first.\n"))
+}
 
-# Create output directory
 ensure_dir(output_dir)
+ensure_dir(plots_dir)
 
-print_header("Basic Graph Analysis (Stage 2)", exposure_name, outcome_name)
-cat("Input:", input_file, "\n")
-cat("Output:", output_dir, "\n\n")
+print_header(paste0("Basic & Semantic Analysis - Degree ", degree), exposure_name, outcome_name)
 
-# Load the parsed graph
+# ==========================================
+# 1. LOAD GRAPH
+# ==========================================
+cat("=== 1. LOADING GRAPH ===\n")
 graph <- readRDS(input_file)
+cat("Graph loaded:", vcount(graph), "nodes,", ecount(graph), "edges\n\n")
 
 # ==========================================
-# 1. BASIC GRAPH STATISTICS
+# 2. BASIC GRAPH STATISTICS
 # ==========================================
-cat("=== 1. GRAPH STATISTICS ===\n")
+cat("=== 2. GRAPH STATISTICS ===\n")
 cat("Nodes:", vcount(graph), "\n")
 cat("Edges:", ecount(graph), "\n")
+cat("Density:", round(graph.density(graph), 6), "\n")
 cat("Directed:", is_directed(graph), "\n")
-cat("Graph density:", round(graph.density(graph), 4), "\n")
-cat("  (0 = sparse, 1 = complete graph)\n")
-cat("Connected (weakly):", is_connected(graph, mode = "weak"), "\n")
-cat("Connected (strongly):", is_connected(graph, mode = "strong"), "\n\n")
+cat("Weakly connected:", is_connected(graph, mode = "weak"), "\n")
+cat("Strongly connected:", is_connected(graph, mode = "strong"), "\n\n")
 
-# ==========================================
-# 2. EXPOSURE AND OUTCOME NODES
-# ==========================================
-cat("=== 2. EXPOSURE AND OUTCOME NODES ===\n")
-exposure_nodes <- V(graph)[V(graph)$type == "exposure"]$name
-outcome_nodes <- V(graph)[V(graph)$type == "outcome"]$name
-
-cat("Exposure node:", exposure_nodes, "\n")
-cat("Outcome node:", outcome_nodes, "\n\n")
-
-# Analyze exposure node connections
-if (length(exposure_nodes) > 0) {
-  exposure <- exposure_nodes[1]
-
-  # Outgoing edges from exposure (what does CVD cause?)
-  out_neighbors <- neighbors(graph, exposure, mode = "out")
-  cat("Exposure node '", exposure, "' has:\n", sep = "")
-  cat("  - ", length(out_neighbors), " outgoing connections (direct effects)\n", sep = "")
-
-  # Incoming edges to exposure (what causes CVD?)
-  in_neighbors <- neighbors(graph, exposure, mode = "in")
-  cat("  - ", length(in_neighbors), " incoming connections (causes)\n\n", sep = "")
-
-  cat("Top 10 direct effects of ", exposure, ":\n", sep = "")
-  if (length(out_neighbors) > 0) {
-    print(head(out_neighbors$name, 10))
-  } else {
-    cat("  (none)\n")
-  }
-  cat("\n")
-
-  cat("Top 10 causes of ", exposure, ":\n", sep = "")
-  if (length(in_neighbors) > 0) {
-    print(head(in_neighbors$name, 10))
-  } else {
-    cat("  (none)\n")
-  }
-  cat("\n")
-}
-
-# Analyze outcome node connections
-if (length(outcome_nodes) > 0) {
-  outcome <- outcome_nodes[1]
-
-  # Incoming edges to outcome (what causes dementia?)
-  in_neighbors <- neighbors(graph, outcome, mode = "in")
-  cat("Outcome node '", outcome, "' has:\n", sep = "")
-  cat("  - ", length(in_neighbors), " incoming connections (direct causes)\n", sep = "")
-
-  # Outgoing edges from outcome (what does dementia cause?)
-  out_neighbors <- neighbors(graph, outcome, mode = "out")
-  cat("  - ", length(out_neighbors), " outgoing connections (effects)\n\n", sep = "")
-
-  cat("Top 10 direct causes of ", outcome, ":\n", sep = "")
-  if (length(in_neighbors) > 0) {
-    print(head(in_neighbors$name, 10))
-  } else {
-    cat("  (none)\n")
-  }
-  cat("\n")
-
-  cat("Top 10 effects of ", outcome, ":\n", sep = "")
-  if (length(out_neighbors) > 0) {
-    print(head(out_neighbors$name, 10))
-  } else {
-    cat("  (none)\n")
-  }
-  cat("\n")
-}
-
-# Path from exposure to outcome
-if (length(exposure_nodes) > 0 && length(outcome_nodes) > 0) {
-  exposure <- exposure_nodes[1]
-  outcome <- outcome_nodes[1]
-
-  cat("=== Path Analysis: ", exposure, " -> ", outcome, " ===\n", sep = "")
-
-  # Check if there's a direct edge
-  direct_path <- are_adjacent(graph, exposure, outcome)
-  cat("Direct edge exists:", direct_path, "\n")
-
-  # Find all simple paths (warning: can be computationally expensive)
-  cat("Finding all simple paths (this may take a moment)...\n")
-  all_paths <- all_simple_paths(graph, from = exposure, to = outcome, mode = "out")
-  cat("Total simple paths from exposure to outcome:", length(all_paths), "\n")
-
-  if (length(all_paths) > 0) {
-    # Show shortest path
-    shortest <- all_paths[[which.min(sapply(all_paths, length))]]
-    cat("Shortest path length:", length(shortest), "nodes\n")
-    cat("Shortest path: ", paste(names(shortest), collapse = " -> "), "\n\n", sep = "")
-
-    # Show distribution of path lengths
-    path_lengths <- sapply(all_paths, length)
-    cat("Path length distribution:\n")
-    print(table(path_lengths))
-    cat("\n")
-  }
-}
-
-# ==========================================
-# 3. NODE DEGREE ANALYSIS
-# ==========================================
-cat("=== 3. NODE DEGREE ANALYSIS ===\n")
-
-# Calculate degrees
-in_degree <- degree(graph, mode = "in")
-out_degree <- degree(graph, mode = "out")
-total_degree <- degree(graph, mode = "all")
-
-cat("Degree statistics:\n")
-cat("  In-degree  - Min:", min(in_degree), " Max:", max(in_degree), " Mean:", round(mean(in_degree), 2), "\n")
-cat("  Out-degree - Min:", min(out_degree), " Max:", max(out_degree), " Mean:", round(mean(out_degree), 2), "\n")
-cat("  Total      - Min:", min(total_degree), " Max:", max(total_degree), " Mean:", round(mean(total_degree), 2), "\n\n")
-
-# Top 20 nodes by total degree
-cat("=== TOP 20 MOST CONNECTED NODES (by total degree) ===\n")
-top_nodes <- sort(total_degree, decreasing = TRUE)[1:20]
-top_df <- data.frame(
-  Node = names(top_nodes),
-  Total_Degree = as.numeric(top_nodes),
-  In_Degree = in_degree[names(top_nodes)],
-  Out_Degree = out_degree[names(top_nodes)]
-)
-print(top_df)
-cat("\n")
-
-# Nodes with very high in-degree (potential "effect hubs")
-cat("=== TOP 15 NODES BY IN-DEGREE (potential effect hubs) ===\n")
-top_in <- sort(in_degree, decreasing = TRUE)[1:15]
-print(data.frame(Node = names(top_in), In_Degree = as.numeric(top_in)))
-cat("\n")
-
-# Nodes with very high out-degree (potential "cause hubs")
-cat("=== TOP 15 NODES BY OUT-DEGREE (potential cause hubs) ===\n")
-top_out <- sort(out_degree, decreasing = TRUE)[1:15]
-print(data.frame(Node = names(top_out), Out_Degree = as.numeric(top_out)))
-cat("\n")
-
-# ==========================================
-# 4. SAVE RESULTS
-# ==========================================
-cat("=== 4. SAVING RESULTS ===\n")
-
-# Save degree data
-degree_data <- data.frame(
-  Node = V(graph)$name,
-  Type = V(graph)$type,
-  In_Degree = in_degree,
-  Out_Degree = out_degree,
-  Total_Degree = total_degree
-)
-degree_data <- degree_data[order(-degree_data$Total_Degree), ]
-
-output_file <- file.path(output_dir, "node_degrees.csv")
-write.csv(degree_data, output_file, row.names = FALSE)
-cat("Saved node degree data to:", output_file, "\n")
-
-# Save basic stats
+# Save detailed stats
 stats_file <- file.path(output_dir, "graph_statistics.txt")
 sink(stats_file)
 cat("=== GRAPH STATISTICS ===\n")
 cat("Nodes:", vcount(graph), "\n")
 cat("Edges:", ecount(graph), "\n")
 cat("Density:", graph.density(graph), "\n")
-cat("Weakly connected:", is_connected(graph, mode = "weak"), "\n")
-cat("Strongly connected:", is_connected(graph, mode = "strong"), "\n")
-cat("\nExposure:", exposure_nodes, "\n")
-cat("Outcome:", outcome_nodes, "\n")
-cat("\nDegree Statistics:\n")
-cat("Mean in-degree:", mean(in_degree), "\n")
-cat("Mean out-degree:", mean(out_degree), "\n")
-cat("Max in-degree:", max(in_degree), "\n")
-cat("Max out-degree:", max(out_degree), "\n")
+cat("\nExposure:", exposure_name, "\n")
+cat("Outcome:", outcome_name, "\n")
 sink()
-cat("Saved graph statistics to:", stats_file, "\n")
+cat("Saved statistics to:", stats_file, "\n\n")
 
-print_complete("Basic Graph Analysis (Stage 2)")
+# ==========================================
+# 3. NODE DEGREE ANALYSIS
+# ==========================================
+cat("=== 3. NODE DEGREE ANALYSIS ===\n")
+
+in_degree <- degree(graph, mode = "in")
+out_degree <- degree(graph, mode = "out")
+total_degree <- degree(graph, mode = "all")
+betweenness_score <- betweenness(graph, normalized = TRUE)
+
+degree_data <- data.frame(
+  Node = V(graph)$name,
+  In_Degree = in_degree,
+  Out_Degree = out_degree,
+  Total_Degree = total_degree,
+  Betweenness = betweenness_score,
+  stringsAsFactors = FALSE
+)
+
+# Sort by total degree and save
+degree_data <- degree_data[order(-degree_data$Total_Degree), ]
+write.csv(degree_data, file.path(output_dir, "node_degrees.csv"), row.names = FALSE)
+cat("Saved node degrees to:", file.path(output_dir, "node_degrees.csv"), "\n")
+
+cat("Top 10 hubs:\n")
+print(head(degree_data[, c("Node", "Total_Degree", "Betweenness")], 10), row.names = FALSE)
+cat("\n")
+
+# ==========================================
+# 4. SEMANTIC TYPE ANALYSIS (DB INTEGRATION)
+# ==========================================
+cat("=== 4. SEMANTIC TYPE ANALYSIS ===\n")
+
+# Initialize semantic type column
+degree_data$semtype <- NA
+degree_data$cui <- NA
+
+# Helper to map names
+clean_for_matching <- function(name) {
+  name <- tolower(name)
+  name <- gsub("[^a-z0-9]+", "_", name)
+  name <- gsub("^_|_$", "", name)
+  name <- gsub("_+", "_", name)
+  return(name)
+}
+
+# Try to connect to DB and fetch semantic types
+db_success <- FALSE
+
+tryCatch({
+  # 1. Find JSON assertions file to map Node Name -> CUI
+  json_file <- find_json_file(exposure_name, outcome_name, degree)
+  
+  if (!is.null(json_file) && require(RPostgreSQL, quietly = TRUE)) {
+    cat("Found JSON file:", json_file, "\n")
+    
+    # Load JSON
+    json_data <- fromJSON(json_file)
+    assertions <- json_data$assertions
+    
+    # Create Name -> CUI map from assertions
+    name_cui_map <- rbind(
+      data.frame(name = assertions$subj, cui = assertions$subj_cui, stringsAsFactors = FALSE),
+      data.frame(name = assertions$obj, cui = assertions$obj_cui, stringsAsFactors = FALSE)
+    )
+    name_cui_map <- name_cui_map[!duplicated(name_cui_map), ]
+    name_cui_map$name_cleaned <- sapply(name_cui_map$name, clean_for_matching)
+    
+    # Map graph nodes to CUIs
+    graph_nodes_clean <- sapply(degree_data$Node, clean_for_matching)
+    degree_data$cui <- name_cui_map$cui[match(graph_nodes_clean, name_cui_map$name_cleaned)]
+    
+    # Get unique CUIs to query
+    unique_cuis <- unique(na.omit(degree_data$cui))
+    cat("Mapped", length(unique_cuis), "unique CUIs from graph nodes.\n")
+    
+    if (length(unique_cuis) > 0) {
+      # Connect to DB
+      validate_db_credentials()
+      con <- dbConnect(PostgreSQL(),
+                       host = DB_CONFIG$host,
+                       port = DB_CONFIG$port,
+                       dbname = DB_CONFIG$dbname,
+                       user = DB_CONFIG$user,
+                       password = DB_CONFIG$password)
+      
+      cat("Connected to database for semantic type lookup.\n")
+      
+      # Query semantic types
+      cui_list_str <- paste0("('", paste(unique_cuis, collapse = "','"), "')")
+      
+      # Query subject semantic types
+      q1 <- sprintf("SELECT DISTINCT subject_cui as cui, subject_semtype as semtype FROM public.predication WHERE subject_cui IN %s", cui_list_str)
+      r1 <- dbGetQuery(con, q1)
+      
+      # Query object semantic types
+      q2 <- sprintf("SELECT DISTINCT object_cui as cui, object_semtype as semtype FROM public.predication WHERE object_cui IN %s", cui_list_str)
+      r2 <- dbGetQuery(con, q2)
+      
+      dbDisconnect(con)
+      
+      # Merge results
+      all_semtypes <- unique(rbind(r1, r2))
+      
+      # Map back to degree_data
+      # Note: A CUI might have multiple semtypes; we'll take the first one or comma-separate
+      semtype_map <- aggregate(semtype ~ cui, data = all_semtypes, FUN = function(x) paste(unique(x), collapse = "|"))
+      
+      degree_data$semtype <- semtype_map$semtype[match(degree_data$cui, semtype_map$cui)]
+      
+      db_success <- TRUE
+      cat("Successfully mapped semantic types for", sum(!is.na(degree_data$semtype)), "nodes.\n")
+    }
+  } else {
+    if (is.null(json_file)) cat("JSON assertions file not found. Skipping DB lookup.\n")
+    if (!require(RPostgreSQL, quietly = TRUE)) cat("RPostgreSQL not available. Skipping DB lookup.\n")
+  }
+}, error = function(e) {
+  cat("WARNING: Database lookup failed:", e$message, "\n")
+  cat("Continuing without semantic type information.\n")
+})
+
+# Save updated node data with semantic types
+write.csv(degree_data, file.path(output_dir, "nodes_with_semantic_types.csv"), row.names = FALSE)
+
+# ==========================================
+# 5. SEMANTIC TYPE DISTRIBUTION
+# ==========================================
+if (db_success && sum(!is.na(degree_data$semtype)) > 0) {
+  cat("\n=== 5. SEMANTIC TYPE DISTRIBUTION ===\n")
+  
+  # Split pipe-separated semtypes if any
+  expanded_semtypes <- degree_data %>%
+    filter(!is.na(semtype)) %>%
+    select(Node, semtype) %>%
+    tidyr::separate_rows(semtype, sep = "\\|")
+  
+  dist_stats <- expanded_semtypes %>%
+    count(semtype, sort = TRUE) %>%
+    rename(Count = n) %>%
+    mutate(Percentage = round(Count / sum(Count) * 100, 1))
+  
+  print(head(dist_stats, 10))
+  
+  write.csv(dist_stats, file.path(output_dir, "semantic_type_distribution.csv"), row.names = FALSE)
+  
+  # Visualization
+  p <- ggplot(head(dist_stats, 20), aes(x = reorder(semtype, Count), y = Count)) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    geom_text(aes(label = Count), hjust = -0.1, size = 3) +
+    coord_flip() +
+    labs(
+      title = "Top 20 Semantic Types",
+      subtitle = paste(exposure_name, "->", outcome_name),
+      x = "Semantic Type",
+      y = "Count"
+    ) +
+    theme_minimal()
+  
+  ggsave(file.path(plots_dir, "semantic_type_distribution.png"), p, width = 8, height = 6)
+  cat("Saved distribution plot to:", file.path(plots_dir, "semantic_type_distribution.png"), "\n")
+  
+} else {
+  cat("\nSkipping semantic distribution analysis (no data available).\n")
+}
+
+print_complete("Basic & Semantic Analysis")

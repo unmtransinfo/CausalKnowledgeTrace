@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-CKT Pipeline - User Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 50px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+
+        .content {
+            padding: 50px;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2.2em;
+            color: #f5576c;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f093fb;
+        }
+
+        .subsection {
+            margin: 30px 0;
+        }
+
+        .subsection-title {
+            font-size: 1.6em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .code-block code {
+            display: block;
+            background: transparent;
+            padding: 0;
+            color: #f8f8f2;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 20px 0;
+        }
+
+        .highlight-title {
+            font-weight: bold;
+            color: #e65100;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+            margin: 20px 0;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #0d47a1;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #4caf50;
+            margin: 20px 0;
+        }
+
+        .success-title {
+            font-weight: bold;
+            color: #1b5e20;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #ff9800;
+            margin: 20px 0;
+        }
+
+        .warning-title {
+            font-weight: bold;
+            color: #e65100;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+            font-size: 0.9em;
+        }
+
+        ul,
+        ol {
+            margin-left: 30px;
+            margin-top: 10px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .file-structure {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+        }
+
+        .toc {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 40px;
+        }
+
+        .toc-title {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            padding: 8px 0;
+        }
+
+        .toc a {
+            color: #f5576c;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .toc a:hover {
+            color: #f093fb;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 User Guide</h1>
+            <p>Post-CKT Analysis Pipeline - Complete Documentation</p>
+        </header>
+
+        <div class="content">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <div class="toc-title">📑 Table of Contents</div>
+                <ul>
+                    <li><a href="#setup">1. Setup & Requirements</a></li>
+                    <li><a href="#input-files">2. Input Files</a></li>
+                    <li><a href="#running">3. Running the Pipeline</a></li>
+                    <li><a href="#scripts">4. Detailed Script Reference</a></li>
+                    <li><a href="#outputs">5. Output Interpretation</a></li>
+                    <li><a href="#examples">6. Example Results</a></li>
+                </ul>
+            </div>
+
+            <!-- SECTION 1: Setup -->
+            <div class="section" id="setup">
+                <div class="section-title">1. 🔧 Setup & Requirements</div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Required R Packages</div>
+                    <div class="code-block">
+                        <code>install.packages(c(
+    "igraph",      # Graph analysis
+    "dplyr",       # Data manipulation
+    "dagitty",     # DAG analysis
+    "rvest",       # HTML parsing
+    "jsonlite",    # JSON parsing
+    "ggplot2",     # Visualization
+    "ggraph",      # Graph visualization
+    "RPostgreSQL"  # Database connection (optional)
+))</code>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 2: Input Files -->
+            <div class="section" id="input-files">
+                <div class="section-title">2. 📁 Input Files</div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Required Input Files</div>
+
+                    <table>
+                        <tr>
+                            <th>File Type</th>
+                            <th>Location</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><strong>DAGitty Graph</strong></td>
+                            <td><code>input/{Exposure}_{Outcome}_degree{N}.R</code></td>
+                            <td>Causal graph in DAGitty format from CKT pipeline</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Evidence File</strong></td>
+                            <td><code>input/{Exposure}_{Outcome}_*.json</code></td>
+                            <td>JSON file containing PMIDs and sentences for causal assertions</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="highlight">
+                    <div class="highlight-title">📌 Example File Names</div>
+                    <ul>
+                        <li><code>input/Hypertension_Alzheimers_degree3.R</code></li>
+                        <li><code>input/Hypertension_Alzheimers_causal_assertions_3.json</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- SECTION 3: Running the Pipeline -->
+            <div class="section" id="running">
+                <div class="section-title">3. ▶️ Running the Pipeline</div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Complete Pipeline Execution</div>
+                    <div class="code-block">
+                        <code># Navigate to post_ckt directory
+cd /home/mpradhan/Research_Project/CausalKnowledgeTrace/furtherAnalysis/post_ckt
+
+# Run the complete pipeline
+bash scripts/run_pipeline.sh Hypertension Alzheimers 3</code>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-title">ℹ️ Command Arguments</div>
+                        <ul>
+                            <li><strong>Argument 1:</strong> Exposure variable (e.g., Hypertension)</li>
+                            <li><strong>Argument 2:</strong> Outcome variable (e.g., Alzheimers)</li>
+                            <li><strong>Argument 3:</strong> Graph degree (e.g., 3)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 4: Script Details -->
+            <div class="section" id="scripts">
+                <div class="section-title">4. 📜 Detailed Script Reference</div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Stage 1: Graph Preparation</div>
+
+                    <table>
+                        <tr>
+                            <th>Script</th>
+                            <th>Description</th>
+                            <th>Key Outputs</th>
+                        </tr>
+                        <tr>
+                            <td><code>01_parse_dagitty.R</code></td>
+                            <td>Parses DAGitty file to igraph format</td>
+                            <td><code>s1_graph/parsed_graph.rds</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>01a_calculate_centrality.R</code></td>
+                            <td>Calculates initial centrality (Degree, Betweenness)</td>
+                            <td><code>s1_graph/top_150_*.csv</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>01b_node_removal_impact.R</code></td>
+                            <td>Analyzes impact of removing generic nodes</td>
+                            <td><code>s1_graph/node_removal_impact.csv</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>01c_prune_generic_hubs.R</code></td>
+                            <td>Prunes generic hubs (Diseases etc.)</td>
+                            <td><code>s1_graph/pruned_graph.rds</code>, <code>s1_graph/pruned_nodes.txt</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>01d_post_node_removal_analysis.R</code></td>
+                            <td>Analyzes pruned graph structure</td>
+                            <td><code>s1_graph/post_removal_*.csv</code></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Stage 2: Basic Analysis</div>
+                    <table>
+                        <tr>
+                            <th>Script</th>
+                            <th>Description</th>
+                            <th>Key Outputs</th>
+                        </tr>
+                        <tr>
+                            <td><code>02_basic_analysis.R</code></td>
+                            <td>Graph statistics & Semantic Types</td>
+                            <td><code>s2_semantic/graph_statistics.txt</code></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">Stage 3: Confounder Analysis</div>
+                    <table>
+                        <tr>
+                            <th>Script</th>
+                            <th>Description</th>
+                            <th>Key Outputs</th>
+                        </tr>
+                        <tr>
+                            <td><code>03_confounder_analysis.R</code></td>
+                            <td>Identifies confounders, breaks cycles</td>
+                            <td><code>s3_confounders/valid_confounders.csv</code>, <code>s3_confounders/graph_cycle_broken.rds</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>03b_extract_confounder_evidence.R</code></td>
+                            <td>Extracts evidence from JSON (optional, long-running)</td>
+                            <td><code>s3b_evidence/full_evidence_database.csv</code>, <code>s3b_evidence/all_evidence.csv</code>, <code>s3b_evidence/evidence_summary.csv</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>03c_confounder_relationships.R</code></td>
+                            <td>Analyzes confounder inter-relationships</td>
+                            <td><code>s3c_relationships/confounder_relationships_2nd.csv</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>04_butterfly_bias_analysis.R</code></td>
+                            <td>Detects butterfly bias</td>
+                            <td><code>s4_butterfly_bias/butterfly_nodes.csv</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>04b_confounder_subgraphs.R</code></td>
+                            <td>Visualizes butterfly bias</td>
+                            <td><code>s4_butterfly_bias/graphs/*.png</code></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION 5: Output Interpretation -->
+            <div class="section" id="outputs">
+                <div class="section-title">5. 📊 Output Interpretation</div>
+
+                <div class="subsection">
+                    <div class="subsection-title">1. Pruning Results (Stage 1)</div>
+                    <p><strong>File:</strong> <code>s1_graph/pruned_nodes.txt</code></p>
+                    <p>Lists generic nodes removed from the graph. These are typically high-level concepts like
+                        "Disease", "Symptoms", etc., that create excessive noise.</p>
+
+                    <p><strong>File:</strong> <code>s1_graph/post_removal_summary.csv</code></p>
+                    <p>Summarizes the graph state after pruning. Look for "nodes_in_sccs" - ideally, this should be low,
+                        indicating fewer feedback loops.</p>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">2. Confounder List (Stage 3)</div>
+                    <p><strong>File:</strong> <code>s3_confounders/valid_confounders.csv</code></p>
+                    <p>Contains the definitive Stage-3 confounder list under the pipeline's direct-parent criteria.</p>
+                    <div class="success-box">
+                        <div class="success-title">✅ Key Columns</div>
+                        <ul>
+                            <li><code>node</code>: Confounder name</li>
+                            <li><code>classification</code>: "Pure Confounder" (Best), "Tight Feedback", or "Long
+                                Feedback".</li>
+                            <li><code>is_valid</code>: TRUE if it's a valid confounder to consider.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="subsection">
+                    <div class="subsection-title">3. Butterfly Bias Analysis (Stage 4)</div>
+                    <p><strong>File:</strong> <code>s4_butterfly_bias/butterfly_nodes.csv</code></p>
+                    <p>Lists confounders that are "Butterflies" - they have 2 or more other confounders as parents.</p>
+
+                    <div class="warning-box">
+                        <div class="warning-title">⚠️ Critical Interpretation</div>
+                        <p><strong>DO NOT adjust for butterfly confounders directly!</strong></p>
+                        <p>Adjusting for a butterfly confounder can open collider paths and introduce bias. Instead,
+                            adjust for its parent confounders listed in the <code>confounder_parents</code> column.</p>
+                    </div>
+
+                    <p><strong>File:</strong> <code>s4_butterfly_bias/independent_confounders.csv</code></p>
+                    <p>Lists confounders that occupy the "Independent" position (top of the hierarchy).</p>
+                    <div class="success-box">
+                        <div class="success-title">✅ Safe to Adjust</div>
+                        <p>These confounders are safe to adjust for as they do not have other confounders as parents.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 6: Example Results -->
+                <div class="section" id="examples">
+                    <div class="section-title">6. 💡 Example Results</div>
+                    <p>For <strong>Hypertension → Alzheimers (Degree 3)</strong>, the pipeline identified:</p>
+                    <ul>
+                        <li><strong>Original graph:</strong> 3812 nodes, 12157 edges</li>
+                        <li><strong>Pruned graph:</strong> 3797 nodes, 8441 edges (15 generic hubs removed)</li>
+                        <li><strong>Remaining SCC burden after pruning:</strong> 4 SCCs, 207 nodes in SCCs</li>
+                        <li><strong>21 Stage-3 Valid Confounders</strong> (from <code>s3_confounders/valid_confounders.csv</code>)</li>
+                        <li><strong>32 Confounder-to-confounder relationships (2nd degree)</strong> (from <code>s3c_relationships/confounder_relationships_2nd.csv</code>)</li>
+                        <li><strong>25 Total Structural Confounders (dagitty)</strong> (from <code>s4_butterfly_bias/butterfly_analysis_results.csv</code>)</li>
+                        <li><strong>9 Butterfly Confounders</strong> (Diabetes, Obesity, Insulin_Resistance, etc.) - Avoid
+                            adjusting directly.</li>
+                        <li><strong>16 Independent Confounders</strong> (Diet, Polymorphism_Genetic, etc.) - Safe to adjust.
+                        </li>
+                        <li><strong>25 confounder subgraph images</strong> generated by <code>04b_confounder_subgraphs.R</code>.</li>
+                    </ul>
+                    <p><strong>Note:</strong> In this rerun, <code>03b_extract_confounder_evidence.R</code> was skipped, so no
+                        <code>s3b_evidence/</code> output files were generated.</p>
+                    <p>By creating this separation, the pipeline ensures you don't inadvertently introduce bias while trying
+                        to control for it.</p>
+                </div>
+        </div>
+    </div>
+</body>
+
+</html>
