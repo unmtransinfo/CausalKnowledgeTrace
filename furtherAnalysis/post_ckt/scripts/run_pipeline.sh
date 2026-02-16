@@ -181,21 +181,30 @@ else
     exit 1
 fi
 
-# Step 8: Evidence Extraction (03b)
-print_step "Step 8/11: Extracting Evidence (03b)"
-if Rscript 03b_extract_confounder_evidence.R "$EXPOSURE" "$OUTCOME" "$DEGREE"; then
+# Step 8: Confounder Relationships (03b)
+print_step "Step 8/12: Analyzing Confounder Relationships (03b)"
+if Rscript 03b_confounder_relationships.R "$EXPOSURE" "$OUTCOME" "$DEGREE"; then
+    print_success "Relationship analysis complete"
+else
+    print_error "Relationship analysis failed"
+    exit 1
+fi
+
+# Step 9: Evidence Extraction (03c)
+print_step "Step 9/12: Extracting Evidence (03c)"
+if Rscript 03c_extract_confounder_evidence.R "$EXPOSURE" "$OUTCOME" "$DEGREE"; then
     print_success "Evidence extraction complete"
 else
     print_error "Evidence extraction failed"
     exit 1
 fi
 
-# Step 9: Confounder Relationships (03c)
-print_step "Step 9/11: Analyzing Confounder Relationships (03c)"
-if Rscript 03c_confounder_relationships.R "$EXPOSURE" "$OUTCOME" "$DEGREE"; then
-    print_success "Relationship analysis complete"
+# Step 10: Confounder Subgraphs (03d)
+print_step "Step 10/12: Generating Confounder Subgraphs (03d)"
+if Rscript 03d_extract_confounder_subgraphs.R "$EXPOSURE" "$OUTCOME" "$DEGREE"; then
+    print_success "Subgraph generation complete"
 else
-    print_error "Relationship analysis failed"
+    print_error "Subgraph generation failed"
     exit 1
 fi
 

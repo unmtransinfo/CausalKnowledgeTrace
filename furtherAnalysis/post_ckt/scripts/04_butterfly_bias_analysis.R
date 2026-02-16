@@ -52,11 +52,11 @@ OUTCOME <- args[2]
 DEGREE <- as.integer(args[3])
 
 # ---- Set paths ----
-BASE_DIR <- getwd()
-DATA_DIR <- file.path(BASE_DIR, "data", paste0(EXPOSURE, "_", OUTCOME), paste0("degree", DEGREE))
+# ---- Set paths ----
+DATA_DIR <- get_pair_dir(EXPOSURE, OUTCOME, DEGREE)
 GRAPH_FILE <- file.path(DATA_DIR, "s3_confounders", "graph_cycle_broken.rds")
 if (!file.exists(GRAPH_FILE)) {
-  GRAPH_FILE <- file.path(DATA_DIR, "s1_graph", "pruned_graph.rds")
+  GRAPH_FILE <- get_pruned_graph_path(EXPOSURE, OUTCOME, DEGREE)
   cat("Note: Using original pruned graph (no cycle-broken graph found)\n")
 }
 CONFOUNDERS_FILE <- file.path(DATA_DIR, "s3_confounders", "valid_confounders.csv")

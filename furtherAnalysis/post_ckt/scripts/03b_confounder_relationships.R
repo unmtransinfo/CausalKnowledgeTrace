@@ -52,8 +52,7 @@ DEGREE <- as.integer(args[3])
 REL_DEGREE <- if (length(args) >= 4) as.integer(args[4]) else 2
 
 # ---- Set paths ----
-BASE_DIR <- getwd()
-DATA_DIR <- file.path(BASE_DIR, "data", paste0(EXPOSURE, "_", OUTCOME), paste0("degree", DEGREE))
+DATA_DIR <- get_pair_dir(EXPOSURE, OUTCOME, DEGREE)
 GRAPH_FILE <- file.path(DATA_DIR, "s3_confounders", "graph_cycle_broken.rds")
 if (!file.exists(GRAPH_FILE)) {
   GRAPH_FILE <- file.path(DATA_DIR, "s1_graph", "pruned_graph.rds")
