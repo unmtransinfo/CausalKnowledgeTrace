@@ -148,6 +148,33 @@ SEMANTIC_CONFIG <- list(
 # ============================================
 # Generic/non-specific biomedical terms to consider for removal
 # These nodes often create many cycles by connecting unrelated concepts
+# Generic nodes to consider for removal hypertension -> alzheimers
+# GENERIC_NODES <- c(
+#   "Growth",
+#   "Patients",
+#   "Disease",
+#   "Symptoms",
+#   "Diagnosis",
+#   "Agent",
+#   "Therapeutic_procedure",
+#   "Adverse_effects",
+#   "Physical_findings",
+#   "Obstruction",
+#   "Complication",
+#   "Functional_disorder",
+#   "Syndrome",
+#   "Injury",
+#   "Genes",
+#   "Study_models",
+#   "Persons",
+#   "Virus",
+#   "Family",
+#   "Metals",
+#   "Cells",
+#   "Negative"
+# )
+
+# Generic nodes to consider for removal depression -> alzheimers
 GENERIC_NODES <- c(
   "Growth",
   "Patients",
@@ -164,7 +191,15 @@ GENERIC_NODES <- c(
   "Syndrome",
   "Injury",
   "Genes",
-  "Study_models"
+  "Study_models",
+  "Proteins",
+  "Pharmaceutical_Preparations",
+  "Persons",
+  "Virus",
+  "Family",
+  "Metals",
+  "Cells",
+  "Negative"
 )
 
 NODE_REMOVAL_CONFIG <- list(
