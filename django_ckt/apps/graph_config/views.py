@@ -10,6 +10,7 @@ from apps.core.models import SubjectSearch, ObjectSearch
 import json
 import yaml
 import os
+from datetime import datetime
 
 
 class GraphConfigView(TemplateView):
@@ -22,6 +23,12 @@ class GraphConfigView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Graph Configuration'
         context['active_tab'] = 'create_graph'
+
+        # Generate year range for publication year cutoff dropdown
+        current_year = datetime.now().year
+        context['year_range'] = range(1980, current_year + 2)  # 1980 to current year + 1
+        context['default_year'] = 2015
+
         return context
 
 

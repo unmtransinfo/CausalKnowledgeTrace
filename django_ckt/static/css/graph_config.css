@@ -1,0 +1,163 @@
+/* Graph Configuration Page Styles */
+
+/* Main container styles */
+.config-box {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.config-header {
+    background-color: #3c8dbc;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px 5px 0 0;
+    margin: -20px -20px 20px -20px;
+}
+
+/* Alert styles */
+.alert-info-custom {
+    background-color: #3c8dbc !important;
+    color: #fff !important;
+    border-color: #3c8dbc !important;
+}
+
+.alert-success-custom {
+    background-color: #00a65a !important;
+    color: #fff !important;
+    border-color: #00a65a !important;
+}
+
+/* Form styles */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.help-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 5px;
+}
+
+/* Button styles */
+.btn-create-graph {
+    background-color: #3c8dbc;
+    color: white;
+    border-color: #367fa9;
+    font-size: 1.1rem;
+    padding: 12px 24px;
+}
+
+.btn-create-graph:hover {
+    background-color: #367fa9;
+    color: white;
+}
+
+.btn-clear {
+    font-size: 0.875rem;
+    padding: 4px 12px;
+}
+
+/* Progress section */
+#graph_progress_section {
+    display: none;
+    margin-top: 20px;
+}
+
+#graph_progress_section h4 {
+    margin-bottom: 15px;
+}
+
+.progress-container {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}
+
+.progress {
+    height: 25px;
+}
+
+.progress-bar {
+    background-color: #007bff;
+}
+
+#graph_progress_status {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 10px;
+}
+
+/* CUI Search Results */
+.cui-search-results {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 5px;
+    display: none;
+    background-color: white;
+    z-index: 1000;
+}
+
+.cui-result-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.cui-result-item:hover {
+    background-color: #f8f9fa;
+}
+
+.cui-result-item:last-child {
+    border-bottom: none;
+}
+
+/* Predication Type Multi-Select */
+#PREDICATION_TYPE {
+    height: auto;
+    min-height: 120px;
+}
+
+#PREDICATION_TYPE option:checked {
+    background-color: #3c8dbc;
+    color: white;
+}
+
+/* Squelch Thresholds Section */
+.squelch-thresholds-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+}
+
+.squelch-thresholds-section h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* Disabled threshold fields */
+.threshold-field:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .config-box {
+        padding: 15px;
+    }
+    
+    .config-header {
+        margin: -15px -15px 15px -15px;
+        padding: 12px 15px;
+    }
+}
+
