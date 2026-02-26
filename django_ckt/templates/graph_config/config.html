@@ -71,6 +71,36 @@
                             >
                             <div class="help-text">Required: Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.</div>
                         </div>
+
+                        <!-- Publication Year Cutoff -->
+                        <div class="mb-3">
+                            <label for="pub_year_cutoff" class="form-label">Publication Year Cutoff *</label>
+                            <select class="form-select" id="pub_year_cutoff" name="pub_year_cutoff">
+                                {% for year in year_range %}
+                                    <option value="{{ year }}" {% if year == default_year %}selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="help-text">Only include citations published on or after this year.</div>
+                        </div>
+
+                        <!-- Predication Types -->
+                        <div class="mb-3">
+                            <label for="PREDICATION_TYPE" class="form-label">Predication Types *</label>
+                            <select class="form-select" id="PREDICATION_TYPE" name="PREDICATION_TYPE" multiple>
+                                <option value="CAUSES" selected>CAUSES</option>
+                                <option value="AFFECTS">AFFECTS</option>
+                                <option value="AUGMENTS">AUGMENTS</option>
+                                <option value="COMPLICATES">COMPLICATES</option>
+                                <option value="DISRUPTS">DISRUPTS</option>
+                                <option value="INHIBITS">INHIBITS</option>
+                                <option value="PRECEDES">PRECEDES</option>
+                                <option value="PREDISPOSES">PREDISPOSES</option>
+                                <option value="PREVENTS">PREVENTS</option>
+                                <option value="PRODUCES">PRODUCES</option>
+                                <option value="STIMULATES">STIMULATES</option>
+                            </select>
+                            <div class="help-text">Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Selected items will be highlighted.</div>
+                        </div>
                     </div>
 
                     <!-- Column 2: Outcome -->
@@ -114,6 +144,17 @@
                                 placeholder="e.g., Alzheimers, Cancer"
                             >
                             <div class="help-text">Required: Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.</div>
+                        </div>
+
+                        <!-- SemMedDB Version -->
+                        <div class="mb-3">
+                            <label for="SemMedDBD_version" class="form-label">SemMedDB Version *</label>
+                            <select class="form-select" id="SemMedDBD_version" name="SemMedDBD_version">
+                                <option value="heuristic" selected>heuristic</option>
+                                <option value="LLM-based">LLM-based</option>
+                                <option value="heuristic+LLM-based">heuristic+LLM-based</option>
+                            </select>
+                            <div class="help-text">SemMedDB version by filtering method.</div>
                         </div>
                     </div>
 
@@ -174,56 +215,6 @@
                                 <input type="number" class="form-control threshold-field" id="min_pmids_degree3" name="min_pmids_degree3" value="200" min="1" max="1000" step="1">
                             </div>
                             <div class="help-text">Minimum number of unique PMIDs required for each degree level (1-1000). Fields are enabled based on selected degree.</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Second Row: Additional Parameters -->
-                <div class="row mt-3">
-
-                    <!-- Publication Year and Predication Types -->
-                    <div class="col-md-4">
-                        <!-- Publication Year Cutoff -->
-                        <div class="mb-3">
-                            <label for="pub_year_cutoff" class="form-label">Publication Year Cutoff *</label>
-                            <select class="form-select" id="pub_year_cutoff" name="pub_year_cutoff">
-                                {% for year in year_range %}
-                                    <option value="{{ year }}" {% if year == default_year %}selected{% endif %}>{{ year }}</option>
-                                {% endfor %}
-                            </select>
-                            <div class="help-text">Only include citations published on or after this year.</div>
-                        </div>
-
-                        <!-- Predication Types -->
-                        <div class="mb-3">
-                            <label for="PREDICATION_TYPE" class="form-label">Predication Types *</label>
-                            <select class="form-select" id="PREDICATION_TYPE" name="PREDICATION_TYPE" multiple>
-                                <option value="CAUSES" selected>CAUSES</option>
-                                <option value="AFFECTS">AFFECTS</option>
-                                <option value="AUGMENTS">AUGMENTS</option>
-                                <option value="COMPLICATES">COMPLICATES</option>
-                                <option value="DISRUPTS">DISRUPTS</option>
-                                <option value="INHIBITS">INHIBITS</option>
-                                <option value="PRECEDES">PRECEDES</option>
-                                <option value="PREDISPOSES">PREDISPOSES</option>
-                                <option value="PREVENTS">PREVENTS</option>
-                                <option value="PRODUCES">PRODUCES</option>
-                                <option value="STIMULATES">STIMULATES</option>
-                            </select>
-                            <div class="help-text">Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Selected items will be highlighted.</div>
-                        </div>
-                    </div>
-
-                    <!-- SemMedDB Version -->
-                    <div class="col-md-4">
-                        <div class="mb-3">
-                            <label for="SemMedDBD_version" class="form-label">SemMedDB Version *</label>
-                            <select class="form-select" id="SemMedDBD_version" name="SemMedDBD_version">
-                                <option value="heuristic" selected>heuristic</option>
-                                <option value="LLM-based">LLM-based</option>
-                                <option value="heuristic+LLM-based">heuristic+LLM-based</option>
-                            </select>
-                            <div class="help-text">SemMedDB version by filtering method.</div>
                         </div>
                     </div>
                 </div>
