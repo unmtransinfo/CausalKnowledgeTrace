@@ -4,100 +4,7 @@
 {% block title %}Graph Configuration - CKT{% endblock %}
 
 {% block extra_css %}
-<style>
-    .config-box {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .config-header {
-        background-color: #3c8dbc;
-        color: white;
-        padding: 15px 20px;
-        border-radius: 5px 5px 0 0;
-        margin: -20px -20px 20px -20px;
-    }
-    
-    .alert-info-custom {
-        background-color: #3c8dbc !important;
-        color: #fff !important;
-        border-color: #3c8dbc !important;
-    }
-    
-    .alert-success-custom {
-        background-color: #00a65a !important;
-        color: #fff !important;
-        border-color: #00a65a !important;
-    }
-    
-    .form-label {
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-    
-    .help-text {
-        font-size: 0.875rem;
-        color: #6c757d;
-        margin-top: 5px;
-    }
-    
-    .btn-create-graph {
-        background-color: #3c8dbc;
-        color: white;
-        border-color: #367fa9;
-        font-size: 1.1rem;
-        padding: 12px 24px;
-    }
-    
-    .btn-create-graph:hover {
-        background-color: #367fa9;
-        color: white;
-    }
-    
-    .btn-clear {
-        font-size: 0.875rem;
-        padding: 4px 12px;
-    }
-    
-    #graph_progress_section {
-        display: none;
-        margin-top: 20px;
-    }
-    
-    .progress {
-        height: 25px;
-    }
-    
-    .progress-bar {
-        background-color: #007bff;
-    }
-    
-    .cui-search-results {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        margin-top: 5px;
-        display: none;
-    }
-    
-    .cui-result-item {
-        padding: 8px 12px;
-        cursor: pointer;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .cui-result-item:hover {
-        background-color: #f8f9fa;
-    }
-    
-    .cui-result-item:last-child {
-        border-bottom: none;
-    }
-</style>
+<link rel="stylesheet" href="{% static 'css/graph_config.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -250,30 +157,29 @@
                             </select>
                             <div class="help-text">Number of degrees for graph traversal (1-3). Controls the depth of relationships included in the graph.</div>
                         </div>
+
+                        <!-- Squelch Thresholds (moved from second row) -->
+                        <div class="squelch-thresholds-section">
+                            <h5>Squelch Thresholds (minimum unique PMIDs) *</h5>
+                            <div class="mb-3">
+                                <label for="min_pmids_degree1" class="form-label">Threshold for 1st Degree:</label>
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree1" name="min_pmids_degree1" value="10" min="1" max="1000" step="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="min_pmids_degree2" class="form-label">Threshold for 2nd Degree:</label>
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree2" name="min_pmids_degree2" value="100" min="1" max="1000" step="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="min_pmids_degree3" class="form-label">Threshold for 3rd Degree:</label>
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree3" name="min_pmids_degree3" value="200" min="1" max="1000" step="1">
+                            </div>
+                            <div class="help-text">Minimum number of unique PMIDs required for each degree level (1-1000). Fields are enabled based on selected degree.</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Second Row: Additional Parameters -->
                 <div class="row mt-3">
-                    <!-- Squelch Thresholds -->
-                    <div class="col-md-4">
-                        <h5>Squelch Thresholds (minimum unique PMIDs) *</h5>
-                        <div class="row">
-                            <div class="col-4">
-                                <label for="min_pmids_degree1" class="form-label">Threshold for 1st Degree:</label>
-                                <input type="number" class="form-control" id="min_pmids_degree1" name="min_pmids_degree1" value="10" min="1" max="1000" step="1">
-                            </div>
-                            <div class="col-4">
-                                <label for="min_pmids_degree2" class="form-label">Threshold for 2nd Degree:</label>
-                                <input type="number" class="form-control" id="min_pmids_degree2" name="min_pmids_degree2" value="100" min="1" max="1000" step="1">
-                            </div>
-                            <div class="col-4">
-                                <label for="min_pmids_degree3" class="form-label">Threshold for 3rd Degree:</label>
-                                <input type="number" class="form-control" id="min_pmids_degree3" name="min_pmids_degree3" value="200" min="1" max="1000" step="1">
-                            </div>
-                        </div>
-                        <div class="help-text">Minimum number of unique PMIDs required for each degree level (1-1000).</div>
-                    </div>
 
                     <!-- Publication Year and Predication Types -->
                     <div class="col-md-4">
@@ -281,60 +187,17 @@
                         <div class="mb-3">
                             <label for="pub_year_cutoff" class="form-label">Publication Year Cutoff *</label>
                             <select class="form-select" id="pub_year_cutoff" name="pub_year_cutoff">
-                                <option value="1980">1980</option>
-                                <option value="1981">1981</option>
-                                <option value="1982">1982</option>
-                                <option value="1983">1983</option>
-                                <option value="1984">1984</option>
-                                <option value="1985">1985</option>
-                                <option value="1986">1986</option>
-                                <option value="1987">1987</option>
-                                <option value="1988">1988</option>
-                                <option value="1989">1989</option>
-                                <option value="1990">1990</option>
-                                <option value="1991">1991</option>
-                                <option value="1992">1992</option>
-                                <option value="1993">1993</option>
-                                <option value="1994">1994</option>
-                                <option value="1995">1995</option>
-                                <option value="1996">1996</option>
-                                <option value="1997">1997</option>
-                                <option value="1998">1998</option>
-                                <option value="1999">1999</option>
-                                <option value="2000">2000</option>
-                                <option value="2001">2001</option>
-                                <option value="2002">2002</option>
-                                <option value="2003">2003</option>
-                                <option value="2004">2004</option>
-                                <option value="2005">2005</option>
-                                <option value="2006">2006</option>
-                                <option value="2007">2007</option>
-                                <option value="2008">2008</option>
-                                <option value="2009">2009</option>
-                                <option value="2010">2010</option>
-                                <option value="2011">2011</option>
-                                <option value="2012">2012</option>
-                                <option value="2013">2013</option>
-                                <option value="2014">2014</option>
-                                <option value="2015" selected>2015</option>
-                                <option value="2016">2016</option>
-                                <option value="2017">2017</option>
-                                <option value="2018">2018</option>
-                                <option value="2019">2019</option>
-                                <option value="2020">2020</option>
-                                <option value="2021">2021</option>
-                                <option value="2022">2022</option>
-                                <option value="2023">2023</option>
-                                <option value="2024">2024</option>
-                                <option value="2025">2025</option>
+                                {% for year in year_range %}
+                                    <option value="{{ year }}" {% if year == default_year %}selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
                             </select>
                             <div class="help-text">Only include citations published on or after this year.</div>
                         </div>
 
                         <!-- Predication Types -->
                         <div class="mb-3">
-                            <label for="PREDICATION_TYPE" class="form-label">Predication Types</label>
-                            <select class="form-select" id="PREDICATION_TYPE" name="PREDICATION_TYPE" multiple size="5">
+                            <label for="PREDICATION_TYPE" class="form-label">Predication Types *</label>
+                            <select class="form-select" id="PREDICATION_TYPE" name="PREDICATION_TYPE" multiple>
                                 <option value="CAUSES" selected>CAUSES</option>
                                 <option value="AFFECTS">AFFECTS</option>
                                 <option value="AUGMENTS">AUGMENTS</option>
@@ -347,7 +210,7 @@
                                 <option value="PRODUCES">PRODUCES</option>
                                 <option value="STIMULATES">STIMULATES</option>
                             </select>
-                            <div class="help-text">Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Will be saved as comma-separated values in YAML format.</div>
+                            <div class="help-text">Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Selected items will be highlighted.</div>
                         </div>
                     </div>
 
@@ -387,17 +250,16 @@
                 </div>
 
                 <!-- Progress Section (initially hidden) -->
-                <div id="graph_progress_section" style="display: none; margin-top: 20px;">
+                <div id="graph_progress_section">
                     <h4><i class="fas fa-spinner fa-spin"></i> Creating Graph...</h4>
-                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
+                    <div class="progress-container">
                         <p>Please wait while your graph is being created. This process may take several minutes.</p>
                         <div class="progress">
                             <div id="graph_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">
                                 <span id="graph_progress_text">Initializing...</span>
                             </div>
                         </div>
-                        <br>
-                        <div id="graph_progress_status" style="font-size: 14px; color: #6c757d;">
+                        <div id="graph_progress_status">
                             Status: Ready to start...
                         </div>
                     </div>
@@ -410,176 +272,11 @@
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // CUI Search functionality
-    function setupCUISearch(searchInputId, resultsId, selectedInputId) {
-        const searchInput = $('#' + searchInputId);
-        const resultsDiv = $('#' + resultsId);
-        const selectedInput = $('#' + selectedInputId);
-
-        searchInput.on('keypress', function(e) {
-            if (e.which === 13) { // Enter key
-                e.preventDefault();
-                const query = $(this).val().trim();
-
-                if (query.length < 3) {
-                    resultsDiv.hide();
-                    return;
-                }
-
-                // Perform CUI search
-                $.ajax({
-                    url: '{% url "graph_config:search_cui" %}',
-                    method: 'GET',
-                    data: { q: query },
-                    success: function(response) {
-                        if (response.success && response.results.length > 0) {
-                            resultsDiv.empty();
-                            response.results.forEach(function(item) {
-                                const resultItem = $('<div class="cui-result-item"></div>')
-                                    .html('<strong>' + item.cui + '</strong> - ' + item.name)
-                                    .on('click', function() {
-                                        // Add CUI to selected list
-                                        let currentCUIs = selectedInput.val().trim();
-                                        if (currentCUIs) {
-                                            currentCUIs += ', ' + item.cui;
-                                        } else {
-                                            currentCUIs = item.cui;
-                                        }
-                                        selectedInput.val(currentCUIs);
-                                        resultsDiv.hide();
-                                    });
-                                resultsDiv.append(resultItem);
-                            });
-                            resultsDiv.show();
-                        } else {
-                            resultsDiv.html('<div class="cui-result-item">No results found</div>').show();
-                        }
-                    },
-                    error: function() {
-                        resultsDiv.html('<div class="cui-result-item text-danger">Error searching CUIs</div>').show();
-                    }
-                });
-            }
-        });
-    }
-
-    // Setup CUI search for all three fields
-    setupCUISearch('exposure_cuis', 'exposure_search_results', 'exposure_cuis_selected');
-    setupCUISearch('outcome_cuis', 'outcome_search_results', 'outcome_cuis_selected');
-    setupCUISearch('blocklist_cuis', 'blocklist_search_results', 'blocklist_cuis_selected');
-
-    // Clear buttons
-    $('#clear_exposure').on('click', function() {
-        $('#exposure_cuis_selected').val('');
-    });
-
-    $('#clear_outcome').on('click', function() {
-        $('#outcome_cuis_selected').val('');
-    });
-
-    $('#clear_blocklist').on('click', function() {
-        $('#blocklist_cuis_selected').val('');
-    });
-
-    // Form submission
-    $('#graphConfigForm').on('submit', function(e) {
-        e.preventDefault();
-
-        // Show progress section
-        $('#graph_progress_section').show();
-        $('#create_graph_btn').prop('disabled', true);
-
-        // Collect form data
-        const formData = {
-            exposure_cuis: $('#exposure_cuis_selected').val(),
-            exposure_name: $('#exposure_name').val(),
-            outcome_cuis: $('#outcome_cuis_selected').val(),
-            outcome_name: $('#outcome_name').val(),
-            blocklist_cuis: $('#blocklist_cuis_selected').val(),
-            degree: $('#degree').val(),
-            min_pmids_degree1: $('#min_pmids_degree1').val(),
-            min_pmids_degree2: $('#min_pmids_degree2').val(),
-            min_pmids_degree3: $('#min_pmids_degree3').val(),
-            pub_year_cutoff: $('#pub_year_cutoff').val(),
-            predication_type: $('#PREDICATION_TYPE').val(),
-            semmeddb_version: $('#SemMedDBD_version').val()
-        };
-
-        // Submit to API
-        $.ajax({
-            url: '{% url "graph_config:generate" %}',
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
-            },
-            contentType: 'application/json',
-            data: JSON.stringify(formData),
-            success: function(response) {
-                if (response.success) {
-                    $('#graph_progress_text').text('Configuration saved!');
-                    $('#graph_progress_bar').css('width', '100%').removeClass('progress-bar-animated');
-                    $('#graph_progress_status').html('<strong style="color: #28a745;">✓ ' + response.message + '</strong>');
-
-                    // Hide progress and show success message after 2 seconds
-                    setTimeout(function() {
-                        $('#graph_progress_section').hide();
-                        $('#create_graph_btn').prop('disabled', false);
-
-                        // Update validation feedback to show success
-                        $('#validation_feedback_area').html(
-                            '<div class="alert alert-success mb-0">' +
-                            '<i class="fas fa-check-circle"></i> ' +
-                            '<strong>Configuration Saved!</strong><br>' +
-                            'Your settings have been saved to user_input.yaml. You can now proceed with graph generation.' +
-                            '</div>'
-                        );
-
-                        // Reset validation feedback after 5 seconds
-                        setTimeout(function() {
-                            $('#validation_feedback_area').html(
-                                '<div class="alert alert-success-custom mb-0">' +
-                                '<i class="fas fa-check-circle"></i> ' +
-                                '<strong> Ready to create graph</strong><br>' +
-                                'All inputs are valid. Click \'Create Graph\' to proceed.' +
-                                '</div>'
-                            );
-                        }, 5000);
-                    }, 2000);
-                } else {
-                    $('#graph_progress_section').hide();
-                    $('#create_graph_btn').prop('disabled', false);
-
-                    // Show error in validation feedback
-                    $('#validation_feedback_area').html(
-                        '<div class="alert alert-danger mb-0">' +
-                        '<i class="fas fa-exclamation-circle"></i> ' +
-                        '<strong>Error:</strong> ' + response.error +
-                        '</div>'
-                    );
-                }
-            },
-            error: function(xhr) {
-                $('#graph_progress_section').hide();
-                $('#create_graph_btn').prop('disabled', false);
-
-                let errorMsg = 'Error submitting form';
-                if (xhr.responseJSON && xhr.responseJSON.error) {
-                    errorMsg = xhr.responseJSON.error;
-                }
-
-                // Show error in validation feedback
-                $('#validation_feedback_area').html(
-                    '<div class="alert alert-danger mb-0">' +
-                    '<i class="fas fa-exclamation-circle"></i> ' +
-                    '<strong>Error:</strong> ' + errorMsg +
-                    '</div>'
-                );
-            }
-        });
-    });
-});
+    // Set URL endpoints for JavaScript
+    var searchCuiUrl = '{% url "graph_config:search_cui" %}';
+    var generateGraphUrl = '{% url "graph_config:generate" %}';
 </script>
+<script src="{% static 'js/graph_config.js' %}"></script>
 {% endblock %}
 
 
