@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -111,11 +112,16 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>&copy; 2024 CausalKnowledgeTrace. All rights reserved.</p>
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <p class="mb-0">&copy; 2024 CausalKnowledgeTrace. All rights reserved.</p>
                 </div>
-                <div class="col-md-6 text-end">
+                <div class="col-md-4 text-center">
+                    <a href="https://hsc.unm.edu/" target="_blank">
+                        <img src="{% static 'images/hsclogo.png' %}" alt="UNM HSC Logo" style="height: 50px;">
+                    </a>
+                </div>
+                <div class="col-md-4 text-end">
                     <a href="https://github.com/unmtransinfo/CausalKnowledgeTrace" target="_blank" class="text-light">
                         <i class="fab fa-github"></i> GitHub
                     </a>
