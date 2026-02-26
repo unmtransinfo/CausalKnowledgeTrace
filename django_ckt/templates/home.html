@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - CKT{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Welcome Section -->
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded shadow-sm mb-4">
+            <h1 class="display-4">
+                <i class="fas fa-project-diagram"></i> 
+                Welcome to CKT
+            </h1>
+            <p class="lead">Causal Knowledge Trace - Interactive Causal Graph Analysis</p>
+            <hr class="my-4 bg-white">
+            <p>
+                Explore causal relationships in biomedical knowledge graphs with powerful visualization 
+                and analysis tools powered by R and Django.
+            </p>
+            <a class="btn btn-light btn-lg" href="{% url 'core:about' %}" role="button">
+                <i class="fas fa-info-circle"></i> Learn More
+            </a>
+            <a class="btn btn-outline-light btn-lg" href="{% url 'upload:upload' %}" role="button">
+                <i class="fas fa-upload"></i> Get Started
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Quick Start Cards -->
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100 border-primary">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-cogs fa-3x text-primary"></i>
+                </div>
+                <h5 class="card-title">1. Configure Graph</h5>
+                <p class="card-text">
+                    Generate a knowledge graph from SemMedDB by specifying exposure and outcome CUIs.
+                </p>
+                <a href="{% url 'graph_config:config' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> Configure
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100 border-success">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-upload fa-3x text-success"></i>
+                </div>
+                <h5 class="card-title">2. Upload Data</h5>
+                <p class="card-text">
+                    Load an existing graph file or select from previously generated graphs.
+                </p>
+                <a href="{% url 'upload:upload' %}" class="btn btn-success">
+                    <i class="fas fa-arrow-right"></i> Upload
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100 border-info">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-project-diagram fa-3x text-info"></i>
+                </div>
+                <h5 class="card-title">3. Visualize</h5>
+                <p class="card-text">
+                    Explore your causal graph with interactive visualization and editing tools.
+                </p>
+                <a href="{% url 'visualization:graph' %}" class="btn btn-info">
+                    <i class="fas fa-arrow-right"></i> Visualize
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3 mb-4">
+        <div class="card h-100 border-warning">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-search-plus fa-3x text-warning"></i>
+                </div>
+                <h5 class="card-title">4. Analyze</h5>
+                <p class="card-text">
+                    Perform causal inference analysis to identify adjustment sets and paths.
+                </p>
+                <a href="{% url 'analysis:causal' %}" class="btn btn-warning">
+                    <i class="fas fa-arrow-right"></i> Analyze
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Features Section -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-star text-warning"></i> Key Features</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <strong>Interactive Visualization:</strong> Zoom, pan, and explore causal graphs
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <strong>Graph Editing:</strong> Remove nodes and edges, undo changes
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <strong>Causal Analysis:</strong> Calculate adjustment sets and instrumental variables
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <strong>SemMedDB Integration:</strong> Generate graphs from biomedical literature
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success"></i>
+                        <strong>Export Options:</strong> Save as R files or HTML reports
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- System Status -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-info-circle text-info"></i> System Information</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tbody>
+                        <tr>
+                            <td><strong>Framework:</strong></td>
+                            <td>Django 5 with ASGI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>R Integration:</strong></td>
+                            <td>rpy2 with visNetwork, dagitty, igraph</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Database:</strong></td>
+                            <td>PostgreSQL (SemMedDB)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Frontend:</strong></td>
+                            <td>Bootstrap 5 + vis-network</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="alert alert-info mb-0">
+                    <i class="fas fa-book"></i>
+                    <strong>Need Help?</strong> Check out the 
+                    <a href="{% url 'core:about' %}" class="alert-link">User Guide</a>
+                    for detailed instructions.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
