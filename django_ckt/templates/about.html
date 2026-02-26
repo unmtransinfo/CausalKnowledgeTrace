@@ -6,14 +6,14 @@
 <div class="row">
     <div class="col-12">
         <div class="card">
-            <div class="card-header" style="background-color: #3c8dbc; color: white;">
+            <div class="card-header card-header-primary">
                 <h3 class="mb-0">About CKT - Causal Knowledge Trace</h3>
             </div>
             <div class="card-body">
                 <!-- Application Overview -->
-                <div style="background-color: #d9edf7; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #31708f;">
-                    <h4 style="color: #31708f; margin-top: 0;"><i class="fas fa-info-circle"></i> What is CKT?</h4>
-                    <p class="mb-0" style="color: #31708f;">
+                <div class="info-box info-box-what-is-ckt">
+                    <h4><i class="fas fa-info-circle"></i> What is CKT?</h4>
+                    <p class="mb-0">
                         CKT (Causal Knowledge Trace) is an interactive web application for exploring and analyzing causal relationships in knowledge graphs.
                         It provides tools for visualizing graphs (which may contain cycles), performing causal inference analysis, and understanding
                         complex relationships between variables extracted from biomedical literature.
@@ -21,9 +21,9 @@
                 </div>
 
                 <!-- Key Features -->
-                <div style="background-color: #e8f4f8; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #5bc0de;">
-                    <h4 style="color: #31708f; margin-top: 0;"><i class="fas fa-star"></i> Key Features</h4>
-                    <ul style="color: #31708f; margin-bottom: 0;">
+                <div class="info-box info-box-key-features">
+                    <h4><i class="fas fa-star"></i> Key Features</h4>
+                    <ul>
                         <li><strong>Interactive Graph Visualization:</strong> Explore causal graphs with zoom, pan, and physics-based layouts</li>
                         <li><strong>Graph Editing:</strong> Remove nodes and edges, undo changes, and save modified graphs</li>
                         <li><strong>Causal Analysis:</strong> Calculate adjustment sets, find instrumental variables, and analyze causal paths</li>
@@ -33,9 +33,9 @@
                 </div>
 
                 <!-- Resources -->
-                <div style="background-color: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #999;">
-                    <h4 style="color: #333; margin-top: 0;"><i class="fas fa-link"></i> Resources</h4>
-                    <ul style="color: #333; margin-bottom: 0;">
+                <div class="info-box info-box-resources">
+                    <h4><i class="fas fa-link"></i> Resources</h4>
+                    <ul>
                         <li>
                             <i class="fab fa-github"></i> <strong>GitHub Repository:</strong>
                             <a href="https://github.com/unmtransinfo/CausalKnowledgeTrace" target="_blank">
@@ -54,11 +54,11 @@
                 <hr>
 
                 <!-- User Guide -->
-                <h3 style="color: #333;"><i class="fas fa-book"></i> User Guide</h3>
+                <h3 class="section-heading"><i class="fas fa-book"></i> User Guide</h3>
 
                 <!-- Step 1 -->
-                <div style="background-color: #fcf8e3; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #f0ad4e;">
-                    <h5 style="color: #8a6d3b; margin-top: 0;"><i class="fas fa-cogs"></i> Step 1: Graph Configuration (Optional)</h5>
+                <div class="info-box step-box-1">
+                    <h5><i class="fas fa-cogs"></i> Step 1: Graph Configuration (Optional)</h5>
                     <p>If you want to generate a new knowledge graph from the SemMedDB database:</p>
                     <ol>
                         <li>Navigate to the <strong>Graph Configuration</strong> tab</li>
@@ -75,14 +75,14 @@
                         <li>Click <strong>Generate Graph</strong> to create your knowledge graph</li>
                         <li>Wait for the process to complete - this may take several minutes</li>
                     </ol>
-                    <div style="background-color: #fff3cd; padding: 15px; border-radius: 4px; border: 1px solid #ffeaa7;">
+                    <div class="step-tip">
                         <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> If you already have a graph file, you can skip this step and go directly to Data Upload.
                     </div>
                 </div>
 
                 <!-- Step 2 -->
-                <div style="background-color: #d9edf7; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #3c8dbc;">
-                    <h5 style="color: #31708f; margin-top: 0;"><i class="fas fa-upload"></i> Step 2: Data Upload</h5>
+                <div class="info-box step-box-2">
+                    <h5><i class="fas fa-upload"></i> Step 2: Data Upload</h5>
                     <p>Load a graph file into the application:</p>
                     <ol>
                         <li>Navigate to the <strong>Data Upload</strong> tab</li>
@@ -99,8 +99,8 @@
                 </div>
 
                 <!-- Step 3 -->
-                <div style="background-color: #d4edda; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #5cb85c;">
-                    <h5 style="color: #3c763d; margin-top: 0;"><i class="fas fa-project-diagram"></i> Step 3: Graph Visualization</h5>
+                <div class="info-box step-box-3">
+                    <h5><i class="fas fa-project-diagram"></i> Step 3: Graph Visualization</h5>
                     <p>Explore and modify your causal graph:</p>
                     <ol>
                         <li>Navigate to the <strong>Graph Visualization</strong> tab</li>
@@ -130,15 +130,15 @@
                     </ol>
                     <p>
                         <strong>Node Colors:</strong>
-                        <span style="color: #d9534f;">● Red</span> = Exposure |
-                        <span style="color: #4ECDC4;">● Cyan</span> = Outcome |
-                        <span style="color: #999;">● Gray</span> = Other variables
+                        <span class="node-color-red">● Red</span> = Exposure |
+                        <span class="node-color-cyan">● Cyan</span> = Outcome |
+                        <span class="node-color-gray">● Gray</span> = Other variables
                     </p>
                 </div>
 
                 <!-- Step 4 -->
-                <div style="background-color: #fff3e0; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #ff9800;">
-                    <h5 style="color: #8a6d3b; margin-top: 0;"><i class="fas fa-search-plus"></i> Step 4: Causal Analysis</h5>
+                <div class="info-box step-box-4">
+                    <h5><i class="fas fa-search-plus"></i> Step 4: Causal Analysis</h5>
                     <p>Perform statistical causal inference analysis:</p>
                     <ol>
                         <li>Navigate to the <strong>Causal Analysis</strong> tab</li>
@@ -160,21 +160,21 @@
                 <hr>
 
                 <!-- Understanding Causal Concepts -->
-                <h3 style="color: #333;"><i class="fas fa-graduation-cap"></i> Understanding Causal Concepts</h3>
+                <h3 class="section-heading"><i class="fas fa-graduation-cap"></i> Understanding Causal Concepts</h3>
 
                 <div class="row">
                     <div class="col-md-6">
                         <!-- Adjustment Sets -->
-                        <div style="background-color: #e3f2fd; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #2196F3;">
-                            <h5 style="color: #1976d2; margin-top: 0;"><i class="fas fa-info-circle"></i> Adjustment Sets</h5>
+                        <div class="info-box concept-box-adjustment">
+                            <h5><i class="fas fa-info-circle"></i> Adjustment Sets</h5>
                             <p>A set of variables that, when controlled for in your analysis, blocks all confounding paths between exposure and outcome. This allows you to estimate the causal effect without bias.</p>
                             <p><strong>Example:</strong> If you want to know if smoking causes lung cancer, you might need to adjust for age and genetics to block confounding paths.</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <!-- Instrumental Variables -->
-                        <div style="background-color: #fff3e0; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #ff9800;">
-                            <h5 style="color: #f57c00; margin-top: 0;"><i class="fas fa-wrench"></i> Instrumental Variables</h5>
+                        <div class="info-box concept-box-instrumental">
+                            <h5><i class="fas fa-wrench"></i> Instrumental Variables</h5>
                             <p>A variable that (1) affects the exposure, (2) does not directly affect the outcome except through the exposure, and (3) is not associated with confounders.</p>
                             <p><strong>Example:</strong> Distance to a smoking cessation clinic might be an instrument for smoking behavior when studying health outcomes.</p>
                         </div>
@@ -184,16 +184,16 @@
                 <div class="row">
                     <div class="col-md-6">
                         <!-- Causal Paths -->
-                        <div style="background-color: #f3e5f5; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #9c27b0;">
-                            <h5 style="color: #7b1fa2; margin-top: 0;"><i class="fas fa-route"></i> Causal Paths</h5>
+                        <div class="info-box concept-box-paths">
+                            <h5><i class="fas fa-route"></i> Causal Paths</h5>
                             <p>All directed paths from exposure to outcome in the graph. Paths can be 'open' (creating confounding) or 'blocked' (already controlled).</p>
                             <p><strong>Example:</strong> Smoking → Tar Deposits → Lung Cancer is a causal path.</p>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <!-- Causal Graph -->
-                        <div style="background-color: #e8f5e9; padding: 20px; margin-bottom: 20px; border-radius: 5px; border-left: 4px solid #4caf50;">
-                            <h5 style="color: #388e3c; margin-top: 0;"><i class="fas fa-project-diagram"></i> Causal Graph</h5>
+                        <div class="info-box concept-box-graph">
+                            <h5><i class="fas fa-project-diagram"></i> Causal Graph</h5>
                             <p>A graphical representation of causal relationships where nodes represent variables and directed edges represent causal effects. The graph may contain cycles representing feedback loops.</p>
                             <p><strong>Example:</strong> Education → Income → Health Status</p>
                         </div>
