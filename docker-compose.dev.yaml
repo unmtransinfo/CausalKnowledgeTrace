@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_DB: causalehr
       POSTGRES_USER: rajesh
-      POSTGRES_PASSWORD: Software292$
+      POSTGRES_PASSWORD: Software292
       PGPORT: 5433
     ports:
       - "0.0.0.0:5433:5433"
@@ -43,7 +43,7 @@ services:
       - APP_PORT=3837
       - DB_PORT=5433
       - DB_USER=rajesh
-      - DB_PASSWORD=Software292$
+      - DB_PASSWORD=Software292
       - DB_NAME=causalehr
       - DB_SENTENCE_SCHEMA=public
       - DB_SENTENCE_TABLE=sentence

@@ -1,0 +1,587 @@
+# Database Connection Module for CausalKnowledgeTrace
+#
+# This module provides database connectivity for the Shiny application
+# to query the cui_search table for CUI search functionality.
+#
+# Author: CausalKnowledgeTrace Application
+# Dependencies: DBI, RPostgreSQL, pool
+
+# Required libraries with error handling
+# Try RPostgres first (more modern), fallback to RPostgreSQL if needed
+postgres_driver <- NULL
+required_base_packages <- c("DBI", "pool")
+
+for (pkg in required_base_packages) {
+    if (!require(pkg, character.only = TRUE, quietly = TRUE)) {
+        message(paste("Installing", pkg, "package..."))
+        install.packages(pkg)
+        library(pkg, character.only = TRUE)
+    }
+}
+
+# Try to load PostgreSQL driver
+tryCatch({
+    if (!require("RPostgres", character.only = TRUE, quietly = TRUE)) {
+        message("Installing RPostgres package...")
+        install.packages("RPostgres")
+        library(RPostgres)
+    }
+    postgres_driver <- RPostgres::Postgres()
+    cat("Using RPostgres driver\n")
+}, error = function(e) {
+    cat("RPostgres not available, trying RPostgreSQL...\n")
+    tryCatch({
+        if (!require("RPostgreSQL", character.only = TRUE, quietly = TRUE)) {
+            message("Installing RPostgreSQL package...")
+            install.packages("RPostgreSQL")
+            library(RPostgreSQL)
+        }
+        postgres_driver <- RPostgreSQL::PostgreSQL()
+        cat("Using RPostgreSQL driver\n")
+    }, error = function(e2) {
+        cat("Warning: No PostgreSQL driver available. Database functionality will be limited.\n")
+        cat("Error with RPostgres:", e$message, "\n")
+        cat("Error with RPostgreSQL:", e2$message, "\n")
+        postgres_driver <- NULL
+    })
+})
+
+# Global connection pool
+.db_pool <- NULL
+
+#' Initialize Database Connection Pool
+#' 
+#' Creates a connection pool to the PostgreSQL database using environment variables.
+#' All parameters are read from environment variables - no defaults provided.
+#' 
+#' @param host Database host (from DB_HOST env var)
+#' @param port Database port (from DB_PORT env var)
+#' @param dbname Database name (from DB_NAME env var)
+#' @param user Database user (from DB_USER env var)
+#' @param password Database password (from DB_PASSWORD env var)
+#' @param schema Database schema (from DB_SCHEMA env var)
+#' @param min_size Minimum pool size (default: 1)
+#' @param max_size Maximum pool size (default: 5)
+#' @return List with success status and connection pool
+#' @export
+init_database_pool <- function(host = NULL, port = NULL, dbname = NULL, 
+                              user = NULL, password = NULL, schema = NULL,
+                              min_size = 1, max_size = 5) {
+    
+    tryCatch({
+        # Read from environment variables (no defaults - force explicit configuration)
+        if (is.null(host)) host <- Sys.getenv("DB_HOST")
+        if (is.null(port)) port <- as.integer(Sys.getenv("DB_PORT"))
+        if (is.null(dbname)) dbname <- Sys.getenv("DB_NAME")
+        if (is.null(user)) user <- Sys.getenv("DB_USER")
+        if (is.null(password)) password <- Sys.getenv("DB_PASSWORD")
+
+        # Load individual schema and table names for CUI search
+        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA")
+        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE")
+
+        # Validate required parameters - no fallbacks
+        if (host == "" || is.na(host)) {
+            return(list(
+                success = FALSE,
+                message = "Database host is required. Set DB_HOST environment variable."
+            ))
+        }
+        
+        if (port == 0 || is.na(port)) {
+            return(list(
+                success = FALSE,
+                message = "Database port is required. Set DB_PORT environment variable."
+            ))
+        }
+        
+        if (dbname == "" || is.na(dbname)) {
+            return(list(
+                success = FALSE,
+                message = "Database name is required. Set DB_NAME environment variable."
+            ))
+        }
+        
+        if (user == "" || is.na(user)) {
+            return(list(
+                success = FALSE,
+                message = "Database user is required. Set DB_USER environment variable."
+            ))
+        }
+        
+        if (cui_search_schema == "" || is.na(cui_search_schema)) {
+            return(list(
+                success = FALSE,
+                message = "Database sentence schema is required. Set DB_SENTENCE_SCHEMA environment variable."
+            ))
+        }
+        
+        if (cui_search_table == "" || is.na(cui_search_table)) {
+            return(list(
+                success = FALSE,
+                message = "Database sentence table is required. Set DB_SENTENCE_TABLE environment variable."
+            ))
+        }
+        
+        # Check if PostgreSQL driver is available
+        if (is.null(postgres_driver)) {
+            return(list(
+                success = FALSE,
+                message = "No PostgreSQL driver available. Please install RPostgres or RPostgreSQL package and ensure PostgreSQL development headers are installed."
+            ))
+        }
+
+        # Validate required parameters
+        if (user == "") {
+            return(list(
+                success = FALSE,
+                message = "Database user is required. Set DB_USER environment variable."
+            ))
+        }
+
+        # Create connection pool with increased minSize to pre-warm connections
+        # This prevents the first query from being slow due to connection initialization
+        .db_pool <<- pool::dbPool(
+            drv = postgres_driver,
+            host = host,
+            port = port,
+            dbname = dbname,
+            user = user,
+            password = password,
+            minSize = max(min_size, 2),  # Ensure at least 2 connections are pre-created
+            maxSize = max_size,
+            idleTimeout = 3600,  # Keep idle connections for 1 hour
+            validationInterval = 60  # Validate connections every 60 seconds
+        )
+
+        # Warm up the connection pool by creating initial connections
+        # This eliminates the delay on the first query
+        if (exists("log_message")) {
+            log_message("Pre-warming connection pool...", "DEBUG")
+        }
+
+        tryCatch({
+            # Checkout and return multiple connections to pre-create them
+            for (i in 1:max(min_size, 2)) {
+                warm_conn <- pool::poolCheckout(.db_pool)
+
+                # Execute a simple query to fully initialize the connection
+                DBI::dbGetQuery(warm_conn, "SELECT 1")
+
+                pool::poolReturn(warm_conn)
+            }
+
+            if (exists("log_message")) {
+                log_message("Connection pool pre-warming completed", "DEBUG")
+            }
+        }, error = function(e) {
+            if (exists("log_message")) {
+                log_message(paste("Warning: Connection pool pre-warming failed:", e$message), "WARNING")
+            }
+        })
+
+        # Test connection
+        test_conn <- pool::poolCheckout(.db_pool)
+
+        # Set schema if specified
+        if (!is.null(schema) && schema != "") {
+            DBI::dbExecute(test_conn, paste("SET search_path TO", schema))
+        }
+
+        # Lightweight test query to verify cui_search table access without scanning entire table
+        test_query <- paste("SELECT 1 FROM", paste0(cui_search_schema, ".", cui_search_table), "LIMIT 1")
+        result <- DBI::dbGetQuery(test_conn, test_query)
+
+        pool::poolReturn(test_conn)
+
+        # Log to file instead of console
+        if (exists("log_db_config")) {
+            log_db_config(host, port, dbname, schema, user)
+            log_db_pool(min_size, max_size)
+        }
+
+        return(list(
+            success = TRUE,
+            message = "Database connection pool initialized successfully",
+            pool = .db_pool,
+            config = list(
+                host = host,
+                port = port,
+                dbname = dbname,
+                schema = schema
+            )
+        ))
+        
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Failed to initialize database connection:", e$message),
+            error = e
+        ))
+    })
+}
+
+#' Close Database Connection Pool
+#' 
+#' Closes the database connection pool
+#' 
+#' @export
+close_database_pool <- function() {
+    if (!is.null(.db_pool)) {
+        tryCatch({
+            pool::poolClose(.db_pool)
+            .db_pool <<- NULL
+            if (exists("log_message")) {
+                log_message("Database connection pool closed", "INFO")
+            }
+        }, error = function(e) {
+            if (exists("log_message")) {
+                log_message(paste("Error closing database pool:", e$message), "ERROR")
+            }
+        })
+    }
+}
+
+#' Get Database Connection
+#' 
+#' Gets a connection from the pool (for internal use)
+#' 
+#' @return Database connection or NULL if pool not initialized
+get_db_connection <- function() {
+    if (is.null(.db_pool)) {
+        warning("Database pool not initialized. Call init_database_pool() first.")
+        return(NULL)
+    }
+    return(.db_pool)
+}
+
+#' Search CUI Entities
+#'
+#' Searches the subject_search or object_search table for medical concepts matching the search term
+#' Returns ALL matching results (no limit)
+#'
+#' @param search_term Character string to search for in concept names
+#' @param search_type Character string indicating search type: "exposure" (subject_search) or "outcome" (object_search)
+#' @param exact_match Whether to perform exact matching (default: FALSE)
+#' @return List with success status and search results
+#' @export
+search_cui_entities <- function(search_term, search_type = "exposure", exact_match = FALSE) {
+
+    if (is.null(.db_pool)) {
+        return(list(
+            success = FALSE,
+            message = "Database connection not initialized. Call init_database_pool() first.",
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+        ))
+    }
+
+    if (is.null(search_term) || nchar(trimws(search_term)) == 0) {
+        return(list(
+            success = TRUE,
+            message = "Empty search term",
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+        ))
+    }
+
+    tryCatch({
+        # Load schema and table names from environment variables based on search type
+        if (tolower(search_type) == "exposure") {
+            search_schema <- Sys.getenv("DB_SUBJECT_SEARCH_SCHEMA")
+            search_table <- Sys.getenv("DB_SUBJECT_SEARCH_TABLE")
+        } else if (tolower(search_type) == "outcome") {
+            search_schema <- Sys.getenv("DB_OBJECT_SEARCH_SCHEMA")
+            search_table <- Sys.getenv("DB_OBJECT_SEARCH_TABLE")
+        } else {
+            return(list(
+                success = FALSE,
+                message = paste("Invalid search_type:", search_type, ". Must be 'exposure' or 'outcome'."),
+                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            ))
+        }
+        
+        # Validate schema and table names
+        if (search_schema == "" || is.na(search_schema)) {
+            return(list(
+                success = FALSE,
+                message = paste("Database schema for", search_type, "search is required. Set appropriate environment variable."),
+                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            ))
+        }
+        
+        if (search_table == "" || is.na(search_table)) {
+            return(list(
+                success = FALSE,
+                message = paste("Database table for", search_type, "search is required. Set appropriate environment variable."),
+                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            ))
+        }
+
+        # Clean and prepare search term
+        clean_term <- trimws(search_term)
+
+        # Build query based on match type - NO LIMIT to show all results
+        if (exact_match) {
+            # Exact match: use simple equality (can use index)
+            query <- paste("SELECT cui, name, semtype, semtype_definition FROM",
+                          paste0(search_schema, ".", search_table),
+                          "WHERE LOWER(name) = LOWER($1) ORDER BY name")
+            params <- list(clean_term)
+        } else {
+            # Partial match: use trigram index for better performance
+            # Pattern: starts with search term (better index usage than LIKE %term%)
+            search_pattern <- paste0(clean_term, "%")
+            query <- paste("SELECT cui, name, semtype, semtype_definition FROM",
+                          paste0(search_schema, ".", search_table),
+                          "WHERE name ILIKE $1 ORDER BY name")
+            params <- list(search_pattern)
+        }
+
+        # Log the SQL query being executed
+        if (exists("log_message")) {
+            log_message(paste("SQL Query:", query), "DEBUG")
+            log_message(paste("Search Type:", search_type, "| Table:", paste0(search_schema, ".", search_table)), "DEBUG")
+            log_message(paste("Parameters:", paste(params, collapse = ", ")), "DEBUG")
+            log_message(paste("Search term:", search_term, "-> Pattern:", if(exact_match) clean_term else search_pattern), "DEBUG")
+        }
+
+        # Execute query
+        results <- pool::dbGetQuery(.db_pool, query, params = params)
+
+        # Ensure consistent column names and types
+        if (nrow(results) > 0) {
+            results$cui <- as.character(results$cui)
+            results$name <- as.character(results$name)
+            results$semtype <- as.character(results$semtype)
+            results$semtype_definition <- as.character(results$semtype_definition)
+        } else {
+            results <- data.frame(
+                cui = character(0),
+                name = character(0),
+                semtype = character(0),
+                semtype_definition = character(0),
+                stringsAsFactors = FALSE
+            )
+        }
+
+        # Return all results (no limit)
+        return(list(
+            success = TRUE,
+            message = paste("Found", nrow(results), "results in", search_type, "table"),
+            results = results,
+            search_term = clean_term,
+            search_type = search_type,
+            total_results = nrow(results),
+            hit_limit = FALSE
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Database query error:", e$message),
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0)),
+            error = e
+        ))
+    })
+}
+
+#' Get CUI Details
+#'
+#' Retrieves detailed information for specific CUI codes
+#'
+#' @param cui_codes Character vector of CUI codes to look up
+#' @return List with success status and CUI details
+#' @export
+get_cui_details <- function(cui_codes) {
+
+    if (is.null(.db_pool)) {
+        return(list(
+            success = FALSE,
+            message = "Database connection not initialized. Call init_database_pool() first.",
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+        ))
+    }
+
+    if (is.null(cui_codes) || length(cui_codes) == 0) {
+        return(list(
+            success = TRUE,
+            message = "No CUI codes provided",
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+        ))
+    }
+
+    tryCatch({
+        # Load schema and table names from environment variables (sentence table now used for CUI details)
+        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA", "public")
+        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE", "sentence")
+
+        # Clean CUI codes
+        clean_cuis <- trimws(cui_codes)
+        clean_cuis <- clean_cuis[clean_cuis != ""]
+
+        if (length(clean_cuis) == 0) {
+            return(list(
+                success = TRUE,
+                message = "No valid CUI codes provided",
+                results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0))
+            ))
+        }
+
+        # Create placeholders for parameterized query
+        placeholders <- paste(rep("$", length(clean_cuis)), 1:length(clean_cuis), sep = "", collapse = ",")
+        query <- paste(
+            "SELECT DISTINCT cui, name,",
+            "NULL::text AS semtype,",
+            "NULL::text AS semtype_definition",
+            "FROM", paste0(cui_search_schema, ".", cui_search_table),
+            "WHERE cui IN (", placeholders, ") ORDER BY name"
+        )
+
+        # Execute query
+        results <- pool::dbGetQuery(.db_pool, query, params = as.list(clean_cuis))
+
+        # Ensure consistent column names and types
+        if (nrow(results) > 0) {
+            results$cui <- as.character(results$cui)
+            results$name <- as.character(results$name)
+            results$semtype <- as.character(results$semtype)
+            results$semtype_definition <- as.character(results$semtype_definition)
+        } else {
+            results <- data.frame(
+                cui = character(0),
+                name = character(0),
+                semtype = character(0),
+                semtype_definition = character(0),
+                stringsAsFactors = FALSE
+            )
+        }
+
+        return(list(
+            success = TRUE,
+            message = paste("Found", nrow(results), "of", length(clean_cuis), "requested CUIs"),
+            results = results,
+            requested_cuis = clean_cuis,
+            found_count = nrow(results)
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Database query error:", e$message),
+            results = data.frame(cui = character(0), name = character(0), semtype = character(0), semtype_definition = character(0)),
+            error = e
+        ))
+    })
+}
+
+#' Validate CUI Format
+#'
+#' Validates that CUI codes follow the expected format (C followed by 7 digits)
+#'
+#' @param cui_codes Character vector of CUI codes to validate
+#' @return List with validation results
+#' @export
+validate_cui_format <- function(cui_codes) {
+
+    if (is.null(cui_codes) || length(cui_codes) == 0) {
+        return(list(
+            valid = TRUE,
+            message = "No CUI codes to validate",
+            valid_cuis = character(0),
+            invalid_cuis = character(0)
+        ))
+    }
+
+    # Clean and split CUI codes
+    clean_cuis <- trimws(unlist(strsplit(paste(cui_codes, collapse = ","), ",")))
+    clean_cuis <- clean_cuis[clean_cuis != ""]
+
+    if (length(clean_cuis) == 0) {
+        return(list(
+            valid = TRUE,
+            message = "No valid CUI codes provided",
+            valid_cuis = character(0),
+            invalid_cuis = character(0)
+        ))
+    }
+
+    # CUI format: C followed by 7 digits
+    cui_pattern <- "^C[0-9]{7}$"
+
+    valid_cuis <- clean_cuis[grepl(cui_pattern, clean_cuis)]
+    invalid_cuis <- clean_cuis[!grepl(cui_pattern, clean_cuis)]
+
+    is_valid <- length(invalid_cuis) == 0
+
+    message <- if (is_valid) {
+        paste("All", length(valid_cuis), "CUI codes are valid")
+    } else {
+        paste("Found", length(invalid_cuis), "invalid CUI codes:", paste(invalid_cuis, collapse = ", "))
+    }
+
+    return(list(
+        valid = is_valid,
+        message = message,
+        valid_cuis = valid_cuis,
+        invalid_cuis = invalid_cuis,
+        total_count = length(clean_cuis),
+        valid_count = length(valid_cuis),
+        invalid_count = length(invalid_cuis)
+    ))
+}
+
+#' Test Database Connection
+#'
+#' Tests the database connection and cui_search table access
+#'
+#' @return List with test results
+#' @export
+test_database_connection <- function() {
+
+    if (is.null(.db_pool)) {
+        return(list(
+            success = FALSE,
+            message = "Database connection pool not initialized"
+        ))
+    }
+
+    tryCatch({
+        # Load schema and table names from environment variables (sentence table)
+        cui_search_schema <- Sys.getenv("DB_SENTENCE_SCHEMA", "public")
+        cui_search_table  <- Sys.getenv("DB_SENTENCE_TABLE", "sentence")
+
+        # Test basic connection
+        test_conn <- pool::poolCheckout(.db_pool)
+
+        # Test sentence table access
+        count_query <- paste("SELECT COUNT(*) as total_entities FROM", paste0(cui_search_schema, ".", cui_search_table))
+        count_result <- DBI::dbGetQuery(test_conn, count_query)
+
+        # Test sample query
+        sample_query <- paste(
+            "SELECT DISTINCT cui, name,",
+            "NULL::text AS semtype,",
+            "NULL::text AS semtype_definition",
+            "FROM", paste0(cui_search_schema, ".", cui_search_table),
+            "LIMIT 5"
+        )
+        sample_result <- DBI::dbGetQuery(test_conn, sample_query)
+
+        pool::poolReturn(test_conn)
+
+        return(list(
+            success = TRUE,
+            message = "Database connection test successful",
+            total_entities = count_result$total_entities[1],
+            sample_entities = sample_result
+        ))
+
+    }, error = function(e) {
+        return(list(
+            success = FALSE,
+            message = paste("Database connection test failed:", e$message),
+            error = e
+        ))
+    })
+}
+
+

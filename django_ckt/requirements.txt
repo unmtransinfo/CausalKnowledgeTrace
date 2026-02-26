@@ -1,0 +1,17 @@
+
+Django
+django-environ
+daphne
+uvicorn[standard]
+psycopg2-binary
+rpy2
+pandas
+numpy
+networkx
+scipy
+requests
+python-dotenv
+PyYAML
+python-dateutil
+pytest
+pytest-django
