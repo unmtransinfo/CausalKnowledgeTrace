@@ -221,11 +221,13 @@ tabItems(
                 fluidRow(
                     id = "dag-main-row",
                     class = "dag-responsive-layout",
+                    style = "margin-left: 0 !important; margin-right: 0 !important;",
 
                     # Left Column: Interactive Causal Graph Explorer
-                    column(8,
+                    column(6,
                         id = "dag-graph-column",
                         class = "dag-graph-col",
+                        style = "padding-left: 0 !important; padding-right: 0 !important;",
                         box(
                             title = "Interactive Causal Graph Explorer",
                             status = "primary",
@@ -233,6 +235,7 @@ tabItems(
                             width = NULL,
                             class = "dag-network-box",
                             div(class = "resizable-dag-container",
+                                style = "margin: 0 !important; padding: 0 !important;",
                                 visNetworkOutput("network", height = "100%", width = "100%"),
                                 div(class = "dag-resize-handle")
                             ),
@@ -289,9 +292,10 @@ tabItems(
                     ),
 
                     # Right Column: Edge Information
-                    column(4,
+                    column(6,
                         id = "dag-edge-column",
                         class = "dag-edge-col",
+                        style = "padding-left: 0 !important; padding-right: 0 !important;",
                         box(
                             title = "Edge Information",
                             status = "info",
