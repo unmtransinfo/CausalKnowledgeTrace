@@ -164,13 +164,30 @@ get_app_css_styles <- function() {
             padding: 10px;
         }
 
+        /* Target box-body that has the dag-network-box class directly */
+        .box-body.dag-network-box {
+            height: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: fit-content !important;
+        }
+
+        /* Also target if dag-network-box is on the box element */
         .box.dag-network-box {
             height: auto !important;
+            width: fit-content !important;
         }
 
         .box.dag-network-box .box-body {
             height: auto !important;
             padding: 0 !important;
+            margin: 0 !important;
+            width: fit-content !important;
+        }
+
+        /* Make the box containing the DAG fit its content */
+        #dag-graph-column .box {
+            width: fit-content !important;
         }
 
         /* Resizable graph visualization styles */
@@ -179,12 +196,13 @@ get_app_css_styles <- function() {
             min-height: 400px;
             max-height: calc(100vh - 200px);
             height: calc(100vh - 300px);
-            min-width: 400px;
-            max-width: calc(100vw - 100px);
+            max-width: 100%;
             width: 100%;
             border: 1px solid #ddd;
             border-radius: 4px;
             overflow: visible;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         /* Fix for visNetwork nodesIdSelection dropdown */
@@ -275,18 +293,42 @@ get_app_css_styles <- function() {
             display: flex;
             flex-wrap: wrap;
             transition: all 0.3s ease;
+            width: fit-content !important;
+            max-width: 100% !important;
+        }
+
+        /* Override Bootstrap row negative margins that cause spacing issues */
+        #dag-main-row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: fit-content !important;
+            max-width: 100% !important;
+        }
+
+        /* Remove column padding that creates gaps */
+        #dag-graph-column,
+        #dag-edge-column {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* Make columns fit their content */
+        .dag-graph-col {
+            width: fit-content !important;
         }
 
         .dag-graph-col {
-            flex: 1 1 66.666%;
-            min-width: 400px;
+            flex: 1 1 50%;
             transition: all 0.3s ease;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
         .dag-edge-col {
-            flex: 1 1 33.333%;
-            min-width: 300px;
+            flex: 1 1 50%;
             transition: all 0.3s ease;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
         }
 
         /* When layout stacks (responsive breakpoint) */
