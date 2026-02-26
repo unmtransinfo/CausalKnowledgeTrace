@@ -14,127 +14,10 @@
     
     <!-- vis-network CSS -->
     <link href="https://unpkg.com/vis-network@9.1.6/dist/dist/vis-network.min.css" rel="stylesheet">
-    
+
     <!-- Custom CSS -->
-    <style>
-        :root {
-            --primary-color: #3c8dbc;
-            --secondary-color: #6c757d;
-            --success-color: #4caf50;
-            --danger-color: #dc3545;
-            --warning-color: #ff9800;
-            --info-color: #2196F3;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f6f9;
-        }
-        
-        .navbar-custom {
-            background-color: #3c8dbc;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    <link href="{% static 'css/main.css' %}" rel="stylesheet">
 
-        .navbar-custom .container-fluid {
-            flex-direction: column;
-            padding: 0;
-        }
-
-        .navbar-brand-row {
-            width: 100%;
-            text-align: center;
-            padding: 1rem 0 0.5rem 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .navbar-brand-title {
-            color: white;
-            font-weight: bold;
-            font-size: 1.5rem;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .navbar-brand-title:hover {
-            color: rgba(255,255,255,0.9);
-        }
-
-        .navbar-nav-row {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            padding: 0.5rem 0;
-        }
-
-        .navbar-custom .navbar-toggler {
-            border-color: rgba(255,255,255,0.5);
-            margin: 0.5rem auto;
-        }
-
-        .navbar-custom .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }
-
-        .navbar-custom .nav-link {
-            color: rgba(255,255,255,0.9);
-            margin: 0 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .navbar-custom .nav-link:hover,
-        .navbar-custom .nav-link.active {
-            color: white;
-            background-color: rgba(255,255,255,0.1);
-            border-radius: 4px;
-        }
-
-        @media (max-width: 991px) {
-            .navbar-nav-row {
-                flex-direction: column;
-            }
-
-            .navbar-custom .navbar-collapse {
-                text-align: center;
-            }
-        }
-        
-        .content-wrapper {
-            padding: 2rem 0;
-            min-height: calc(100vh - 120px);
-        }
-        
-        .card {
-            border: none;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
-            margin-bottom: 1.5rem;
-        }
-        
-        .card-header {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: 600;
-            border-bottom: none;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-        
-        .btn-primary:hover {
-            background-color: #367fa9;
-            border-color: #367fa9;
-        }
-        
-        footer {
-            background-color: #222;
-            color: #ccc;
-            padding: 1.5rem 0;
-            margin-top: 3rem;
-        }
-    </style>
-    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -150,19 +33,16 @@
     
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-4">
-                    <p class="mb-0">&copy; 2024 CausalKnowledgeTrace. All rights reserved.</p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <a href="https://hsc.unm.edu/" target="_blank">
-                        <img src="{% static 'images/hsclogo.png' %}" alt="UNM HSC Logo" style="height: 50px;">
-                    </a>
-                </div>
-                <div class="col-md-4 text-end">
+        <div class="container-fluid">
+            <div class="row align-items-center justify-content-end">
+                <div class="col-auto">
                     <a href="https://github.com/unmtransinfo/CausalKnowledgeTrace" target="_blank" class="text-light">
                         <i class="fab fa-github"></i> GitHub
+                    </a>
+                </div>
+                <div class="col-auto ms-3">
+                    <a href="https://hsc.unm.edu/" target="_blank">
+                        <img src="{% static 'images/hsclogo.png' %}" alt="UNM HSC Logo" class="footer-logo">
                     </a>
                 </div>
             </div>
