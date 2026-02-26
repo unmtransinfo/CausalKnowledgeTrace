@@ -387,7 +387,7 @@
                 </div>
 
                 <!-- Progress Section (initially hidden) -->
-                <div id="graph_progress_section">
+                <div id="graph_progress_section" style="display: none; margin-top: 20px;">
                     <h4><i class="fas fa-spinner fa-spin"></i> Creating Graph...</h4>
                     <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px solid #dee2e6;">
                         <p>Please wait while your graph is being created. This process may take several minutes.</p>
@@ -517,26 +517,64 @@ $(document).ready(function() {
             data: JSON.stringify(formData),
             success: function(response) {
                 if (response.success) {
-                    $('#graph_progress_text').text('Graph generation started!');
-                    $('#graph_progress_bar').css('width', '100%');
-                    $('#graph_progress_status').text('Status: ' + response.message);
+                    $('#graph_progress_text').text('Configuration saved!');
+                    $('#graph_progress_bar').css('width', '100%').removeClass('progress-bar-animated');
+                    $('#graph_progress_status').html('<strong style="color: #28a745;">✓ ' + response.message + '</strong>');
 
-                    // TODO: Poll for status updates
+                    // Hide progress and show success message after 2 seconds
                     setTimeout(function() {
                         $('#graph_progress_section').hide();
                         $('#create_graph_btn').prop('disabled', false);
-                        alert('Graph generation completed! (This is a placeholder - actual implementation pending)');
-                    }, 3000);
+
+                        // Update validation feedback to show success
+                        $('#validation_feedback_area').html(
+                            '<div class="alert alert-success mb-0">' +
+                            '<i class="fas fa-check-circle"></i> ' +
+                            '<strong>Configuration Saved!</strong><br>' +
+                            'Your settings have been saved to user_input.yaml. You can now proceed with graph generation.' +
+                            '</div>'
+                        );
+
+                        // Reset validation feedback after 5 seconds
+                        setTimeout(function() {
+                            $('#validation_feedback_area').html(
+                                '<div class="alert alert-success-custom mb-0">' +
+                                '<i class="fas fa-check-circle"></i> ' +
+                                '<strong> Ready to create graph</strong><br>' +
+                                'All inputs are valid. Click \'Create Graph\' to proceed.' +
+                                '</div>'
+                            );
+                        }, 5000);
+                    }, 2000);
                 } else {
-                    alert('Error: ' + response.error);
                     $('#graph_progress_section').hide();
                     $('#create_graph_btn').prop('disabled', false);
+
+                    // Show error in validation feedback
+                    $('#validation_feedback_area').html(
+                        '<div class="alert alert-danger mb-0">' +
+                        '<i class="fas fa-exclamation-circle"></i> ' +
+                        '<strong>Error:</strong> ' + response.error +
+                        '</div>'
+                    );
                 }
             },
-            error: function() {
-                alert('Error submitting form');
+            error: function(xhr) {
                 $('#graph_progress_section').hide();
                 $('#create_graph_btn').prop('disabled', false);
+
+                let errorMsg = 'Error submitting form';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMsg = xhr.responseJSON.error;
+                }
+
+                // Show error in validation feedback
+                $('#validation_feedback_area').html(
+                    '<div class="alert alert-danger mb-0">' +
+                    '<i class="fas fa-exclamation-circle"></i> ' +
+                    '<strong>Error:</strong> ' + errorMsg +
+                    '</div>'
+                );
             }
         });
     });

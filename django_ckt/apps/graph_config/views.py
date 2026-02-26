@@ -5,8 +5,11 @@ from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.conf import settings
 from apps.core.models import SubjectSearch, ObjectSearch
 import json
+import yaml
+import os
 
 
 class GraphConfigView(TemplateView):
@@ -71,22 +74,82 @@ def search_cui(request):
 def generate_graph(request):
     """
     API endpoint to generate a new knowledge graph.
+    Saves configuration to user_input.yaml and initiates graph generation.
     """
     try:
         data = json.loads(request.body)
-        exposure_cui = data.get('exposure_cui')
-        outcome_cui = data.get('outcome_cui')
-        squelch_threshold = data.get('squelch_threshold', 5)
-        year_cutoff = data.get('year_cutoff', 2000)
-        degree = data.get('degree', 1)
-        semmeddb_version = data.get('semmeddb_version', 'VER43_R')
-        
+
+        # Extract and parse CUIs from comma-separated strings
+        exposure_cuis_str = data.get('exposure_cuis', '')
+        outcome_cuis_str = data.get('outcome_cuis', '')
+        blocklist_cuis_str = data.get('blocklist_cuis', '')
+
+        # Parse CUIs into lists (remove whitespace and filter empty strings)
+        exposure_cuis = [cui.strip() for cui in exposure_cuis_str.split(',') if cui.strip()]
+        outcome_cuis = [cui.strip() for cui in outcome_cuis_str.split(',') if cui.strip()]
+        blocklist_cuis = [cui.strip() for cui in blocklist_cuis_str.split(',') if cui.strip()] if blocklist_cuis_str else None
+
+        # Extract other parameters
+        exposure_name = data.get('exposure_name', '').replace(' ', '_')
+        outcome_name = data.get('outcome_name', '').replace(' ', '_')
+        degree = int(data.get('degree', 3))
+        min_pmids_degree1 = int(data.get('min_pmids_degree1', 10))
+        min_pmids_degree2 = int(data.get('min_pmids_degree2', 100))
+        min_pmids_degree3 = int(data.get('min_pmids_degree3', 200))
+        pub_year_cutoff = int(data.get('pub_year_cutoff', 2015))
+
+        # Handle predication_type (can be array or string)
+        predication_type = data.get('predication_type', 'CAUSES')
+        if isinstance(predication_type, list):
+            predication_type = ','.join(predication_type)
+
+        semmeddb_version = data.get('semmeddb_version', 'heuristic')
+
+        # Validate required fields
+        if not exposure_cuis or not outcome_cuis:
+            return JsonResponse({
+                'success': False,
+                'error': 'Exposure CUIs and Outcome CUIs are required'
+            }, status=400)
+
+        if not exposure_name or not outcome_name:
+            return JsonResponse({
+                'success': False,
+                'error': 'Exposure Name and Outcome Name are required'
+            }, status=400)
+
+        # Create configuration dictionary matching user_input.yaml structure
+        config = {
+            'exposure_cuis': exposure_cuis,
+            'outcome_cuis': outcome_cuis,
+            'blocklist_cuis': blocklist_cuis,
+            'exposure_name': exposure_name,
+            'outcome_name': outcome_name,
+            'min_pmids_degree1': min_pmids_degree1,
+            'min_pmids_degree2': min_pmids_degree2,
+            'min_pmids_degree3': min_pmids_degree3,
+            'pub_year_cutoff': pub_year_cutoff,
+            'degree': degree,
+            'predication_type': predication_type,
+            'SemMedDBD_version': semmeddb_version
+        }
+
+        # Determine the path to user_input.yaml
+        # It should be in the project root directory
+        base_dir = settings.BASE_DIR.parent  # Go up one level from django_ckt to CausalKnowledgeTrace
+        yaml_path = os.path.join(base_dir, 'user_input.yaml')
+
+        # Save configuration to YAML file
+        with open(yaml_path, 'w') as f:
+            yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+
         # TODO: Implement graph generation using Python graph_creation modules
         # This will call the existing Python code in graph_creation/
-        
+
         return JsonResponse({
             'success': True,
-            'message': 'Graph generation started',
+            'message': 'Configuration saved to user_input.yaml. Graph generation will be implemented.',
+            'config_path': yaml_path,
             'task_id': 'placeholder'  # TODO: Implement async task tracking
         })
     except Exception as e:
