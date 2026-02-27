@@ -105,17 +105,37 @@
 
 /* Pane borders — use inset box-shadow so they're visible inside overflow:hidden wrapper */
 .resizable-graph-pane {
+    display: flex;
+    flex-direction: column;
     box-shadow: inset 0 0 0 1px #bbb, 0 1px 3px rgba(0,0,0,0.08);
 }
 .resizable-info-pane {
     box-shadow: inset 0 0 0 1px #bbb, 0 1px 3px rgba(0,0,0,0.08);
 }
 
+/* Graph pane header — matches info panel .card-header */
+.graph-pane-header {
+    flex: 0 0 auto;
+}
+
+/* Ensure both pane headers share identical sizing */
+.graph-pane-header,
+.info-panel .card-header {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    line-height: 1.5;
+    min-height: 38px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
 /* Cytoscape container */
 #cy-container {
     position: relative;
     width: 100%;
-    height: 100%;
+    flex: 1 1 0;
+    min-height: 0;
     overflow: hidden;
 }
 
@@ -174,10 +194,7 @@
     overflow-y: auto;
 }
 
-.info-panel .card-header {
-    font-size: 0.9rem;
-    padding: 8px 12px;
-}
+/* .info-panel .card-header sizing is now in the shared rule above */
 
 .info-panel-body {
     padding: 12px;
