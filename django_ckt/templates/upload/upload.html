@@ -4,164 +4,7 @@
 {% block title %}Data Upload - CKT{% endblock %}
 
 {% block extra_css %}
-<style>
-/* Upload Page Styles */
-.upload-page-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 4px 4px 0 0;
-    margin-bottom: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-.upload-status-alert {
-    background-color: #d9edf7;
-    border: 1px solid #bce8f1;
-    color: #31708f;
-    padding: 12px 15px;
-    border-radius: 0;
-    margin-bottom: 0;
-}
-.upload-status-alert.status-success {
-    background-color: #dff0d8;
-    border-color: #d6e9c6;
-    color: #3c763d;
-}
-.upload-status-alert.status-error {
-    background-color: #f2dede;
-    border-color: #ebccd1;
-    color: #a94442;
-}
-.upload-section-card {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    background: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-}
-.upload-section-card .card-header {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 10px 15px;
-    font-weight: 600;
-    font-size: 1rem;
-    border-radius: 4px 4px 0 0;
-}
-.upload-section-card .card-body {
-    padding: 15px;
-}
-.graph-status-box {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-}
-.graph-status-box .status-label {
-    font-weight: 600;
-    color: #555;
-}
-.graph-status-box .status-value {
-    color: #888;
-}
-.filter-options-box {
-    background-color: #d9edf7;
-    border: 1px solid #bce8f1;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-.filter-options-box h6 {
-    color: #31708f;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-.btn-load-graph {
-    background-color: var(--primary-color);
-    border-color: var(--primary-color);
-    color: white;
-    font-weight: 600;
-    width: 100%;
-    padding: 10px;
-}
-.btn-load-graph:hover {
-    background-color: #367fa9;
-    border-color: #367fa9;
-    color: white;
-}
-.btn-upload-load {
-    background-color: #2ecc71;
-    border-color: #27ae60;
-    color: white;
-    font-weight: 600;
-    width: 100%;
-    padding: 10px;
-}
-.btn-upload-load:hover {
-    background-color: #27ae60;
-    border-color: #219a52;
-    color: white;
-}
-.file-list-table {
-    font-size: 0.9rem;
-}
-.file-list-table th {
-    background-color: #f5f5f5;
-    font-weight: 600;
-    color: #555;
-}
-.instructions-section {
-    background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 4px;
-    padding: 15px;
-    margin-top: 15px;
-}
-.instructions-section h6 {
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-}
-.instructions-section ul {
-    padding-left: 20px;
-    margin-bottom: 8px;
-}
-.instructions-section code {
-    background-color: #e9ecef;
-    padding: 2px 6px;
-    border-radius: 3px;
-    font-size: 0.85rem;
-}
-.dag-format-box {
-    background-color: #272822;
-    color: #f8f8f2;
-    padding: 12px;
-    border-radius: 4px;
-    font-family: 'Courier New', monospace;
-    font-size: 0.82rem;
-    white-space: pre;
-    overflow-x: auto;
-    margin-top: 8px;
-}
-.upload-progress-section {
-    display: none;
-    margin-top: 15px;
-}
-.upload-progress-section .progress {
-    height: 25px;
-    border-radius: 4px;
-}
-.upload-progress-section .progress-bar {
-    font-size: 0.85rem;
-    line-height: 25px;
-}
-.upload-progress-status {
-    margin-top: 8px;
-    font-size: 0.9rem;
-    color: #555;
-}
-</style>
+<link rel="stylesheet" href="{% static 'css/upload.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -190,6 +33,15 @@
         <div class="upload-section-card">
             <div class="card-header">
                 <i class="fas fa-folder-open"></i> Load Graph from Existing File
+                <i class="fas fa-question-circle header-info-icon"
+                   tabindex="0"
+                   data-bs-toggle="popover"
+                   data-bs-trigger="hover focus"
+                   data-bs-html="true"
+                   data-bs-custom-class="upload-popover"
+                   data-bs-placement="bottom"
+                   title="Loading Instructions"
+                   data-bs-content="<p class='mb-1'>Place files in the <code>graph_creation/result</code> directory:</p><ul><li>Place in the <code>graph_creation/result</code> directory (generated graphs are automatically saved here)</li><li>Click &lsquo;Refresh File List&rsquo; and select your file</li><li>Click &lsquo;Load Selected DAG&rsquo;</li></ul>"></i>
             </div>
             <div class="card-body">
                 <p class="text-muted mb-2">Select a graph file from the dropdown below:</p>
@@ -205,7 +57,7 @@
                 <!-- Filtering Options -->
                 <div class="filter-options-box">
                     <h6><i class="fas fa-filter"></i> Graph Filtering Options</h6>
-                    <p class="text-muted mb-2" style="font-size: 0.9rem;">Select filtering method:</p>
+                    <p class="text-muted mb-2 filter-method-text">Select filtering method:</p>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="filterType" id="filterNone" value="none" checked>
                         <label class="form-check-label" for="filterNone">
@@ -254,6 +106,15 @@
         <div class="upload-section-card">
             <div class="card-header">
                 <i class="fas fa-cloud-upload-alt"></i> Upload New Graph File
+                <i class="fas fa-question-circle header-info-icon"
+                   tabindex="0"
+                   data-bs-toggle="popover"
+                   data-bs-trigger="hover focus"
+                   data-bs-html="true"
+                   data-bs-custom-class="upload-popover"
+                   data-bs-placement="bottom"
+                   title="Upload &amp; File Format"
+                   data-bs-content="<p class='mb-1'>Select an R file and click &ldquo;Upload &amp; Load&rdquo;.</p><p class='mb-1'>Your R file should contain a dagitty graph definition like:</p><pre style='background:#272822;color:#f8f8f2;padding:8px;border-radius:4px;font-size:0.8rem;white-space:pre;overflow-x:auto;'>g &lt;- dagitty( &quot;dag {&#10;    Variable1 [exposure]&#10;    Variable2 [outcome]&#10;    Variable3&#10;    Variable4&#10;&#10;    Variable1 -&gt; Variable2&#10;    Variable2 -&gt; Variable3&#10;    Variable3 -&gt; Variable4&#10;}&quot; )</pre><p class='mt-1 mb-0' style='font-size:0.83rem;'><i class='fas fa-exclamation-circle'></i> The variable name must be <strong>g</strong> for the app to recognize it.</p>"></i>
             </div>
             <div class="card-body">
                 <p class="text-muted mb-2">Upload a new R file containing your graph definition:</p>
@@ -285,41 +146,7 @@
                     </div>
                 </div>
 
-                <!-- Instructions -->
-                <div class="instructions-section mt-3">
-                    <h6><i class="fas fa-book"></i> Instructions</h6>
 
-                    <p class="mb-1"><strong>Method 1:</strong> Place files in <code>graph_creation/result</code> directory</p>
-                    <ul>
-                        <li>Create R files (e.g., <code>Aspirin_1.R</code>, <code>Aspirin_2.R</code>, <code>Vegans_1.R</code>, <code>Manualbibset_links.R</code>) with your DAG definition</li>
-                        <li>Place in the <code>graph_creation/result</code> directory (generated graphs are automatically saved here)</li>
-                        <li>Click 'Refresh File List' and select your file</li>
-                        <li>Click 'Load Selected DAG'</li>
-                    </ul>
-
-                    <p class="mb-1"><strong>Method 2:</strong> Upload files through the interface</p>
-                    <ul>
-                        <li>Use the file upload interface above</li>
-                        <li>Select your R file containing the DAG</li>
-                        <li>Click 'Upload &amp; Load'</li>
-                    </ul>
-
-                    <h6 class="mt-3"><i class="fas fa-file-code"></i> DAG File Format</h6>
-                    <p class="mb-1">Your R file should contain a dagitty graph definition like:</p>
-                    <div class="dag-format-box">g <- dagitty( "dag {
-    Variable1 [exposure]
-    Variable2 [outcome]
-    Variable3
-    Variable4
-
-    Variable1 -> Variable2
-    Variable2 -> Variable3
-    Variable3 -> Variable4
-}" )</div>
-                    <p class="text-muted mt-2" style="font-size: 0.85rem;">
-                        <i class="fas fa-exclamation-circle"></i> The variable name must be '<strong>g</strong>' for the app to recognize it.
-                    </p>
-                </div>
             </div>
         </div>
     </div>
@@ -362,8 +189,13 @@
     const graphStatusAlert = document.getElementById('graphStatusAlert');
     const currentGraphStatus = document.getElementById('currentGraphStatus');
 
-    // Load available files on page load
+    // Initialize popovers and load files on page load
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all Bootstrap popovers
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(el) {
+            new bootstrap.Popover(el);
+        });
+
         loadFileList();
     });
 
