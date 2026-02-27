@@ -36,7 +36,7 @@ def list_available_files(request):
         files = []
         if os.path.exists(result_dir):
             for filename in os.listdir(result_dir):
-                if filename.endswith('.R') or filename.endswith('.rds'):
+                if filename.endswith('.R') or filename.endswith('.r') or filename.endswith('.rds'):
                     files.append({
                         'name': filename,
                         'path': os.path.join(result_dir, filename)

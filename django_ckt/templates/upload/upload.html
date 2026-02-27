@@ -1,0 +1,530 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Data Upload - CKT{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Upload Page Styles */
+.upload-page-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.upload-status-alert {
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+    color: #31708f;
+    padding: 12px 15px;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+.upload-status-alert.status-success {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #3c763d;
+}
+.upload-status-alert.status-error {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+.upload-section-card {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+.upload-section-card .card-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 4px 4px 0 0;
+}
+.upload-section-card .card-body {
+    padding: 15px;
+}
+.graph-status-box {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+}
+.graph-status-box .status-label {
+    font-weight: 600;
+    color: #555;
+}
+.graph-status-box .status-value {
+    color: #888;
+}
+.filter-options-box {
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+.filter-options-box h6 {
+    color: #31708f;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+.btn-load-graph {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    width: 100%;
+    padding: 10px;
+}
+.btn-load-graph:hover {
+    background-color: #367fa9;
+    border-color: #367fa9;
+    color: white;
+}
+.btn-upload-load {
+    background-color: #2ecc71;
+    border-color: #27ae60;
+    color: white;
+    font-weight: 600;
+    width: 100%;
+    padding: 10px;
+}
+.btn-upload-load:hover {
+    background-color: #27ae60;
+    border-color: #219a52;
+    color: white;
+}
+.file-list-table {
+    font-size: 0.9rem;
+}
+.file-list-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #555;
+}
+.instructions-section {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 15px;
+    margin-top: 15px;
+}
+.instructions-section h6 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+.instructions-section ul {
+    padding-left: 20px;
+    margin-bottom: 8px;
+}
+.instructions-section code {
+    background-color: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+}
+.dag-format-box {
+    background-color: #272822;
+    color: #f8f8f2;
+    padding: 12px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.82rem;
+    white-space: pre;
+    overflow-x: auto;
+    margin-top: 8px;
+}
+.upload-progress-section {
+    display: none;
+    margin-top: 15px;
+}
+.upload-progress-section .progress {
+    height: 25px;
+    border-radius: 4px;
+}
+.upload-progress-section .progress-bar {
+    font-size: 0.85rem;
+    line-height: 25px;
+}
+.upload-progress-status {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #555;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="upload-page-header">
+    <i class="fas fa-file-import"></i> Graph File Selection &amp; Loading
+</div>
+
+<!-- Status Alert -->
+<div id="graphStatusAlert" class="upload-status-alert">
+    <i class="fas fa-info-circle"></i>
+    <strong>No graph file is currently loaded.</strong>
+    Please select or upload a graph file below to get started. Once loaded, you'll be able to explore it in the Graph Visualization tab.
+</div>
+
+<!-- Current Graph Status -->
+<div class="graph-status-box mt-3">
+    <span class="status-label"><i class="fas fa-chart-network"></i> Current Graph Status:</span>
+    <span id="currentGraphStatus" class="status-value ms-2">No DAG Loaded</span>
+</div>
+
+<!-- Two Column Layout -->
+<div class="row mt-3">
+    <!-- Left Column: Load Graph from Existing File -->
+    <div class="col-md-6">
+        <div class="upload-section-card">
+            <div class="card-header">
+                <i class="fas fa-folder-open"></i> Load Graph from Existing File
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-2">Select a graph file from the dropdown below:</p>
+
+                <!-- File Dropdown -->
+                <div class="mb-3">
+                    <label for="graphFileSelect" class="form-label fw-bold">Choose Graph File:</label>
+                    <select class="form-select" id="graphFileSelect">
+                        <option value="">Loading files...</option>
+                    </select>
+                </div>
+
+                <!-- Filtering Options -->
+                <div class="filter-options-box">
+                    <h6><i class="fas fa-filter"></i> Graph Filtering Options</h6>
+                    <p class="text-muted mb-2" style="font-size: 0.9rem;">Select filtering method:</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="filterType" id="filterNone" value="none" checked>
+                        <label class="form-check-label" for="filterNone">
+                            No filtering - Load original graph
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="filterType" id="filterLeaf" value="remove_leaf">
+                        <label class="form-check-label" for="filterLeaf">
+                            Remove leaf nodes only (degree = 1)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Load Button -->
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-load-graph" id="loadGraphBtn">
+                            <i class="fas fa-download"></i> Load Selected Graph
+                        </button>
+                    </div>
+                </div>
+
+                <!-- File List Table -->
+                <div class="mt-3">
+                    <table class="table table-sm table-hover file-list-table" id="fileListTable">
+                        <thead>
+                            <tr>
+                                <th>File Name</th>
+                                <th>Nodes</th>
+                                <th>Edges</th>
+                            </tr>
+                        </thead>
+                        <tbody id="fileListBody">
+                            <tr><td colspan="3" class="text-center text-muted">Loading files...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Upload New Graph File -->
+    <div class="col-md-6">
+        <div class="upload-section-card">
+            <div class="card-header">
+                <i class="fas fa-cloud-upload-alt"></i> Upload New Graph File
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-2">Upload a new R file containing your graph definition:</p>
+
+                <!-- File Upload -->
+                <div class="mb-3">
+                    <label for="graphFileUpload" class="form-label fw-bold">Choose R File:</label>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <input class="form-control" type="file" id="graphFileUpload" accept=".R,.r">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-upload-load" id="uploadAndLoadBtn" disabled>
+                                <i class="fas fa-upload"></i> Upload &amp; Load
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div class="upload-progress-section" id="uploadProgressSection">
+                    <div class="progress">
+                        <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;">
+                            <span id="uploadProgressText">Uploading...</span>
+                        </div>
+                    </div>
+                    <div class="upload-progress-status" id="uploadProgressStatus">
+                        Status: Preparing upload...
+                    </div>
+                </div>
+
+                <!-- Instructions -->
+                <div class="instructions-section mt-3">
+                    <h6><i class="fas fa-book"></i> Instructions</h6>
+
+                    <p class="mb-1"><strong>Method 1:</strong> Place files in <code>graph_creation/result</code> directory</p>
+                    <ul>
+                        <li>Create R files (e.g., <code>Aspirin_1.R</code>, <code>Aspirin_2.R</code>, <code>Vegans_1.R</code>, <code>Manualbibset_links.R</code>) with your DAG definition</li>
+                        <li>Place in the <code>graph_creation/result</code> directory (generated graphs are automatically saved here)</li>
+                        <li>Click 'Refresh File List' and select your file</li>
+                        <li>Click 'Load Selected DAG'</li>
+                    </ul>
+
+                    <p class="mb-1"><strong>Method 2:</strong> Upload files through the interface</p>
+                    <ul>
+                        <li>Use the file upload interface above</li>
+                        <li>Select your R file containing the DAG</li>
+                        <li>Click 'Upload &amp; Load'</li>
+                    </ul>
+
+                    <h6 class="mt-3"><i class="fas fa-file-code"></i> DAG File Format</h6>
+                    <p class="mb-1">Your R file should contain a dagitty graph definition like:</p>
+                    <div class="dag-format-box">g <- dagitty( "dag {
+    Variable1 [exposure]
+    Variable2 [outcome]
+    Variable3
+    Variable4
+
+    Variable1 -> Variable2
+    Variable2 -> Variable3
+    Variable3 -> Variable4
+}" )</div>
+                    <p class="text-muted mt-2" style="font-size: 0.85rem;">
+                        <i class="fas fa-exclamation-circle"></i> The variable name must be '<strong>g</strong>' for the app to recognize it.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Progress (full width, for graph loading) -->
+<div class="upload-progress-section" id="loadProgressSection">
+    <div class="upload-section-card">
+        <div class="card-header">
+            <i class="fas fa-spinner fa-spin"></i> Loading Graph...
+        </div>
+        <div class="card-body">
+            <div class="progress">
+                <div id="loadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">
+                    <span id="loadProgressText">Initializing...</span>
+                </div>
+            </div>
+            <div class="upload-progress-status" id="loadProgressStatus">
+                Status: Preparing to load graph...
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // API URLs
+    const listFilesUrl = '{% url "upload:list_files" %}';
+    const loadFileUrl = '{% url "upload:load_file" %}';
+    const uploadFileUrl = '{% url "upload:upload_file" %}';
+    const csrfToken = '{{ csrf_token }}';
+
+    // DOM elements
+    const graphFileSelect = document.getElementById('graphFileSelect');
+    const fileListBody = document.getElementById('fileListBody');
+    const loadGraphBtn = document.getElementById('loadGraphBtn');
+    const graphFileUpload = document.getElementById('graphFileUpload');
+    const uploadAndLoadBtn = document.getElementById('uploadAndLoadBtn');
+    const graphStatusAlert = document.getElementById('graphStatusAlert');
+    const currentGraphStatus = document.getElementById('currentGraphStatus');
+
+    // Load available files on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadFileList();
+    });
+
+    // Enable upload button when file is selected
+    graphFileUpload.addEventListener('change', function() {
+        uploadAndLoadBtn.disabled = !this.files.length;
+    });
+
+    // Load file list from API
+    function loadFileList() {
+        fetch(listFilesUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    populateFileList(data.files);
+                } else {
+                    showStatus('Error loading file list: ' + data.error, 'error');
+                }
+            })
+            .catch(err => {
+                showStatus('Error connecting to server: ' + err.message, 'error');
+                graphFileSelect.innerHTML = '<option value="">Error loading files</option>';
+                fileListBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error loading files</td></tr>';
+            });
+    }
+
+    // Populate dropdown and table
+    function populateFileList(files) {
+        graphFileSelect.innerHTML = '';
+        fileListBody.innerHTML = '';
+
+        if (files.length === 0) {
+            graphFileSelect.innerHTML = '<option value="">No files available</option>';
+            fileListBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No graph files found</td></tr>';
+            return;
+        }
+
+        files.forEach(function(file) {
+            // Dropdown option
+            const option = document.createElement('option');
+            option.value = file.name;
+            option.textContent = file.name;
+            graphFileSelect.appendChild(option);
+
+            // Table row
+            const row = document.createElement('tr');
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', function() {
+                graphFileSelect.value = file.name;
+            });
+            row.innerHTML = `
+                <td>${file.name}</td>
+                <td>${file.node_count || '—'}</td>
+                <td>${file.edge_count || '—'}</td>
+            `;
+            fileListBody.appendChild(row);
+        });
+    }
+
+    // Load selected graph
+    loadGraphBtn.addEventListener('click', function() {
+        const filename = graphFileSelect.value;
+        if (!filename) {
+            showStatus('Please select a file first.', 'error');
+            return;
+        }
+
+        const filterType = document.querySelector('input[name="filterType"]:checked').value;
+        showLoadProgress(true);
+        updateLoadProgress(20, 'Loading graph file...', 'Reading ' + filename);
+
+        fetch(loadFileUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ filename: filename, filter_type: filterType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateLoadProgress(100, 'Complete', data.message);
+                showStatus(data.message, 'success');
+                currentGraphStatus.textContent = 'Loaded: ' + filename;
+                currentGraphStatus.classList.remove('status-value');
+                currentGraphStatus.style.color = '#3c763d';
+                setTimeout(() => showLoadProgress(false), 1500);
+            } else {
+                showStatus('Error: ' + data.error, 'error');
+                showLoadProgress(false);
+            }
+        })
+        .catch(err => {
+            showStatus('Error: ' + err.message, 'error');
+            showLoadProgress(false);
+        });
+    });
+
+    // Upload and load new file
+    uploadAndLoadBtn.addEventListener('click', function() {
+        const file = graphFileUpload.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        showUploadProgress(true);
+        updateUploadProgress(30, 'Uploading...', 'Uploading ' + file.name);
+
+        fetch(uploadFileUrl, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateUploadProgress(100, 'Complete', data.message);
+                showStatus(data.message, 'success');
+                loadFileList(); // Refresh file list
+                setTimeout(() => showUploadProgress(false), 1500);
+            } else {
+                showStatus('Upload error: ' + data.error, 'error');
+                showUploadProgress(false);
+            }
+        })
+        .catch(err => {
+            showStatus('Upload error: ' + err.message, 'error');
+            showUploadProgress(false);
+        });
+    });
+
+    // Helper functions
+    function showStatus(message, type) {
+        graphStatusAlert.className = 'upload-status-alert' + (type === 'success' ? ' status-success' : type === 'error' ? ' status-error' : '');
+        const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle';
+        graphStatusAlert.innerHTML = '<i class="fas fa-' + icon + '"></i> ' + message;
+    }
+
+    function showLoadProgress(show) {
+        document.getElementById('loadProgressSection').style.display = show ? 'block' : 'none';
+    }
+
+    function updateLoadProgress(percent, text, status) {
+        const bar = document.getElementById('loadProgressBar');
+        bar.style.width = percent + '%';
+        document.getElementById('loadProgressText').textContent = text;
+        document.getElementById('loadProgressStatus').textContent = 'Status: ' + status;
+    }
+
+    function showUploadProgress(show) {
+        document.getElementById('uploadProgressSection').style.display = show ? 'block' : 'none';
+    }
+
+    function updateUploadProgress(percent, text, status) {
+        const bar = document.getElementById('uploadProgressBar');
+        bar.style.width = percent + '%';
+        document.getElementById('uploadProgressText').textContent = text;
+        document.getElementById('uploadProgressStatus').textContent = 'Status: ' + status;
+    }
+</script>
+{% endblock %}
+
