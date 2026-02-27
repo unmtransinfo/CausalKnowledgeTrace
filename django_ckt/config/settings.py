@@ -4,9 +4,13 @@ Django settings for CausalKnowledgeTrace project.
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env file from the django_ckt directory, overriding any existing shell env vars
+load_dotenv(BASE_DIR / '.env', override=True)
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-key-change-in-production')
@@ -64,25 +68,17 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 ASGI_APPLICATION = 'config.asgi.application'
 
-# Database - SQLite for development (no PostgreSQL needed)
+# Database - PostgreSQL (Docker dev container)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ.get('DB_NAME', 'causalehr'),
+        'USER': os.environ.get('DB_USER', 'rajesh'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'Software292'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', '5433'),
     }
 }
-
-# Uncomment below to use PostgreSQL when ready
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': os.environ.get('DB_NAME', 'causalehr'),
-#         'USER': os.environ.get('DB_USER', 'rajesh'),
-#         'PASSWORD': os.environ.get('DB_PASSWORD', 'Software292'),
-#         'HOST': os.environ.get('DB_HOST', 'localhost'),
-#         'PORT': os.environ.get('DB_PORT', '5433'),
-#     }
-# }
 
 # Database table configuration (for existing schema)
 DB_CONFIG = {
