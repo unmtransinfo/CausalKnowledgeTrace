@@ -1,0 +1,182 @@
+/* ========================================
+   Graph Visualization Page Styles
+   ======================================== */
+
+/* Page header */
+.viz-page-header {
+    background-color: var(--bg-success-light);
+    border-left: 4px solid var(--border-success);
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-success);
+    margin-bottom: 15px;
+    border-radius: 0 4px 4px 0;
+}
+
+/* Cytoscape container */
+#cy-container {
+    position: relative;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    overflow: hidden;
+}
+
+#cy {
+    width: 100%;
+    height: 600px;
+}
+
+/* Toolbar */
+.viz-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.viz-toolbar .btn {
+    font-size: 0.82rem;
+    padding: 4px 10px;
+}
+
+.viz-toolbar .btn i {
+    margin-right: 4px;
+}
+
+.viz-toolbar .separator {
+    width: 1px;
+    height: 24px;
+    background-color: #ddd;
+    margin: 0 4px;
+}
+
+/* Info panel */
+.info-panel {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.info-panel .card-header {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+}
+
+.info-panel-body {
+    padding: 12px;
+    font-size: 0.85rem;
+}
+
+.info-panel-body .info-row {
+    display: flex;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-panel-body .info-label {
+    font-weight: 600;
+    min-width: 100px;
+    color: #555;
+}
+
+.info-panel-body .info-value {
+    color: #333;
+    word-break: break-word;
+}
+
+/* Graph stats bar */
+.graph-stats-bar {
+    display: flex;
+    gap: 20px;
+    padding: 6px 12px;
+    background-color: var(--bg-info-light);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: var(--text-info);
+    margin-bottom: 10px;
+}
+
+.graph-stats-bar .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.graph-stats-bar .stat-item i {
+    font-size: 0.9rem;
+}
+
+/* Legend */
+.graph-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 6px 12px;
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* No-graph placeholder */
+.no-graph-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: #999;
+}
+
+.no-graph-placeholder i {
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+
+.no-graph-placeholder p {
+    font-size: 1.1rem;
+}
+
+/* Selection highlight for connected elements panel */
+.connected-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.connected-list li {
+    padding: 3px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.83rem;
+    cursor: pointer;
+}
+
+.connected-list li:hover {
+    background-color: var(--bg-info-light);
+}
+
