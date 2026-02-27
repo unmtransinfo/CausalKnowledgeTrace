@@ -13,6 +13,12 @@ import os
 from datetime import datetime
 
 
+class _IndentedListDumper(yaml.Dumper):
+    """Custom YAML dumper that indents list items under their parent key."""
+    def increase_indent(self, flow=False, indentless=False):
+        return super().increase_indent(flow, False)
+
+
 class GraphConfigView(TemplateView):
     """
     Main graph configuration view.
@@ -179,7 +185,8 @@ def generate_graph(request):
 
         # Save configuration to YAML file
         with open(yaml_path, 'w') as f:
-            yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+            yaml.dump(config, f, Dumper=_IndentedListDumper,
+                      default_flow_style=False, sort_keys=False)
 
         # TODO: Implement graph generation using Python graph_creation modules
         # This will call the existing Python code in graph_creation/
