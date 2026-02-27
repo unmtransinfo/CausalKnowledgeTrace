@@ -275,12 +275,12 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    // Set URL endpoints for JavaScript
-    var searchCuiUrl = '{% url "graph_config:search_cui" %}';
-    var generateGraphUrl = '{% url "graph_config:generate" %}';
-</script>
 <script src="{% static 'js/graph_config.js' %}"></script>
+<script>
+    // Set URL endpoints for JavaScript (must be after graph_config.js loads)
+    searchCuiUrl = '{% url "graph_config:search_cui" %}';
+    generateGraphUrl = '{% url "graph_config:generate" %}';
+</script>
 {% endblock %}
 
 
