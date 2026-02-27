@@ -13,7 +13,7 @@
             selector: 'node',
             style: {
                 'label': 'data(label)',
-                'background-color': 'data(color)',
+                'background-color': '#999',
                 'color': '#333',
                 'text-valign': 'bottom',
                 'text-halign': 'center',
@@ -26,6 +26,14 @@
                 'text-max-width': '90px',
                 'text-wrap': 'ellipsis',
             }
+        },
+        {
+            selector: 'node[type="exposure"]',
+            style: { 'background-color': '#2ecc71' }
+        },
+        {
+            selector: 'node[type="outcome"]',
+            style: { 'background-color': '#e74c3c' }
         },
         {
             selector: 'node:selected',
@@ -169,7 +177,8 @@
         const incoming = connEdges.filter(e => e.data('target') === data.id);
         const outgoing = connEdges.filter(e => e.data('source') === data.id);
 
-        let html = '<h6 style="margin:0 0 8px;color:var(--text-success)"><i class="fas fa-circle" style="color:' + (data.color || '#999') + '"></i> ' + (data.label || data.id) + '</h6>';
+        var nodeColor = data.type === 'exposure' ? '#2ecc71' : data.type === 'outcome' ? '#e74c3c' : '#999';
+        let html = '<h6 style="margin:0 0 8px;color:var(--text-success)"><i class="fas fa-circle" style="color:' + nodeColor + '"></i> ' + (data.label || data.id) + '</h6>';
         html += infoRow('ID', data.id);
         html += infoRow('Type', data.type || '—');
         html += infoRow('Connections', connEdges.length + ' (' + incoming.length + ' in, ' + outgoing.length + ' out)');
@@ -181,7 +190,8 @@
             html += '<ul class="connected-list">';
             const neighbors = cy.getElementById(data.id).neighborhood().nodes();
             neighbors.forEach(function(n) {
-                html += '<li data-id="' + n.data('id') + '"><i class="fas fa-circle" style="color:' + (n.data('color') || '#999') + ';font-size:8px"></i> ' + (n.data('label') || n.data('id')) + '</li>';
+                var nColor = n.data('type') === 'exposure' ? '#2ecc71' : n.data('type') === 'outcome' ? '#e74c3c' : '#999';
+                html += '<li data-id="' + n.data('id') + '"><i class="fas fa-circle" style="color:' + nColor + ';font-size:8px"></i> ' + (n.data('label') || n.data('id')) + '</li>';
             });
             html += '</ul>';
         }
@@ -317,6 +327,211 @@
             });
     }
 
+    // ── Responsive resizable panels (side-by-side ↔ stacked) ──
+    var HANDLE_SIZE = 6;
+    var INFO_MIN_W = 200;   // below this width → switch to stacked
+    var GRAPH_MIN_W = 250;
+    var GRAPH_MIN_H = 150;
+    var INFO_MIN_H = 80;
+    var WRAPPER_MIN_H = 300;
+    var WRAPPER_MAX_OFFSET = 150; // leave this much room above wrapper
+
+    function isModeSide() {
+        return document.getElementById('resizableWrapper').classList.contains('mode-side');
+    }
+
+    function updateToggleLabel() {
+        var label = document.getElementById('toggleLayoutLabel');
+        if (label) label.textContent = isModeSide() ? 'Stack' : 'Side-by-Side';
+    }
+
+    function switchToStacked() {
+        var wrapper = document.getElementById('resizableWrapper');
+        var graphPane = document.getElementById('graphPane');
+        var infoPane = document.getElementById('infoPane');
+        wrapper.classList.remove('mode-side');
+        wrapper.classList.add('mode-stacked');
+        // Reset flex to stacked defaults
+        graphPane.style.flex = '';
+        infoPane.style.flex = '';
+        if (cy) cy.resize();
+        updateToggleLabel();
+    }
+
+    function switchToSide() {
+        var wrapper = document.getElementById('resizableWrapper');
+        var graphPane = document.getElementById('graphPane');
+        var infoPane = document.getElementById('infoPane');
+        wrapper.classList.remove('mode-stacked');
+        wrapper.classList.add('mode-side');
+        // Reset flex to side-by-side defaults
+        graphPane.style.flex = '';
+        infoPane.style.flex = '';
+        if (cy) cy.resize();
+        updateToggleLabel();
+    }
+
+    function initResizableHandles() {
+        var wrapper = document.getElementById('resizableWrapper');
+        var graphPane = document.getElementById('graphPane');
+        var infoPane = document.getElementById('infoPane');
+        var handleV = document.getElementById('resizeHandleV');
+        var handleH = document.getElementById('resizeHandleH');
+        var handleBottom = document.getElementById('resizeHandleBottom');
+
+        var draggingV = false;
+        var draggingH = false;
+        var draggingBottom = false;
+
+        // ── Vertical handle (side-by-side mode) ──
+        handleV.addEventListener('mousedown', function(e) {
+            if (!isModeSide()) return;
+            e.preventDefault();
+            draggingV = true;
+            handleV.classList.add('active');
+            document.body.classList.add('resizing-v');
+        });
+
+        // ── Horizontal handle (stacked mode) ──
+        handleH.addEventListener('mousedown', function(e) {
+            if (isModeSide()) return;
+            e.preventDefault();
+            draggingH = true;
+            handleH.classList.add('active');
+            document.body.classList.add('resizing-h');
+        });
+
+        // ── Bottom handle (overall wrapper height, both modes) ──
+        handleBottom.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            draggingBottom = true;
+            handleBottom.classList.add('active');
+            document.body.classList.add('resizing-h');
+        });
+
+        document.addEventListener('mousemove', function(e) {
+            if (draggingV) {
+                var rect = wrapper.getBoundingClientRect();
+                var offsetX = e.clientX - rect.left;
+                var totalW = rect.width;
+                var graphW = Math.max(GRAPH_MIN_W, Math.min(offsetX, totalW - INFO_MIN_W - HANDLE_SIZE));
+                var infoW = totalW - graphW - HANDLE_SIZE;
+
+                // Auto-switch to stacked if graph pane occupies >= 80% of wrapper width
+                if (graphW / totalW >= 0.8) {
+                    draggingV = false;
+                    handleV.classList.remove('active');
+                    document.body.classList.remove('resizing-v');
+                    switchToStacked();
+                    return;
+                }
+
+                graphPane.style.flex = '0 0 ' + graphW + 'px';
+                infoPane.style.flex = '0 0 ' + infoW + 'px';
+                if (cy) cy.resize();
+            }
+            if (draggingH) {
+                var rect = wrapper.getBoundingClientRect();
+                var offsetY = e.clientY - rect.top;
+                var totalH = rect.height;
+                var graphH = Math.max(GRAPH_MIN_H, Math.min(offsetY, totalH - INFO_MIN_H - HANDLE_SIZE));
+                var infoH = totalH - graphH - HANDLE_SIZE;
+
+                // Auto-switch back to side-by-side if graph pane shrinks below 50% of wrapper height
+                // and viewport is wide enough
+                if (graphH / totalH < 0.5 && window.innerWidth >= 768) {
+                    var wrapperW = rect.width;
+                    if (wrapperW >= GRAPH_MIN_W + INFO_MIN_W + HANDLE_SIZE) {
+                        draggingH = false;
+                        handleH.classList.remove('active');
+                        document.body.classList.remove('resizing-h');
+                        switchToSide();
+                        return;
+                    }
+                }
+
+                graphPane.style.flex = '0 0 ' + graphH + 'px';
+                infoPane.style.flex = '0 0 ' + infoH + 'px';
+                if (cy) cy.resize();
+            }
+            if (draggingBottom) {
+                var rect = wrapper.getBoundingClientRect();
+                var maxH = window.innerHeight - WRAPPER_MAX_OFFSET;
+                var newH = Math.max(WRAPPER_MIN_H, Math.min(e.clientY - rect.top, maxH));
+
+                // In stacked mode, distribute proportionally between panes
+                if (!isModeSide()) {
+                    var oldH = rect.height;
+                    var graphRect = graphPane.getBoundingClientRect();
+                    var infoRect = infoPane.getBoundingClientRect();
+                    var ratio = oldH > HANDLE_SIZE ? graphRect.height / (oldH - HANDLE_SIZE) : 0.7;
+                    var graphH = Math.max(GRAPH_MIN_H, Math.round((newH - HANDLE_SIZE) * ratio));
+                    var infoH = Math.max(INFO_MIN_H, newH - HANDLE_SIZE - graphH);
+                    // Re-clamp graph if info was clamped
+                    graphH = newH - HANDLE_SIZE - infoH;
+
+                    // Auto-switch back to side-by-side if graph pane < 50% of new height
+                    if (graphH / newH < 0.5 && window.innerWidth >= 768) {
+                        var wrapperW = rect.width;
+                        if (wrapperW >= GRAPH_MIN_W + INFO_MIN_W + HANDLE_SIZE) {
+                            draggingBottom = false;
+                            handleBottom.classList.remove('active');
+                            document.body.classList.remove('resizing-h');
+                            wrapper.style.height = newH + 'px';
+                            switchToSide();
+                            return;
+                        }
+                    }
+
+                    graphPane.style.flex = '0 0 ' + graphH + 'px';
+                    infoPane.style.flex = '0 0 ' + infoH + 'px';
+                }
+
+                wrapper.style.height = newH + 'px';
+                if (cy) cy.resize();
+            }
+        });
+
+        document.addEventListener('mouseup', function() {
+            if (draggingV) {
+                draggingV = false;
+                handleV.classList.remove('active');
+                document.body.classList.remove('resizing-v');
+                if (cy) cy.resize();
+            }
+            if (draggingH) {
+                draggingH = false;
+                handleH.classList.remove('active');
+                document.body.classList.remove('resizing-h');
+                if (cy) { cy.resize(); cy.fit(undefined, 30); }
+            }
+            if (draggingBottom) {
+                draggingBottom = false;
+                handleBottom.classList.remove('active');
+                document.body.classList.remove('resizing-h');
+                if (cy) { cy.resize(); cy.fit(undefined, 30); }
+            }
+        });
+
+        // ── Window resize: force stacked on small screens, revert on wide ──
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 768) {
+                // Small screen → always stacked
+                if (isModeSide()) switchToStacked();
+            } else if (!isModeSide()) {
+                var wrapperW = wrapper.getBoundingClientRect().width;
+                if (wrapperW >= GRAPH_MIN_W + INFO_MIN_W + HANDLE_SIZE) {
+                    switchToSide();
+                }
+            }
+        });
+
+        // ── Initial check: if page loads on a small screen, start stacked ──
+        if (window.innerWidth < 768 && isModeSide()) {
+            switchToStacked();
+        }
+    }
+
     // ── Button bindings ──
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('btnFit').addEventListener('click', function() {
@@ -333,6 +548,17 @@
         document.getElementById('btnRelayout').addEventListener('click', function() {
             runLayout(document.getElementById('layoutSelect').value);
         });
+        document.getElementById('btnToggleLayout').addEventListener('click', function() {
+            if (isModeSide()) {
+                switchToStacked();
+            } else {
+                switchToSide();
+            }
+            if (cy) cy.fit(undefined, 30);
+        });
+
+        // Initialize resizable drag handles
+        initResizableHandles();
 
         // Load graph data on page load
         loadGraphFromServer();

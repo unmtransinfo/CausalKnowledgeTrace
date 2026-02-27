@@ -31,12 +31,9 @@
 
 <!-- Legend -->
 <div class="graph-legend" id="graphLegend">
-    <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Exposure</div>
-    <div class="legend-item"><span class="legend-color" style="background:#2ecc71"></span> Outcome</div>
-    <div class="legend-item"><span class="legend-color" style="background:#3498db"></span> Confounder</div>
-    <div class="legend-item"><span class="legend-color" style="background:#f39c12"></span> Mediator</div>
-    <div class="legend-item"><span class="legend-color" style="background:#9b59b6"></span> Collider</div>
-    <div class="legend-item"><span class="legend-color" style="background:#1abc9c"></span> Instrument</div>
+    <div class="legend-item"><span class="legend-color" style="background:#2ecc71"></span> Exposure</div>
+    <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Outcome</div>
+    <div class="legend-item"><span class="legend-color" style="background:#999"></span> Other</div>
 </div>
 
 <!-- Toolbar -->
@@ -68,11 +65,16 @@
     <button class="btn btn-sm btn-outline-secondary" id="btnRelayout" title="Re-run layout">
         <i class="fas fa-sync-alt"></i> Re-layout
     </button>
+    <div class="separator"></div>
+    <button class="btn btn-sm btn-outline-info" id="btnToggleLayout" title="Toggle side-by-side / stacked layout">
+        <i class="fas fa-columns"></i> <span id="toggleLayoutLabel">Stack</span>
+    </button>
 </div>
 
-<!-- Main content: graph + info panel -->
-<div class="row">
-    <div class="col-md-9">
+<!-- Main content: responsive graph + info panel (side-by-side ↔ stacked) -->
+<div class="resizable-wrapper mode-side" id="resizableWrapper">
+    <!-- Graph pane (left in side-by-side, top in stacked) -->
+    <div class="resizable-graph-pane" id="graphPane">
         <div id="cy-container">
             <div id="cy"></div>
             <!-- No-graph placeholder -->
@@ -82,7 +84,12 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
+    <!-- Vertical drag handle (side-by-side mode) -->
+    <div class="resize-handle resize-handle-vertical" id="resizeHandleV" title="Drag to resize columns"></div>
+    <!-- Horizontal drag handle (stacked mode) -->
+    <div class="resize-handle resize-handle-horizontal" id="resizeHandleH" title="Drag to resize rows"></div>
+    <!-- Info pane (right in side-by-side, bottom in stacked) -->
+    <div class="resizable-info-pane" id="infoPane">
         <div class="info-panel" id="infoPanel">
             <div class="card-header">
                 <i class="fas fa-info-circle"></i> Element Info
@@ -93,6 +100,8 @@
         </div>
     </div>
 </div>
+<!-- Bottom drag handle (controls overall wrapper height in both modes) -->
+<div class="resize-handle resize-handle-bottom" id="resizeHandleBottom" title="Drag to resize overall height"></div>
 {% endblock %}
 
 {% block extra_js %}
