@@ -42,7 +42,7 @@
                                 name="exposure_cuis"
                                 rows="3"
                                 placeholder="Search for exposure concepts (e.g., hypertension, diabetes)... (Press Enter to search)"
-                            >C0020538, C4013784, C0221155, C0745114, C0745135</textarea>
+                            ></textarea>
                             <div id="exposure_search_results" class="cui-search-results"></div>
                         </div>
                         
@@ -56,7 +56,7 @@
                                 id="exposure_cuis_selected"
                                 name="exposure_cuis_selected"
                                 rows="3"
-                            >C0020538, C4013784, C0221155, C0745114, C0745135</textarea>
+                            >{{ default_exposure_cuis_selected }}</textarea>
                             <button type="button" class="btn btn-warning btn-sm btn-clear mt-2" id="clear_exposure">Clear Selection</button>
                         </div>
 
@@ -70,7 +70,7 @@
                                 class="form-control"
                                 id="exposure_name"
                                 name="exposure_name"
-                                value="Hypertension"
+                                value="{{ default_exposure_name }}"
                                 placeholder="e.g., Hypertension, Diabetes"
                             >
                         </div>
@@ -93,17 +93,17 @@
                                 <span class="tooltip-text">Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Selected items will be highlighted.</span>
                             </label>
                             <select class="form-select" id="PREDICATION_TYPE" name="PREDICATION_TYPE" multiple>
-                                <option value="CAUSES" selected>CAUSES</option>
-                                <option value="AFFECTS">AFFECTS</option>
-                                <option value="AUGMENTS">AUGMENTS</option>
-                                <option value="COMPLICATES">COMPLICATES</option>
-                                <option value="DISRUPTS">DISRUPTS</option>
-                                <option value="INHIBITS">INHIBITS</option>
-                                <option value="PRECEDES">PRECEDES</option>
-                                <option value="PREDISPOSES">PREDISPOSES</option>
-                                <option value="PREVENTS">PREVENTS</option>
-                                <option value="PRODUCES">PRODUCES</option>
-                                <option value="STIMULATES">STIMULATES</option>
+                                <option value="CAUSES" {% if default_predication_type == 'CAUSES' %}selected{% endif %}>CAUSES</option>
+                                <option value="AFFECTS" {% if default_predication_type == 'AFFECTS' %}selected{% endif %}>AFFECTS</option>
+                                <option value="AUGMENTS" {% if default_predication_type == 'AUGMENTS' %}selected{% endif %}>AUGMENTS</option>
+                                <option value="COMPLICATES" {% if default_predication_type == 'COMPLICATES' %}selected{% endif %}>COMPLICATES</option>
+                                <option value="DISRUPTS" {% if default_predication_type == 'DISRUPTS' %}selected{% endif %}>DISRUPTS</option>
+                                <option value="INHIBITS" {% if default_predication_type == 'INHIBITS' %}selected{% endif %}>INHIBITS</option>
+                                <option value="PRECEDES" {% if default_predication_type == 'PRECEDES' %}selected{% endif %}>PRECEDES</option>
+                                <option value="PREDISPOSES" {% if default_predication_type == 'PREDISPOSES' %}selected{% endif %}>PREDISPOSES</option>
+                                <option value="PREVENTS" {% if default_predication_type == 'PREVENTS' %}selected{% endif %}>PREVENTS</option>
+                                <option value="PRODUCES" {% if default_predication_type == 'PRODUCES' %}selected{% endif %}>PRODUCES</option>
+                                <option value="STIMULATES" {% if default_predication_type == 'STIMULATES' %}selected{% endif %}>STIMULATES</option>
                             </select>
                         </div>
                     </div>
@@ -121,7 +121,7 @@
                                 name="outcome_cuis"
                                 rows="3"
                                 placeholder="Search for outcome concepts (e.g., alzheimer, stroke)... (Press Enter to search)"
-                            >C2677888, C0750901, C0494463, C0002395</textarea>
+                            ></textarea>
                             <div id="outcome_search_results" class="cui-search-results"></div>
                         </div>
 
@@ -135,7 +135,7 @@
                                 id="outcome_cuis_selected"
                                 name="outcome_cuis_selected"
                                 rows="3"
-                            >C2677888, C0750901, C0494463, C0002395</textarea>
+                            >{{ default_outcome_cuis_selected }}</textarea>
                             <button type="button" class="btn btn-warning btn-sm btn-clear mt-2" id="clear_outcome">Clear Selection</button>
                         </div>
 
@@ -149,7 +149,7 @@
                                 class="form-control"
                                 id="outcome_name"
                                 name="outcome_name"
-                                value="Alzheimers"
+                                value="{{ default_outcome_name }}"
                                 placeholder="e.g., Alzheimers, Cancer"
                             >
                         </div>
@@ -160,9 +160,9 @@
                                 <span class="tooltip-text">SemMedDB version by filtering method.</span>
                             </label>
                             <select class="form-select" id="SemMedDBD_version" name="SemMedDBD_version">
-                                <option value="heuristic" selected>heuristic</option>
-                                <option value="LLM-based">LLM-based</option>
-                                <option value="heuristic+LLM-based">heuristic+LLM-based</option>
+                                <option value="heuristic" {% if default_semmeddb_version == 'heuristic' %}selected{% endif %}>heuristic</option>
+                                <option value="LLM-based" {% if default_semmeddb_version == 'LLM-based' %}selected{% endif %}>LLM-based</option>
+                                <option value="heuristic+LLM-based" {% if default_semmeddb_version == 'heuristic+LLM-based' %}selected{% endif %}>heuristic+LLM-based</option>
                             </select>
                         </div>
                     </div>
@@ -195,7 +195,7 @@
                                 name="blocklist_cuis_selected"
                                 rows="2"
                                 placeholder="Selected CUI codes will appear here (comma-separated)"
-                            ></textarea>
+                            >{{ default_blocklist_cuis_selected }}</textarea>
                             <button type="button" class="btn btn-warning btn-sm btn-clear mt-2" id="clear_blocklist">Clear Selection</button>
                         </div>
 
@@ -205,9 +205,9 @@
                                 <span class="tooltip-text">Number of degrees for graph traversal (1-3). Controls the depth of relationships included in the graph.</span>
                             </label>
                             <select class="form-select" id="degree" name="degree">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3" selected>3</option>
+                                <option value="1" {% if default_degree == 1 %}selected{% endif %}>1</option>
+                                <option value="2" {% if default_degree == 2 %}selected{% endif %}>2</option>
+                                <option value="3" {% if default_degree == 3 %}selected{% endif %}>3</option>
                             </select>
                         </div>
 
@@ -218,15 +218,15 @@
                             </h5>
                             <div class="mb-3">
                                 <label for="min_pmids_degree1" class="form-label">Threshold for 1st Degree:</label>
-                                <input type="number" class="form-control threshold-field" id="min_pmids_degree1" name="min_pmids_degree1" value="10" min="1" max="1000" step="1">
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree1" name="min_pmids_degree1" value="{{ default_min_pmids_degree1 }}" min="1" max="1000" step="1">
                             </div>
                             <div class="mb-3">
                                 <label for="min_pmids_degree2" class="form-label">Threshold for 2nd Degree:</label>
-                                <input type="number" class="form-control threshold-field" id="min_pmids_degree2" name="min_pmids_degree2" value="100" min="1" max="1000" step="1">
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree2" name="min_pmids_degree2" value="{{ default_min_pmids_degree2 }}" min="1" max="1000" step="1">
                             </div>
                             <div class="mb-3">
                                 <label for="min_pmids_degree3" class="form-label">Threshold for 3rd Degree:</label>
-                                <input type="number" class="form-control threshold-field" id="min_pmids_degree3" name="min_pmids_degree3" value="200" min="1" max="1000" step="1">
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree3" name="min_pmids_degree3" value="{{ default_min_pmids_degree3 }}" min="1" max="1000" step="1">
                             </div>
                         </div>
                     </div>

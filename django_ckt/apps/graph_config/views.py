@@ -19,15 +19,46 @@ class GraphConfigView(TemplateView):
     """
     template_name = 'graph_config/config.html'
 
+    def _load_default_config(self):
+        """Load default configuration from default_config.yaml."""
+        config_path = os.path.join(settings.BASE_DIR, 'config', 'default_config.yaml')
+        try:
+            with open(config_path, 'r') as f:
+                return yaml.safe_load(f)
+        except (FileNotFoundError, yaml.YAMLError):
+            return {}
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['page_title'] = 'Graph Configuration'
         context['active_tab'] = 'create_graph'
 
+        # Load defaults from YAML config file
+        defaults = self._load_default_config()
+
         # Generate year range for publication year cutoff dropdown
         current_year = datetime.now().year
         context['year_range'] = range(1980, current_year + 2)  # 1980 to current year + 1
-        context['default_year'] = 2015
+        context['default_year'] = defaults.get('pub_year_cutoff', 2015)
+
+        # CUI defaults as comma-separated strings for selected fields
+        exposure_cuis = defaults.get('exposure_cuis', [])
+        outcome_cuis = defaults.get('outcome_cuis', [])
+        blocklist_cuis = defaults.get('blocklist_cuis') or []
+
+        context['default_exposure_cuis_selected'] = ', '.join(exposure_cuis) if exposure_cuis else ''
+        context['default_outcome_cuis_selected'] = ', '.join(outcome_cuis) if outcome_cuis else ''
+        context['default_blocklist_cuis_selected'] = ', '.join(blocklist_cuis) if blocklist_cuis else ''
+
+        # Scalar defaults
+        context['default_exposure_name'] = defaults.get('exposure_name', '')
+        context['default_outcome_name'] = defaults.get('outcome_name', '')
+        context['default_degree'] = defaults.get('degree', 3)
+        context['default_min_pmids_degree1'] = defaults.get('min_pmids_degree1', 10)
+        context['default_min_pmids_degree2'] = defaults.get('min_pmids_degree2', 100)
+        context['default_min_pmids_degree3'] = defaults.get('min_pmids_degree3', 200)
+        context['default_predication_type'] = defaults.get('predication_type', 'CAUSES')
+        context['default_semmeddb_version'] = defaults.get('SemMedDBD_version', 'heuristic')
 
         return context
 
