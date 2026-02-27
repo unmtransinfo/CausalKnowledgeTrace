@@ -175,7 +175,7 @@ def generate_graph(request):
             'pub_year_cutoff': pub_year_cutoff,
             'degree': degree,
             'predication_type': predication_type,
-            'SemMedDBD_version': semmeddb_version
+            'SemMedDBD_version': semmeddb_version,
         }
 
         # Determine the path to user_input.yaml
