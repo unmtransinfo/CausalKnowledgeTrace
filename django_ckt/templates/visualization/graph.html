@@ -56,6 +56,7 @@
     </button>
     <div class="separator"></div>
     <select class="form-select form-select-sm" id="layoutSelect" style="width:auto;font-size:0.82rem;">
+        <option value="physics">Layout: Physics</option>
         <option value="cose">Layout: CoSE</option>
         <option value="circle">Layout: Circle</option>
         <option value="grid">Layout: Grid</option>
@@ -65,6 +66,15 @@
     <button class="btn btn-sm btn-outline-secondary" id="btnRelayout" title="Re-run layout">
         <i class="fas fa-sync-alt"></i> Re-layout
     </button>
+    <!-- Physics strength slider — shown only when Physics layout is active -->
+    <div id="physicsControls" style="display:flex;align-items:center;gap:6px;margin-left:4px;">
+        <label for="physicsStrength" style="font-size:0.8rem;white-space:nowrap;margin:0;">
+            <i class="fas fa-atom"></i> Physics Strength:
+        </label>
+        <input type="range" id="physicsStrength" min="1000" max="20000" step="500" value="4500"
+               style="width:110px;cursor:pointer;" title="Higher = wider cluster rings">
+        <span id="physicsStrengthVal" style="font-size:0.8rem;min-width:52px;">4500</span>
+    </div>
     <div class="separator"></div>
     <button class="btn btn-sm btn-outline-info" id="btnToggleLayout" title="Toggle side-by-side / stacked layout">
         <i class="fas fa-columns"></i> <span id="toggleLayoutLabel">Stack</span>

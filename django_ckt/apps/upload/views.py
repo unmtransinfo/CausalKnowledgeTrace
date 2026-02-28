@@ -167,15 +167,17 @@ def load_graph_file(request):
 
         nodes, edges, metadata = _load_json_graph(file_path, filter_type)
 
-        # Store in session for visualization page to retrieve
-        request.session['graph_data'] = {
-            'nodes': nodes,
-            'edges': edges,
-            'metadata': metadata,
+        # Remove the legacy large 'graph_data' key if it exists (it bloats the session)
+        request.session.pop('graph_data', None)
+        # Store only lightweight reference in session (full data is loaded from disk on demand)
+        # This avoids storing multi-MB graph data in the session backend
+        request.session['graph_source'] = {
             'filename': filename,
+            'filter_type': filter_type,
         }
-        # Keep undo history in session
+        request.session['graph_deletions'] = {'nodes': [], 'edges': []}
         request.session['graph_undo_stack'] = []
+        request.session.modified = True
 
         return JsonResponse({
             'success': True,
@@ -248,13 +250,14 @@ def upload_graph_file(request):
         edges = elements.get('edges', [])
         metadata = graph_data.get('metadata', {})
 
-        request.session['graph_data'] = {
-            'nodes': nodes,
-            'edges': edges,
-            'metadata': metadata,
+        request.session.pop('graph_data', None)
+        request.session['graph_source'] = {
             'filename': uploaded_file.name,
+            'filter_type': 'none',
         }
+        request.session['graph_deletions'] = {'nodes': [], 'edges': []}
         request.session['graph_undo_stack'] = []
+        request.session.modified = True
 
         return JsonResponse({
             'success': True,

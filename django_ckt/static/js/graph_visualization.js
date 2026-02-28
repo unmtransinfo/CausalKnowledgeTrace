@@ -95,37 +95,237 @@
             selector: 'edge.faded',
             style: { 'opacity': 0.1 }
         },
+
+        // ── Compound cluster parent nodes ──
+        // Shared base: transparent fill, dashed border, label at top, no arrow shape
+        {
+            selector: 'node.compound-cluster',
+            style: {
+                'shape': 'roundrectangle',
+                'background-opacity': 0.06,
+                'border-style': 'dashed',
+                'border-width': 2,
+                'label': 'data(label)',
+                'text-valign': 'top',
+                'text-halign': 'center',
+                'font-size': '12px',
+                'font-weight': 'bold',
+                'text-margin-y': 6,
+                'padding': '22px',
+                'z-compound-depth': 'bottom',
+            }
+        },
+        // Exposure cluster — green
+        {
+            selector: 'node#__exposure_cluster__',
+            style: {
+                'background-color': '#2ecc71',
+                'border-color': '#27ae60',
+                'color': '#145a32',
+            }
+        },
+        // Outcome cluster — red
+        {
+            selector: 'node#__outcome_cluster__',
+            style: {
+                'background-color': '#e74c3c',
+                'border-color': '#c0392b',
+                'color': '#7b241c',
+            }
+        },
+        // Compound node when selected — highlight border only
+        {
+            selector: 'node.compound-cluster:selected',
+            style: {
+                'border-width': 3,
+                'border-color': '#ff9800',
+                'border-style': 'solid',
+                'overlay-opacity': 0,
+            }
+        },
     ];
 
+    // ── Raw element store (server data, no compound parents) ──
+    var rawGraphElements = null;
+
+    // ── Check fCoSE availability ──
+    var fcoseAvailable = (typeof cytoscape !== 'undefined') &&
+        cytoscape.extensions && typeof cytoscape.extensions === 'function'
+        ? false  // we'll detect via trial below
+        : false;
+    // Simpler: just check if the layout name resolves at runtime
+    try {
+        // cytoscape-fcose registers itself automatically when loaded via script tag
+        // after cytoscape.js. If cose-base/layout-base were missing it won't register.
+        var _testCy = cytoscape({ headless: true, elements: [] });
+        _testCy.layout({ name: 'fcose' });
+        _testCy.destroy();
+        fcoseAvailable = true;
+    } catch (e) {
+        console.warn('fCoSE layout extension not available, falling back to cose:', e.message);
+        fcoseAvailable = false;
+    }
+
+    // ── Physics layout parameters ──
+    // fCoSE scale: default 4500, recommended range 1000–20000
+    var physicsRepulsion = 4500;
+
+    // ── Build compound structure for fCoSE ──
+    // Injects synthetic parent nodes for exposure/outcome clusters.
+    // Returns a flat Cytoscape elements array ready for cy.add() / init.
+    function buildCompoundElements(nodes, edges) {
+        var hasExposure = nodes.some(function(n) { return n.data && n.data.type === 'exposure'; });
+        var hasOutcome  = nodes.some(function(n) { return n.data && n.data.type === 'outcome';  });
+
+        var result = [];
+
+        // Compound parent nodes — styled via .compound-cluster class
+        if (hasExposure) {
+            result.push({ data: { id: '__exposure_cluster__', label: 'Exposures' }, classes: 'compound-cluster' });
+        }
+        if (hasOutcome) {
+            result.push({ data: { id: '__outcome_cluster__', label: 'Outcomes'  }, classes: 'compound-cluster' });
+        }
+
+        // Child nodes — clone and assign parent
+        nodes.forEach(function(n) {
+            var node = { data: Object.assign({}, n.data), classes: n.classes || '' };
+            if (hasExposure && node.data.type === 'exposure') {
+                node.data.parent = '__exposure_cluster__';
+            } else if (hasOutcome && node.data.type === 'outcome') {
+                node.data.parent = '__outcome_cluster__';
+            }
+            result.push(node);
+        });
+
+        // Edges — pass through unchanged
+        edges.forEach(function(e) { result.push(e); });
+
+        return result;
+    }
+
+    // Helper: is a cytoscape node a synthetic compound parent?
+    function isCompoundParent(nodeOrData) {
+        var id = (nodeOrData && nodeOrData.id) ? nodeOrData.id : (nodeOrData && nodeOrData.data ? nodeOrData.data('id') : '');
+        return id === '__exposure_cluster__' || id === '__outcome_cluster__';
+    }
+
+    function getPhysicsLayoutOpts() {
+        if (!fcoseAvailable) {
+            // Fallback to built-in cose layout with similar tuning
+            return {
+                name: 'cose',
+                animate: true,
+                animationDuration: 1200,
+                nodeRepulsion: function() { return physicsRepulsion; },
+                idealEdgeLength: function() { return 55; },
+                edgeElasticity: function() { return 0.45; },
+                gravity: 0.25,
+                nestingFactor: 0.1,
+                numIter: 2500,
+                padding: 40,
+                randomize: true,
+            };
+        }
+        return {
+            name: 'fcose',
+            // Rendering quality — 'proof' runs until full convergence
+            quality: 'proof',
+            animate: true,
+            animationDuration: 1200,
+            animationEasing: 'ease-out',
+            // Randomize starting positions each run for fresh clusters
+            randomize: true,
+
+            // ── Spring physics ──
+            // nodeRepulsion: inter-node repulsion (fCoSE scale ≈ 1000–20000)
+            // Higher → nodes spread wider in each cluster circle
+            nodeRepulsion: physicsRepulsion,
+            // idealEdgeLength: rest length of each spring (px)
+            // Shorter → siblings pulled tighter; longer → wider arcs
+            idealEdgeLength: 55,
+            // edgeElasticity: spring stiffness divisor (lower = stiffer)
+            edgeElasticity: 0.45,
+
+            // ── Gravity ──
+            // gravity: global pull toward layout centroid (keeps graph from flying apart)
+            gravity: 0.25,
+            // gravityRange: how far gravity reaches (higher = wider pull)
+            gravityRange: 3.8,
+            // gravityCompound: gravity inside each compound parent node
+            // Higher → sibling nodes orbit tighter around compound center
+            gravityCompound: 1.0,
+            // gravityRangeCompound: reach of compound gravity
+            gravityRangeCompound: 1.5,
+
+            // ── Nesting ──
+            // nestingFactor: scales how much compound boundaries expand
+            nestingFactor: 0.1,
+
+            // ── Convergence ──
+            numIter: 2500,
+            // initialEnergyOnIncremental: starting temperature for incremental re-runs
+            initialEnergyOnIncremental: 0.5,
+
+            // ── Tiling (disconnected nodes) ──
+            tile: true,
+            tilingPaddingVertical: 10,
+            tilingPaddingHorizontal: 10,
+
+            // ── Packing ──
+            packComponents: true,
+            padding: 40,
+        };
+    }
+
     // ── Initialize Cytoscape instance ──
-    function initCytoscape(elements) {
+    // rawElements: {nodes:[], edges:[]} from server (no compound parents)
+    function initCytoscape(rawElements) {
         if (cy) { cy.destroy(); }
+
+        // Store raw server elements for re-use on layout switches / undo / remove
+        rawGraphElements = rawElements;
 
         document.getElementById('noGraphPlaceholder').style.display = 'none';
         document.getElementById('cy').style.display = 'block';
+
+        var layoutName = document.getElementById('layoutSelect')
+            ? document.getElementById('layoutSelect').value
+            : 'physics';
+
+        // Physics mode → inject compound parents; other layouts → flat elements
+        var elements = (layoutName === 'physics')
+            ? buildCompoundElements(rawElements.nodes || [], rawElements.edges || [])
+            : rawElements;
+
+        var initLayout = (layoutName === 'physics')
+            ? getPhysicsLayoutOpts()
+            : { name: layoutName, animate: true, animationDuration: 800, padding: 30 };
 
         cy = cytoscape({
             container: document.getElementById('cy'),
             elements: elements,
             style: cyStyle,
-            layout: { name: 'cose', animate: true, animationDuration: 800, nodeRepulsion: function() { return 8000; }, idealEdgeLength: function() { return 80; }, padding: 30 },
+            layout: initLayout,
             minZoom: 0.1,
             maxZoom: 5,
             wheelSensitivity: 0.3,
         });
 
-        // Event bindings
+        // Event bindings — guard against tapping compound parent nodes
         cy.on('tap', 'node', onNodeTap);
         cy.on('tap', 'edge', onEdgeTap);
         cy.on('tap', function(evt) {
             if (evt.target === cy) { clearSelection(); }
         });
 
-        updateStats(elements);
+        updateStats(rawElements);
     }
 
     // ── Node tap handler ──
     function onNodeTap(evt) {
+        // Ignore clicks on synthetic compound parent nodes
+        if (isCompoundParent({ id: evt.target.data('id') })) { return; }
         clearHighlights();
         selectedElement = evt.target;
         document.getElementById('btnRemoveSelected').disabled = false;
@@ -225,14 +425,15 @@
     }
 
     // ── Stats ──
+    // Always receives raw server elements (no compound parents) so counts are accurate
     function updateStats(elements) {
-        const nodes = elements.nodes || elements.filter(function(e) { return e.group === 'nodes'; }) || [];
-        const edges = elements.edges || elements.filter(function(e) { return e.group === 'edges'; }) || [];
-        // Handle both {nodes:[], edges:[]} and flat array formats
-        let nodeCount, edgeCount;
+        var nodeCount, edgeCount;
         if (Array.isArray(elements)) {
-            nodeCount = elements.filter(function(e) { return !e.data.source; }).length;
-            edgeCount = elements.filter(function(e) { return e.data.source; }).length;
+            // Filter out compound parent placeholders by id convention
+            nodeCount = elements.filter(function(e) {
+                return !e.data.source && !isCompoundParent({ id: e.data.id });
+            }).length;
+            edgeCount = elements.filter(function(e) { return !!e.data.source; }).length;
         } else {
             nodeCount = (elements.nodes || []).length;
             edgeCount = (elements.edges || []).length;
@@ -258,6 +459,9 @@
         const isNode = selectedElement.isNode();
         const data = selectedElement.data();
 
+        // Never remove synthetic compound parent nodes
+        if (isCompoundParent({ id: data.id })) { return; }
+
         const url = isNode ? removeNodeUrl : removeEdgeUrl;
         const body = isNode
             ? { node_id: data.id }
@@ -265,7 +469,7 @@
 
         apiPost(url, body).then(function(resp) {
             if (resp.success) {
-                // Re-render with updated data
+                // Re-render with updated raw server data
                 const elems = { nodes: resp.nodes, edges: resp.edges };
                 initCytoscape(elems);
                 document.getElementById('btnUndo').disabled = false;
@@ -295,14 +499,41 @@
     }
 
     // ── Layout ──
+    // Physics ↔ non-physics transitions rebuild the element set (compound vs flat).
+    // Same-mode re-runs just re-apply the layout on existing elements.
     function runLayout(name) {
         if (!cy) return;
-        const opts = { name: name, animate: true, animationDuration: 600, padding: 30 };
-        if (name === 'cose') {
-            opts.nodeRepulsion = function() { return 8000; };
-            opts.idealEdgeLength = function() { return 80; };
+
+        var currentlyPhysics = cy.getElementById('__exposure_cluster__').length > 0 ||
+                               cy.getElementById('__outcome_cluster__').length > 0;
+        var wantsPhysics = (name === 'physics');
+
+        if (wantsPhysics !== currentlyPhysics && rawGraphElements) {
+            // Mode switch — reinitialize with the right element structure
+            initCytoscape(rawGraphElements);
+            return;
+        }
+
+        var opts;
+        if (name === 'physics') {
+            opts = getPhysicsLayoutOpts();
+        } else {
+            opts = { name: name, animate: true, animationDuration: 600, padding: 30 };
+            if (name === 'cose') {
+                opts.nodeRepulsion = function() { return 8000; };
+                opts.idealEdgeLength = function() { return 80; };
+            }
         }
         cy.layout(opts).run();
+    }
+
+    // ── Toggle physics controls visibility ──
+    function updatePhysicsControlsVisibility() {
+        var sel = document.getElementById('layoutSelect');
+        var controls = document.getElementById('physicsControls');
+        if (sel && controls) {
+            controls.style.display = (sel.value === 'physics') ? 'flex' : 'none';
+        }
     }
 
     // ── Load graph from server ──
@@ -311,7 +542,9 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (data.success && data.nodes && data.nodes.length > 0) {
-                    const elems = { nodes: data.nodes, edges: data.edges };
+                    // Store raw elements then initialize (initCytoscape stores them too)
+                    var elems = { nodes: data.nodes, edges: data.edges };
+                    rawGraphElements = elems;
                     initCytoscape(elems);
                     document.getElementById('statFilename').textContent = data.filename || 'Loaded';
                 } else {
@@ -548,6 +781,29 @@
         document.getElementById('btnRelayout').addEventListener('click', function() {
             runLayout(document.getElementById('layoutSelect').value);
         });
+
+        // Show/hide physics slider when layout selection changes
+        document.getElementById('layoutSelect').addEventListener('change', function() {
+            updatePhysicsControlsVisibility();
+        });
+
+        // Physics strength slider — live-update label; re-run layout on release
+        var physicsSlider = document.getElementById('physicsStrength');
+        var physicsVal = document.getElementById('physicsStrengthVal');
+        if (physicsSlider) {
+            physicsSlider.addEventListener('input', function() {
+                physicsRepulsion = parseInt(this.value, 10);
+                if (physicsVal) physicsVal.textContent = physicsRepulsion.toLocaleString();
+            });
+            physicsSlider.addEventListener('change', function() {
+                if (document.getElementById('layoutSelect').value === 'physics') {
+                    runLayout('physics');
+                }
+            });
+        }
+
+        // Set initial visibility of physics controls
+        updatePhysicsControlsVisibility();
         document.getElementById('btnToggleLayout').addEventListener('click', function() {
             if (isModeSide()) {
                 switchToStacked();
