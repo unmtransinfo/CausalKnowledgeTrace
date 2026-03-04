@@ -102,9 +102,9 @@ Example usage:
     # Output parameters
     output_group = parser.add_argument_group("Output Parameters")
     output_group.add_argument(
-        "--output-dir", 
-        default="output",
-        help="Output directory for results (default: output)"
+        "--output-dir",
+        default="graph_creation/result",
+        help="Output directory for results (default: graph_creation/result)"
     )
     output_group.add_argument(
         "--verbose", 
