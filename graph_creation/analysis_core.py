@@ -101,6 +101,10 @@ class GraphAnalyzer:
         """Generate the causal assertions filename based on degree parameter."""
         return f"causal_assertions_{self.degree}.json"
 
+    def get_cytoscape_filename(self) -> str:
+        """Generate the Cytoscape.js JSON filename based on degree parameter."""
+        return f"degree_{self.degree}_cytoscape.json"
+
     def generate_basic_dagitty_script(
         self,
         nodes: Set[str],
@@ -142,6 +146,135 @@ class GraphAnalyzer:
             dag_filename = self.get_dag_filename()
             with open(self.output_dir / dag_filename, "w") as f:
                 f.write(dagitty_format)
+
+    def generate_cytoscape_json(
+        self,
+        nodes: Set[str],
+        edges: Set[Tuple[str, str]],
+        exposure_nodes: Optional[Set[str]],
+        outcome_nodes: Optional[Set[str]],
+        detailed_assertions: List[Dict],
+        consolidated_mapping: Dict[str, str],
+        cui_to_name_mapping: Dict[str, str],
+    ):
+        """Generate a Cytoscape.js-compatible JSON file for graph visualization.
+
+        Each edge embeds PMID data (with sentences) and evidence count so the
+        front-end Element Info panel can display full provenance on edge click.
+
+        Args:
+            nodes: Cleaned/consolidated node ids in the graph.
+            edges: Set of (source, target) tuples in the graph.
+            exposure_nodes: Subset of nodes that are exposure variables.
+            outcome_nodes: Subset of nodes that are outcome variables.
+            detailed_assertions: Raw assertion dicts from the database (before
+                consolidation), each with subject_name, subject_cui, predicate,
+                object_name, object_cui, evidence_count, pmid_data.
+            consolidated_mapping: cleaned name -> consolidated name mapping.
+            cui_to_name_mapping: CUI -> canonical name mapping.
+        """
+        exposure_nodes = exposure_nodes or set()
+        outcome_nodes = outcome_nodes or set()
+        if consolidated_mapping is None:
+            consolidated_mapping = {}
+
+        with TimingContext("cytoscape_generation", self.timing_data):
+            # --- Nodes ---
+            cytoscape_nodes = []
+            for node in sorted(nodes):
+                if node in exposure_nodes:
+                    node_type = "exposure"
+                elif node in outcome_nodes:
+                    node_type = "outcome"
+                else:
+                    node_type = "default"
+                cytoscape_nodes.append({
+                    "data": {"id": node, "label": node, "node_type": node_type}
+                })
+
+            # --- Edges ---
+            # Key: (consolidated_source, predicate, consolidated_target)
+            # Multiple raw assertions collapsing to the same key are merged.
+            edge_map: Dict[Tuple[str, str, str], Dict] = {}
+
+            for assertion in detailed_assertions:
+                subject_name = assertion.get("subject_name", "")
+                object_name = assertion.get("object_name", "")
+                predicate = assertion.get("predicate", "")
+
+                # Apply same cleaning/consolidation used when building the graph
+                cleaned_subj = self.db_ops.clean_output_name(subject_name)
+                cleaned_obj = self.db_ops.clean_output_name(object_name)
+                cons_subj = self.db_ops.apply_consolidated_mapping(cleaned_subj, consolidated_mapping)
+                cons_obj = self.db_ops.apply_consolidated_mapping(cleaned_obj, consolidated_mapping)
+
+                # Skip self-loops and edges not present in the graph
+                if cons_subj == cons_obj:
+                    continue
+                if (cons_subj, cons_obj) not in edges:
+                    continue
+
+                edge_key = (cons_subj, predicate, cons_obj)
+                if edge_key not in edge_map:
+                    edge_map[edge_key] = {
+                        "source": cons_subj,
+                        "target": cons_obj,
+                        "predicate": predicate,
+                        "subject_name": cons_subj,
+                        "subject_cui": assertion.get("subject_cui", ""),
+                        "object_name": cons_obj,
+                        "object_cui": assertion.get("object_cui", ""),
+                        "evidence_count": 0,
+                        "pmid_data": {},
+                    }
+
+                entry = edge_map[edge_key]
+                entry["evidence_count"] += assertion.get("evidence_count", 0)
+
+                # Merge PMID -> sentences, deduplicating sentences
+                for pmid, pmid_info in assertion.get("pmid_data", {}).items():
+                    sentences = pmid_info.get("sentences", [])
+                    if pmid not in entry["pmid_data"]:
+                        entry["pmid_data"][pmid] = list(sentences)
+                    else:
+                        existing = set(entry["pmid_data"][pmid])
+                        for s in sentences:
+                            if s not in existing:
+                                entry["pmid_data"][pmid].append(s)
+                                existing.add(s)
+
+            cytoscape_edges = []
+            for edge_key in sorted(edge_map.keys()):
+                source, predicate, target = edge_key
+                ed = edge_map[edge_key]
+                cytoscape_edges.append({
+                    "data": {
+                        "id": f"{source}__{predicate}__{target}",
+                        "source": source,
+                        "target": target,
+                        "predicate": ed["predicate"],
+                        "subject_name": ed["subject_name"],
+                        "subject_cui": ed["subject_cui"],
+                        "object_name": ed["object_name"],
+                        "object_cui": ed["object_cui"],
+                        "evidence_count": ed["evidence_count"],
+                        "pmid_data": ed["pmid_data"],
+                    }
+                })
+
+            cytoscape_data = {
+                "elements": {
+                    "nodes": cytoscape_nodes,
+                    "edges": cytoscape_edges,
+                }
+            }
+
+            cytoscape_filename = self.get_cytoscape_filename()
+            with open(self.output_dir / cytoscape_filename, "w", encoding="utf-8") as f:
+                json.dump(cytoscape_data, f, indent=2, ensure_ascii=False)
+
+            print(f"Cytoscape.js JSON saved: {self.output_dir}/{cytoscape_filename}")
+            print(f"  Nodes: {len(cytoscape_nodes)}, Edges: {len(cytoscape_edges)}")
 
     def save_results_and_metadata(
         self,
@@ -434,14 +567,14 @@ if (lightweight_result$success) {{
                             cui_to_name_mapping, consolidated_mapping, nodes_in_graph
                         )
 
-                    print("\nGenerating DAGitty visualization script...")
-                    # Generate basic DAG script with exposure/outcome annotations
+                    print("\nGenerating Cytoscape.js visualization JSON...")
+                    # Generate Cytoscape.js JSON with exposure/outcome annotations and edge PMID data
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
-                    self.generate_basic_dagitty_script(all_nodes, all_edges, exposure_nodes, outcome_nodes)
-
-                    print(f"DAGitty script generated:")
-                    print(f"  - {self.output_dir}/{self.get_dag_filename()}")
+                    self.generate_cytoscape_json(
+                        all_nodes, all_edges, exposure_nodes, outcome_nodes,
+                        detailed_assertions, consolidated_mapping, cui_to_name_mapping
+                    )
 
                     # Save all results and metadata with consolidated mapping
                     self.save_results_and_metadata(
@@ -535,11 +668,10 @@ if (lightweight_result$success) {{
 
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
-        print(f"  - {self.get_dag_filename()}: R script for DAG visualization (degree={self.degree})")
+        print(f"  - {self.get_cytoscape_filename()}: Cytoscape.js JSON for graph visualization (degree={self.degree})")
 
-        print("\nTo visualize results, run the R script in the output directory:")
-        print(f"  cd {output_path}")
-        print(f"  Rscript {self.get_dag_filename()}")
+        print("\nTo visualize results, load the Cytoscape.js JSON in the visualization app:")
+        print(f"  {output_path}/{self.get_cytoscape_filename()}")
 
 
 class MarkovBlanketAnalyzer(GraphAnalyzer):
@@ -663,12 +795,13 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
 
         print("\nGenerated files:")
         print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
-        print(f"  - {self.get_dag_filename()}: R script for full DAG visualization (degree={self.degree})")
+        print(f"  - {self.get_cytoscape_filename()}: Cytoscape.js JSON for graph visualization (degree={self.degree})")
         print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
 
-        print("\nTo visualize results, run the R scripts in the output directory:")
+        print("\nTo visualize results, load the Cytoscape.js JSON in the visualization app:")
+        print(f"  {output_path}/{self.get_cytoscape_filename()}")
+        print("\nFor Markov blanket analysis, run:")
         print(f"  cd {output_path}")
-        print(f"  Rscript {self.get_dag_filename()}")
         print(f"  Rscript MarkovBlanket_Union.R")
 
     def run_markov_blanket_analysis(self) -> Dict:
@@ -723,17 +856,18 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                             cui_to_name_mapping, consolidated_mapping, nodes_in_graph
                         )
 
-                    print("\nGenerating DAGitty visualization scripts...")
-                    # Generate basic DAG script using parent class method, with exposure/outcome annotations
+                    print("\nGenerating Cytoscape.js visualization JSON and Markov blanket script...")
+                    # Generate Cytoscape.js JSON using parent class method, with exposure/outcome annotations
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
-                    self.generate_basic_dagitty_script(all_nodes, all_edges, exposure_nodes, outcome_nodes)
+                    self.generate_cytoscape_json(
+                        all_nodes, all_edges, exposure_nodes, outcome_nodes,
+                        detailed_assertions, consolidated_mapping, cui_to_name_mapping
+                    )
 
-                    # Generate Markov blanket-specific script
+                    # Generate Markov blanket-specific DAGitty script
                     self.generate_markov_blanket_dagitty_script(all_edges, mb_union)
 
-                    print(f"DAGitty scripts generated with Markov blanket support:")
-                    print(f"  - {self.output_dir}/{self.get_dag_filename()}")
                     print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
 
                     # Save all results and metadata with consolidated mapping
