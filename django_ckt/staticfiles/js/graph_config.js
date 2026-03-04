@@ -3,9 +3,9 @@
  * Handles CUI search, form validation, dynamic field enabling, and form submission
  */
 
-// Global variables for URL endpoints (will be set from template)
-var searchCuiUrl = '';
-var generateGraphUrl = '';
+// Global variables for URL endpoints (will be set from template inline script)
+var searchCuiUrl;
+var generateGraphUrl;
 
 $(document).ready(function() {
     

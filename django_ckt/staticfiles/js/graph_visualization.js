@@ -7,19 +7,25 @@
     let cy = null;
     let selectedElement = null;
 
-    // ── Color palette: Red=exposure, Green=outcome, Gray=everything else ──
+    // ── Color palette ──
     var COLORS = {
-        exposure: '#E53935',  // Red
-        outcome:  '#43A047',  // Green
-        other:    '#9E9E9E',  // Gray
-        edge:     '#aaaaaa',
-        edgeHl:   '#00bcd4',
-        selected: '#FFD700',
+        exposure:     '#FF6B6B',  // Coral red
+        outcome:      '#4ECDC4',  // Soft teal
+        expNeighbor:  '#F5A6A6',  // Light coral — nodes connected to exposure
+        outNeighbor:  '#A8DCD5',  // Light teal  — nodes connected to outcome
+        bothNeighbor: '#C9A0DC',  // Lavender    — connected to both
+        other:        '#B0BEC5',  // Blue-gray   — not directly connected
+        edge:         '#aaaaaa',
+        edgeHl:       '#00bcd4',
+        selected:     '#FFD700',
     };
 
     // ── Cytoscape style ──
+    // Uses 'size_score' (log-scaled 0–100) computed by computeNodeMetrics()
+    // Uses 'role' data field: exposure, outcome, exp_neighbor, out_neighbor,
+    //                          both_neighbor, other
     const cyStyle = [
-        // ── All nodes: gray by default ──
+        // ── Base node style (fallback for 'other' role) ──
         {
             selector: 'node',
             style: {
@@ -34,19 +40,44 @@
                 'width': 'mapData(size_score, 0, 100, 10, 55)',
                 'height': 'mapData(size_score, 0, 100, 10, 55)',
                 'border-width': 1,
-                'border-color': '#757575',
+                'border-color': '#90A4AE',
                 'text-max-width': '90px',
                 'text-wrap': 'ellipsis',
                 'min-zoomed-font-size': 10,
                 'background-opacity': 'mapData(size_score, 0, 100, 0.55, 1)',
             }
         },
-        // ── Exposure node: RED ──
+        // ── Role-based colors for default nodes ──
+        {
+            selector: 'node[role="exp_neighbor"]',
+            style: {
+                'background-color': COLORS.expNeighbor,
+                'border-color': '#E57373',
+                'color': '#8B0000',
+            }
+        },
+        {
+            selector: 'node[role="out_neighbor"]',
+            style: {
+                'background-color': COLORS.outNeighbor,
+                'border-color': '#4DB6AC',
+                'color': '#004D40',
+            }
+        },
+        {
+            selector: 'node[role="both_neighbor"]',
+            style: {
+                'background-color': COLORS.bothNeighbor,
+                'border-color': '#AB47BC',
+                'color': '#4A148C',
+            }
+        },
+        // ── Exposure / Outcome nodes — always prominent ──
         {
             selector: 'node[role="exposure"]',
             style: {
                 'background-color': COLORS.exposure,
-                'border-color': '#B71C1C',
+                'border-color': '#C62828',
                 'border-width': 3,
                 'width': 'mapData(size_score, 0, 100, 35, 70)',
                 'height': 'mapData(size_score, 0, 100, 35, 70)',
@@ -57,18 +88,17 @@
                 'text-max-width': '150px',
             }
         },
-        // ── Outcome node: GREEN ──
         {
             selector: 'node[role="outcome"]',
             style: {
                 'background-color': COLORS.outcome,
-                'border-color': '#1B5E20',
+                'border-color': '#00897B',
                 'border-width': 3,
                 'width': 'mapData(size_score, 0, 100, 35, 70)',
                 'height': 'mapData(size_score, 0, 100, 35, 70)',
                 'font-size': '13px',
                 'font-weight': 'bold',
-                'color': '#1B5E20',
+                'color': '#00695C',
                 'background-opacity': 1,
                 'text-max-width': '150px',
             }
@@ -387,9 +417,15 @@
         var role = data.role || 'other';
         var nodeColor = role === 'exposure' ? COLORS.exposure
             : role === 'outcome' ? COLORS.outcome
+            : role === 'exp_neighbor' ? COLORS.expNeighbor
+            : role === 'out_neighbor' ? COLORS.outNeighbor
+            : role === 'both_neighbor' ? COLORS.bothNeighbor
             : COLORS.other;
         var typeLabel = role === 'exposure' ? 'Exposure'
             : role === 'outcome' ? 'Outcome'
+            : role === 'exp_neighbor' ? 'Exposure Neighbor'
+            : role === 'out_neighbor' ? 'Outcome Neighbor'
+            : role === 'both_neighbor' ? 'Shared Neighbor'
             : 'Other';
         let html = '<h6 style="margin:0 0 8px;color:var(--text-success)"><i class="fas fa-circle" style="color:' + nodeColor + '"></i> ' + (data.label || data.id) + '</h6>';
         html += infoRow('ID', data.id);
@@ -406,6 +442,9 @@
                 var nRole = n.data('role') || 'other';
                 var nColor = nRole === 'exposure' ? COLORS.exposure
                     : nRole === 'outcome' ? COLORS.outcome
+                    : nRole === 'exp_neighbor' ? COLORS.expNeighbor
+                    : nRole === 'out_neighbor' ? COLORS.outNeighbor
+                    : nRole === 'both_neighbor' ? COLORS.bothNeighbor
                     : COLORS.other;
                 html += '<li data-id="' + n.data('id') + '"><i class="fas fa-circle" style="color:' + nColor + ';font-size:8px"></i> ' + (n.data('label') || n.data('id')) + '</li>';
             });

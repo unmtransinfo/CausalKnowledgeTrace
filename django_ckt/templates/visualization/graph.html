@@ -4,7 +4,7 @@
 {% block title %}Graph Visualization - CKT{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/graph_visualization.css' %}">
+<link rel="stylesheet" href="{% static 'css/graph_visualization.css' %}?v=3">
 {% endblock %}
 
 {% block content %}
@@ -31,9 +31,9 @@
 
 <!-- Legend -->
 <div class="graph-legend" id="graphLegend">
-    <div class="legend-item"><span class="legend-color" style="background:#2ecc71"></span> Exposure</div>
-    <div class="legend-item"><span class="legend-color" style="background:#e74c3c"></span> Outcome</div>
-    <div class="legend-item"><span class="legend-color" style="background:#999"></span> Other</div>
+    <div class="legend-item"><span class="legend-color" style="background:#E53935"></span> Exposure</div>
+    <div class="legend-item"><span class="legend-color" style="background:#43A047"></span> Outcome</div>
+    <div class="legend-item"><span class="legend-color" style="background:#9E9E9E"></span> Other</div>
 </div>
 
 <!-- Toolbar -->
@@ -71,9 +71,9 @@
         <label for="physicsStrength" style="font-size:0.8rem;white-space:nowrap;margin:0;">
             <i class="fas fa-atom"></i> Physics Strength:
         </label>
-        <input type="range" id="physicsStrength" min="1000" max="20000" step="500" value="4500"
-               style="width:110px;cursor:pointer;" title="Higher = wider cluster rings">
-        <span id="physicsStrengthVal" style="font-size:0.8rem;min-width:52px;">4500</span>
+        <input type="range" id="physicsStrength" min="1000" max="20000" step="500" value="8000"
+               style="width:110px;cursor:pointer;" title="Higher = more spread between nodes">
+        <span id="physicsStrengthVal" style="font-size:0.8rem;min-width:52px;">8,000</span>
     </div>
     <div class="separator"></div>
     <button class="btn btn-sm btn-outline-info" id="btnToggleLayout" title="Toggle side-by-side / stacked layout">
@@ -126,6 +126,6 @@
     const undoUrl = '{% url "visualization:undo" %}';
     const csrfToken = '{{ csrf_token }}';
 </script>
-<script src="{% static 'js/graph_visualization.js' %}"></script>
+<script src="{% static 'js/graph_visualization.js' %}?v=3"></script>
 {% endblock %}
 

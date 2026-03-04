@@ -1,0 +1,201 @@
+/* ========================================
+   Upload Page Styles
+   ======================================== */
+
+/* Page Header */
+.upload-page-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 4px 4px 0 0;
+    margin-bottom: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Status Alert */
+.upload-status-alert {
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+    color: #31708f;
+    padding: 12px 15px;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+.upload-status-alert.status-success {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #3c763d;
+}
+
+.upload-status-alert.status-error {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+
+/* Section Cards */
+.upload-section-card {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    background: white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.upload-section-card .card-header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px 15px;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 4px 4px 0 0;
+}
+
+.upload-section-card .card-body {
+    padding: 15px;
+}
+
+/* Graph Status Box */
+.graph-status-box {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+}
+
+.graph-status-box .status-label {
+    font-weight: 600;
+    color: #555;
+}
+
+.graph-status-box .status-value {
+    color: #888;
+}
+
+/* Filter Options */
+.filter-options-box {
+    background-color: #d9edf7;
+    border: 1px solid #bce8f1;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.filter-options-box h6 {
+    color: #31708f;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+/* Buttons */
+.btn-load-graph {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    width: 100%;
+    padding: 10px;
+}
+
+.btn-load-graph:hover {
+    background-color: #367fa9;
+    border-color: #367fa9;
+    color: white;
+}
+
+.btn-upload-load {
+    background-color: #2ecc71;
+    border-color: #27ae60;
+    color: white;
+    font-weight: 600;
+    width: 100%;
+    padding: 10px;
+}
+
+.btn-upload-load:hover {
+    background-color: #27ae60;
+    border-color: #219a52;
+    color: white;
+}
+
+/* File List Table */
+.file-list-table {
+    font-size: 0.9rem;
+}
+
+.file-list-table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #555;
+}
+
+/* Header Info Popover Icon */
+.header-info-icon {
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.85rem;
+    margin-left: 6px;
+    cursor: pointer;
+    transition: color 0.2s;
+    vertical-align: middle;
+}
+
+.header-info-icon:hover,
+.header-info-icon:focus {
+    color: white;
+    outline: none;
+}
+
+/* Upload Popover Sizing */
+.popover.upload-popover {
+    max-width: 450px;
+}
+
+.popover.upload-popover .popover-body {
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.popover.upload-popover .popover-body ul {
+    padding-left: 18px;
+    margin-bottom: 6px;
+}
+
+.popover.upload-popover .popover-body code {
+    background-color: #e9ecef;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: 0.82rem;
+}
+
+/* Progress Sections */
+.upload-progress-section {
+    display: none;
+    margin-top: 15px;
+}
+
+.upload-progress-section .progress {
+    height: 25px;
+    border-radius: 4px;
+}
+
+.upload-progress-section .progress-bar {
+    font-size: 0.85rem;
+    line-height: 25px;
+}
+
+.upload-progress-status {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Filter method text */
+.filter-method-text {
+    font-size: 0.9rem;
+}
+
+
+
