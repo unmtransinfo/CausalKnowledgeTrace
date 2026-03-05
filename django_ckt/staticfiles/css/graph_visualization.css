@@ -325,3 +325,124 @@
     background-color: var(--bg-info-light);
 }
 
+
+
+/* ── Evidence Table ── */
+.evidence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.evidence-title {
+    margin: 0;
+    color: #00838f;
+    font-size: 0.92rem;
+}
+
+.evidence-search label {
+    font-size: 0.82rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.evidence-search input {
+    padding: 3px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    width: 140px;
+}
+
+.evidence-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 8px;
+}
+
+.evidence-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.evidence-table th {
+    background-color: #00acc1;
+    color: #fff;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid #0097a7;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.evidence-table td {
+    padding: 6px 10px;
+    border: 1px solid #e0e0e0;
+    vertical-align: top;
+}
+
+.evidence-table tbody tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+.evidence-table tbody tr:hover {
+    background-color: #e0f7fa;
+}
+
+.evidence-table td.sentence-cell {
+    max-width: 320px;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.evidence-table a {
+    color: #0277bd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.evidence-table a:hover {
+    text-decoration: underline;
+}
+
+/* Evidence pagination */
+.evidence-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.8rem;
+}
+
+.evidence-page-info {
+    color: #666;
+}
+
+.evidence-page-buttons {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.evidence-page-buttons .btn {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    min-width: 30px;
+}
+
+/* Node info summary above evidence table */
+.node-info-summary {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e0e0e0;
+}
