@@ -4,7 +4,7 @@
 # Input:
 #   - data/{Exposure}_{Outcome}/s1_graph/parsed_graph.rds
 #   - data/{Exposure}_{Outcome}/s2_semantic/node_centrality_and_cycles.csv
-#   - input/{Exposure}_{Outcome}*.json
+#   - graph_creation/result/{Exposure}_to_{Outcome}_degreeN_causal_assertions.json
 # Output: data/{Exposure}_{Outcome}/s2_semantic/
 #   - nodes_with_semantic_types.csv
 #   - semantic_type_cycle_stats.csv
@@ -42,8 +42,10 @@ outcome_name <- args$outcome
 json_file <- find_json_file(exposure_name, outcome_name)
 
 if (is.null(json_file)) {
-  stop("Could not find JSON assertions file for ", exposure_name, "_", outcome_name,
-       " in ", get_input_dir())
+  stop(
+    "Could not find JSON assertions file for ", exposure_name, "_", outcome_name,
+    " in ", get_graph_creation_result_dir(), " or ", get_input_dir()
+  )
 }
 
 # ---- Set paths using utility functions ----
