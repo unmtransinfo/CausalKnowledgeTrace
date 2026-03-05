@@ -3,22 +3,6 @@
     "nodes": [
       {
         "data": {
-          "id": "n0",
-          "label": "Hypertension",
-          "type": "exposure",
-          "color": "#e74c3c"
-        }
-      },
-      {
-        "data": {
-          "id": "n1",
-          "label": "Diabetes Type2",
-          "type": "exposure",
-          "color": "#e74c3c"
-        }
-      },
-      {
-        "data": {
           "id": "n2",
           "label": "Obesity",
           "type": "confounder",
@@ -49,30 +33,7 @@
           "color": "#f39c12"
         }
       },
-      {
-        "data": {
-          "id": "n6",
-          "label": "Coronary Artery Disease",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n7",
-          "label": "Stroke",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n8",
-          "label": "Heart Failure",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
+      
       {
         "data": {
           "id": "n9",
@@ -81,22 +42,7 @@
           "color": "#f39c12"
         }
       },
-      {
-        "data": {
-          "id": "n10",
-          "label": "Chronic Kidney Disease",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n11",
-          "label": "Peripheral Artery Disease",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
+      
       {
         "data": {
           "id": "n12",
@@ -121,14 +67,7 @@
           "color": "#3498db"
         }
       },
-      {
-        "data": {
-          "id": "n15",
-          "label": "Alcohol Use",
-          "type": "exposure",
-          "color": "#e74c3c"
-        }
-      },
+  
       {
         "data": {
           "id": "n16",
@@ -177,14 +116,7 @@
           "color": "#3498db"
         }
       },
-      {
-        "data": {
-          "id": "n22",
-          "label": "Air Pollution",
-          "type": "exposure",
-          "color": "#e74c3c"
-        }
-      },
+     
       {
         "data": {
           "id": "n23",
@@ -305,54 +237,9 @@
           "color": "#f39c12"
         }
       },
-      {
-        "data": {
-          "id": "n38",
-          "label": "Retinopathy",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n39",
-          "label": "Neuropathy",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n40",
-          "label": "Dementia",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n41",
-          "label": "Alzheimers Disease",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n42",
-          "label": "Vascular Dementia",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n43",
-          "label": "Cognitive Decline",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
+    
+    
+     
       {
         "data": {
           "id": "n44",
@@ -481,62 +368,7 @@
           "color": "#f39c12"
         }
       },
-      {
-        "data": {
-          "id": "n60",
-          "label": "Myocardial Infarction",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n61",
-          "label": "Angina",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n62",
-          "label": "Pulmonary Embolism",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n63",
-          "label": "Deep Vein Thrombosis",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n64",
-          "label": "Aortic Aneurysm",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n65",
-          "label": "Cardiac Arrest",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
-      {
-        "data": {
-          "id": "n66",
-          "label": "Kidney Failure",
-          "type": "outcome",
-          "color": "#2ecc71"
-        }
-      },
+   
       {
         "data": {
           "id": "n67",

@@ -57,11 +57,6 @@
     <div class="separator"></div>
     <select class="form-select form-select-sm" id="layoutSelect" style="width:auto;font-size:0.82rem;">
         <option value="physics">Layout: Physics</option>
-        <option value="cose">Layout: CoSE</option>
-        <option value="circle">Layout: Circle</option>
-        <option value="grid">Layout: Grid</option>
-        <option value="breadthfirst">Layout: Breadthfirst</option>
-        <option value="concentric">Layout: Concentric</option>
     </select>
     <button class="btn btn-sm btn-outline-secondary" id="btnRelayout" title="Re-run layout">
         <i class="fas fa-sync-alt"></i> Re-layout
@@ -71,9 +66,9 @@
         <label for="physicsStrength" style="font-size:0.8rem;white-space:nowrap;margin:0;">
             <i class="fas fa-atom"></i> Physics Strength:
         </label>
-        <input type="range" id="physicsStrength" min="1000" max="20000" step="500" value="8000"
-               style="width:110px;cursor:pointer;" title="Higher = more spread between nodes">
-        <span id="physicsStrengthVal" style="font-size:0.8rem;min-width:52px;">8,000</span>
+        <input type="range" id="physicsStrength" min="-500" max="0" step="10" value="-150"
+               style="width:110px;cursor:pointer;" title="Gravitational constant (more negative = stronger repulsion)">
+        <span id="physicsStrengthVal" style="font-size:0.8rem;min-width:52px;">-150</span>
     </div>
     <div class="separator"></div>
     <button class="btn btn-sm btn-outline-info" id="btnToggleLayout" title="Toggle side-by-side / stacked layout">
@@ -126,6 +121,6 @@
     const undoUrl = '{% url "visualization:undo" %}';
     const csrfToken = '{{ csrf_token }}';
 </script>
-<script src="{% static 'js/graph_visualization.js' %}?v=5"></script>
+<script src="{% static 'js/graph_visualization.js' %}?v=6"></script>
 {% endblock %}
 
