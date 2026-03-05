@@ -15,15 +15,15 @@
     <!-- vis-network CSS -->
     <link href="https://unpkg.com/vis-network@9.1.6/dist/dist/vis-network.min.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link href="{% static 'css/main.css' %}" rel="stylesheet">
+    <!-- Custom CSS (cache-bust with version param) -->
+    <link href="{% static 'css/main.css' %}?v=20260305" rel="stylesheet">
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation Bar -->
     {% include 'navbar.html' %}
-    
+
     <!-- Top Notification Banner -->
     <div id="ckt-top-notification"></div>
 
@@ -100,6 +100,7 @@
         html += '</div>';
 
         el.innerHTML = html;
+
         // Force reflow then show
         el.classList.remove('show');
         void el.offsetWidth;

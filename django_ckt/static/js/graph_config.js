@@ -272,7 +272,7 @@ function setupFormSubmission() {
  */
 function handleFormSuccess(response) {
     if (response.success) {
-        $('#graph_progress_text').text('Configuration saved!');
+        $('#graph_progress_text').text('Graph created!');
         $('#graph_progress_bar').css('width', '100%').removeClass('progress-bar-animated');
         $('#graph_progress_status').html('<strong style="color: #28a745;">✓ ' + response.message + '</strong>');
 
@@ -281,13 +281,21 @@ function handleFormSuccess(response) {
             $('#graph_progress_section').hide();
             $('#create_graph_btn').prop('disabled', false);
 
+            // Build a descriptive body for the notification
+            var notifBody = response.message || 'Your knowledge graph has been created and is ready to use.';
+            if (response.graph_name) {
+                notifBody = 'Graph "' + response.graph_name + '" created'
+                    + (response.degree ? ' (degree ' + response.degree + ')' : '')
+                    + ' — Go to Data Upload to load and visualize your graph.';
+            }
+
             // Show top notification banner
             if (typeof showTopNotification === 'function') {
                 showTopNotification({
-                    title: 'Graph Configuration Saved Successfully!',
-                    body: 'Your settings have been saved. Proceed to Data Upload to load and visualize your graph.',
+                    title: 'Graph Created Successfully!',
+                    body: notifBody,
                     type: 'success',
-                    duration: 8000,
+                    duration: 0,
                     action: { text: 'Go to Data Upload', url: '/upload/' }
                 });
             }
@@ -296,8 +304,8 @@ function handleFormSuccess(response) {
             $('#validation_feedback_area').html(
                 '<div class="alert alert-success mb-0">' +
                 '<i class="fas fa-check-circle"></i> ' +
-                '<strong>Configuration Saved!</strong><br>' +
-                'Your settings have been saved to user_input.yaml. You can now proceed with graph generation.' +
+                '<strong>Graph Created!</strong><br>' +
+                response.message +
                 '</div>'
             );
 
