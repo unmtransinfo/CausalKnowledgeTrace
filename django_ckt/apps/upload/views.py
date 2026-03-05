@@ -38,6 +38,52 @@ def _find_graph_file(filename):
     return None
 
 
+def _validate_graph_for_visualization(nodes, edges):
+    """
+    Validate that graph data can be rendered by the Graph Visualization panel.
+
+    The vis-network renderer expects:
+      - nodes: non-empty list where each item has data.id
+      - edges: list where each item has data.source and data.target
+      - all edge source/target values reference existing node IDs
+
+    Returns (is_valid, error_message).
+    """
+    if not isinstance(nodes, list) or not isinstance(edges, list):
+        return False, 'Graph data is malformed: "nodes" and "edges" must be arrays'
+
+    if len(nodes) == 0:
+        return False, 'Graph contains no nodes and cannot be visualized'
+
+    # Validate node structure
+    node_ids = set()
+    for i, node in enumerate(nodes):
+        if not isinstance(node, dict) or 'data' not in node:
+            return False, f'Node at index {i} is missing the required "data" object'
+        node_data = node['data']
+        if not isinstance(node_data, dict) or 'id' not in node_data:
+            return False, f'Node at index {i} is missing a "data.id" field required for rendering'
+        node_ids.add(node_data['id'])
+
+    # Validate edge structure
+    for i, edge in enumerate(edges):
+        if not isinstance(edge, dict) or 'data' not in edge:
+            return False, f'Edge at index {i} is missing the required "data" object'
+        edge_data = edge['data']
+        if not isinstance(edge_data, dict):
+            return False, f'Edge at index {i} has an invalid "data" field'
+        if 'source' not in edge_data or 'target' not in edge_data:
+            return False, f'Edge at index {i} is missing "data.source" or "data.target" fields required for rendering'
+        if edge_data['source'] not in node_ids:
+            return False, (f'Edge at index {i} references source "{edge_data["source"]}" '
+                           f'which does not match any node ID')
+        if edge_data['target'] not in node_ids:
+            return False, (f'Edge at index {i} references target "{edge_data["target"]}" '
+                           f'which does not match any node ID')
+
+    return True, None
+
+
 def _load_json_graph(file_path, filter_type='none'):
     """
     Load a JSON graph file and return nodes/edges in Cytoscape.js format.
@@ -169,6 +215,14 @@ def load_graph_file(request):
 
         nodes, edges, metadata = _load_json_graph(file_path, filter_type)
 
+        # Validate that the graph data can be rendered in Graph Visualization
+        is_valid, validation_error = _validate_graph_for_visualization(nodes, edges)
+        if not is_valid:
+            return JsonResponse({
+                'success': False,
+                'error': f'Graph file "{filename}" cannot be visualized: {validation_error}'
+            }, status=400)
+
         # Remove the legacy large 'graph_data' key if it exists (it bloats the session)
         request.session.pop('graph_data', None)
         # Store only lightweight reference in session (full data is loaded from disk on demand)
@@ -183,7 +237,7 @@ def load_graph_file(request):
 
         return JsonResponse({
             'success': True,
-            'message': f'Graph {filename} loaded successfully '
+            'message': f'Graph {filename} loaded and verified for visualization '
                        f'({len(nodes)} nodes, {len(edges)} edges)',
             'nodes': nodes,
             'edges': edges,
@@ -245,6 +299,17 @@ def upload_graph_file(request):
                 'error': 'JSON must contain "elements" with "nodes" and "edges" arrays'
             }, status=400)
 
+        nodes = elements.get('nodes', [])
+        edges = elements.get('edges', [])
+
+        # Validate that the graph data can be rendered in Graph Visualization
+        is_valid, validation_error = _validate_graph_for_visualization(nodes, edges)
+        if not is_valid:
+            return JsonResponse({
+                'success': False,
+                'error': f'Uploaded file cannot be visualized: {validation_error}'
+            }, status=400)
+
         # Save to graph_creation/result directory
         result_dir = os.path.join(
             settings.BASE_DIR.parent, 'graph_creation', 'result'
@@ -258,8 +323,6 @@ def upload_graph_file(request):
 
         # Also load into session
         filter_type = request.POST.get('filter_type', 'none')
-        nodes = elements.get('nodes', [])
-        edges = elements.get('edges', [])
         metadata = graph_data.get('metadata', {})
 
         request.session.pop('graph_data', None)
@@ -273,7 +336,7 @@ def upload_graph_file(request):
 
         return JsonResponse({
             'success': True,
-            'message': f'File {uploaded_file.name} uploaded successfully '
+            'message': f'Graph {uploaded_file.name} uploaded and verified for visualization '
                        f'({len(nodes)} nodes, {len(edges)} edges)',
             'file_path': dest_path,
             'nodes': nodes,
