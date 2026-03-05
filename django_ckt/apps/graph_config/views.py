@@ -10,7 +10,12 @@ from apps.core.models import SubjectSearch, ObjectSearch
 import json
 import yaml
 import os
+import subprocess
+import logging
+import threading
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 
 class _IndentedListDumper(yaml.Dumper):
@@ -188,21 +193,65 @@ def generate_graph(request):
             yaml.dump(config, f, Dumper=_IndentedListDumper,
                       default_flow_style=False, sort_keys=False)
 
-        # TODO: Implement graph generation using Python graph_creation modules
-        # This will call the existing Python code in graph_creation/
-
         # Build a descriptive graph name for the notification
         graph_name = f"{exposure_name}_to_{outcome_name}_degree{degree}"
 
+        # Read database credentials from environment variables
+        db_host = os.environ.get('DB_HOST', 'localhost')
+        db_port = os.environ.get('DB_PORT', '5433')
+        db_user = os.environ.get('DB_USER', 'rajesh')
+        db_password = os.environ.get('DB_PASSWORD', 'Software292')
+        db_name = os.environ.get('DB_NAME', 'causalehr')
+
+        # Build the graph creation command
+        project_root = str(settings.BASE_DIR.parent)
+        cmd = [
+            'python', 'graph_creation/pushkin.py',
+            '--yaml-config', 'user_input.yaml',
+            '--dbname', db_name,
+            '--user', db_user,
+            '--password', db_password,
+            '--host', db_host,
+            '--port', db_port,
+            '--verbose',
+        ]
+
+        # Run the command asynchronously in a background thread
+        def _run_graph_creation():
+            try:
+                result = subprocess.run(
+                    cmd,
+                    cwd=project_root,
+                    capture_output=True,
+                    text=True,
+                    timeout=3600,  # 1 hour timeout
+                )
+                if result.returncode != 0:
+                    logger.error(
+                        "Graph creation failed for '%s'.\nstderr: %s\nstdout: %s",
+                        graph_name, result.stderr, result.stdout,
+                    )
+                else:
+                    logger.info(
+                        "Graph creation completed for '%s'.\nstdout: %s",
+                        graph_name, result.stdout,
+                    )
+            except subprocess.TimeoutExpired:
+                logger.error("Graph creation timed out for '%s'.", graph_name)
+            except Exception as exc:
+                logger.exception("Unexpected error during graph creation for '%s': %s", graph_name, exc)
+
+        thread = threading.Thread(target=_run_graph_creation, daemon=True)
+        thread.start()
+
         return JsonResponse({
             'success': True,
-            'message': f'Graph "{graph_name}" created successfully.',
+            'message': f'Graph generation for "{graph_name}" has been started. This may take several minutes.',
             'graph_name': graph_name,
             'exposure_name': exposure_name,
             'outcome_name': outcome_name,
             'degree': degree,
-            'config_path': yaml_path,
-            'task_id': 'placeholder'  # TODO: Implement async task tracking
+            'config_path': str(yaml_path),
         })
     except Exception as e:
         return JsonResponse({
