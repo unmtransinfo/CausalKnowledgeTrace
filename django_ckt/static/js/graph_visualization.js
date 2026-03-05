@@ -591,6 +591,116 @@
         return '<div class="info-row"><span class="info-label">' + label + '</span><span class="info-value">' + value + '</span></div>';
     }
 
+    // ── Download helpers ──
+    function triggerDownload(content, filename, mimeType) {
+        var blob = new Blob([content], { type: mimeType });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function downloadJsonGraph() {
+        if (!nodesDataSet || !edgesDataSet) return;
+        var nodes = [];
+        nodesDataSet.forEach(function(n) {
+            var raw = n._rawData || {};
+            nodes.push({ data: Object.assign({ id: n.id, label: n.label || n.id }, raw) });
+        });
+        var edges = [];
+        edgesDataSet.forEach(function(e) {
+            var raw = e._rawData || {};
+            edges.push({ data: Object.assign({ id: e.id, source: e.from, target: e.to }, raw) });
+        });
+        var graphJson = {
+            elements: { nodes: nodes, edges: edges },
+            metadata: { exported_at: new Date().toISOString(), node_count: nodes.length, edge_count: edges.length }
+        };
+        triggerDownload(JSON.stringify(graphJson, null, 2), 'graph_export.json', 'application/json');
+    }
+
+    function downloadHtmlEvidence() {
+        if (!edgesDataSet || !nodesDataSet) return;
+        var sections = '';
+        edgesDataSet.forEach(function(e) {
+            var raw = e._rawData || {};
+            var srcNode = nodesDataSet.get(e.from);
+            var tgtNode = nodesDataSet.get(e.to);
+            var fromLabel = srcNode ? (srcNode.label || srcNode.id) : e.from;
+            var toLabel = tgtNode ? (tgtNode.label || tgtNode.id) : e.to;
+            var predicate = raw.predicate || raw.relationship || raw.label || '\u2014';
+            var subjectCui = raw.subject_cui || '';
+            var objectCui = raw.object_cui || '';
+            var pmidData = raw.pmid_data || {};
+            var pmids = Object.keys(pmidData);
+
+            var pmidLines = '';
+            if (pmids.length === 0) {
+                pmidLines = "<div class='pmid-sentence-line'><span class='sentence-part'>No evidence available.</span></div>";
+            } else {
+                pmids.forEach(function(pmid) {
+                    var sentences = pmidData[pmid] || [];
+                    var sentenceText = sentences.length > 0 ? sentences.join(' ') : 'No extracted sentence.';
+                    pmidLines += "<div class='pmid-sentence-line'>"
+                        + "<span class='pmid-part'><a href='https://pubmed.ncbi.nlm.nih.gov/" + escapeHtml(pmid)
+                        + "' target='_blank' class='pmid-link'>" + escapeHtml(pmid) + "</a>:</span> "
+                        + "<span class='sentence-part'>" + escapeHtml(sentenceText) + "</span></div>";
+                });
+            }
+
+            sections += "<div class='streamlined-assertion'>"
+                + "<div class='streamlined-header sticky-relation-header'>"
+                + "<span class='label-text'>Subject:</span> <strong>" + escapeHtml(fromLabel) + "</strong>"
+                + (subjectCui ? " <span class='label-text'>Subject CUI:</span> <strong>" + escapeHtml(subjectCui) + "</strong>" : '')
+                + " \u2192 <span class='label-text predicate-text'>" + escapeHtml(predicate.toUpperCase()) + "</span> \u2192 "
+                + "<span class='label-text'>Object:</span> <strong>" + escapeHtml(toLabel) + "</strong>"
+                + (objectCui ? " <span class='label-text'>Object CUI:</span> <strong>" + escapeHtml(objectCui) + "</strong>" : '')
+                + "</div>" + pmidLines + "</div>\n";
+        });
+
+        var html = "<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'>"
+            + "<meta name='viewport' content='width=device-width, initial-scale=1.0'>"
+            + "<title>Causal Knowledge Trace - Evidence Report</title>\n<style>\n"
+            + "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;"
+            + "line-height:1.6;color:#333;max-width:1200px;margin:0 auto;padding:20px;background-color:#f5f5f5;}\n"
+            + ".header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:30px;"
+            + "border-radius:10px;margin-bottom:30px;box-shadow:0 4px 6px rgba(0,0,0,0.1);}\n"
+            + ".header h1{margin:0 0 10px 0;font-size:2em;}\n"
+            + ".header p{margin:5px 0;opacity:0.9;}\n"
+            + ".section{background:white;padding:25px;margin-bottom:20px;border-radius:8px;"
+            + "box-shadow:0 2px 4px rgba(0,0,0,0.1);}\n"
+            + ".section h2{color:#667eea;border-bottom:2px solid #667eea;padding-bottom:10px;margin-top:0;}\n"
+            + ".streamlined-header{background-color:#f8f9fa;padding:12px;margin-bottom:15px;"
+            + "border-radius:5px;border:1px solid #dee2e6;}\n"
+            + ".sticky-relation-header{position:sticky;top:0;background-color:#e3f2fd;border:2px solid #1976d2;"
+            + "border-radius:5px;padding:12px;margin-bottom:15px;z-index:100;box-shadow:0 2px 4px rgba(0,0,0,0.1);}\n"
+            + ".label-text{color:#6c757d;font-weight:normal;font-size:0.9em;}\n"
+            + ".predicate-text{color:#495057;font-weight:bold;font-size:1.0em;background-color:#f8f9fa;"
+            + "padding:2px 6px;border-radius:3px;border:1px solid #dee2e6;}\n"
+            + ".pmid-sentence-line{margin:8px 0;padding:10px;background-color:white;border-radius:3px;"
+            + "border-left:3px solid #28a745;line-height:1.5;word-wrap:break-word;overflow-wrap:break-word;}\n"
+            + ".pmid-part{font-weight:bold;}\n"
+            + ".sentence-part{color:#495057;}\n"
+            + ".pmid-link{color:#007bff;text-decoration:none;padding:2px 4px;margin:1px;border-radius:3px;"
+            + "background-color:#f8f9fa;border:1px solid #dee2e6;display:inline-block;}\n"
+            + ".pmid-link:hover{text-decoration:none;background-color:#007bff;color:white;}\n"
+            + ".footer{text-align:center;padding:20px;color:#666;font-size:0.9em;margin-top:30px;}\n"
+            + "</style>\n</head><body><div class='container'>"
+            + "<div class='header'><h1>Causal Knowledge Trace - Evidence Report</h1>"
+            + "<p>Generated: " + new Date().toLocaleString() + "</p></div>\n"
+            + "<div class='section'><h2>\uD83D\uDD17 Causal Assertions</h2>\n"
+            + sections
+            + "</div>\n"
+            + "<div class='footer'>Generated by CausalKnowledgeTrace</div>"
+            + "</div></body></html>";
+
+        triggerDownload(html, 'evidence_report.html', 'text/html');
+    }
+
     // ── Stats ──
     function updateStats(elements) {
         var nodeCount = (elements.nodes || []).length;
@@ -953,6 +1063,10 @@
             }
             if (network) network.fit();
         });
+
+        // Download buttons
+        document.getElementById('btnDownloadJson').addEventListener('click', downloadJsonGraph);
+        document.getElementById('btnDownloadEvidence').addEventListener('click', downloadHtmlEvidence);
 
         // Initialize resizable drag handles
         initResizableHandles();
