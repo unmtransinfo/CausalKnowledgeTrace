@@ -13,9 +13,15 @@ import os
 import subprocess
 import logging
 import threading
+import uuid
 from datetime import datetime
 
 logger = logging.getLogger(__name__)
+
+# In-memory store for graph generation task statuses
+# Maps task_id -> { 'status': 'running'|'completed'|'failed', 'message': str, 'graph_name': str, ... }
+_graph_tasks = {}
+_graph_tasks_lock = threading.Lock()
 
 
 class _IndentedListDumper(yaml.Dumper):
@@ -216,6 +222,18 @@ def generate_graph(request):
             '--verbose',
         ]
 
+        # Create a unique task ID for tracking this graph creation
+        task_id = str(uuid.uuid4())
+        with _graph_tasks_lock:
+            _graph_tasks[task_id] = {
+                'status': 'running',
+                'graph_name': graph_name,
+                'exposure_name': exposure_name,
+                'outcome_name': outcome_name,
+                'degree': degree,
+                'message': f'Graph generation for "{graph_name}" is in progress...',
+            }
+
         # Run the command asynchronously in a background thread
         def _run_graph_creation():
             try:
@@ -226,26 +244,48 @@ def generate_graph(request):
                     text=True,
                     timeout=3600,  # 1 hour timeout
                 )
-                if result.returncode != 0:
-                    logger.error(
-                        "Graph creation failed for '%s'.\nstderr: %s\nstdout: %s",
-                        graph_name, result.stderr, result.stdout,
-                    )
-                else:
-                    logger.info(
-                        "Graph creation completed for '%s'.\nstdout: %s",
-                        graph_name, result.stdout,
-                    )
+                with _graph_tasks_lock:
+                    if result.returncode != 0:
+                        logger.error(
+                            "Graph creation failed for '%s'.\nstderr: %s\nstdout: %s",
+                            graph_name, result.stderr, result.stdout,
+                        )
+                        _graph_tasks[task_id]['status'] = 'failed'
+                        _graph_tasks[task_id]['message'] = (
+                            f'Graph creation failed for "{graph_name}". '
+                            f'Error: {result.stderr[:500] if result.stderr else "Unknown error"}'
+                        )
+                    else:
+                        logger.info(
+                            "Graph creation completed for '%s'.\nstdout: %s",
+                            graph_name, result.stdout,
+                        )
+                        _graph_tasks[task_id]['status'] = 'completed'
+                        _graph_tasks[task_id]['message'] = (
+                            f'Graph "{graph_name}" created successfully!'
+                        )
             except subprocess.TimeoutExpired:
                 logger.error("Graph creation timed out for '%s'.", graph_name)
+                with _graph_tasks_lock:
+                    _graph_tasks[task_id]['status'] = 'failed'
+                    _graph_tasks[task_id]['message'] = (
+                        f'Graph creation timed out for "{graph_name}".'
+                    )
             except Exception as exc:
                 logger.exception("Unexpected error during graph creation for '%s': %s", graph_name, exc)
+                with _graph_tasks_lock:
+                    _graph_tasks[task_id]['status'] = 'failed'
+                    _graph_tasks[task_id]['message'] = (
+                        f'Unexpected error during graph creation: {exc}'
+                    )
 
         thread = threading.Thread(target=_run_graph_creation, daemon=True)
         thread.start()
 
         return JsonResponse({
             'success': True,
+            'status': 'running',
+            'task_id': task_id,
             'message': f'Graph generation for "{graph_name}" has been started. This may take several minutes.',
             'graph_name': graph_name,
             'exposure_name': exposure_name,
@@ -266,12 +306,23 @@ def check_generation_status(request, task_id):
     API endpoint to check graph generation status.
     """
     try:
-        # TODO: Implement task status checking
-        
+        with _graph_tasks_lock:
+            task = _graph_tasks.get(task_id)
+
+        if task is None:
+            return JsonResponse({
+                'success': False,
+                'error': f'Unknown task ID: {task_id}'
+            }, status=404)
+
         return JsonResponse({
             'success': True,
-            'status': 'pending',  # 'pending', 'running', 'completed', 'failed'
-            'progress': 0
+            'status': task['status'],
+            'message': task.get('message', ''),
+            'graph_name': task.get('graph_name', ''),
+            'exposure_name': task.get('exposure_name', ''),
+            'outcome_name': task.get('outcome_name', ''),
+            'degree': task.get('degree', 0),
         })
     except Exception as e:
         return JsonResponse({
