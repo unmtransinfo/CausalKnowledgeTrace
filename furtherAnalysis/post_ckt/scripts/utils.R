@@ -115,12 +115,27 @@ get_project_root <- function() {
 # BASE PATH GETTERS
 # ============================================
 
+#' Get the repository root directory
+#' @param root Post-CKT project root (default: auto-detect)
+#' @return Path to repository root
+get_repo_root <- function(root = NULL) {
+  if (is.null(root)) root <- get_project_root()
+  dirname(dirname(root))
+}
+
 #' Get the input directory path (for original CKT files)
 #' @param root Project root (default: auto-detect)
 #' @return Path to input directory
 get_input_dir <- function(root = NULL) {
   if (is.null(root)) root <- get_project_root()
   file.path(root, "input")
+}
+
+#' Get the graph_creation/result directory path
+#' @param root Project root (default: auto-detect)
+#' @return Path to graph_creation/result
+get_graph_creation_result_dir <- function(root = NULL) {
+  file.path(get_repo_root(root), "graph_creation", "result")
 }
 
 #' Get the data directory path
@@ -349,6 +364,88 @@ get_plots_output_dir <- function(exposure, outcome, root = NULL) {
 # INPUT FILE HELPERS
 # ============================================
 
+#' Extract graph degree from a filename when present
+#' @param path File path
+#' @return Integer degree or NA
+extract_degree_from_path <- function(path) {
+  filename <- basename(path)
+
+  if (grepl("_degree[0-9]+(_causal_assertions)?\\.json$", filename)) {
+    return(as.integer(sub(
+      ".*_degree([0-9]+)(?:_causal_assertions)?\\.json$",
+      "\\1",
+      filename,
+      perl = TRUE
+    )))
+  }
+
+  if (grepl("_degree_[0-9]+\\.(R|json)$", filename)) {
+    return(as.integer(sub(
+      ".*_degree_([0-9]+)\\.(R|json)$",
+      "\\1",
+      filename,
+      perl = TRUE
+    )))
+  }
+
+  NA_integer_
+}
+
+#' Select the preferred file from a candidate list
+#' @param files Candidate file paths
+#' @param preferred_degree Preferred graph degree (default: 2)
+#' @return Best-matching file path or NULL
+select_preferred_file <- function(files, preferred_degree = 2) {
+  files <- unique(files[file.exists(files)])
+  if (length(files) == 0) {
+    return(NULL)
+  }
+
+  degrees <- vapply(files, extract_degree_from_path, integer(1))
+  exact_match <- files[!is.na(degrees) & degrees == preferred_degree]
+  if (length(exact_match) > 0) {
+    return(exact_match[1])
+  }
+
+  sortable_degrees <- ifelse(is.na(degrees), -1L, degrees)
+  files <- files[order(-sortable_degrees, basename(files))]
+
+  if (length(files) > 1) {
+    cat("Warning: Multiple matching files found, using:", basename(files[1]), "\n")
+  }
+
+  files[1]
+}
+
+#' Find the graph JSON file for a specific exposure/outcome
+#' @param exposure Exposure name
+#' @param outcome Outcome name
+#' @param degree Graph degree (default: 2)
+#' @param root Project root (default: auto-detect)
+#' @return Full path to graph JSON file, or NULL if not found
+find_graph_json_file <- function(exposure, outcome, degree = 2, root = NULL) {
+  search_dirs <- unique(c(get_graph_creation_result_dir(root), get_input_dir(root)))
+
+  exact_candidates <- unlist(lapply(search_dirs, function(dir_path) {
+    file.path(dir_path, sprintf(FILE_CONFIG$graph_json_pattern, exposure, outcome, degree))
+  }))
+  exact_match <- select_preferred_file(exact_candidates, degree)
+  if (!is.null(exact_match)) {
+    return(exact_match)
+  }
+
+  matching <- character(0)
+  for (dir_path in search_dirs) {
+    if (!dir.exists(dir_path)) next
+    pattern <- glob2rx(sprintf("%s_to_%s_degree*.json", exposure, outcome))
+    files <- list.files(dir_path, pattern = pattern, full.names = TRUE)
+    files <- files[!grepl("_causal_assertions\\.json$", basename(files))]
+    matching <- c(matching, files)
+  }
+
+  select_preferred_file(matching, degree)
+}
+
 #' Find the DAGitty R file for a specific exposure/outcome
 #' @param exposure Exposure name
 #' @param outcome Outcome name
@@ -359,13 +456,13 @@ find_dagitty_file <- function(exposure, outcome, degree = 2, root = NULL) {
   input_dir <- get_input_dir(root)
 
   # Try exact match first
-  exact_file <- file.path(input_dir, sprintf("%s_%s_degree_%d.R", exposure, outcome, degree))
+  exact_file <- file.path(input_dir, sprintf(FILE_CONFIG$legacy_dagitty_pattern, exposure, outcome, degree))
   if (file.exists(exact_file)) {
     return(exact_file)
   }
 
   # Try pattern match
-  pattern <- sprintf("%s_%s_degree_%d.R", exposure, outcome, degree)
+  pattern <- sprintf(FILE_CONFIG$legacy_dagitty_pattern, exposure, outcome, degree)
   matching <- list.files(input_dir, pattern = glob2rx(pattern), full.names = TRUE)
 
   if (length(matching) > 0) {
@@ -389,23 +486,40 @@ find_dagitty_file <- function(exposure, outcome, degree = 2, root = NULL) {
 #' Find the JSON assertions file for a specific exposure/outcome
 #' @param exposure Exposure name
 #' @param outcome Outcome name
+#' @param degree Graph degree (default: 2)
 #' @param root Project root (default: auto-detect)
 #' @return Full path to JSON file, or NULL if not found
-find_json_file <- function(exposure, outcome, root = NULL) {
-  input_dir <- get_input_dir(root)
+find_json_file <- function(exposure, outcome, degree = 2, root = NULL) {
+  search_dirs <- unique(c(get_graph_creation_result_dir(root), get_input_dir(root)))
 
-  # Try pattern match
-  pattern <- sprintf("%s_%s*.json", exposure, outcome)
-  matching <- list.files(input_dir, pattern = glob2rx(pattern), full.names = TRUE)
-
-  if (length(matching) > 0) {
-    if (length(matching) > 1) {
-      cat("Warning: Multiple JSON files found, using:", basename(matching[1]), "\n")
-    }
-    return(matching[1])
+  exact_candidates <- c(
+    unlist(lapply(search_dirs, function(dir_path) {
+      file.path(dir_path, sprintf(FILE_CONFIG$assertions_json_pattern, exposure, outcome, degree))
+    })),
+    unlist(lapply(search_dirs, function(dir_path) {
+      file.path(dir_path, sprintf(FILE_CONFIG$legacy_assertions_pattern, exposure, outcome, degree))
+    }))
+  )
+  exact_match <- select_preferred_file(exact_candidates, degree)
+  if (!is.null(exact_match)) {
+    return(exact_match)
   }
 
-  return(NULL)
+  matching <- character(0)
+  for (dir_path in search_dirs) {
+    if (!dir.exists(dir_path)) next
+
+    new_pattern <- glob2rx(sprintf("%s_to_%s_degree*_causal_assertions.json", exposure, outcome))
+    legacy_pattern <- glob2rx(sprintf("%s_%s*_causal_assertions*.json", exposure, outcome))
+
+    matching <- c(
+      matching,
+      list.files(dir_path, pattern = new_pattern, full.names = TRUE),
+      list.files(dir_path, pattern = legacy_pattern, full.names = TRUE)
+    )
+  }
+
+  select_preferred_file(matching, degree)
 }
 
 # ============================================
@@ -567,7 +681,9 @@ validate_inputs <- function(exposure, outcome,
     if (is.null(json_file)) {
       stop(paste0(
         "Could not find JSON file for ", exposure, "_", outcome, "\n",
-        "Expected location: ", get_input_dir(root), "/", exposure, "_", outcome, "*.json\n",
+        "Expected locations:\n",
+        "  - ", get_graph_creation_result_dir(root), "/", exposure, "_to_", outcome, "_degree*_causal_assertions.json\n",
+        "  - ", get_input_dir(root), "/", exposure, "_", outcome, "*_causal_assertions*.json\n",
         "Please run generate_graph.sh first.\n"
       ))
     }

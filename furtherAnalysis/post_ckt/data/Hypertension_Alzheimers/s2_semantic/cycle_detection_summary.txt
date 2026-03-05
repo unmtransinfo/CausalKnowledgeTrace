@@ -1,20 +1,20 @@
 === CYCLE DETECTION SUMMARY ===
 
-Graph: 960 nodes, 1865 edges
+Graph: 849 nodes, 1596 edges
 
 Is DAG (no cycles): FALSE 
 
 Strongly Connected Components:
-  Total SCCs: 898 
+  Total SCCs: 788 
   SCCs with size > 1: 2 
-  Largest SCC size: 60 
+  Largest SCC size: 61 
 
 Nodes in Cycles:
-  Count: 64 
-  Percentage: 6.67 %
+  Count: 63 
+  Percentage: 7.42 %
 
 Centrality Statistics:
-  Nodes in cycles - Mean degree: 22.33 
-  Nodes NOT in cycles - Mean degree: 2.57 
-  Nodes in cycles - Mean betweenness: 2144.7 
-  Nodes NOT in cycles - Mean betweenness: 8.54 
+  Nodes in cycles - Mean degree: 20.43 
+  Nodes NOT in cycles - Mean degree: 2.42 
+  Nodes in cycles - Mean betweenness: 2152.84 
+  Nodes NOT in cycles - Mean betweenness: 12.46 

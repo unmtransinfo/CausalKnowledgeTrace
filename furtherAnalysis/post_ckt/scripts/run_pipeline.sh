@@ -8,7 +8,7 @@
 #   ./run_pipeline.sh Hypertension Alzheimers
 #
 # This script runs all analysis scripts in sequence:
-#   01_parse_dagitty.R
+#   01_parse_dagitty.R (loads graph_creation/result JSON graph by default)
 #   02_basic_analysis.R
 #   04a_cycle_detection.R
 #   03a_semantic_type_analysis.R (requires DB credentials)
@@ -97,13 +97,13 @@ echo ""
 
 START_TIME=$(date +%s)
 
-# Step 1: Parse DAGitty
-print_step "Step 1/7: Parsing DAGitty file"
+# Step 1: Parse graph JSON
+print_step "Step 1/7: Loading graph JSON"
 cd "$SCRIPT_DIR"
 if Rscript 01_parse_dagitty.R "$EXPOSURE" "$OUTCOME"; then
-    print_success "DAGitty parsing complete"
+    print_success "Graph parsing complete"
 else
-    print_error "DAGitty parsing failed"
+    print_error "Graph parsing failed"
     exit 1
 fi
 
@@ -179,8 +179,9 @@ echo "Outcome:  $OUTCOME"
 echo "Time:     ${ELAPSED} seconds"
 echo ""
 echo "Output directories:"
-echo "  - Parsed graphs:    ../output/parsed_graphs/${EXPOSURE}_${OUTCOME}/"
-echo "  - Analysis results: ../output/analysis_results/${EXPOSURE}_${OUTCOME}/"
-echo "  - Cycle subgraphs:  ../output/cycle_subgraph/${EXPOSURE}_${OUTCOME}/"
-echo "  - Plots:            ../output/plots/${EXPOSURE}_${OUTCOME}/"
+echo "  - Stage 1 graph:    ../data/${EXPOSURE}_${OUTCOME}/s1_graph/"
+echo "  - Stage 2 analysis: ../data/${EXPOSURE}_${OUTCOME}/s2_semantic/"
+echo "  - Stage 3 cycles:   ../data/${EXPOSURE}_${OUTCOME}/s3_cycles/"
+echo "  - Stage 4 pruning:  ../data/${EXPOSURE}_${OUTCOME}/s4_node_removal/"
+echo "  - Stage 5 post:     ../data/${EXPOSURE}_${OUTCOME}/s5_post_removal/"
 echo ""

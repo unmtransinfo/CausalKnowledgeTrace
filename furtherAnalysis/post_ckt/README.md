@@ -6,16 +6,14 @@ Analyze causal knowledge graphs, detect and remove cycles, and prepare clean DAG
 
 ## Step 1: Get Your Graph
 
-1. Go to the **CKT Application**: [https://habanero.health.unm.edu/CKT/](https://habanero.health.unm.edu/CKT/)
-2. Enter your exposure and outcome concepts
-3. Download the generated graph files:
-   - `degree_N.R` - DAGitty format graph
-   - `.html` - Required for Semantic Type analysis
-4. Rename and place in `input/` folder:
+1. Generate the graph with the Python pipeline.
+2. Use the files already written to `graph_creation/result/`:
+   - `<Exposure>_to_<Outcome>_degreeN.json` - graph JSON used by Stage 1
+   - `<Exposure>_to_<Outcome>_degreeN_causal_assertions.json` - assertions JSON used by semantic analysis
+3. Example:
    ```bash
-   example:
-   mv degree_2.R input/Hypertension_Alzheimers_degree_2.R
-   mv xyz.json input/Hypertension_Alzheimers_causal_assertions_2.json
+   ls ../../graph_creation/result/Hypertension_to_Alzheimers_degree2.json
+   ls ../../graph_creation/result/Hypertension_to_Alzheimers_degree2_causal_assertions.json
    ```
 
 ---
@@ -24,7 +22,7 @@ Analyze causal knowledge graphs, detect and remove cycles, and prepare clean DAG
 
 ```bash
 # Create required directories
-mkdir -p input data
+mkdir -p data
 
 # Set up database credentials (for semantic type analysis)
 cp .env.example .env
@@ -40,7 +38,8 @@ cp .env.example .env
 ```bash
 cd scripts
 
-# Stage 1: Parse graph
+# Stage 1: Load graph_creation/result JSON graph
+# (script name kept for compatibility)
 Rscript 01_parse_dagitty.R Hypertension Alzheimers
 
 # Stage 2: Basic analysis & cycle detection
@@ -119,7 +118,7 @@ for (conf in confounders) {
 
 | Stage | File | Description |
 |-------|------|-------------|
-| S1 | `s1_graph/parsed_graph.rds` | Original igraph object |
+| S1 | `s1_graph/parsed_graph.rds` | igraph built from `graph_creation/result/*.json` |
 | S2 | `s2_semantic/node_centrality_and_cycles.csv` | Node metrics + cycle info |
 | S3 | `s3_cycles/node_cycle_participation.csv` | Cycle counts per node |
 | S4 | `s4_node_removal/reduced_graph.rds` | **Pruned graph** |
