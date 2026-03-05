@@ -6,6 +6,7 @@ They are unmanaged (managed = False) to prevent Django from trying to create/mod
 """
 from django.db import models
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 
 
 class Sentence(models.Model):
@@ -24,7 +25,7 @@ class Sentence(models.Model):
 
     class Meta:
         managed = False
-        db_table = f"{settings.DB_CONFIG['SENTENCE_SCHEMA']}.{settings.DB_CONFIG['SENTENCE_TABLE']}"
+        db_table = f'"{settings.DB_CONFIG["SENTENCE_SCHEMA"]}"."{settings.DB_CONFIG["SENTENCE_TABLE"]}"'
         verbose_name = 'Sentence'
         verbose_name_plural = 'Sentences'
 
@@ -52,7 +53,7 @@ class Predication(models.Model):
 
     class Meta:
         managed = False
-        db_table = f"{settings.DB_CONFIG['PREDICATION_SCHEMA']}.{settings.DB_CONFIG['PREDICATION_TABLE']}"
+        db_table = f'"{settings.DB_CONFIG["PREDICATION_SCHEMA"]}"."{settings.DB_CONFIG["PREDICATION_TABLE"]}"'
         verbose_name = 'Predication'
         verbose_name_plural = 'Predications'
 
@@ -67,11 +68,12 @@ class SubjectSearch(models.Model):
     """
     cui = models.CharField(max_length=8, primary_key=True)
     name = models.CharField(max_length=255)
-    semtype = models.CharField(max_length=50, blank=True, null=True)
+    semtype = ArrayField(models.CharField(max_length=50), blank=True, null=True)
+    semtype_definition = ArrayField(models.TextField(), blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = f"{settings.DB_CONFIG['SUBJECT_SEARCH_SCHEMA']}.{settings.DB_CONFIG['SUBJECT_SEARCH_TABLE']}"
+        db_table = f'"{settings.DB_CONFIG["SUBJECT_SEARCH_SCHEMA"]}"."{settings.DB_CONFIG["SUBJECT_SEARCH_TABLE"]}"'
         verbose_name = 'Subject Search'
         verbose_name_plural = 'Subject Searches'
 
@@ -86,11 +88,12 @@ class ObjectSearch(models.Model):
     """
     cui = models.CharField(max_length=8, primary_key=True)
     name = models.CharField(max_length=255)
-    semtype = models.CharField(max_length=50, blank=True, null=True)
+    semtype = ArrayField(models.CharField(max_length=50), blank=True, null=True)
+    semtype_definition = ArrayField(models.TextField(), blank=True, null=True)
 
     class Meta:
         managed = False
-        db_table = f"{settings.DB_CONFIG['OBJECT_SEARCH_SCHEMA']}.{settings.DB_CONFIG['OBJECT_SEARCH_TABLE']}"
+        db_table = f'"{settings.DB_CONFIG["OBJECT_SEARCH_SCHEMA"]}"."{settings.DB_CONFIG["OBJECT_SEARCH_TABLE"]}"'
         verbose_name = 'Object Search'
         verbose_name_plural = 'Object Searches'
 

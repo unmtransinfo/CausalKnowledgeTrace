@@ -13,10 +13,10 @@ $(document).ready(function() {
     // Initialize dynamic threshold field activation
     initializeThresholdFields();
     
-    // Setup CUI search for all three fields
-    setupCUISearch('exposure_cuis', 'exposure_search_results', 'exposure_cuis_selected');
-    setupCUISearch('outcome_cuis', 'outcome_search_results', 'outcome_cuis_selected');
-    setupCUISearch('blocklist_cuis', 'blocklist_search_results', 'blocklist_cuis_selected');
+    // Setup CUI search for all three fields with appropriate search type
+    setupCUISearch('exposure_cuis', 'exposure_search_results', 'exposure_cuis_selected', 'subject');
+    setupCUISearch('outcome_cuis', 'outcome_search_results', 'outcome_cuis_selected', 'object');
+    setupCUISearch('blocklist_cuis', 'blocklist_search_results', 'blocklist_cuis_selected', 'both');
     
     // Setup clear buttons
     setupClearButtons();
@@ -71,50 +71,135 @@ function updateThresholdFields(degree) {
  * @param {string} searchInputId - ID of the search input field
  * @param {string} resultsId - ID of the results container
  * @param {string} selectedInputId - ID of the selected CUIs textarea
+ * @param {string} searchType - 'subject', 'object', or 'both'
  */
-function setupCUISearch(searchInputId, resultsId, selectedInputId) {
+function setupCUISearch(searchInputId, resultsId, selectedInputId, searchType) {
     const searchInput = $('#' + searchInputId);
     const resultsDiv = $('#' + resultsId);
     const selectedInput = $('#' + selectedInputId);
-    
+
+    // Track sort state per results container
+    var sortState = { col: null, asc: true };
+
     searchInput.on('keypress', function(e) {
         if (e.which === 13) { // Enter key
             e.preventDefault();
             const query = $(this).val().trim();
-            
+
             if (query.length < 3) {
                 resultsDiv.hide();
                 return;
             }
-            
+
             // Perform CUI search
             $.ajax({
                 url: searchCuiUrl,
                 method: 'GET',
-                data: { q: query },
+                data: { q: query, type: searchType },
                 success: function(response) {
                     if (response.success && response.results.length > 0) {
-                        resultsDiv.empty();
-                        response.results.forEach(function(item) {
-                            const resultItem = $('<div class="cui-result-item"></div>')
-                                .html('<strong>' + item.cui + '</strong> - ' + item.name)
-                                .on('click', function() {
-                                    addCUIToSelected(item.cui, selectedInput);
-                                    resultsDiv.hide();
-                                });
-                            resultsDiv.append(resultItem);
-                        });
+                        sortState = { col: null, asc: true };
+                        renderResultsTable(response.results, resultsDiv, selectedInput, sortState);
                         resultsDiv.show();
                     } else {
-                        resultsDiv.html('<div class="cui-result-item">No results found</div>').show();
+                        resultsDiv.html('<div class="cui-no-results">No results found</div>').show();
                     }
                 },
                 error: function() {
-                    resultsDiv.html('<div class="cui-result-item text-danger">Error searching CUIs</div>').show();
+                    resultsDiv.html('<div class="cui-no-results text-danger">Error searching CUIs</div>').show();
                 }
             });
         }
     });
+}
+
+/**
+ * Format semtype_definition array for display
+ * @param {Array} defs - array of definition strings
+ * @returns {string} formatted string
+ */
+function formatDefinition(defs) {
+    if (!defs || defs.length === 0) return '';
+    return defs.join(', ');
+}
+
+/**
+ * Render search results as a scrollable table
+ * @param {Array} results - Array of result objects
+ * @param {jQuery} resultsDiv - Container element
+ * @param {jQuery} selectedInput - The selected CUIs textarea
+ * @param {Object} sortState - Current sort state {col, asc}
+ */
+function renderResultsTable(results, resultsDiv, selectedInput, sortState) {
+    resultsDiv.empty();
+
+    // Sort results if a column is selected
+    if (sortState.col !== null) {
+        var col = sortState.col;
+        var asc = sortState.asc;
+        results = results.slice().sort(function(a, b) {
+            var valA, valB;
+            if (col === 'cui') { valA = a.cui; valB = b.cui; }
+            else if (col === 'name') { valA = a.name; valB = b.name; }
+            else { valA = formatDefinition(a.semtype_definition); valB = formatDefinition(b.semtype_definition); }
+            valA = (valA || '').toLowerCase();
+            valB = (valB || '').toLowerCase();
+            if (valA < valB) return asc ? -1 : 1;
+            if (valA > valB) return asc ? 1 : -1;
+            return 0;
+        });
+    }
+
+    // Build table
+    var table = $('<table class="cui-results-table"></table>');
+
+    // Header
+    var thead = $('<thead></thead>');
+    var headerRow = $('<tr></tr>');
+    headerRow.append('<th class="cui-col-num">#</th>');
+
+    ['cui', 'name', 'definition'].forEach(function(colKey) {
+        var label = colKey === 'cui' ? 'CUI' : colKey === 'name' ? 'Name' : 'Definition';
+        var th = $('<th class="cui-col-sortable"></th>');
+        var arrow = '';
+        if (sortState.col === colKey) {
+            arrow = sortState.asc ? ' ↑' : ' ↓';
+        } else {
+            arrow = ' ↕';
+        }
+        th.html(label + '<span class="sort-arrow">' + arrow + '</span>');
+        th.on('click', function() {
+            if (sortState.col === colKey) {
+                sortState.asc = !sortState.asc;
+            } else {
+                sortState.col = colKey;
+                sortState.asc = true;
+            }
+            renderResultsTable(results, resultsDiv, selectedInput, sortState);
+        });
+        headerRow.append(th);
+    });
+    thead.append(headerRow);
+    table.append(thead);
+
+    // Body
+    var tbody = $('<tbody></tbody>');
+    results.forEach(function(item, idx) {
+        var row = $('<tr class="cui-result-row"></tr>');
+        row.append('<td class="cui-col-num">' + (idx + 1) + '</td>');
+        row.append('<td class="cui-col-cui"><span class="cui-code">' + item.cui + '</span></td>');
+        row.append('<td class="cui-col-name">' + item.name + '</td>');
+        row.append('<td class="cui-col-def">' + formatDefinition(item.semtype_definition) + '</td>');
+        row.on('click', function() {
+            addCUIToSelected(item.cui, selectedInput);
+            $(this).addClass('cui-row-selected');
+            setTimeout(function() { row.removeClass('cui-row-selected'); }, 600);
+        });
+        tbody.append(row);
+    });
+    table.append(tbody);
+
+    resultsDiv.append(table);
 }
 
 /**
