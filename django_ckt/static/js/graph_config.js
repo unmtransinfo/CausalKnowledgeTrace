@@ -6,6 +6,7 @@
 // Global variables for URL endpoints (will be set from template inline script)
 var searchCuiUrl;
 var generateGraphUrl;
+var checkStatusBaseUrl;  // Base URL for status polling, e.g. '/config/api/status/'
 
 $(document).ready(function() {
     
@@ -271,58 +272,145 @@ function setupFormSubmission() {
  * @param {Object} response - Server response
  */
 function handleFormSuccess(response) {
-    if (response.success) {
-        $('#graph_progress_text').text('Graph created!');
-        $('#graph_progress_bar').css('width', '100%').removeClass('progress-bar-animated');
-        $('#graph_progress_status').html('<strong style="color: #28a745;">✓ ' + response.message + '</strong>');
+    if (response.success && response.task_id) {
+        // Show "in progress" state
+        $('#graph_progress_text').text('Graph creation in progress...');
+        $('#graph_progress_bar').css('width', '50%');
+        $('#graph_progress_status').html(
+            '<strong style="color: #17a2b8;"><i class="fas fa-spinner fa-spin"></i> ' +
+            response.message + '</strong>'
+        );
 
-        // Hide progress and show success message after 2 seconds
-        setTimeout(function() {
-            $('#graph_progress_section').hide();
-            $('#create_graph_btn').prop('disabled', false);
+        // Update validation feedback to show in-progress
+        $('#validation_feedback_area').html(
+            '<div class="alert alert-info mb-0">' +
+            '<i class="fas fa-spinner fa-spin"></i> ' +
+            '<strong>Graph creation started...</strong><br>' +
+            'Please wait while the graph is being generated. This may take several minutes.' +
+            '</div>'
+        );
 
-            // Build a descriptive body for the notification
-            var notifBody = response.message || 'Your knowledge graph has been created and is ready to use.';
-            if (response.graph_name) {
-                notifBody = 'Graph "' + response.graph_name + '" created'
-                    + (response.degree ? ' (degree ' + response.degree + ')' : '')
-                    + ' — Go to Data Upload to load and visualize your graph.';
-            }
-
-            // Show top notification banner
-            if (typeof showTopNotification === 'function') {
-                showTopNotification({
-                    title: 'Graph Created Successfully!',
-                    body: notifBody,
-                    type: 'success',
-                    duration: 0,
-                    action: { text: 'Go to Data Upload', url: '/upload/' }
-                });
-            }
-
-            // Update validation feedback to show success
-            $('#validation_feedback_area').html(
-                '<div class="alert alert-success mb-0">' +
-                '<i class="fas fa-check-circle"></i> ' +
-                '<strong>Graph Created!</strong><br>' +
-                response.message +
-                '</div>'
-            );
-
-            // Reset validation feedback after 5 seconds
-            setTimeout(function() {
-                $('#validation_feedback_area').html(
-                    '<div class="alert alert-success-custom mb-0">' +
-                    '<i class="fas fa-check-circle"></i> ' +
-                    '<strong> Ready to create graph</strong><br>' +
-                    'All inputs are valid. Click \'Create Graph\' to proceed.' +
-                    '</div>'
-                );
-            }, 5000);
-        }, 2000);
+        // Start polling for task completion
+        pollTaskStatus(response.task_id);
+    } else if (response.success) {
+        // Fallback for responses without task_id
+        showGraphSuccess(response);
     } else {
         showFormError(response.error);
     }
+}
+
+/**
+ * Poll the task status endpoint until the task completes or fails
+ * @param {string} taskId - The task ID to poll
+ */
+function pollTaskStatus(taskId) {
+    var statusUrl = checkStatusBaseUrl + taskId + '/';
+    var pollInterval = 3000;  // Poll every 3 seconds
+
+    var poller = setInterval(function() {
+        $.ajax({
+            url: statusUrl,
+            method: 'GET',
+            success: function(statusResponse) {
+                if (statusResponse.status === 'completed') {
+                    clearInterval(poller);
+                    showGraphSuccess(statusResponse);
+                } else if (statusResponse.status === 'failed') {
+                    clearInterval(poller);
+                    showGraphFailure(statusResponse);
+                }
+                // If still 'running', keep polling
+            },
+            error: function() {
+                // On network error, keep polling (transient failure)
+                logger_warn_count = (logger_warn_count || 0) + 1;
+                if (logger_warn_count > 20) {
+                    clearInterval(poller);
+                    showFormError('Lost connection while checking graph creation status.');
+                }
+            }
+        });
+    }, pollInterval);
+}
+var logger_warn_count = 0;
+
+/**
+ * Show the success state after graph creation is confirmed complete
+ * @param {Object} response - Status response with graph details
+ */
+function showGraphSuccess(response) {
+    $('#graph_progress_text').text('Graph created!');
+    $('#graph_progress_bar').css('width', '100%').removeClass('progress-bar-animated');
+    $('#graph_progress_status').html('<strong style="color: #28a745;">✓ ' + (response.message || 'Graph created successfully!') + '</strong>');
+
+    // Hide progress and show success message after 2 seconds
+    setTimeout(function() {
+        $('#graph_progress_section').hide();
+        $('#create_graph_btn').prop('disabled', false);
+
+        // Build a descriptive body for the notification
+        var notifBody = response.message || 'Your knowledge graph has been created and is ready to use.';
+        if (response.graph_name) {
+            notifBody = 'Graph "' + response.graph_name + '" created'
+                + (response.degree ? ' (degree ' + response.degree + ')' : '')
+                + ' — Go to Data Upload to load and visualize your graph.';
+        }
+
+        // Show top notification banner
+        if (typeof showTopNotification === 'function') {
+            showTopNotification({
+                title: 'Graph Created Successfully!',
+                body: notifBody,
+                type: 'success',
+                duration: 0,
+                action: { text: 'Go to Data Upload', url: '/upload/' }
+            });
+        }
+
+        // Update validation feedback to show success
+        $('#validation_feedback_area').html(
+            '<div class="alert alert-success mb-0">' +
+            '<i class="fas fa-check-circle"></i> ' +
+            '<strong>Graph Created!</strong><br>' +
+            (response.message || 'Graph created successfully!') +
+            '</div>'
+        );
+
+        // Reset validation feedback after 5 seconds
+        setTimeout(function() {
+            $('#validation_feedback_area').html(
+                '<div class="alert alert-success-custom mb-0">' +
+                '<i class="fas fa-check-circle"></i> ' +
+                '<strong> Ready to create graph</strong><br>' +
+                'All inputs are valid. Click \'Create Graph\' to proceed.' +
+                '</div>'
+            );
+        }, 5000);
+    }, 2000);
+}
+
+/**
+ * Show the failure state after graph creation fails
+ * @param {Object} response - Status response with error details
+ */
+function showGraphFailure(response) {
+    $('#graph_progress_text').text('Graph creation failed');
+    $('#graph_progress_bar')
+        .css('width', '100%')
+        .removeClass('progress-bar-animated progress-bar-striped')
+        .addClass('bg-danger');
+    $('#graph_progress_status').html(
+        '<strong style="color: #dc3545;"><i class="fas fa-times-circle"></i> ' +
+        (response.message || 'Graph creation failed.') + '</strong>'
+    );
+
+    setTimeout(function() {
+        $('#graph_progress_section').hide();
+        $('#create_graph_btn').prop('disabled', false);
+    }, 3000);
+
+    showFormError(response.message || 'Graph creation failed.');
 }
 
 /**
