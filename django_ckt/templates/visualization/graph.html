@@ -4,7 +4,7 @@
 {% block title %}Graph Visualization - CKT{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/graph_visualization.css' %}?v=4">
+<link rel="stylesheet" href="{% static 'css/graph_visualization.css' %}?v=5">
 {% endblock %}
 
 {% block content %}
@@ -13,8 +13,8 @@
     <i class="fas fa-project-diagram"></i> Graph Visualization
 </div>
 
-<!-- Graph Stats -->
-<div class="graph-stats-bar" id="graphStatsBar">
+<!-- Graph Stats & Legend (single row) -->
+<div class="graph-stats-legend-bar" id="graphStatsBar">
     <div class="stat-item">
         <i class="fas fa-circle"></i>
         <span>Nodes: <strong id="statNodes">0</strong></span>
@@ -27,10 +27,7 @@
         <i class="fas fa-file"></i>
         <span>File: <strong id="statFilename">None loaded</strong></span>
     </div>
-</div>
-
-<!-- Legend -->
-<div class="graph-legend" id="graphLegend">
+    <div class="bar-divider"></div>
     <div class="legend-item"><span class="legend-color" style="background:#E53935"></span> Exposure</div>
     <div class="legend-item"><span class="legend-color" style="background:#43A047"></span> Outcome</div>
     <div class="legend-item"><span class="legend-color" style="background:#9E9E9E"></span> Other</div>
