@@ -25,7 +25,6 @@ def _get_graph_dirs():
     """Return list of directories to search for graph files."""
     return [
         os.path.join(settings.BASE_DIR.parent, 'graph_creation', 'result'),
-        os.path.join(settings.BASE_DIR, 'static', 'sample_data'),
         os.path.join(settings.MEDIA_ROOT, 'graphs'),
     ]
 
@@ -107,30 +106,33 @@ def list_available_files(request):
             if not os.path.exists(directory):
                 continue
             for filename in sorted(os.listdir(directory)):
-                if _is_allowed_file(filename) and filename not in seen:
-                    seen.add(filename)
-                    full_path = os.path.join(directory, filename)
-                    # Try to read metadata for node/edge counts
-                    node_count = None
-                    edge_count = None
-                    try:
-                        with open(full_path, 'r') as f:
-                            data = json.load(f)
-                        meta = data.get('metadata', {})
-                        node_count = meta.get('node_count')
-                        edge_count = meta.get('edge_count')
-                        if node_count is None:
-                            elems = data.get('elements', data)
-                            node_count = len(elems.get('nodes', []))
-                            edge_count = len(elems.get('edges', []))
-                    except Exception:
-                        pass
-                    files.append({
-                        'name': filename,
-                        'path': full_path,
-                        'node_count': node_count,
-                        'edge_count': edge_count,
-                    })
+                if (not _is_allowed_file(filename)
+                        or filename in seen
+                        or '_causal_assertions' in filename):
+                    continue
+                seen.add(filename)
+                full_path = os.path.join(directory, filename)
+                # Try to read metadata for node/edge counts
+                node_count = None
+                edge_count = None
+                try:
+                    with open(full_path, 'r') as f:
+                        data = json.load(f)
+                    meta = data.get('metadata', {})
+                    node_count = meta.get('node_count')
+                    edge_count = meta.get('edge_count')
+                    if node_count is None:
+                        elems = data.get('elements', data)
+                        node_count = len(elems.get('nodes', []))
+                        edge_count = len(elems.get('edges', []))
+                except Exception:
+                    pass
+                files.append({
+                    'name': filename,
+                    'path': full_path,
+                    'node_count': node_count,
+                    'edge_count': edge_count,
+                })
 
         return JsonResponse({'success': True, 'files': files})
     except Exception as e:
@@ -216,6 +218,15 @@ def upload_graph_file(request):
                 'error': f'Only JSON files ({", ".join(ALLOWED_EXTENSIONS)}) are allowed'
             }, status=400)
 
+        # Reject causal assertions files — they are supporting evidence data,
+        # not graph files, and would not appear in the file listing.
+        if '_causal_assertions' in uploaded_file.name:
+            return JsonResponse({
+                'success': False,
+                'error': 'Causal assertions files cannot be uploaded directly. '
+                         'Please upload a graph file instead.'
+            }, status=400)
+
         # Validate JSON content
         try:
             content = uploaded_file.read()
@@ -246,6 +257,7 @@ def upload_graph_file(request):
                 f.write(chunk)
 
         # Also load into session
+        filter_type = request.POST.get('filter_type', 'none')
         nodes = elements.get('nodes', [])
         edges = elements.get('edges', [])
         metadata = graph_data.get('metadata', {})
@@ -253,7 +265,7 @@ def upload_graph_file(request):
         request.session.pop('graph_data', None)
         request.session['graph_source'] = {
             'filename': uploaded_file.name,
-            'filter_type': 'none',
+            'filter_type': filter_type,
         }
         request.session['graph_deletions'] = {'nodes': [], 'edges': []}
         request.session['graph_undo_stack'] = []
