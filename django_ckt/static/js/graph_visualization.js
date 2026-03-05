@@ -1,3 +1,4 @@
+
 /**
  * CKT Graph Visualization - Cytoscape.js Integration
  */
@@ -127,6 +128,16 @@
                 'opacity': 0.9,
             }
         },
+        // ── Compound parent (group) nodes — invisible, just for layout grouping ──
+        {
+            selector: '$node > node',
+            style: {
+                'background-opacity': 0,
+                'border-width': 0,
+                'padding': '40px',
+                'label': '',
+            }
+        },
         // ── Faded states ──
         {
             selector: 'node.faded',
@@ -163,27 +174,61 @@
     // Base repulsion — auto-scaled by node count in getPhysicsLayoutOpts
     var physicsRepulsion = 8000;
 
+    // Hub node IDs — set by computeNodeMetrics, used for layout constraints
+    var _hubExposureIds = [];
+    var _hubOutcomeIds  = [];
+    var _sharedNodeIds  = [];   // both_neighbor node IDs
+
+    // Build relativePlacementConstraint so fCOSE places exposure left of outcome,
+    // with shared (both_neighbor) nodes constrained to sit between them.
+    function buildPlacementConstraints() {
+        var constraints = [];
+        if (_hubExposureIds.length === 0 || _hubOutcomeIds.length === 0) {
+            return undefined;
+        }
+
+        // 1. Exposure hubs LEFT of outcome hubs
+        _hubExposureIds.forEach(function(eId) {
+            _hubOutcomeIds.forEach(function(oId) {
+                constraints.push({ left: eId, right: oId, gap: 200 });
+            });
+        });
+
+        // 2. Each shared node sits BETWEEN exposure and outcome hubs.
+        //    exposure --gap--> shared --gap--> outcome
+        //    Smaller gaps so shared nodes cluster tightly in the middle.
+        _sharedNodeIds.forEach(function(sId) {
+            _hubExposureIds.forEach(function(eId) {
+                constraints.push({ left: eId, right: sId, gap: 60 });
+            });
+            _hubOutcomeIds.forEach(function(oId) {
+                constraints.push({ left: sId, right: oId, gap: 60 });
+            });
+        });
+
+        return constraints.length > 0 ? constraints : undefined;
+    }
+
     // Auto-scale physics based on graph size (like R/visNetwork forceAtlas2Based)
     function getPhysicsLayoutOpts(nodeCount) {
-        nodeCount = nodeCount || 50;
-        // Scale repulsion: more nodes → more spread needed
-        var scaledRepulsion = physicsRepulsion * Math.max(1, nodeCount / 80);
-        // Scale edge length with node count
-        var edgeLen = Math.min(300, Math.max(100, nodeCount * 0.6));
-        // Weaker gravity for larger graphs so they spread
-        var grav = Math.max(0.02, 0.25 - (nodeCount * 0.0006));
+        // Hardcoded values tuned for ~400 node graphs
+        var scaledRepulsion = 10000;
+        var edgeLen = 100;
+        var grav = 0.05;
 
         if (!fcoseAvailable) {
             return {
                 name: 'cose',
                 animate: true,
                 animationDuration: 1600,
+                nodeDimensionsIncludeLabels: true,
                 nodeRepulsion: function() { return scaledRepulsion; },
                 idealEdgeLength: function() { return edgeLen; },
                 edgeElasticity: function() { return 0.45; },
+                nodeOverlap: 20,
                 gravity: grav,
-                numIter: 3500,
-                padding: 60,
+                numIter: 3000,
+                padding: 40,
                 randomize: true,
             };
         }
@@ -192,30 +237,28 @@
             quality: 'proof',
             animate: true,
             animationDuration: 1600,
-            animationEasing: 'ease-out',
             randomize: true,
-
-            nodeRepulsion: scaledRepulsion,
-            idealEdgeLength: edgeLen,
-            edgeElasticity: 0.45,
-
-            gravity: grav,
-            gravityRange: 5.0,
-
-            numIter: 3500,
-            initialEnergyOnIncremental: 0.5,
-
+            nodeDimensionsIncludeLabels: true,
+            nodeRepulsion: 8000,
+            idealEdgeLength: 100,
+            edgeElasticity: 0.2,
+            nodeSeparation: 100,
+            gravity: 0.08,
+            gravityRange: 2.0,
+            numIter: 10000,
+            initialEnergyOnIncremental: 0.3,
             tile: true,
-            tilingPaddingVertical: 25,
-            tilingPaddingHorizontal: 25,
-
+            tilingPaddingVertical: 30,
+            tilingPaddingHorizontal: 30,
             packComponents: true,
             padding: 60,
+            relativePlacementConstraint: buildPlacementConstraints(),
         };
     }
 
     // ── Compute node metrics: degree, role, size_score ──
     // Injects data fields used by cyStyle's mapData() and role selectors.
+    // Also creates compound parent nodes so fCOSE clusters by role group.
     function computeNodeMetrics(elements) {
         var nodes = elements.nodes || [];
         var edges = elements.edges || [];
@@ -276,7 +319,41 @@
             }
         });
 
-        // 5. Edge score — log-scaled evidence_count (fallback to 1)
+        // 5. Create compound parent nodes for the two main clusters.
+        //    Shared (both_neighbor) nodes are NOT placed in a compound —
+        //    instead they are positioned between clusters via relativePlacementConstraint.
+        var hasExposure = exposureIds.size > 0;
+        var hasOutcome  = outcomeIds.size > 0;
+
+        var parentNodes = [];
+        if (hasExposure) {
+            parentNodes.push({ data: { id: '__group_exposure__', label: 'Exposure cluster', _isGroup: true } });
+        }
+        if (hasOutcome) {
+            parentNodes.push({ data: { id: '__group_outcome__', label: 'Outcome cluster', _isGroup: true } });
+        }
+
+        // 6. Assign parent to each node based on role.
+        //    both_neighbor nodes get NO parent so they float freely between clusters,
+        //    constrained only by relativePlacementConstraint.
+        var sharedIds = [];
+        nodes.forEach(function(n) {
+            var role = n.data.role;
+            if (role === 'exposure' || role === 'exp_neighbor') {
+                n.data.parent = '__group_exposure__';
+            } else if (role === 'outcome' || role === 'out_neighbor') {
+                n.data.parent = '__group_outcome__';
+            } else if (role === 'both_neighbor') {
+                sharedIds.push(n.data.id);
+                // No parent — positioned by constraints + edge forces
+            }
+            // 'other' nodes also get no parent — they float freely
+        });
+
+        // Prepend parent nodes so they exist before children
+        elements.nodes = parentNodes.concat(nodes);
+
+        // 7. Edge score — log-scaled evidence_count (fallback to 1)
         var maxEvid = 1;
         edges.forEach(function(e) {
             var ec = e.data.evidence_count || 1;
@@ -288,7 +365,12 @@
             e.data.edge_score = Math.round((Math.log(ec + 1) / logMaxEvid) * 100);
         });
 
-        return elements;
+        return {
+            elements: elements,
+            exposureIds: Array.from(exposureIds),
+            outcomeIds: Array.from(outcomeIds),
+            sharedIds: sharedIds,
+        };
     }
 
     // ── Initialize Cytoscape instance ──
@@ -306,13 +388,19 @@
             : 'physics';
 
         // Compute degree, role, size_score for styling (mapData + role selectors)
-        var elements = computeNodeMetrics(rawElements);
+        var metrics = computeNodeMetrics(rawElements);
+        var elements = metrics.elements;
         var nodeCount = (elements.nodes || []).length;
+
+        // Store hub IDs + shared IDs for layout constraint building
+        _hubExposureIds = metrics.exposureIds;
+        _hubOutcomeIds  = metrics.outcomeIds;
+        _sharedNodeIds  = metrics.sharedIds;
 
         var initLayout = (layoutName === 'physics')
             ? getPhysicsLayoutOpts(nodeCount)
             : { name: layoutName, animate: true, animationDuration: 800, padding: 30 };
-
+ 
         cy = cytoscape({
             container: document.getElementById('cy'),
             elements: elements,
@@ -335,6 +423,8 @@
 
     // ── Node tap handler ──
     function onNodeTap(evt) {
+        // Ignore taps on compound parent (group) nodes
+        if (evt.target.data('_isGroup')) return;
         clearHighlights();
         selectedElement = evt.target;
         document.getElementById('btnRemoveSelected').disabled = false;
@@ -446,10 +536,10 @@
     function updateStats(elements) {
         var nodeCount, edgeCount;
         if (Array.isArray(elements)) {
-            nodeCount = elements.filter(function(e) { return !e.data.source; }).length;
+            nodeCount = elements.filter(function(e) { return !e.data.source && !e.data._isGroup; }).length;
             edgeCount = elements.filter(function(e) { return !!e.data.source; }).length;
         } else {
-            nodeCount = (elements.nodes || []).length;
+            nodeCount = (elements.nodes || []).filter(function(n) { return !n.data._isGroup; }).length;
             edgeCount = (elements.edges || []).length;
         }
         document.getElementById('statNodes').textContent = nodeCount;
@@ -518,10 +608,11 @@
         if (name === 'physics') {
             opts = getPhysicsLayoutOpts(nodeCount);
         } else {
-            opts = { name: name, animate: true, animationDuration: 600, padding: 30 };
+            opts = { name: name, animate: true, animationDuration: 600, padding: 30, nodeDimensionsIncludeLabels: true };
             if (name === 'cose') {
                 opts.nodeRepulsion = function() { return 8000 * Math.max(1, nodeCount / 80); };
                 opts.idealEdgeLength = function() { return Math.min(300, nodeCount * 0.6); };
+                opts.nodeOverlap = 20;
             }
         }
         cy.layout(opts).run();
