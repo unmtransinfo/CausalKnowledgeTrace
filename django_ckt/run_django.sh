@@ -7,7 +7,7 @@ if [ -f .env ]; then
 fi
 
 # Default port
-PORT=${APP_PORT:-3838}
+PORT=${DJANGO_PORT:-3838}
 
 echo "========================================="
 echo "🚀 Starting Django CausalKnowledgeTrace"

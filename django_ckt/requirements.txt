@@ -3,6 +3,7 @@ Django
 django-environ
 daphne
 uvicorn[standard]
+gunicorn
 psycopg2-binary
 rpy2
 pandas
