@@ -93,17 +93,25 @@ class GraphAnalyzer:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         print(f"Output directory created: {self.output_dir.absolute()}")
 
+    def _get_name_prefix(self) -> str:
+        """Build the '{exposure}_to_{outcome}_degree{N}' prefix for output files."""
+        exposure = getattr(self.config, 'exposure_name', None)
+        outcome = getattr(self.config, 'outcome_name', None)
+        if exposure and outcome:
+            return f"{exposure}_to_{outcome}_degree{self.degree}"
+        return f"degree_{self.degree}"
+
     def get_dag_filename(self) -> str:
-        """Generate the DAG filename based on degree parameter."""
-        return f"degree_{self.degree}.R"
+        """Generate the DAG filename based on exposure, outcome, and degree."""
+        return f"{self._get_name_prefix()}.R"
 
     def get_causal_assertions_filename(self) -> str:
-        """Generate the causal assertions filename based on degree parameter."""
-        return f"causal_assertions_{self.degree}.json"
+        """Generate the causal assertions filename based on exposure, outcome, and degree."""
+        return f"{self._get_name_prefix()}_causal_assertions.json"
 
     def get_cytoscape_filename(self) -> str:
-        """Generate the Cytoscape.js JSON filename based on degree parameter."""
-        return f"degree_{self.degree}_cytoscape.json"
+        """Generate the Cytoscape.js JSON filename based on exposure, outcome, and degree."""
+        return f"{self._get_name_prefix()}.json"
 
     def generate_basic_dagitty_script(
         self,

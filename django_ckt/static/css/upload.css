@@ -35,6 +35,17 @@
     color: #a94442;
 }
 
+/* Equal-height columns */
+.row.mt-3 {
+    display: flex;
+    align-items: stretch;
+}
+
+.row.mt-3 > [class*="col-"] {
+    display: flex;
+    flex-direction: column;
+}
+
 /* Section Cards */
 .upload-section-card {
     border: 1px solid #ddd;
@@ -42,6 +53,9 @@
     margin-bottom: 20px;
     background: white;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .upload-section-card .card-header {
@@ -55,6 +69,9 @@
 
 .upload-section-card .card-body {
     padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 /* Graph Status Box */
@@ -107,8 +124,8 @@
 }
 
 .btn-upload-load {
-    background-color: #2ecc71;
-    border-color: #27ae60;
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
     color: white;
     font-weight: 600;
     width: 100%;
@@ -116,9 +133,17 @@
 }
 
 .btn-upload-load:hover {
-    background-color: #27ae60;
-    border-color: #219a52;
+    background-color: #367fa9;
+    border-color: #367fa9;
     color: white;
+}
+
+.btn-upload-load:disabled,
+.btn-upload-load.disabled {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    opacity: 0.65;
 }
 
 /* File List Table */
