@@ -622,21 +622,17 @@ class DatabaseOperations:
             all_known_cuis = current_hop_cuis.copy()
             current_hop_cuis = new_hop_cuis - all_known_cuis
 
-        # Build CUI-to-canonical-name mapping from all assertions
-        cui_to_name_mapping = self.build_cui_to_name_mapping(all_detailed_assertions)
-
-        # Create CUI-based links with canonical names
-        cui_based_links = []
+        # Build CUI pair links directly from assertions.
+        # Using CUIs as stable identifiers avoids the name-mismatch issues
+        # that arise when canonical names differ from raw assertion names.
+        cui_links = []
         for assertion in all_detailed_assertions:
             subject_cui = assertion.get('subject_cui')
             object_cui = assertion.get('object_cui')
+            if subject_cui and object_cui:
+                cui_links.append((subject_cui, object_cui))
 
-            if subject_cui and object_cui and subject_cui in cui_to_name_mapping and object_cui in cui_to_name_mapping:
-                canonical_subject_name = cui_to_name_mapping[subject_cui]
-                canonical_object_name = cui_to_name_mapping[object_cui]
-                cui_based_links.append((canonical_subject_name, canonical_object_name))
-
-        return current_hop_cuis, cui_based_links, all_detailed_assertions
+        return current_hop_cuis, cui_links, all_detailed_assertions
 
     def _process_hop_results(self, cursor, results: List, hop_level: int) -> List:
         """

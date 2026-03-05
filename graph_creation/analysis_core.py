@@ -162,8 +162,7 @@ class GraphAnalyzer:
         exposure_nodes: Optional[Set[str]],
         outcome_nodes: Optional[Set[str]],
         detailed_assertions: List[Dict],
-        consolidated_mapping: Dict[str, str],
-        cui_to_name_mapping: Dict[str, str],
+        cui_to_display_name: Dict[str, str],
     ):
         """Generate a Cytoscape.js-compatible JSON file for graph visualization.
 
@@ -171,20 +170,16 @@ class GraphAnalyzer:
         front-end Element Info panel can display full provenance on edge click.
 
         Args:
-            nodes: Cleaned/consolidated node ids in the graph.
-            edges: Set of (source, target) tuples in the graph.
+            nodes: Display-name node ids in the graph.
+            edges: Set of (source, target) display-name tuples in the graph.
             exposure_nodes: Subset of nodes that are exposure variables.
             outcome_nodes: Subset of nodes that are outcome variables.
-            detailed_assertions: Raw assertion dicts from the database (before
-                consolidation), each with subject_name, subject_cui, predicate,
-                object_name, object_cui, evidence_count, pmid_data.
-            consolidated_mapping: cleaned name -> consolidated name mapping.
-            cui_to_name_mapping: CUI -> canonical name mapping.
+            detailed_assertions: Raw assertion dicts from the database, each with
+                subject_cui, object_cui, predicate, evidence_count, pmid_data.
+            cui_to_display_name: CUI -> display name mapping (single source of truth).
         """
         exposure_nodes = exposure_nodes or set()
         outcome_nodes = outcome_nodes or set()
-        if consolidated_mapping is None:
-            consolidated_mapping = {}
 
         with TimingContext("cytoscape_generation", self.timing_data):
             # --- Nodes ---
@@ -201,22 +196,22 @@ class GraphAnalyzer:
                 })
 
             # --- Edges ---
-            # Key: (consolidated_source, predicate, consolidated_target)
+            # Key: (display_source, predicate, display_target)
             # Multiple raw assertions collapsing to the same key are merged.
             edge_map: Dict[Tuple[str, str, str], Dict] = {}
 
             for assertion in detailed_assertions:
-                subject_name = assertion.get("subject_name", "")
-                object_name = assertion.get("object_name", "")
+                subject_cui = assertion.get("subject_cui", "")
+                object_cui = assertion.get("object_cui", "")
                 predicate = assertion.get("predicate", "")
 
-                # Apply same cleaning/consolidation used when building the graph
-                cleaned_subj = self.db_ops.clean_output_name(subject_name)
-                cleaned_obj = self.db_ops.clean_output_name(object_name)
-                cons_subj = self.db_ops.apply_consolidated_mapping(cleaned_subj, consolidated_mapping)
-                cons_obj = self.db_ops.apply_consolidated_mapping(cleaned_obj, consolidated_mapping)
+                # Resolve CUI → display name (same path as graph construction)
+                cons_subj = cui_to_display_name.get(subject_cui, "")
+                cons_obj = cui_to_display_name.get(object_cui, "")
 
-                # Skip self-loops and edges not present in the graph
+                # Skip unmapped CUIs, self-loops, and edges not in the graph
+                if not cons_subj or not cons_obj:
+                    continue
                 if cons_subj == cons_obj:
                     continue
                 if (cons_subj, cons_obj) not in edges:
@@ -229,9 +224,9 @@ class GraphAnalyzer:
                         "target": cons_obj,
                         "predicate": predicate,
                         "subject_name": cons_subj,
-                        "subject_cui": assertion.get("subject_cui", ""),
+                        "subject_cui": subject_cui,
                         "object_name": cons_obj,
-                        "object_cui": assertion.get("object_cui", ""),
+                        "object_cui": object_cui,
                         "evidence_count": 0,
                         "pmid_data": {},
                     }
@@ -288,8 +283,7 @@ class GraphAnalyzer:
         self,
         timing_results: Dict,
         detailed_assertions: List[Dict],
-        consolidated_mapping: Dict[str, str] = None,
-        cui_to_name_mapping: Dict[str, str] = None
+        cui_to_display_name: Dict[str, str] = None
     ):
         """Save analysis results, timing data, and configuration metadata with optimization."""
         output_path = self.output_dir
@@ -302,8 +296,7 @@ class GraphAnalyzer:
         self.save_optimized_json(
             detailed_assertions,
             output_path / causal_assertions_filename,
-            consolidated_mapping,
-            cui_to_name_mapping
+            cui_to_display_name
         )
 
         # Automatically create optimized formats for large files
@@ -316,18 +309,13 @@ class GraphAnalyzer:
         self,
         data: List[Dict],
         filepath: Path,
-        consolidated_mapping: Dict[str, str] = None,
-        cui_to_name_mapping: Dict[str, str] = None
+        cui_to_display_name: Dict[str, str] = None
     ):
         """Save JSON using the new single optimized format."""
         print(f"Saving {len(data)} assertions in optimized format...")
 
-        # Create optimized structure with consolidated mapping
-        optimized_data = self.create_optimized_structure(
-            data,
-            consolidated_mapping,
-            cui_to_name_mapping
-        )
+        # Create optimized structure using CUI-based display name resolution
+        optimized_data = self.create_optimized_structure(data, cui_to_display_name)
 
         # Save with custom readable formatting
         self._save_with_custom_formatting(optimized_data, filepath)
@@ -335,20 +323,16 @@ class GraphAnalyzer:
     def create_optimized_structure(
         self,
         data: List[Dict],
-        consolidated_mapping: Dict[str, str] = None,
-        cui_to_name_mapping: Dict[str, str] = None
+        cui_to_display_name: Dict[str, str] = None
     ) -> Dict:
-        """Create optimized JSON structure with sentence deduplication and node consolidation."""
+        """Create optimized JSON structure with sentence deduplication and CUI-based name resolution."""
         optimized = {
             'pmid_sentences': {},      # pmid -> [sentences] mapping
             'assertions': []           # assertions array (compact)
         }
 
-        # Initialize mappings if not provided
-        if consolidated_mapping is None:
-            consolidated_mapping = {}
-        if cui_to_name_mapping is None:
-            cui_to_name_mapping = {}
+        if cui_to_display_name is None:
+            cui_to_display_name = {}
 
         # First pass: collect PMID -> sentences mapping
         for assertion in data:
@@ -356,40 +340,32 @@ class GraphAnalyzer:
             for pmid, pmid_info in pmid_data.items():
                 sentences = pmid_info.get('sentences', [])
                 if sentences:
-                    # Store sentences directly with PMID
                     if pmid not in optimized['pmid_sentences']:
                         optimized['pmid_sentences'][pmid] = sentences
                     else:
-                        # Merge sentences if PMID appears multiple times
                         existing_sentences = set(optimized['pmid_sentences'][pmid])
                         for sentence in sentences:
                             if sentence not in existing_sentences:
                                 optimized['pmid_sentences'][pmid].append(sentence)
                                 existing_sentences.add(sentence)
 
-        # Second pass: create compact assertions
+        # Second pass: create compact assertions using CUI → display name
         for assertion in data:
-            # Get original node names
-            subject_name = assertion.get('subject_name', '')
-            object_name = assertion.get('object_name', '')
+            subject_cui = assertion.get('subject_cui', '')
+            object_cui = assertion.get('object_cui', '')
 
-            # Apply the same cleaning as used for DAG nodes
-            cleaned_subject = self.db_ops.clean_output_name(subject_name)
-            cleaned_object = self.db_ops.clean_output_name(object_name)
+            # Resolve display names via CUI (same path as graph + Cytoscape)
+            display_subject = cui_to_display_name.get(subject_cui, self.db_ops.clean_output_name(assertion.get('subject_name', '')))
+            display_object = cui_to_display_name.get(object_cui, self.db_ops.clean_output_name(assertion.get('object_name', '')))
 
-            # Apply consolidated mapping (e.g., map all PTSD CUIs to "PTSD")
-            consolidated_subject = self.db_ops.apply_consolidated_mapping(cleaned_subject, consolidated_mapping)
-            consolidated_object = self.db_ops.apply_consolidated_mapping(cleaned_object, consolidated_mapping)
-
-            # Create compact assertion with meaningful short field names
             compact_assertion = {
-                'subj': consolidated_subject,                   # subject_name -> subj (cleaned & consolidated)
-                'subj_cui': assertion.get('subject_cui', ''),   # subject_cui -> subj_cui
-                'predicate': assertion.get('predicate', ''),    # predicate -> predicate
-                'obj': consolidated_object,                     # object_name -> obj (cleaned & consolidated)
-                'obj_cui': assertion.get('object_cui', ''),     # object_cui -> obj_cui
-                'ev_count': assertion.get('evidence_count', 0), # evidence_count -> ev_count
-                'pmid_refs': []                                 # List of PMIDs for this assertion
+                'subj': display_subject,
+                'subj_cui': subject_cui,
+                'predicate': assertion.get('predicate', ''),
+                'obj': display_object,
+                'obj_cui': object_cui,
+                'ev_count': assertion.get('evidence_count', 0),
+                'pmid_refs': []
             }
 
             # Build PMID references list
@@ -397,7 +373,6 @@ class GraphAnalyzer:
             for pmid, pmid_info in pmid_data.items():
                 sentences = pmid_info.get('sentences', [])
                 if sentences:
-                    # Just store the PMID - sentences are stored in pmid_sentences
                     compact_assertion['pmid_refs'].append(pmid)
 
             optimized['assertions'].append(compact_assertion)
@@ -533,139 +508,95 @@ if (lightweight_result$success) {{
             # Connect to database
             with psycopg2.connect(**self.db_params) as conn:
                 with conn.cursor() as cursor:
-                    # Fetch relationships using degree functionality with CUI-based node identification
-                    _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
+                    # Fetch relationships — returns CUI pairs (stable identifiers)
+                    _, cui_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
 
-                    # Build CUI -> canonical name mapping so we can later tag exposure/outcome nodes
+                    # Build CUI -> canonical name mapping
                     cui_to_name_mapping = self.db_ops.build_cui_to_name_mapping(detailed_assertions)
 
                     print("\nConstructing causal graph...")
-                    # Build graph with cleaned node names and consolidated mapping
                     with TimingContext("graph_construction", self.timing_data):
                         G = nx.DiGraph()
 
-                        # Create consolidated node mapping and augment it so that
-                        # canonical names for exposure/outcome CUIs also collapse to
-                        # the YAML-provided exposure_name / outcome_name labels.
-                        consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
-                        consolidated_mapping = self._augment_consolidated_mapping_with_canonical_names(
-                            consolidated_mapping, cui_to_name_mapping
-                        )
+                        # Build the single CUI → display-name mapping used
+                        # everywhere (graph, Cytoscape, assertions export).
+                        cui_to_display_name = self._build_cui_to_display_name(cui_to_name_mapping)
 
-                        # Add edges with cleaned node names from CUI-based relationships
-                        consolidated_edges = set()
-                        for src, dst in cui_based_links:
-                            clean_src = self.db_ops.clean_output_name(src)
-                            clean_dst = self.db_ops.clean_output_name(dst)
-
-                            # Apply consolidated mapping
-                            consolidated_src = self.db_ops.apply_consolidated_mapping(clean_src, consolidated_mapping)
-                            consolidated_dst = self.db_ops.apply_consolidated_mapping(clean_dst, consolidated_mapping)
-
-                            # Only add edge if source and destination are different (avoid self-loops from consolidation)
-                            if consolidated_src != consolidated_dst:
-                                consolidated_edges.add((consolidated_src, consolidated_dst))
-                                G.add_edge(consolidated_src, consolidated_dst)
+                        # Add edges resolved through CUI → display name
+                        for src_cui, dst_cui in cui_links:
+                            src = cui_to_display_name.get(src_cui)
+                            dst = cui_to_display_name.get(dst_cui)
+                            if src and dst and src != dst:
+                                G.add_edge(src, dst)
 
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (degree={self.degree})")
 
-                        # Determine which graph nodes correspond to exposure and outcome CUIs
+                        # Identify exposure / outcome nodes by their known display names
                         nodes_in_graph = set(G.nodes())
-                        exposure_nodes, outcome_nodes = self._get_exposure_outcome_node_sets(
-                            cui_to_name_mapping, consolidated_mapping, nodes_in_graph
-                        )
+                        exposure_nodes, outcome_nodes = self._get_exposure_outcome_node_sets(nodes_in_graph)
 
-                    print("\nGenerating Cytoscape.js visualization JSON...")
-                    # Generate Cytoscape.js JSON with exposure/outcome annotations and edge PMID data
+                    print("\nGenerating Graph in JSON...")
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
                     self.generate_cytoscape_json(
                         all_nodes, all_edges, exposure_nodes, outcome_nodes,
-                        detailed_assertions, consolidated_mapping, cui_to_name_mapping
+                        detailed_assertions, cui_to_display_name
                     )
 
-                    # Save all results and metadata with consolidated mapping
+                    # Save all results and metadata
                     self.save_results_and_metadata(
                         self.timing_data,
                         detailed_assertions,
-                        consolidated_mapping,
-                        cui_to_name_mapping
+                        cui_to_display_name
                     )
 
         return self.timing_data
 
-    def _augment_consolidated_mapping_with_canonical_names(
+    def _build_cui_to_display_name(
         self,
-        consolidated_mapping: Dict[str, str],
         cui_to_name_mapping: Dict[str, str],
     ) -> Dict[str, str]:
-        """Ensure canonical names for exposure/outcome CUIs map to YAML labels.
+        """Build a CUI → display-name mapping used everywhere in the pipeline.
 
-        This guarantees that all exposure CUIs collapse to a single cleaned
-        ``exposure_name`` and all outcome CUIs collapse to a single cleaned
-        ``outcome_name``, regardless of which canonical labels appeared in the
-        relationship queries.
+        * Exposure CUIs → ``clean(config.exposure_name)``
+        * Outcome CUIs  → ``clean(config.outcome_name)``
+        * All other CUIs → ``clean(canonical_name)``
+
+        Because every path through the code resolves names through this single
+        mapping, graph edges and Cytoscape / assertion outputs are guaranteed to
+        agree – eliminating the isolated-node bug that arose when canonical vs
+        raw assertion names diverged.
         """
-        if consolidated_mapping is None:
-            consolidated_mapping = {}
+        cui_to_display: Dict[str, str] = {}
 
-        # Compute the consolidated labels derived from the YAML config
-        consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
-        consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
+        exposure_display = self.db_ops.clean_output_name(self.config.exposure_name)
+        outcome_display = self.db_ops.clean_output_name(self.config.outcome_name)
 
-        # Map exposure CUIs' canonical names to the consolidated exposure label
+        # Exposure CUIs → single consolidated label
         for cui in getattr(self.config, "exposure_cui_list", []):
-            canonical_name = cui_to_name_mapping.get(cui)
-            if not canonical_name:
-                continue
-            clean_name = self.db_ops.clean_output_name(canonical_name)
-            consolidated_mapping[clean_name] = consolidated_exposure_name
+            cui_to_display[cui] = exposure_display
 
-        # Map outcome CUIs' canonical names to the consolidated outcome label
+        # Outcome CUIs → single consolidated label
         for cui in getattr(self.config, "outcome_cui_list", []):
-            canonical_name = cui_to_name_mapping.get(cui)
-            if not canonical_name:
-                continue
-            clean_name = self.db_ops.clean_output_name(canonical_name)
-            consolidated_mapping[clean_name] = consolidated_outcome_name
+            cui_to_display[cui] = outcome_display
 
-        return consolidated_mapping
+        # Remaining CUIs → cleaned canonical name (don't overwrite exposure/outcome)
+        for cui, canonical_name in cui_to_name_mapping.items():
+            if cui not in cui_to_display:
+                cui_to_display[cui] = self.db_ops.clean_output_name(canonical_name)
+
+        return cui_to_display
 
     def _get_exposure_outcome_node_sets(
         self,
-        cui_to_name_mapping: Dict[str, str],
-        consolidated_mapping: Dict[str, str],
         nodes_in_graph: Set[str],
     ) -> Tuple[Set[str], Set[str]]:
-        """Map configured exposure/outcome CUIs to actual graph node ids.
+        """Return the exposure and outcome display-name sets present in the graph."""
+        exposure_display = self.db_ops.clean_output_name(self.config.exposure_name)
+        outcome_display = self.db_ops.clean_output_name(self.config.outcome_name)
 
-        This ensures that DAGitty [exposure] and [outcome] annotations are applied
-        to nodes that participate in the connected graph rather than to isolated
-        synthetic nodes.
-        """
-        exposure_nodes: Set[str] = set()
-        outcome_nodes: Set[str] = set()
-
-        # Map exposure CUIs to graph nodes (after consolidation)
-        for cui in getattr(self.config, "exposure_cui_list", []):
-            canonical_name = cui_to_name_mapping.get(cui)
-            if not canonical_name:
-                continue
-            clean_name = self.db_ops.clean_output_name(canonical_name)
-            consolidated_name = self.db_ops.apply_consolidated_mapping(clean_name, consolidated_mapping)
-            if consolidated_name in nodes_in_graph:
-                exposure_nodes.add(consolidated_name)
-
-        # Map outcome CUIs to graph nodes (after consolidation)
-        for cui in getattr(self.config, "outcome_cui_list", []):
-            canonical_name = cui_to_name_mapping.get(cui)
-            if not canonical_name:
-                continue
-            clean_name = self.db_ops.clean_output_name(canonical_name)
-            consolidated_name = self.db_ops.apply_consolidated_mapping(clean_name, consolidated_mapping)
-            if consolidated_name in nodes_in_graph:
-                outcome_nodes.add(consolidated_name)
-
+        exposure_nodes = {exposure_display} if exposure_display in nodes_in_graph else set()
+        outcome_nodes = {outcome_display} if outcome_display in nodes_in_graph else set()
         return exposure_nodes, outcome_nodes
 
 
@@ -727,67 +658,41 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
         self.mb_computer = MarkovBlanketComputer(self.config, threshold, self.timing_data, predication_types)
 
     def generate_markov_blanket_dagitty_script(self, edges: Set[Tuple[str, str]], mb_nodes: Set[str]):
-        """Generate Markov blanket-specific DAGitty script."""
+        """Generate Markov blanket-specific DAGitty script.
+
+        Args:
+            edges: Set of (source, target) tuples already in display-name form
+                   (resolved through CUI → display name during graph construction).
+            mb_nodes: Raw Markov blanket node names from the database (will be cleaned).
+        """
         with TimingContext("markov_blanket_dagitty_generation", self.timing_data):
-            try:
-                with psycopg2.connect(**self.db_params) as conn:
-                    with conn.cursor() as cursor:
-                        # Create consolidated node mapping
-                        consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
+            exposure_display = self.db_ops.clean_output_name(self.config.exposure_name)
+            outcome_display = self.db_ops.clean_output_name(self.config.outcome_name)
 
-                        # Get consolidated exposure and outcome names
-                        consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
-                        consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
+            # Clean MB node names (they come as raw names from SQL queries)
+            cleaned_mb_nodes = {self.db_ops.clean_output_name(node) for node in mb_nodes}
 
-            except Exception as e:
-                print(f"Warning: Could not create consolidated mapping for Markov blanket DAG generation: {e}")
-                # Fallback to basic consolidated names
-                consolidated_mapping = {}
-                consolidated_exposure_name = self.db_ops.clean_output_name(self.config.exposure_name)
-                consolidated_outcome_name = self.db_ops.clean_output_name(self.config.outcome_name)
+            # Edges are already in display-name form — filter to MB subgraph
+            mb_edges = {
+                (u, v) for u, v in edges
+                if u in cleaned_mb_nodes and v in cleaned_mb_nodes and u != v
+            }
 
-            # Clean Markov blanket nodes and apply consolidated mapping
-            cleaned_mb_nodes = set()
-            for node in mb_nodes:
-                clean_node = self.db_ops.clean_output_name(node)
-                consolidated_node = self.db_ops.apply_consolidated_mapping(clean_node, consolidated_mapping)
-                cleaned_mb_nodes.add(consolidated_node)
-
-            # Create consolidated Markov blanket edges
-            mb_edges = set()
-            for u, v in edges:
-                clean_u = self.db_ops.clean_output_name(u)
-                clean_v = self.db_ops.clean_output_name(v)
-                consolidated_u = self.db_ops.apply_consolidated_mapping(clean_u, consolidated_mapping)
-                consolidated_v = self.db_ops.apply_consolidated_mapping(clean_v, consolidated_mapping)
-
-                # Only include edges where both nodes are in the Markov blanket and not self-loops
-                if (consolidated_u in cleaned_mb_nodes and consolidated_v in cleaned_mb_nodes
-                    and consolidated_u != consolidated_v):
-                    mb_edges.add((consolidated_u, consolidated_v))
-
-            # Collect consolidated exposure and outcome names for filtering
-            all_exposure_outcome_names = {consolidated_exposure_name, consolidated_outcome_name}
-
+            exposure_outcome = {exposure_display, outcome_display}
             dagitty_mb_lines = ["g <- dagitty('dag {"]
 
-            # Add consolidated exposure node for Markov blanket
-            if consolidated_exposure_name in cleaned_mb_nodes:
-                dagitty_mb_lines.append(f" {consolidated_exposure_name} [exposure]")
+            if exposure_display in cleaned_mb_nodes:
+                dagitty_mb_lines.append(f" {exposure_display} [exposure]")
+            if outcome_display in cleaned_mb_nodes:
+                dagitty_mb_lines.append(f" {outcome_display} [outcome]")
 
-            # Add consolidated outcome node for Markov blanket
-            if consolidated_outcome_name in cleaned_mb_nodes:
-                dagitty_mb_lines.append(f" {consolidated_outcome_name} [outcome]")
-
-            # Add other Markov blanket nodes (excluding consolidated exposure/outcome nodes)
-            for node in cleaned_mb_nodes:
-                if node not in all_exposure_outcome_names:
+            for node in sorted(cleaned_mb_nodes):
+                if node not in exposure_outcome:
                     dagitty_mb_lines.append(f" {node}")
 
-            for src, dst in mb_edges:
+            for src, dst in sorted(mb_edges):
                 dagitty_mb_lines.append(f" {src} -> {dst}")
 
-            # Close the DAG definition
             dagitty_mb_lines.append("}')")
 
             dagitty_mb_format = "\n".join(dagitty_mb_lines)
@@ -818,59 +723,41 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
             # Connect to database
             with psycopg2.connect(**self.db_params) as conn:
                 with conn.cursor() as cursor:
-                    # Fetch relationships using k-hop functionality with CUI-based node identification
-                    _, cui_based_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
+                    # Fetch relationships — returns CUI pairs (stable identifiers)
+                    _, cui_links, detailed_assertions = self.db_ops.fetch_k_hop_relationships(cursor)
 
-                    # Build CUI -> canonical name mapping so we can later tag exposure/outcome nodes
+                    # Build CUI -> canonical name mapping
                     cui_to_name_mapping = self.db_ops.build_cui_to_name_mapping(detailed_assertions)
 
                     # Compute Markov blankets
                     mb_union = self.mb_computer.compute_markov_blankets(cursor)
 
                     print("\nConstructing causal graph...")
-                    # Build graph with cleaned node names and consolidated mapping
                     with TimingContext("graph_construction", self.timing_data):
                         G = nx.DiGraph()
 
-                        # Create consolidated node mapping and augment it so that
-                        # canonical names for exposure/outcome CUIs also collapse to
-                        # the YAML-provided exposure_name / outcome_name labels.
-                        consolidated_mapping = self.db_ops.create_consolidated_node_mapping(cursor)
-                        consolidated_mapping = self._augment_consolidated_mapping_with_canonical_names(
-                            consolidated_mapping, cui_to_name_mapping
-                        )
+                        # Build the single CUI → display-name mapping
+                        cui_to_display_name = self._build_cui_to_display_name(cui_to_name_mapping)
 
-                        # Add edges with cleaned node names from CUI-based relationships
-                        consolidated_edges = set()
-                        for src, dst in cui_based_links:
-                            clean_src = self.db_ops.clean_output_name(src)
-                            clean_dst = self.db_ops.clean_output_name(dst)
-
-                            # Apply consolidated mapping
-                            consolidated_src = self.db_ops.apply_consolidated_mapping(clean_src, consolidated_mapping)
-                            consolidated_dst = self.db_ops.apply_consolidated_mapping(clean_dst, consolidated_mapping)
-
-                            # Only add edge if source and destination are different (avoid self-loops from consolidation)
-                            if consolidated_src != consolidated_dst:
-                                consolidated_edges.add((consolidated_src, consolidated_dst))
-                                G.add_edge(consolidated_src, consolidated_dst)
+                        # Add edges resolved through CUI → display name
+                        for src_cui, dst_cui in cui_links:
+                            src = cui_to_display_name.get(src_cui)
+                            dst = cui_to_display_name.get(dst_cui)
+                            if src and dst and src != dst:
+                                G.add_edge(src, dst)
 
                         print(f"Graph constructed with {len(G.nodes())} nodes and {len(G.edges())} edges (degree={self.degree})")
-                        print(f"Consolidated {len(cui_based_links)} CUI-based relationships into {len(consolidated_edges)} consolidated relationships")
 
-                        # Determine which graph nodes correspond to exposure and outcome CUIs
+                        # Identify exposure / outcome nodes
                         nodes_in_graph = set(G.nodes())
-                        exposure_nodes, outcome_nodes = self._get_exposure_outcome_node_sets(
-                            cui_to_name_mapping, consolidated_mapping, nodes_in_graph
-                        )
+                        exposure_nodes, outcome_nodes = self._get_exposure_outcome_node_sets(nodes_in_graph)
 
-                    print("\nGenerating Cytoscape.js visualization JSON and Markov blanket script...")
-                    # Generate Cytoscape.js JSON using parent class method, with exposure/outcome annotations
+                    print("\nGenerating graph visualization JSON and Markov blanket script...")
                     all_nodes = set(G.nodes())
                     all_edges = set(G.edges())
                     self.generate_cytoscape_json(
                         all_nodes, all_edges, exposure_nodes, outcome_nodes,
-                        detailed_assertions, consolidated_mapping, cui_to_name_mapping
+                        detailed_assertions, cui_to_display_name
                     )
 
                     # Generate Markov blanket-specific DAGitty script
@@ -878,12 +765,11 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
 
                     print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
 
-                    # Save all results and metadata with consolidated mapping
+                    # Save all results and metadata
                     self.save_results_and_metadata(
                         self.timing_data,
                         detailed_assertions,
-                        consolidated_mapping,
-                        cui_to_name_mapping
+                        cui_to_display_name
                     )
 
         print("\nMarkov blanket analysis complete!")
