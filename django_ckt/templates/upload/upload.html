@@ -82,21 +82,7 @@
                     </div>
                 </div>
 
-                <!-- File List Table -->
-                <div class="mt-3">
-                    <table class="table table-sm table-hover file-list-table" id="fileListTable">
-                        <thead>
-                            <tr>
-                                <th>File Name</th>
-                                <th>Nodes</th>
-                                <th>Edges</th>
-                            </tr>
-                        </thead>
-                        <tbody id="fileListBody">
-                            <tr><td colspan="3" class="text-center text-muted">Loading files...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+
             </div>
         </div>
     </div>
@@ -182,7 +168,7 @@
 
     // DOM elements
     const graphFileSelect = document.getElementById('graphFileSelect');
-    const fileListBody = document.getElementById('fileListBody');
+
     const loadGraphBtn = document.getElementById('loadGraphBtn');
     const graphFileUpload = document.getElementById('graphFileUpload');
     const uploadAndLoadBtn = document.getElementById('uploadAndLoadBtn');
@@ -218,40 +204,24 @@
             .catch(err => {
                 showStatus('Error connecting to server: ' + err.message, 'error');
                 graphFileSelect.innerHTML = '<option value="">Error loading files</option>';
-                fileListBody.innerHTML = '<tr><td colspan="3" class="text-center text-danger">Error loading files</td></tr>';
+
             });
     }
 
-    // Populate dropdown and table
+    // Populate dropdown
     function populateFileList(files) {
         graphFileSelect.innerHTML = '';
-        fileListBody.innerHTML = '';
 
         if (files.length === 0) {
             graphFileSelect.innerHTML = '<option value="">No files available</option>';
-            fileListBody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No graph files found</td></tr>';
             return;
         }
 
         files.forEach(function(file) {
-            // Dropdown option
             const option = document.createElement('option');
             option.value = file.name;
             option.textContent = file.name;
             graphFileSelect.appendChild(option);
-
-            // Table row
-            const row = document.createElement('tr');
-            row.style.cursor = 'pointer';
-            row.addEventListener('click', function() {
-                graphFileSelect.value = file.name;
-            });
-            row.innerHTML = `
-                <td>${file.name}</td>
-                <td>${file.node_count || '—'}</td>
-                <td>${file.edge_count || '—'}</td>
-            `;
-            fileListBody.appendChild(row);
         });
     }
 
