@@ -12,7 +12,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <!-- vis-network CSS (legacy) -->
+    <!-- vis-network CSS -->
     <link href="https://unpkg.com/vis-network@9.1.6/dist/dist/vis-network.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
@@ -55,16 +55,8 @@
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     
-    <!-- vis-network JS (legacy) -->
+    <!-- vis-network JS (same library as Shiny/R visNetwork) -->
     <script src="https://unpkg.com/vis-network@9.1.6/dist/vis-network.min.js"></script>
-
-    <!-- Cytoscape.js -->
-    <script src="https://unpkg.com/cytoscape@3.30.4/dist/cytoscape.min.js"></script>
-
-    <!-- fCoSE dependency chain: layout-base → cose-base → cytoscape-fcose -->
-    <script src="https://unpkg.com/layout-base@2.0.1/layout-base.js"></script>
-    <script src="https://unpkg.com/cose-base@2.2.0/cose-base.js"></script>
-    <script src="https://unpkg.com/cytoscape-fcose@2.2.0/cytoscape-fcose.js"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

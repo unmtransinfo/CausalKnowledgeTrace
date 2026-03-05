@@ -1,257 +1,112 @@
+
 /**
- * CKT Graph Visualization - Cytoscape.js Integration
+ * CKT Graph Visualization — vis-network Integration
+ * Uses the same vis.js library as the Shiny/R visNetwork app,
+ * with identical forceAtlas2Based / barnesHut physics parameters.
  */
 (function() {
     'use strict';
 
-    let cy = null;
-    let selectedElement = null;
-
-    // ── Color palette ──
-    var COLORS = {
-        exposure:     '#FF6B6B',  // Coral red
-        outcome:      '#4ECDC4',  // Soft teal
-        expNeighbor:  '#F5A6A6',  // Light coral — nodes connected to exposure
-        outNeighbor:  '#A8DCD5',  // Light teal  — nodes connected to outcome
-        bothNeighbor: '#C9A0DC',  // Lavender    — connected to both
-        other:        '#B0BEC5',  // Blue-gray   — not directly connected
-        edge:         '#aaaaaa',
-        edgeHl:       '#00bcd4',
-        selected:     '#FFD700',
-    };
-
-    // ── Cytoscape style ──
-    // Uses 'size_score' (log-scaled 0–100) computed by computeNodeMetrics()
-    // Uses 'role' data field: exposure, outcome, exp_neighbor, out_neighbor,
-    //                          both_neighbor, other
-    const cyStyle = [
-        // ── Base node style (fallback for 'other' role) ──
-        {
-            selector: 'node',
-            style: {
-                'label': 'data(label)',
-                'background-color': COLORS.other,
-                'color': '#444',
-                'text-valign': 'bottom',
-                'text-halign': 'center',
-                'font-size': '9px',
-                'font-family': 'Arial, Helvetica, sans-serif',
-                'text-margin-y': 4,
-                'width': 35,
-                'height': 35,
-                'border-width': 1,
-                'border-color': '#90A4AE',
-                'text-max-width': '90px',
-                'text-wrap': 'ellipsis',
-                'min-zoomed-font-size': 10,
-                'background-opacity': 'mapData(size_score, 0, 100, 0.55, 1)',
-            }
-        },
-        // ── Role-based colors for default nodes ──
-        {
-            selector: 'node[role="exp_neighbor"]',
-            style: {
-                'background-color': COLORS.expNeighbor,
-                'border-color': '#E57373',
-                'color': '#8B0000',
-            }
-        },
-        {
-            selector: 'node[role="out_neighbor"]',
-            style: {
-                'background-color': COLORS.outNeighbor,
-                'border-color': '#4DB6AC',
-                'color': '#004D40',
-            }
-        },
-        {
-            selector: 'node[role="both_neighbor"]',
-            style: {
-                'background-color': COLORS.bothNeighbor,
-                'border-color': '#AB47BC',
-                'color': '#4A148C',
-            }
-        },
-        // ── Exposure / Outcome nodes — always prominent ──
-        {
-            selector: 'node[role="exposure"]',
-            style: {
-                'background-color': COLORS.exposure,
-                'border-color': '#C62828',
-                'border-width': 3,
-                'width': 35,
-                'height': 35,
-                'font-size': '13px',
-                'font-weight': 'bold',
-                'color': '#B71C1C',
-                'background-opacity': 1,
-                'text-max-width': '150px',
-            }
-        },
-        {
-            selector: 'node[role="outcome"]',
-            style: {
-                'background-color': COLORS.outcome,
-                'border-color': '#00897B',
-                'border-width': 3,
-                'width': 35,
-                'height': 35,
-                'font-size': '13px',
-                'font-weight': 'bold',
-                'color': '#00695C',
-                'background-opacity': 1,
-                'text-max-width': '150px',
-            }
-        },
-        // ── Selection / highlight states ──
-        {
-            selector: 'node:selected',
-            style: {
-                'border-width': 3,
-                'border-color': COLORS.selected,
-                'overlay-color': COLORS.selected,
-                'overlay-opacity': 0.15,
-            }
-        },
-        {
-            selector: 'node.highlighted',
-            style: {
-                'border-width': 2,
-                'border-color': COLORS.edgeHl,
-                'overlay-color': COLORS.edgeHl,
-                'overlay-opacity': 0.1,
-            }
-        },
-        // ── Edges ──
-        {
-            selector: 'edge',
-            style: {
-                'width': 'mapData(edge_score, 0, 100, 0.4, 3)',
-                'line-color': '#CFD8DC',
-                'target-arrow-color': '#CFD8DC',
-                'target-arrow-shape': 'triangle',
-                'curve-style': 'bezier',
-                'arrow-scale': 0.6,
-                'opacity': 0.35,
-            }
-        },
-        {
-            selector: 'edge:selected',
-            style: {
-                'width': 3,
-                'line-color': '#ff9800',
-                'target-arrow-color': '#ff9800',
-                'opacity': 1,
-                'overlay-color': '#ff9800',
-                'overlay-opacity': 0.15,
-            }
-        },
-        {
-            selector: 'edge.highlighted',
-            style: {
-                'width': 2.5,
-                'line-color': COLORS.edgeHl,
-                'target-arrow-color': COLORS.edgeHl,
-                'opacity': 0.9,
-            }
-        },
-        // ── Faded states ──
-        {
-            selector: 'node.faded',
-            style: { 'opacity': 0.12 }
-        },
-        {
-            selector: 'edge.faded',
-            style: { 'opacity': 0.04 }
-        },
-    ];
-
-    // ── Raw element store (server data) ──
+    var network = null;
+    var nodesDataSet = null;
+    var edgesDataSet = null;
+    var selectedElement = null;
     var rawGraphElements = null;
 
-    // ── Check fCoSE availability ──
-    var fcoseAvailable = (typeof cytoscape !== 'undefined') &&
-        cytoscape.extensions && typeof cytoscape.extensions === 'function'
-        ? false  // we'll detect via trial below
-        : false;
-    // Simpler: just check if the layout name resolves at runtime
-    try {
-        // cytoscape-fcose registers itself automatically when loaded via script tag
-        // after cytoscape.js. If cose-base/layout-base were missing it won't register.
-        var _testCy = cytoscape({ headless: true, elements: [] });
-        _testCy.layout({ name: 'fcose' });
-        _testCy.destroy();
-        fcoseAvailable = true;
-    } catch (e) {
-        console.warn('fCoSE layout extension not available, falling back to cose:', e.message);
-        fcoseAvailable = false;
-    }
+    // ── Color palette: Red=exposure, Green=outcome, Gray=everything else ──
+    var COLORS = {
+        exposure: '#E53935',
+        outcome:  '#43A047',
+        other:    '#9E9E9E',
+        edge:     '#aaaaaa',
+        edgeHl:   '#00bcd4',
+        selected: '#FFD700',
+    };
 
-    // ── Physics layout parameters ──
-    // Base repulsion — auto-scaled by node count in getPhysicsLayoutOpts
-    var physicsRepulsion = 8000;
+    // ── Physics strength (maps to gravitationalConstant, user-adjustable) ──
+    var physicsStrength = -150;
 
-    // Auto-scale physics based on graph size (like R/visNetwork forceAtlas2Based)
-    function getPhysicsLayoutOpts(nodeCount) {
-        nodeCount = nodeCount || 50;
-        // Scale repulsion: more nodes → more spread needed
-        var scaledRepulsion = physicsRepulsion * Math.max(1, nodeCount / 80);
-        // Scale edge length with node count
-        var edgeLen = Math.min(300, Math.max(100, nodeCount * 0.6));
-        // Weaker gravity for larger graphs so they spread
-        var grav = Math.max(0.02, 0.25 - (nodeCount * 0.0006));
-
-        if (!fcoseAvailable) {
+    // ── Build physics options matching Shiny/visNetwork (dag_visualization.R) ──
+    // R thresholds: is_large_graph = node_count > 5000 || edge_count > 15000
+    // Small: forceAtlas2Based, gravitationalConstant=-150, centralGravity=0.01,
+    //        springLength=200, springConstant=0.08, damping=0.4, avoidOverlap=1
+    // Large: barnesHut, gravitationalConstant=physicsStrength*1.5, centralGravity=0.2,
+    //        springLength=140, springConstant=0.08, damping=0.9, avoidOverlap=0.2
+    function getPhysicsOptions(nodeCount, edgeCount) {
+        edgeCount = edgeCount || 0;
+        var isLarge = nodeCount > 5000 || edgeCount > 15000;
+        if (isLarge) {
             return {
-                name: 'cose',
-                animate: true,
-                animationDuration: 1600,
-                nodeRepulsion: function() { return scaledRepulsion; },
-                idealEdgeLength: function() { return edgeLen; },
-                edgeElasticity: function() { return 0.45; },
-                gravity: grav,
-                numIter: 3500,
-                padding: 60,
-                randomize: true,
+                enabled: true,
+                solver: 'barnesHut',
+                barnesHut: {
+                    gravitationalConstant: physicsStrength * 1.5,
+                    centralGravity: 0.2,
+                    springLength: 140,
+                    springConstant: 0.08,
+                    damping: 0.9,
+                    avoidOverlap: 0.2,
+                },
+                stabilization: { enabled: true, iterations: 1000 },
             };
         }
         return {
-            name: 'fcose',
-            quality: 'proof',
-            animate: true,
-            animationDuration: 1600,
-            animationEasing: 'ease-out',
-            randomize: true,
-
-            nodeRepulsion: scaledRepulsion,
-            idealEdgeLength: edgeLen,
-            edgeElasticity: 0.45,
-
-            gravity: grav,
-            gravityRange: 5.0,
-
-            numIter: 3500,
-            initialEnergyOnIncremental: 0.5,
-
-            tile: true,
-            tilingPaddingVertical: 25,
-            tilingPaddingHorizontal: 25,
-
-            packComponents: true,
-            padding: 60,
+            enabled: true,
+            solver: 'forceAtlas2Based',
+            forceAtlas2Based: {
+                gravitationalConstant: physicsStrength,
+                centralGravity: 0.01,
+                springLength: 200,
+                springConstant: 0.08,
+                damping: 0.4,
+                avoidOverlap: 1,
+            },
+            stabilization: { enabled: true, iterations: 1000 },
         };
     }
 
-    // ── Compute node metrics: degree, role, size_score ──
-    // Injects data fields used by cyStyle's mapData() and role selectors.
+    // ── Map node role → vis-network visual properties (matches R visNodes) ──
+    // Small graphs: shadow=TRUE, font.size=20, borderWidth=2
+    // Large graphs: shadow=FALSE, font.size=14, borderWidth=1, scaling min=8 max=20
+    function nodeStyle(role, sizeScore, isLargeGraph) {
+        var size = isLargeGraph
+            ? 8 + (sizeScore / 100) * 12   // 8–20 (R: scaling min=8, max=20)
+            : 12 + (sizeScore / 100) * 25;  // 12–37
+        var fontSize = isLargeGraph ? 14 : 20;  // R: font.size = 14 (large) / 20 (small)
+        var strokeWidth = isLargeGraph ? 1 : 2;  // R: font.strokeWidth
+        var base = {
+            size: size,
+            font: { size: fontSize, face: 'Arial', strokeWidth: strokeWidth, strokeColor: '#ffffff' },
+            shadow: !isLargeGraph,  // R: shadow=TRUE (small), FALSE (large)
+        };
+        if (role === 'exposure') {
+            base.color = { background: COLORS.exposure, border: '#B71C1C', highlight: { background: '#EF5350', border: '#B71C1C' } };
+            base.borderWidth = isLargeGraph ? 2 : 3;
+            base.size = isLargeGraph ? 20 : 28;
+            base.font.size = isLargeGraph ? 16 : 22;
+            base.font.bold = true;
+        } else if (role === 'outcome') {
+            base.color = { background: COLORS.outcome, border: '#1B5E20', highlight: { background: '#66BB6A', border: '#1B5E20' } };
+            base.borderWidth = isLargeGraph ? 2 : 3;
+            base.size = isLargeGraph ? 20 : 28;
+            base.font.size = isLargeGraph ? 16 : 22;
+            base.font.bold = true;
+        } else {
+            base.color = { background: COLORS.other, border: '#757575', highlight: { background: '#BDBDBD', border: '#616161' } };
+            base.borderWidth = isLargeGraph ? 1 : 2;  // R: borderWidth=1 (large) / 2 (small)
+        }
+        return base;
+    }
+
+    // ── Compute node metrics and convert to vis-network DataSets ──
     function computeNodeMetrics(elements) {
-        var nodes = elements.nodes || [];
-        var edges = elements.edges || [];
+        var rawNodes = elements.nodes || [];
+        var rawEdges = elements.edges || [];
 
         // 1. Degree per node
         var degMap = {};
-        nodes.forEach(function(n) { degMap[n.data.id] = 0; });
-        edges.forEach(function(e) {
+        rawNodes.forEach(function(n) { degMap[n.data.id] = 0; });
+        rawEdges.forEach(function(e) {
             var s = e.data.source, t = e.data.target;
             if (degMap[s] !== undefined) degMap[s]++;
             if (degMap[t] !== undefined) degMap[t]++;
@@ -260,16 +115,16 @@
         // 2. Find exposure/outcome IDs
         var exposureIds = new Set();
         var outcomeIds  = new Set();
-        nodes.forEach(function(n) {
+        rawNodes.forEach(function(n) {
             var nt = n.data.node_type || n.data.type || '';
             if (nt === 'exposure') exposureIds.add(n.data.id);
             if (nt === 'outcome')  outcomeIds.add(n.data.id);
         });
 
-        // 3. Build neighbor sets: which nodes connect to exposure / outcome
+        // 3. Build neighbor sets
         var expNeighbors = new Set();
         var outNeighbors = new Set();
-        edges.forEach(function(e) {
+        rawEdges.forEach(function(e) {
             var s = e.data.source, t = e.data.target;
             if (exposureIds.has(s)) expNeighbors.add(t);
             if (exposureIds.has(t)) expNeighbors.add(s);
@@ -277,121 +132,199 @@
             if (outcomeIds.has(t))  outNeighbors.add(s);
         });
 
-        // 4. Log-scale size_score (0–100) — handles extreme skew (e.g. 329 vs 1)
+        // 4. Log-scale size_score (0–100)
         var maxDeg = Math.max.apply(null, Object.values(degMap).concat([1]));
         var logMax = Math.log(maxDeg + 1);
 
-        nodes.forEach(function(n) {
+        // 5. Build vis nodes
+        var visNodes = [];
+        rawNodes.forEach(function(n) {
             var id = n.data.id;
             var deg = degMap[id] || 0;
-            n.data.degree = deg;
-            n.data.size_score = Math.round((Math.log(deg + 1) / logMax) * 100);
+            var sizeScore = Math.round((Math.log(deg + 1) / logMax) * 100);
 
-            // Assign role for color styling
             var nt = n.data.node_type || n.data.type || '';
-            if (nt === 'exposure') {
-                n.data.role = 'exposure';
-            } else if (nt === 'outcome') {
-                n.data.role = 'outcome';
-            } else if (expNeighbors.has(id) && outNeighbors.has(id)) {
-                n.data.role = 'both_neighbor';
-            } else if (expNeighbors.has(id)) {
-                n.data.role = 'exp_neighbor';
-            } else if (outNeighbors.has(id)) {
-                n.data.role = 'out_neighbor';
-            } else {
-                n.data.role = 'other';
-            }
+            var role;
+            if (nt === 'exposure')                                    role = 'exposure';
+            else if (nt === 'outcome')                                role = 'outcome';
+            else if (expNeighbors.has(id) && outNeighbors.has(id))    role = 'both_neighbor';
+            else if (expNeighbors.has(id))                            role = 'exp_neighbor';
+            else if (outNeighbors.has(id))                            role = 'out_neighbor';
+            else                                                      role = 'other';
+
+            var isLargeGraph = rawNodes.length > 5000 || rawEdges.length > 15000;
+            var style = nodeStyle(role, sizeScore, isLargeGraph);
+            visNodes.push(Object.assign({
+                id: id,
+                label: n.data.label || id,
+                title: (n.data.label || id) + ' (degree: ' + deg + ')',
+                shape: 'dot',
+                role: role,
+                degree: deg,
+                sizeScore: sizeScore,
+                _rawData: n.data,
+            }, style));
         });
 
-        // 5. Edge score — log-scaled evidence_count (fallback to 1)
+        // 6. Edge score — log-scaled evidence_count
         var maxEvid = 1;
-        edges.forEach(function(e) {
+        rawEdges.forEach(function(e) {
             var ec = e.data.evidence_count || 1;
             if (ec > maxEvid) maxEvid = ec;
         });
         var logMaxEvid = Math.log(maxEvid + 1);
-        edges.forEach(function(e) {
+
+        var visEdges = [];
+        rawEdges.forEach(function(e) {
             var ec = e.data.evidence_count || 1;
-            e.data.edge_score = Math.round((Math.log(ec + 1) / logMaxEvid) * 100);
+            var edgeScore = Math.round((Math.log(ec + 1) / logMaxEvid) * 100);
+            var w = 0.8 + (edgeScore / 100) * 2.2;  // 0.8–3 px
+            visEdges.push({
+                id: e.data.id,
+                from: e.data.source,
+                to: e.data.target,
+                arrows: 'to',
+                width: w,
+                color: { color: '#37474F', opacity: 0.55, highlight: '#ff9800' },
+                _rawData: e.data,
+            });
         });
 
-        return elements;
+        return { visNodes: visNodes, visEdges: visEdges, nodeCount: rawNodes.length, edgeCount: rawEdges.length };
     }
 
-    // ── Initialize Cytoscape instance ──
-    function initCytoscape(rawElements) {
-        if (cy) { cy.destroy(); }
+    // ── Initialize vis-network instance ──
+    function initNetwork(rawElements) {
+        if (network) { network.destroy(); network = null; }
 
-        // Store raw server elements
         rawGraphElements = rawElements;
 
         document.getElementById('noGraphPlaceholder').style.display = 'none';
         document.getElementById('cy').style.display = 'block';
 
-        var layoutName = document.getElementById('layoutSelect')
-            ? document.getElementById('layoutSelect').value
-            : 'physics';
+        // Compute metrics and build vis DataSets
+        var metrics = computeNodeMetrics(rawElements);
+        nodesDataSet = new vis.DataSet(metrics.visNodes);
+        edgesDataSet = new vis.DataSet(metrics.visEdges);
+        var nodeCount = metrics.nodeCount;
+        var edgeCount = metrics.edgeCount;
+        var isLarge = nodeCount > 5000 || edgeCount > 15000;
 
-        // Compute degree, role, size_score for styling (mapData + role selectors)
-        var elements = computeNodeMetrics(rawElements);
-        var nodeCount = (elements.nodes || []).length;
+        var container = document.getElementById('cy');
+        var data = { nodes: nodesDataSet, edges: edgesDataSet };
 
-        var initLayout = (layoutName === 'physics')
-            ? getPhysicsLayoutOpts(nodeCount)
-            : { name: layoutName, animate: true, animationDuration: 800, padding: 30 };
+        // Edge smooth options: R uses curvedCW for small, disabled for large
+        var edgeSmooth = isLarge
+            ? { enabled: false }
+            : { enabled: true, type: 'curvedCW' };
 
-        cy = cytoscape({
-            container: document.getElementById('cy'),
-            elements: elements,
-            style: cyStyle,
-            layout: initLayout,
-            minZoom: 0.05,
-            maxZoom: 6,
-            wheelSensitivity: 0.3,
-        });
+        var options = {
+            physics: getPhysicsOptions(nodeCount, edgeCount),
+            interaction: {
+                dragNodes: true,
+                dragView: true,
+                zoomView: true,
+                hover: !isLarge ? true : true,
+                hoverConnectedEdges: !isLarge,  // R: FALSE for large
+                tooltipDelay: isLarge ? 200 : 300,  // R: 200 (large) / 300 (small)
+                keyboard: { enabled: true, speed: { x: 10, y: 10, zoom: 0.02 } },
+                navigationButtons: true,
+                selectConnectedEdges: true,
+                zoomSpeed: 0.3,
+            },
+            edges: {
+                smooth: edgeSmooth,
+                arrows: { to: { enabled: true, scaleFactor: isLarge ? 0.9 : 1 } },
+                width: isLarge ? 1.5 : undefined,
+                color: isLarge ? { color: '#666666', opacity: 0.7 } : undefined,
+            },
+            nodes: {
+                shape: 'dot',
+            },
+            layout: {
+                randomSeed: 123,  // R: visLayout(randomSeed = 123)
+            },
+        };
 
-        // Event bindings
-        cy.on('tap', 'node', onNodeTap);
-        cy.on('tap', 'edge', onEdgeTap);
-        cy.on('tap', function(evt) {
-            if (evt.target === cy) { clearSelection(); }
+        network = new vis.Network(container, data, options);
+
+        // ── Event bindings ──
+        network.on('click', function(params) {
+            if (params.nodes.length > 0) {
+                onNodeClick(params.nodes[0]);
+            } else if (params.edges.length > 0) {
+                onEdgeClick(params.edges[0]);
+            } else {
+                clearSelection();
+            }
         });
 
         updateStats(rawElements);
     }
 
-    // ── Node tap handler ──
-    function onNodeTap(evt) {
+    // ── Node click handler ──
+    function onNodeClick(nodeId) {
         clearHighlights();
-        selectedElement = evt.target;
+        var nodeData = nodesDataSet.get(nodeId);
+        if (!nodeData) return;
+        selectedElement = { type: 'node', id: nodeId, data: nodeData };
         document.getElementById('btnRemoveSelected').disabled = false;
 
-        // Highlight connected
-        const neighborhood = selectedElement.neighborhood();
-        cy.elements().addClass('faded');
-        selectedElement.removeClass('faded');
-        neighborhood.removeClass('faded');
-        neighborhood.nodes().addClass('highlighted');
-        neighborhood.edges().addClass('highlighted');
+        // Highlight: fade all, then restore selected + neighbors
+        var connEdgeIds = network.getConnectedEdges(nodeId);
+        var connNodeIds = network.getConnectedNodes(nodeId);
 
-        showNodeInfo(selectedElement.data());
+        // Fade non-connected nodes
+        var updates = [];
+        nodesDataSet.forEach(function(n) {
+            if (n.id !== nodeId && connNodeIds.indexOf(n.id) === -1) {
+                updates.push({ id: n.id, opacity: 0.12, _wasFaded: true });
+            }
+        });
+        nodesDataSet.update(updates);
+
+        // Fade non-connected edges
+        var edgeUpdates = [];
+        edgesDataSet.forEach(function(e) {
+            if (connEdgeIds.indexOf(e.id) === -1) {
+                edgeUpdates.push({ id: e.id, color: { opacity: 0.04 }, _wasFaded: true });
+            }
+        });
+        edgesDataSet.update(edgeUpdates);
+
+        showNodeInfo(nodeId);
     }
 
-    // ── Edge tap handler ──
-    function onEdgeTap(evt) {
+    // ── Edge click handler ──
+    function onEdgeClick(edgeId) {
         clearHighlights();
-        selectedElement = evt.target;
+        var edgeData = edgesDataSet.get(edgeId);
+        if (!edgeData) return;
+        selectedElement = { type: 'edge', id: edgeId, data: edgeData };
         document.getElementById('btnRemoveSelected').disabled = false;
 
-        const src = cy.getElementById(selectedElement.data('source'));
-        const tgt = cy.getElementById(selectedElement.data('target'));
-        cy.elements().addClass('faded');
-        selectedElement.removeClass('faded');
-        src.removeClass('faded').addClass('highlighted');
-        tgt.removeClass('faded').addClass('highlighted');
+        // Fade everything except this edge and its endpoints
+        var srcId = edgeData.from;
+        var tgtId = edgeData.to;
+        var updates = [];
+        nodesDataSet.forEach(function(n) {
+            if (n.id !== srcId && n.id !== tgtId) {
+                updates.push({ id: n.id, opacity: 0.12, _wasFaded: true });
+            }
+        });
+        nodesDataSet.update(updates);
 
-        showEdgeInfo(selectedElement.data(), src.data(), tgt.data());
+        var edgeUpdates = [];
+        edgesDataSet.forEach(function(e) {
+            if (e.id !== edgeId) {
+                edgeUpdates.push({ id: e.id, color: { opacity: 0.04 }, _wasFaded: true });
+            }
+        });
+        edgesDataSet.update(edgeUpdates);
+
+        var srcData = nodesDataSet.get(srcId);
+        var tgtData = nodesDataSet.get(tgtId);
+        showEdgeInfo(edgeData, srcData, tgtData);
     }
 
     // ── Clear selection ──
@@ -404,49 +337,60 @@
     }
 
     function clearHighlights() {
-        if (!cy) return;
-        cy.elements().removeClass('faded highlighted');
+        if (!nodesDataSet || !edgesDataSet) return;
+        // Restore opacity on all nodes/edges that were faded
+        var nodeUpdates = [];
+        nodesDataSet.forEach(function(n) {
+            if (n._wasFaded) nodeUpdates.push({ id: n.id, opacity: 1, _wasFaded: false });
+        });
+        if (nodeUpdates.length) nodesDataSet.update(nodeUpdates);
+
+        var edgeUpdates = [];
+        edgesDataSet.forEach(function(e) {
+            if (e._wasFaded) edgeUpdates.push({ id: e.id, color: { color: '#37474F', opacity: 0.55 }, _wasFaded: false });
+        });
+        if (edgeUpdates.length) edgesDataSet.update(edgeUpdates);
     }
 
     // ── Info panel renderers ──
-    function showNodeInfo(data) {
-        const connEdges = cy.getElementById(data.id).connectedEdges();
-        const incoming = connEdges.filter(e => e.data('target') === data.id);
-        const outgoing = connEdges.filter(e => e.data('source') === data.id);
+    function showNodeInfo(nodeId) {
+        var data = nodesDataSet.get(nodeId);
+        if (!data) return;
+        var connEdgeIds = network.getConnectedEdges(nodeId);
+        var connNodeIds = network.getConnectedNodes(nodeId);
+
+        // Count incoming/outgoing
+        var incoming = 0, outgoing = 0;
+        connEdgeIds.forEach(function(eid) {
+            var e = edgesDataSet.get(eid);
+            if (e) {
+                if (e.to === nodeId) incoming++;
+                if (e.from === nodeId) outgoing++;
+            }
+        });
 
         var role = data.role || 'other';
         var nodeColor = role === 'exposure' ? COLORS.exposure
-            : role === 'outcome' ? COLORS.outcome
-            : role === 'exp_neighbor' ? COLORS.expNeighbor
-            : role === 'out_neighbor' ? COLORS.outNeighbor
-            : role === 'both_neighbor' ? COLORS.bothNeighbor
-            : COLORS.other;
+            : role === 'outcome' ? COLORS.outcome : COLORS.other;
         var typeLabel = role === 'exposure' ? 'Exposure'
-            : role === 'outcome' ? 'Outcome'
-            : role === 'exp_neighbor' ? 'Exposure Neighbor'
-            : role === 'out_neighbor' ? 'Outcome Neighbor'
-            : role === 'both_neighbor' ? 'Shared Neighbor'
-            : 'Other';
-        let html = '<h6 style="margin:0 0 8px;color:var(--text-success)"><i class="fas fa-circle" style="color:' + nodeColor + '"></i> ' + (data.label || data.id) + '</h6>';
+            : role === 'outcome' ? 'Outcome' : 'Other';
+
+        var html = '<h6 style="margin:0 0 8px;color:var(--text-success)"><i class="fas fa-circle" style="color:' + nodeColor + '"></i> ' + (data.label || data.id) + '</h6>';
         html += infoRow('ID', data.id);
         html += infoRow('Type', typeLabel);
-        html += infoRow('Connections', connEdges.length + ' (' + incoming.length + ' in, ' + outgoing.length + ' out)');
+        html += infoRow('Connections', connEdgeIds.length + ' (' + incoming + ' in, ' + outgoing + ' out)');
 
-        // List connected nodes
-        if (connEdges.length > 0) {
+        if (connNodeIds.length > 0) {
             html += '<hr style="margin:8px 0">';
             html += '<strong style="font-size:0.83rem">Connected Nodes:</strong>';
             html += '<ul class="connected-list">';
-            const neighbors = cy.getElementById(data.id).neighborhood().nodes();
-            neighbors.forEach(function(n) {
-                var nRole = n.data('role') || 'other';
+            connNodeIds.forEach(function(nid) {
+                var n = nodesDataSet.get(nid);
+                if (!n) return;
+                var nRole = n.role || 'other';
                 var nColor = nRole === 'exposure' ? COLORS.exposure
-                    : nRole === 'outcome' ? COLORS.outcome
-                    : nRole === 'exp_neighbor' ? COLORS.expNeighbor
-                    : nRole === 'out_neighbor' ? COLORS.outNeighbor
-                    : nRole === 'both_neighbor' ? COLORS.bothNeighbor
-                    : COLORS.other;
-                html += '<li data-id="' + n.data('id') + '"><i class="fas fa-circle" style="color:' + nColor + ';font-size:8px"></i> ' + (n.data('label') || n.data('id')) + '</li>';
+                    : nRole === 'outcome' ? COLORS.outcome : COLORS.other;
+                html += '<li data-id="' + n.id + '"><i class="fas fa-circle" style="color:' + nColor + ';font-size:8px"></i> ' + (n.label || n.id) + '</li>';
             });
             html += '</ul>';
         }
@@ -456,22 +400,20 @@
         // Click to focus on connected node
         document.querySelectorAll('.connected-list li').forEach(function(li) {
             li.addEventListener('click', function() {
-                const nid = this.getAttribute('data-id');
-                const node = cy.getElementById(nid);
-                if (node.length) {
-                    cy.animate({ center: { eles: node }, zoom: cy.zoom() }, { duration: 300 });
-                    node.emit('tap');
-                }
+                var nid = this.getAttribute('data-id');
+                network.focus(nid, { scale: network.getScale(), animation: { duration: 300 } });
+                onNodeClick(nid);
             });
         });
     }
 
     function showEdgeInfo(data, srcData, tgtData) {
-        let html = '<h6 style="margin:0 0 8px;color:var(--text-warning)"><i class="fas fa-arrow-right"></i> Edge</h6>';
+        var rawData = data._rawData || data;
+        var html = '<h6 style="margin:0 0 8px;color:var(--text-warning)"><i class="fas fa-arrow-right"></i> Edge</h6>';
         html += infoRow('ID', data.id);
-        html += infoRow('Relationship', data.relationship || data.label || '—');
-        html += infoRow('Source', (srcData.label || srcData.id));
-        html += infoRow('Target', (tgtData.label || tgtData.id));
+        html += infoRow('Relationship', rawData.relationship || rawData.label || '—');
+        html += infoRow('Source', (srcData ? (srcData.label || srcData.id) : data.from));
+        html += infoRow('Target', (tgtData ? (tgtData.label || tgtData.id) : data.to));
         document.getElementById('infoPanelBody').innerHTML = html;
     }
 
@@ -481,18 +423,11 @@
 
     // ── Stats ──
     function updateStats(elements) {
-        var nodeCount, edgeCount;
-        if (Array.isArray(elements)) {
-            nodeCount = elements.filter(function(e) { return !e.data.source; }).length;
-            edgeCount = elements.filter(function(e) { return !!e.data.source; }).length;
-        } else {
-            nodeCount = (elements.nodes || []).length;
-            edgeCount = (elements.edges || []).length;
-        }
+        var nodeCount = (elements.nodes || []).length;
+        var edgeCount = (elements.edges || []).length;
         document.getElementById('statNodes').textContent = nodeCount;
         document.getElementById('statEdges').textContent = edgeCount;
     }
-
 
     // ── API helpers ──
     function apiPost(url, body) {
@@ -507,19 +442,19 @@
     function removeSelected() {
         if (!selectedElement) return;
 
-        const isNode = selectedElement.isNode();
-        const data = selectedElement.data();
+        var isNode = selectedElement.type === 'node';
+        var data = selectedElement.data;
+        var rawData = data._rawData || data;
 
-        const url = isNode ? removeNodeUrl : removeEdgeUrl;
-        const body = isNode
+        var url = isNode ? removeNodeUrl : removeEdgeUrl;
+        var body = isNode
             ? { node_id: data.id }
-            : { edge_id: data.id, from: data.source, to: data.target };
+            : { edge_id: data.id, from: rawData.source || data.from, to: rawData.target || data.to };
 
         apiPost(url, body).then(function(resp) {
             if (resp.success) {
-                // Re-render with updated raw server data
-                const elems = { nodes: resp.nodes, edges: resp.edges };
-                initCytoscape(elems);
+                var elems = { nodes: resp.nodes, edges: resp.edges };
+                initNetwork(elems);
                 document.getElementById('btnUndo').disabled = false;
                 clearSelection();
             } else {
@@ -534,8 +469,8 @@
     function undoLast() {
         apiPost(undoUrl, {}).then(function(resp) {
             if (resp.success) {
-                const elems = { nodes: resp.nodes, edges: resp.edges };
-                initCytoscape(elems);
+                var elems = { nodes: resp.nodes, edges: resp.edges };
+                initNetwork(elems);
                 clearSelection();
             } else {
                 alert(resp.error || 'Nothing to undo');
@@ -546,22 +481,17 @@
         });
     }
 
-    // ── Layout ──
+    // ── Layout switching ──
     function runLayout(name) {
-        if (!cy) return;
-        var nodeCount = cy.nodes().length;
-
-        var opts;
+        if (!network) return;
         if (name === 'physics') {
-            opts = getPhysicsLayoutOpts(nodeCount);
+            var nodeCount = nodesDataSet.length;
+            var edgeCount = edgesDataSet.length;
+            network.setOptions({ physics: getPhysicsOptions(nodeCount, edgeCount) });
         } else {
-            opts = { name: name, animate: true, animationDuration: 600, padding: 30 };
-            if (name === 'cose') {
-                opts.nodeRepulsion = function() { return 8000 * Math.max(1, nodeCount / 80); };
-                opts.idealEdgeLength = function() { return Math.min(300, nodeCount * 0.6); };
-            }
+            // Disable physics for non-physics layouts
+            network.setOptions({ physics: { enabled: false } });
         }
-        cy.layout(opts).run();
     }
 
     // ── Toggle physics controls visibility ──
@@ -579,13 +509,11 @@
             .then(function(r) { return r.json(); })
             .then(function(data) {
                 if (data.success && data.nodes && data.nodes.length > 0) {
-                    // Store raw elements then initialize (initCytoscape stores them too)
                     var elems = { nodes: data.nodes, edges: data.edges };
                     rawGraphElements = elems;
-                    initCytoscape(elems);
+                    initNetwork(elems);
                     document.getElementById('statFilename').textContent = data.filename || 'Loaded';
                 } else {
-                    // No graph in session - show placeholder
                     document.getElementById('noGraphPlaceholder').style.display = 'flex';
                     document.getElementById('cy').style.display = 'none';
                 }
@@ -624,7 +552,7 @@
         // Reset flex to stacked defaults
         graphPane.style.flex = '';
         infoPane.style.flex = '';
-        if (cy) cy.resize();
+        if (network) network.redraw();
         updateToggleLabel();
     }
 
@@ -637,7 +565,7 @@
         // Reset flex to side-by-side defaults
         graphPane.style.flex = '';
         infoPane.style.flex = '';
-        if (cy) cy.resize();
+        if (network) network.redraw();
         updateToggleLabel();
     }
 
@@ -698,7 +626,7 @@
 
                 graphPane.style.flex = '0 0 ' + graphW + 'px';
                 infoPane.style.flex = '0 0 ' + infoW + 'px';
-                if (cy) cy.resize();
+                if (network) network.redraw();
             }
             if (draggingH) {
                 var rect = wrapper.getBoundingClientRect();
@@ -722,7 +650,7 @@
 
                 graphPane.style.flex = '0 0 ' + graphH + 'px';
                 infoPane.style.flex = '0 0 ' + infoH + 'px';
-                if (cy) cy.resize();
+                if (network) network.redraw();
             }
             if (draggingBottom) {
                 var rect = wrapper.getBoundingClientRect();
@@ -758,7 +686,7 @@
                 }
 
                 wrapper.style.height = newH + 'px';
-                if (cy) cy.resize();
+                if (network) network.redraw();
             }
         });
 
@@ -767,19 +695,19 @@
                 draggingV = false;
                 handleV.classList.remove('active');
                 document.body.classList.remove('resizing-v');
-                if (cy) cy.resize();
+                if (network) network.redraw();
             }
             if (draggingH) {
                 draggingH = false;
                 handleH.classList.remove('active');
                 document.body.classList.remove('resizing-h');
-                if (cy) { cy.resize(); cy.fit(undefined, 30); }
+                if (network) { network.redraw(); network.fit(); }
             }
             if (draggingBottom) {
                 draggingBottom = false;
                 handleBottom.classList.remove('active');
                 document.body.classList.remove('resizing-h');
-                if (cy) { cy.resize(); cy.fit(undefined, 30); }
+                if (network) { network.redraw(); network.fit(); }
             }
         });
 
@@ -805,13 +733,19 @@
     // ── Button bindings ──
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('btnFit').addEventListener('click', function() {
-            if (cy) cy.fit(undefined, 30);
+            if (network) network.fit();
         });
         document.getElementById('btnZoomIn').addEventListener('click', function() {
-            if (cy) cy.zoom({ level: cy.zoom() * 1.3, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+            if (network) {
+                var scale = network.getScale() * 1.3;
+                network.moveTo({ scale: scale });
+            }
         });
         document.getElementById('btnZoomOut').addEventListener('click', function() {
-            if (cy) cy.zoom({ level: cy.zoom() / 1.3, renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 } });
+            if (network) {
+                var scale = network.getScale() / 1.3;
+                network.moveTo({ scale: scale });
+            }
         });
         document.getElementById('btnRemoveSelected').addEventListener('click', removeSelected);
         document.getElementById('btnUndo').addEventListener('click', undoLast);
@@ -824,13 +758,13 @@
             updatePhysicsControlsVisibility();
         });
 
-        // Physics strength slider — live-update label; re-run layout on release
+        // Physics strength slider — maps to gravitationalConstant (-500 to 0)
         var physicsSlider = document.getElementById('physicsStrength');
         var physicsVal = document.getElementById('physicsStrengthVal');
         if (physicsSlider) {
             physicsSlider.addEventListener('input', function() {
-                physicsRepulsion = parseInt(this.value, 10);
-                if (physicsVal) physicsVal.textContent = physicsRepulsion.toLocaleString();
+                physicsStrength = parseInt(this.value, 10);
+                if (physicsVal) physicsVal.textContent = physicsStrength;
             });
             physicsSlider.addEventListener('change', function() {
                 if (document.getElementById('layoutSelect').value === 'physics') {
@@ -847,7 +781,7 @@
             } else {
                 switchToSide();
             }
-            if (cy) cy.fit(undefined, 30);
+            if (network) network.fit();
         });
 
         // Initialize resizable drag handles
