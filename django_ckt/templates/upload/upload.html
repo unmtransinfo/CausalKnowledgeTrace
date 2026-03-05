@@ -254,6 +254,17 @@
                 currentGraphStatus.classList.remove('status-value');
                 currentGraphStatus.style.color = '#3c763d';
                 setTimeout(() => showLoadProgress(false), 1500);
+
+                // Show top notification banner
+                if (typeof showTopNotification === 'function') {
+                    showTopNotification({
+                        title: 'Graph Loaded Successfully!',
+                        body: data.message + ' — Go to Graph Visualization to explore your graph.',
+                        type: 'success',
+                        duration: 8000,
+                        action: { text: 'Go to Graph Visualization', url: '/visualization/' }
+                    });
+                }
             } else {
                 showStatus('Error: ' + data.error, 'error');
                 showLoadProgress(false);
@@ -288,6 +299,17 @@
                 showStatus(data.message, 'success');
                 loadFileList(); // Refresh file list
                 setTimeout(() => showUploadProgress(false), 1500);
+
+                // Show top notification banner
+                if (typeof showTopNotification === 'function') {
+                    showTopNotification({
+                        title: 'File Uploaded Successfully!',
+                        body: data.message + ' — Go to Graph Visualization to explore your graph.',
+                        type: 'success',
+                        duration: 8000,
+                        action: { text: 'Go to Graph Visualization', url: '/visualization/' }
+                    });
+                }
             } else {
                 showStatus('Upload error: ' + data.error, 'error');
                 showUploadProgress(false);

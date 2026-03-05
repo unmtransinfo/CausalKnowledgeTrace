@@ -24,6 +24,9 @@
     <!-- Navigation Bar -->
     {% include 'navbar.html' %}
     
+    <!-- Top Notification Banner -->
+    <div id="ckt-top-notification"></div>
+
     <!-- Main Content -->
     <div class="content-wrapper">
         <div class="container-fluid">
@@ -51,13 +54,71 @@
     
     <!-- Bootstrap 5 JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    
+
     <!-- vis-network JS (same library as Shiny/R visNetwork) -->
     <script src="https://unpkg.com/vis-network@9.1.6/dist/vis-network.min.js"></script>
-    
+
+    <!-- Global Top Notification Utility -->
+    <script>
+    /**
+     * Show a top notification banner.
+     * @param {Object} options
+     * @param {string} options.title    - Bold title text
+     * @param {string} [options.body]   - Optional secondary text
+     * @param {string} [options.type]   - 'success' | 'error' | 'info' (default 'success')
+     * @param {number} [options.duration] - Auto-dismiss ms (0 = manual only, default 6000)
+     * @param {Object} [options.action] - Optional action button {text, url}
+     */
+    function showTopNotification(options) {
+        var el = document.getElementById('ckt-top-notification');
+        if (!el) return;
+
+        var type = options.type || 'success';
+        var duration = options.duration !== undefined ? options.duration : 6000;
+
+        var iconMap = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+        var iconClass = iconMap[type] || iconMap.success;
+
+        var html = '<div class="ckt-notif-bar ckt-notif-' + type + '">';
+        html += '<i class="fas ' + iconClass + ' ckt-notif-icon"></i>';
+        html += '<div class="ckt-notif-text">';
+        html += '<span class="ckt-notif-title">' + (options.title || '') + '</span>';
+        if (options.body) {
+            html += '<span class="ckt-notif-body">' + options.body + '</span>';
+        }
+        html += '</div>';
+
+        if (options.action && options.action.url) {
+            html += '<a href="' + options.action.url + '" class="ckt-notif-action">' +
+                (options.action.text || 'Go') + '</a>';
+        }
+
+        html += '<button type="button" class="ckt-notif-close" onclick="dismissTopNotification()">\u00D7</button>';
+        html += '</div>';
+
+        el.innerHTML = html;
+        // Force reflow then show
+        el.classList.remove('show');
+        void el.offsetWidth;
+        el.classList.add('show');
+
+        if (el._autoDismissTimer) clearTimeout(el._autoDismissTimer);
+        if (duration > 0) {
+            el._autoDismissTimer = setTimeout(function() { dismissTopNotification(); }, duration);
+        }
+    }
+
+    function dismissTopNotification() {
+        var el = document.getElementById('ckt-top-notification');
+        if (!el) return;
+        el.classList.remove('show');
+        if (el._autoDismissTimer) { clearTimeout(el._autoDismissTimer); el._autoDismissTimer = null; }
+    }
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>
