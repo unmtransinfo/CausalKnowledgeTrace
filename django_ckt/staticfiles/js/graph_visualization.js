@@ -65,35 +65,24 @@
         };
     }
 
-    // ── Map node role → vis-network visual properties (matches R visNodes) ──
-    // Small graphs: shadow=TRUE, font.size=20, borderWidth=2
-    // Large graphs: shadow=FALSE, font.size=14, borderWidth=1, scaling min=8 max=20
-    function nodeStyle(role, sizeScore, isLargeGraph) {
-        var size = isLargeGraph
-            ? 8 + (sizeScore / 100) * 12   // 8–20 (R: scaling min=8, max=20)
-            : 12 + (sizeScore / 100) * 25;  // 12–37
-        var fontSize = isLargeGraph ? 14 : 20;  // R: font.size = 14 (large) / 20 (small)
-        var strokeWidth = isLargeGraph ? 1 : 2;  // R: font.strokeWidth
+    // ── Map node role → vis-network visual properties ──
+    function nodeStyle(role) {
         var base = {
-            size: size,
-            font: { size: fontSize, face: 'Arial', strokeWidth: strokeWidth, strokeColor: '#ffffff' },
-            shadow: !isLargeGraph,  // R: shadow=TRUE (small), FALSE (large)
+            size: 26,
+            font: { size: 18, face: 'Arial', strokeWidth: 2, strokeColor: '#ffffff' },
+            shadow: true,
+            borderWidth: 2,
         };
         if (role === 'exposure') {
             base.color = { background: COLORS.exposure, border: '#B71C1C', highlight: { background: '#EF5350', border: '#B71C1C' } };
-            base.borderWidth = isLargeGraph ? 2 : 3;
-            base.size = isLargeGraph ? 20 : 28;
-            base.font.size = isLargeGraph ? 16 : 22;
+            base.borderWidth = 3;
             base.font.bold = true;
         } else if (role === 'outcome') {
             base.color = { background: COLORS.outcome, border: '#1B5E20', highlight: { background: '#66BB6A', border: '#1B5E20' } };
-            base.borderWidth = isLargeGraph ? 2 : 3;
-            base.size = isLargeGraph ? 20 : 28;
-            base.font.size = isLargeGraph ? 16 : 22;
+            base.borderWidth = 3;
             base.font.bold = true;
         } else {
             base.color = { background: COLORS.other, border: '#757575', highlight: { background: '#BDBDBD', border: '#616161' } };
-            base.borderWidth = isLargeGraph ? 1 : 2;  // R: borderWidth=1 (large) / 2 (small)
         }
         return base;
     }
@@ -152,8 +141,7 @@
             else if (outNeighbors.has(id))                            role = 'out_neighbor';
             else                                                      role = 'other';
 
-            var isLargeGraph = rawNodes.length > 5000 || rawEdges.length > 15000;
-            var style = nodeStyle(role, sizeScore, isLargeGraph);
+            var style = nodeStyle(role);
             visNodes.push(Object.assign({
                 id: id,
                 label: n.data.label || id,
