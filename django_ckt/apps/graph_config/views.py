@@ -84,36 +84,52 @@ class GraphConfigView(TemplateView):
 def search_cui(request):
     """
     API endpoint to search for CUIs by name.
+    Supports type='subject' (exposure), 'object' (outcome), or 'both' (blocklist).
     """
     try:
         query = request.GET.get('q', '')
-        search_type = request.GET.get('type', 'subject')  # 'subject' or 'object'
-        
-        if len(query) < 2:
+        search_type = request.GET.get('type', 'subject')  # 'subject', 'object', or 'both'
+
+        if len(query) < 3:
             return JsonResponse({
                 'success': True,
                 'results': []
             })
-        
-        # Search in appropriate table
+
+        def _serialize(qs):
+            """Serialize a queryset of SubjectSearch or ObjectSearch rows."""
+            return [
+                {
+                    'cui': r.cui,
+                    'name': r.name,
+                    'semtype': r.semtype or [],
+                    'semtype_definition': r.semtype_definition or [],
+                }
+                for r in qs
+            ]
+
         if search_type == 'subject':
-            results = SubjectSearch.objects.filter(
-                name__icontains=query
-            )[:20]
+            results = SubjectSearch.objects.filter(name__icontains=query)[:50]
+            cui_list = _serialize(results)
+        elif search_type == 'object':
+            results = ObjectSearch.objects.filter(name__icontains=query)[:50]
+            cui_list = _serialize(results)
         else:
-            results = ObjectSearch.objects.filter(
-                name__icontains=query
-            )[:20]
-        
-        cui_list = [
-            {
-                'cui': r.cui,
-                'name': r.name,
-                'semtype': r.semtype if hasattr(r, 'semtype') else None
-            }
-            for r in results
-        ]
-        
+            # 'both' — query both tables and combine, dedup by CUI
+            subj = SubjectSearch.objects.filter(name__icontains=query)[:50]
+            obj = ObjectSearch.objects.filter(name__icontains=query)[:50]
+            seen = set()
+            cui_list = []
+            for r in list(subj) + list(obj):
+                if r.cui not in seen:
+                    seen.add(r.cui)
+                    cui_list.append({
+                        'cui': r.cui,
+                        'name': r.name,
+                        'semtype': r.semtype or [],
+                        'semtype_definition': r.semtype_definition or [],
+                    })
+
         return JsonResponse({
             'success': True,
             'results': cui_list
