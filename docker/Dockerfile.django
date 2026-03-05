@@ -17,7 +17,7 @@ FROM python:3.11-slim AS builder
 
 WORKDIR /build
 
-# Install system dependencies required for psycopg2 and other C extensions
+# Install system dependencies required for psycopg2 (C extension needs libpq headers)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
