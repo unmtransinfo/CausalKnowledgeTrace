@@ -281,6 +281,17 @@ function handleFormSuccess(response) {
             $('#graph_progress_section').hide();
             $('#create_graph_btn').prop('disabled', false);
 
+            // Show top notification banner
+            if (typeof showTopNotification === 'function') {
+                showTopNotification({
+                    title: 'Graph Configuration Saved Successfully!',
+                    body: 'Your settings have been saved. Proceed to Data Upload to load and visualize your graph.',
+                    type: 'success',
+                    duration: 8000,
+                    action: { text: 'Go to Data Upload', url: '/upload/' }
+                });
+            }
+
             // Update validation feedback to show success
             $('#validation_feedback_area').html(
                 '<div class="alert alert-success mb-0">' +
