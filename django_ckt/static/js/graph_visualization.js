@@ -68,7 +68,7 @@
     // ── Map node role → vis-network visual properties ──
     function nodeStyle(role) {
         var base = {
-            size: 26,
+            size: 40,
             font: { size: 18, face: 'Arial', strokeWidth: 2, strokeColor: '#ffffff' },
             shadow: true,
             borderWidth: 2,
