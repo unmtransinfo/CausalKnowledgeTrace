@@ -191,9 +191,16 @@ def generate_graph(request):
         # TODO: Implement graph generation using Python graph_creation modules
         # This will call the existing Python code in graph_creation/
 
+        # Build a descriptive graph name for the notification
+        graph_name = f"{exposure_name}_to_{outcome_name}_degree{degree}"
+
         return JsonResponse({
             'success': True,
-            'message': 'Configuration saved to user_input.yaml. Graph generation will be implemented.',
+            'message': f'Graph "{graph_name}" created successfully.',
+            'graph_name': graph_name,
+            'exposure_name': exposure_name,
+            'outcome_name': outcome_name,
+            'degree': degree,
             'config_path': yaml_path,
             'task_id': 'placeholder'  # TODO: Implement async task tracking
         })
