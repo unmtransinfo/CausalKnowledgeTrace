@@ -345,7 +345,6 @@
         var data = nodesDataSet.get(nodeId);
         if (!data) return;
         var connEdgeIds = network.getConnectedEdges(nodeId);
-        var connNodeIds = network.getConnectedNodes(nodeId);
 
         // Count incoming/outgoing
         var incoming = 0, outgoing = 0;
@@ -363,46 +362,229 @@
         var typeLabel = role === 'exposure' ? 'Exposure'
             : role === 'outcome' ? 'Outcome' : 'Other';
 
-        var html = '<h6 style="margin:0 0 8px;color:var(--text-success)"><i class="fas fa-circle" style="color:' + nodeColor + '"></i> ' + (data.label || data.id) + '</h6>';
-        html += infoRow('ID', data.id);
-        html += infoRow('Type', typeLabel);
-        html += infoRow('Connections', connEdgeIds.length + ' (' + incoming + ' in, ' + outgoing + ' out)');
-
-        if (connNodeIds.length > 0) {
-            html += '<hr style="margin:8px 0">';
-            html += '<strong style="font-size:0.83rem">Connected Nodes:</strong>';
-            html += '<ul class="connected-list">';
-            connNodeIds.forEach(function(nid) {
-                var n = nodesDataSet.get(nid);
-                if (!n) return;
-                var nRole = n.role || 'other';
-                var nColor = nRole === 'exposure' ? COLORS.exposure
-                    : nRole === 'outcome' ? COLORS.outcome : COLORS.other;
-                html += '<li data-id="' + n.id + '"><i class="fas fa-circle" style="color:' + nColor + ';font-size:8px"></i> ' + (n.label || n.id) + '</li>';
+        // Build evidence rows from all connected edges
+        var edgeInfoArray = [];
+        connEdgeIds.forEach(function(eid) {
+            var e = edgesDataSet.get(eid);
+            if (!e) return;
+            var rawData = e._rawData || e;
+            var srcNode = nodesDataSet.get(e.from);
+            var tgtNode = nodesDataSet.get(e.to);
+            edgeInfoArray.push({
+                rawData: rawData,
+                fromLabel: srcNode ? (srcNode.label || srcNode.id) : e.from,
+                toLabel: tgtNode ? (tgtNode.label || tgtNode.id) : e.to,
             });
-            html += '</ul>';
-        }
+        });
 
+        currentEvidenceRows = buildEvidenceRows(edgeInfoArray);
+        currentEvidencePage = 1;
+        currentEvidenceFilter = '';
+
+        // Build header with node summary + evidence table
+        var headerHtml = '<div class="node-info-summary">';
+        headerHtml += '<h6 style="margin:0 0 8px"><i class="fas fa-circle" style="color:' + nodeColor + '"></i> ' + escapeHtml(data.label || data.id) + '</h6>';
+        headerHtml += infoRow('Type', typeLabel);
+        headerHtml += infoRow('Connections', connEdgeIds.length + ' (' + incoming + ' in, ' + outgoing + ' out)');
+        headerHtml += '</div>';
+
+        var title = 'Node Information: ' + (data.label || data.id);
+        var html = headerHtml + renderEvidenceTable(title);
         document.getElementById('infoPanelBody').innerHTML = html;
+        bindEvidenceEvents(title);
+    }
 
-        // Click to focus on connected node
-        document.querySelectorAll('.connected-list li').forEach(function(li) {
-            li.addEventListener('click', function() {
-                var nid = this.getAttribute('data-id');
-                network.focus(nid, { scale: network.getScale(), animation: { duration: 300 } });
-                onNodeClick(nid);
+    // ── Evidence table helpers ──
+    var EVIDENCE_PAGE_SIZE = 10;
+    var currentEvidenceRows = [];
+    var currentEvidencePage = 1;
+    var currentEvidenceFilter = '';
+
+    function buildEvidenceRows(edgeDataArray) {
+        // edgeDataArray: array of { fromLabel, predicate, toLabel, pmid, sentence }
+        var rows = [];
+        edgeDataArray.forEach(function(edgeInfo) {
+            var rawData = edgeInfo.rawData || {};
+            var pmidData = rawData.pmid_data || {};
+            var fromLabel = edgeInfo.fromLabel;
+            var toLabel = edgeInfo.toLabel;
+            var predicate = rawData.predicate || rawData.relationship || rawData.label || '—';
+            var fromCui = rawData.subject_cui ? ' [' + rawData.subject_cui + ']' : '';
+            var toCui = rawData.object_cui ? ' [' + rawData.object_cui + ']' : '';
+
+            var pmids = Object.keys(pmidData);
+            if (pmids.length === 0) {
+                // No PMID data, add a single row
+                rows.push({
+                    fromNode: fromLabel + fromCui,
+                    predicate: predicate,
+                    toNode: toLabel + toCui,
+                    pmid: '—',
+                    sentence: '—',
+                });
+            } else {
+                pmids.forEach(function(pmid) {
+                    var sentences = pmidData[pmid] || [];
+                    if (sentences.length === 0) {
+                        rows.push({
+                            fromNode: fromLabel + fromCui,
+                            predicate: predicate,
+                            toNode: toLabel + toCui,
+                            pmid: pmid,
+                            sentence: '—',
+                        });
+                    } else {
+                        // Combine all sentences for this PMID into one row
+                        var combinedSentence = sentences.join(' ');
+                        if (combinedSentence.length > 300) {
+                            combinedSentence = combinedSentence.substring(0, 300) + '...';
+                        }
+                        rows.push({
+                            fromNode: fromLabel + fromCui,
+                            predicate: predicate,
+                            toNode: toLabel + toCui,
+                            pmid: pmid,
+                            sentence: combinedSentence,
+                        });
+                    }
+                });
+            }
+        });
+        return rows;
+    }
+
+    function getFilteredRows() {
+        if (!currentEvidenceFilter) return currentEvidenceRows;
+        var q = currentEvidenceFilter.toLowerCase();
+        return currentEvidenceRows.filter(function(r) {
+            return r.fromNode.toLowerCase().indexOf(q) !== -1 ||
+                   r.predicate.toLowerCase().indexOf(q) !== -1 ||
+                   r.toNode.toLowerCase().indexOf(q) !== -1 ||
+                   r.pmid.toLowerCase().indexOf(q) !== -1 ||
+                   r.sentence.toLowerCase().indexOf(q) !== -1;
+        });
+    }
+
+    function renderEvidenceTable(title) {
+        var filtered = getFilteredRows();
+        var totalRows = filtered.length;
+        var totalPages = Math.max(1, Math.ceil(totalRows / EVIDENCE_PAGE_SIZE));
+        if (currentEvidencePage > totalPages) currentEvidencePage = totalPages;
+        var startIdx = (currentEvidencePage - 1) * EVIDENCE_PAGE_SIZE;
+        var endIdx = Math.min(startIdx + EVIDENCE_PAGE_SIZE, totalRows);
+        var pageRows = filtered.slice(startIdx, endIdx);
+
+        var html = '<div class="evidence-header">';
+        html += '<h6 class="evidence-title"><i class="fas fa-arrow-right"></i> ' + title + '</h6>';
+        html += '<div class="evidence-search"><label>Search: <input type="text" id="evidenceSearchInput" value="' + escapeHtml(currentEvidenceFilter) + '"></label></div>';
+        html += '</div>';
+
+        html += '<div class="evidence-table-wrap"><table class="evidence-table">';
+        html += '<thead><tr>';
+        html += '<th>From Node</th><th>Predicate</th><th>To Node</th><th>PMID</th><th>Causal Sentences</th>';
+        html += '</tr></thead><tbody>';
+
+        if (pageRows.length === 0) {
+            html += '<tr><td colspan="5" style="text-align:center;color:#999;">No matching records found.</td></tr>';
+        } else {
+            pageRows.forEach(function(r) {
+                var pmidCell = r.pmid !== '—'
+                    ? '<a href="https://pubmed.ncbi.nlm.nih.gov/' + r.pmid + '/" target="_blank" rel="noopener">' + r.pmid + '</a>'
+                    : '—';
+                html += '<tr>';
+                html += '<td>' + escapeHtml(r.fromNode) + '</td>';
+                html += '<td>' + escapeHtml(r.predicate) + '</td>';
+                html += '<td>' + escapeHtml(r.toNode) + '</td>';
+                html += '<td>' + pmidCell + '</td>';
+                html += '<td class="sentence-cell">' + escapeHtml(r.sentence) + '</td>';
+                html += '</tr>';
+            });
+        }
+        html += '</tbody></table></div>';
+
+        // Pagination
+        html += '<div class="evidence-pagination">';
+        html += '<span class="evidence-page-info">Showing ' + (totalRows > 0 ? startIdx + 1 : 0) + ' to ' + endIdx + ' of ' + totalRows + ' entries</span>';
+        html += '<span class="evidence-page-buttons">';
+        html += '<button class="btn btn-sm btn-outline-secondary" id="evidencePrev"' + (currentEvidencePage <= 1 ? ' disabled' : '') + '>Previous</button>';
+        for (var p = 1; p <= totalPages && p <= 7; p++) {
+            html += '<button class="btn btn-sm ' + (p === currentEvidencePage ? 'btn-primary' : 'btn-outline-secondary') + ' evidence-page-btn" data-page="' + p + '">' + p + '</button>';
+        }
+        if (totalPages > 7) {
+            html += '<span>...</span>';
+            html += '<button class="btn btn-sm btn-outline-secondary evidence-page-btn" data-page="' + totalPages + '">' + totalPages + '</button>';
+        }
+        html += '<button class="btn btn-sm btn-outline-secondary" id="evidenceNext"' + (currentEvidencePage >= totalPages ? ' disabled' : '') + '>Next</button>';
+        html += '</span></div>';
+
+        return html;
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function bindEvidenceEvents(title) {
+        var searchInput = document.getElementById('evidenceSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                currentEvidenceFilter = this.value;
+                currentEvidencePage = 1;
+                document.getElementById('infoPanelBody').innerHTML = renderEvidenceTable(title);
+                bindEvidenceEvents(title);
+            });
+            // Focus the search input and restore cursor position
+            searchInput.focus();
+            searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+        }
+        var prevBtn = document.getElementById('evidencePrev');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                if (currentEvidencePage > 1) {
+                    currentEvidencePage--;
+                    document.getElementById('infoPanelBody').innerHTML = renderEvidenceTable(title);
+                    bindEvidenceEvents(title);
+                }
+            });
+        }
+        var nextBtn = document.getElementById('evidenceNext');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                var filtered = getFilteredRows();
+                var totalPages = Math.max(1, Math.ceil(filtered.length / EVIDENCE_PAGE_SIZE));
+                if (currentEvidencePage < totalPages) {
+                    currentEvidencePage++;
+                    document.getElementById('infoPanelBody').innerHTML = renderEvidenceTable(title);
+                    bindEvidenceEvents(title);
+                }
+            });
+        }
+        document.querySelectorAll('.evidence-page-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                currentEvidencePage = parseInt(this.getAttribute('data-page'), 10);
+                document.getElementById('infoPanelBody').innerHTML = renderEvidenceTable(title);
+                bindEvidenceEvents(title);
             });
         });
     }
 
     function showEdgeInfo(data, srcData, tgtData) {
         var rawData = data._rawData || data;
-        var html = '<h6 style="margin:0 0 8px;color:var(--text-warning)"><i class="fas fa-arrow-right"></i> Edge</h6>';
-        html += infoRow('ID', data.id);
-        html += infoRow('Relationship', rawData.relationship || rawData.label || '—');
-        html += infoRow('Source', (srcData ? (srcData.label || srcData.id) : data.from));
-        html += infoRow('Target', (tgtData ? (tgtData.label || tgtData.id) : data.to));
-        document.getElementById('infoPanelBody').innerHTML = html;
+        var fromLabel = srcData ? (srcData.label || srcData.id) : data.from;
+        var toLabel = tgtData ? (tgtData.label || tgtData.id) : data.to;
+
+        currentEvidenceRows = buildEvidenceRows([{
+            rawData: rawData,
+            fromLabel: fromLabel,
+            toLabel: toLabel,
+        }]);
+        currentEvidencePage = 1;
+        currentEvidenceFilter = '';
+
+        var title = 'Edge Information: ' + fromLabel + ' → ' + toLabel;
+        document.getElementById('infoPanelBody').innerHTML = renderEvidenceTable(title);
+        bindEvidenceEvents(title);
     }
 
     function infoRow(label, value) {

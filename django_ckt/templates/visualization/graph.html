@@ -4,7 +4,7 @@
 {% block title %}Graph Visualization - CKT{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/graph_visualization.css' %}?v=3">
+<link rel="stylesheet" href="{% static 'css/graph_visualization.css' %}?v=4">
 {% endblock %}
 
 {% block content %}
@@ -121,6 +121,6 @@
     const undoUrl = '{% url "visualization:undo" %}';
     const csrfToken = '{{ csrf_token }}';
 </script>
-<script src="{% static 'js/graph_visualization.js' %}?v=6"></script>
+<script src="{% static 'js/graph_visualization.js' %}?v=7"></script>
 {% endblock %}
 
