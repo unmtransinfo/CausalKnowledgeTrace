@@ -1,5 +1,9 @@
 """
 Django settings for CausalKnowledgeTrace project.
+
+Environment-aware configuration:
+  - ENVIRONMENT=development  → DEBUG=True,  relaxed security
+  - ENVIRONMENT=production   → DEBUG=False, hardened security
 """
 
 import os
@@ -9,16 +13,46 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load .env file from the django_ckt directory, overriding any existing shell env vars
+# Load .env file from the django_ckt directory, overriding any existing shell env vars.
+# In Docker the env vars come from env_file / environment in docker-compose,
+# so this is mainly useful for local (non-Docker) development.
 load_dotenv(BASE_DIR / '.env', override=True)
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-dev-key-change-in-production')
+# Detect environment once — used throughout this file
+ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
+IS_PRODUCTION = ENVIRONMENT == 'production'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('ENVIRONMENT', 'development') == 'development'
+# ---------------------------------------------------------------------------
+# Security — SECRET_KEY
+# ---------------------------------------------------------------------------
+# In production the key MUST be set via DJANGO_SECRET_KEY env var.
+# The insecure fallback only works when ENVIRONMENT != production.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '')
+if not SECRET_KEY:
+    if IS_PRODUCTION:
+        raise ValueError(
+            "DJANGO_SECRET_KEY environment variable is required in production. "
+            "Generate one with: python -c \"from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())\""
+        )
+    SECRET_KEY = 'django-insecure-dev-key-change-in-production'
 
-ALLOWED_HOSTS = ['*']  # Configure appropriately for production
+# ---------------------------------------------------------------------------
+# Debug
+# ---------------------------------------------------------------------------
+DEBUG = not IS_PRODUCTION
+
+# ---------------------------------------------------------------------------
+# Allowed Hosts
+# ---------------------------------------------------------------------------
+# Parsed from a comma-separated env var.  Falls back to permissive defaults
+# only in development; production MUST supply an explicit list.
+_allowed = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
+if _allowed:
+    ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()]
+elif IS_PRODUCTION:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+else:
+    ALLOWED_HOSTS = ['*']  # permissive in dev only
 
 # Application definition
 INSTALLED_APPS = [
@@ -118,8 +152,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Application port configuration
-APP_PORT = int(os.environ.get('APP_PORT', '3838'))
+# Application port configuration (used by Gunicorn via DJANGO_PORT env var)
+DJANGO_PORT = int(os.environ.get('DJANGO_PORT', '3838'))
 
 # R modules path
 R_MODULES_PATH = BASE_DIR / 'r_modules'
@@ -133,6 +167,8 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 86400  # 24 hours
 
 # Logging configuration
+# In Docker, logs go to stdout/stderr (captured by Docker logging driver).
+# The file handler is kept for local/non-Docker runs.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -143,12 +179,6 @@ LOGGING = {
         },
     },
     'handlers': {
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR.parent / 'logs' / 'django_app.log',
-            'formatter': 'verbose',
-        },
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
@@ -156,8 +186,52 @@ LOGGING = {
         },
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': 'INFO',
     },
 }
+
+# Try to add file handler — may fail in Docker if logs dir doesn't exist
+_log_dir = BASE_DIR.parent / 'logs'
+if _log_dir.exists():
+    LOGGING['handlers']['file'] = {
+        'level': 'INFO',
+        'class': 'logging.FileHandler',
+        'filename': _log_dir / 'django_app.log',
+        'formatter': 'verbose',
+    }
+    LOGGING['root']['handlers'].append('file')
+
+# ---------------------------------------------------------------------------
+# Production Security Hardening
+# ---------------------------------------------------------------------------
+# These settings are only enabled when ENVIRONMENT=production.
+# They protect against common web vulnerabilities (XSS, clickjacking,
+# session hijacking, CSRF, etc.)
+# ---------------------------------------------------------------------------
+if IS_PRODUCTION:
+    # CSRF — trusted origins for cross-site POST requests
+    _csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+    if _csrf_origins:
+        CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',') if o.strip()]
+
+    # Cookie security — mark cookies Secure so they're only sent over HTTPS.
+    # Set to False if running behind a TLS-terminating proxy on plain HTTP internally.
+    SESSION_COOKIE_SECURE = os.environ.get('SESSION_COOKIE_SECURE', 'True') == 'True'
+    CSRF_COOKIE_SECURE = os.environ.get('CSRF_COOKIE_SECURE', 'True') == 'True'
+
+    # HTTP Strict Transport Security — tell browsers to always use HTTPS
+    # Only enable if the entire site is served over HTTPS
+    SECURE_HSTS_SECONDS = int(os.environ.get('SECURE_HSTS_SECONDS', '0'))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = SECURE_HSTS_SECONDS > 0
+    SECURE_HSTS_PRELOAD = SECURE_HSTS_SECONDS > 0
+
+    # Redirect HTTP → HTTPS (disable if TLS is terminated at load balancer)
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False') == 'True'
+
+    # Prevent the browser from MIME-sniffing the content type
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
+    # X-Frame-Options — prevent clickjacking
+    X_FRAME_OPTIONS = 'DENY'
 

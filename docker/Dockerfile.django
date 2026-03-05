@@ -1,0 +1,87 @@
+# =============================================================================
+# Django CausalKnowledgeTrace Dockerfile
+# =============================================================================
+# Uses a multi-stage build:
+#   Stage 1 (builder): installs Python deps and collects static files
+#   Stage 2 (runtime): slim image with only what's needed to run
+#
+# Gunicorn is used as the WSGI server because:
+#   - It's the de-facto production WSGI server for Django
+#   - Pre-fork worker model handles concurrent requests efficiently
+#   - Battle-tested, widely deployed, simple configuration
+#   - Works well behind a reverse proxy (Nginx, Traefik, etc.)
+# =============================================================================
+
+# --------------- Stage 1: Builder ---------------
+FROM python:3.11-slim AS builder
+
+WORKDIR /build
+
+# Install system dependencies required for psycopg2 and other C extensions
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy only requirements first to leverage Docker layer caching.
+# This layer is rebuilt only when requirements.txt changes.
+COPY django_ckt/requirements.txt /build/requirements.txt
+
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
+
+# --------------- Stage 2: Runtime ---------------
+FROM python:3.11-slim
+
+# Install only the runtime library needed by psycopg2 (no compiler)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed Python packages from the builder stage
+COPY --from=builder /install /usr/local
+
+WORKDIR /app
+
+# Copy the Django project source code
+COPY django_ckt/ /app/
+
+# Create a non-root user for security — never run production containers as root
+RUN groupadd -r django && useradd -r -g django django
+
+# Create directories for static files, media uploads, and logs.
+# Ownership is set to the non-root user so Gunicorn can write to them.
+RUN mkdir -p /app/staticfiles /app/media /app/logs \
+    && chown -R django:django /app
+
+# Collect static files at build time so they're ready to serve.
+# DJANGO_SECRET_KEY is provided as a dummy value — it's only needed here
+# so collectstatic doesn't fail; the real key comes from env at runtime.
+RUN DJANGO_SECRET_KEY=build-placeholder \
+    ENVIRONMENT=production \
+    python manage.py collectstatic --noinput
+
+# Switch to non-root user
+USER django
+
+# Expose the Django port (documentation; actual mapping is in docker-compose)
+# Dev uses 3837, Prod uses 3838 — set via DJANGO_PORT env var
+EXPOSE 3838
+
+# ---------------------------------------------------------------------------
+# Gunicorn configuration:
+#   --bind 0.0.0.0:PORT    Listen on all interfaces inside the container
+#   --workers 4             Number of pre-fork worker processes (2*CPU+1 rule)
+#   --timeout 120           Kill workers that are silent for >120s (long queries)
+#   --access-logfile -      Write access logs to stdout (captured by Docker)
+#   --error-logfile -       Write error logs to stderr (captured by Docker)
+# Workers can be overridden at runtime via GUNICORN_WORKERS env var.
+# ---------------------------------------------------------------------------
+CMD ["sh", "-c", \
+    "python manage.py migrate --noinput && \
+     gunicorn config.wsgi:application \
+       --bind 0.0.0.0:${DJANGO_PORT:-3838} \
+       --workers ${GUNICORN_WORKERS:-4} \
+       --timeout 120 \
+       --access-logfile - \
+       --error-logfile -"]
+
