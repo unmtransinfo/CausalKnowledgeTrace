@@ -13,10 +13,11 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load .env file from the django_ckt directory, overriding any existing shell env vars.
-# In Docker the env vars come from env_file / environment in docker-compose,
-# so this is mainly useful for local (non-Docker) development.
-load_dotenv(BASE_DIR / '.env', override=True)
+# Load .env file from the django_ckt directory as FALLBACK values.
+# override=False means Docker/shell env vars take precedence over the .env file.
+# This way, docker-compose `environment:` entries (e.g. DB_HOST=db-dev) are not
+# clobbered by the local .env file (which has DB_HOST=localhost for non-Docker use).
+load_dotenv(BASE_DIR / '.env', override=False)
 
 # Detect environment once — used throughout this file
 ENVIRONMENT = os.environ.get('ENVIRONMENT', 'development')
@@ -154,9 +155,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application port configuration (used by Gunicorn via DJANGO_PORT env var)
 DJANGO_PORT = int(os.environ.get('DJANGO_PORT', '3838'))
-
-# R modules path
-R_MODULES_PATH = BASE_DIR / 'r_modules'
 
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB

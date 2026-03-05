@@ -32,7 +32,7 @@ def calculate_adjustment_sets(request):
         outcome = data.get('outcome')
         effect_type = data.get('effect_type', 'total')
         
-        # TODO: Implement adjustment set calculation using R dagitty interface
+        # TODO: Implement adjustment set calculation
         
         return JsonResponse({
             'success': True,
@@ -56,7 +56,7 @@ def find_instrumental_variables(request):
         exposure = data.get('exposure')
         outcome = data.get('outcome')
         
-        # TODO: Implement instrumental variable search using R dagitty interface
+        # TODO: Implement instrumental variable search
         
         return JsonResponse({
             'success': True,
@@ -81,7 +81,7 @@ def analyze_causal_paths(request):
         to_var = data.get('to')
         limit = data.get('limit', 10)
         
-        # TODO: Implement causal path analysis using R dagitty interface
+        # TODO: Implement causal path analysis
         
         return JsonResponse({
             'success': True,
@@ -101,7 +101,7 @@ def get_dag_variables(request):
     API endpoint to get all variables in the current DAG.
     """
     try:
-        # TODO: Implement variable extraction using R dagitty interface
+        # TODO: Implement variable extraction
         
         return JsonResponse({
             'success': True,
