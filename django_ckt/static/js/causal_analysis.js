@@ -478,6 +478,9 @@
             renderSummary(d);
             show('analysisResults');
 
+            // Auto-fire cycle analysis in background (non-blocking)
+            runCycleAnalysis();
+
             return apiGet(variablesUrl);
         }).then(function (d) {
             if (d && d.success) {
