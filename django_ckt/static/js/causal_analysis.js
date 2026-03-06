@@ -50,7 +50,7 @@
     }
 
     // ── populate variable dropdowns ──
-    function populateDropdowns(variables) {
+    function populateDropdowns(variables, exposures, outcomes) {
         allVariables = variables;
         var selFrom = document.getElementById('pathFrom');
         var selTo = document.getElementById('pathTo');
@@ -61,7 +61,9 @@
             selFrom.innerHTML += '<option value="' + v + '">' + label + '</option>';
             selTo.innerHTML += '<option value="' + v + '">' + label + '</option>';
         });
-        if (variables.length > 1) selTo.selectedIndex = 1;
+        // Pre-select exposure as source and outcome as target
+        if (exposures && exposures.length > 0) selFrom.value = exposures[0];
+        if (outcomes && outcomes.length > 0) selTo.value = outcomes[0];
     }
 
     // ── find paths ──
@@ -274,7 +276,7 @@
             return apiGet(variablesUrl);
         }).then(function (d) {
             if (d && d.success) {
-                populateDropdowns(d.variables);
+                populateDropdowns(d.variables, d.exposures, d.outcomes);
                 populateCIDropdowns(d.variables, d.exposures, d.outcomes);
             }
         }).catch(function () {
