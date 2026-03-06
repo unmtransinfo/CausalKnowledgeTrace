@@ -26,11 +26,6 @@
         setText('acNodes', d.node_count);
         setText('acEdges', d.edge_count);
         setText('acDensity', d.density.toFixed(6));
-        // total_cycles is loaded asynchronously — keep spinner if null
-        if (d.total_cycles !== null && d.total_cycles !== undefined) {
-            setText('acTotalCycles', d.total_cycles.toLocaleString());
-        }
-        setText('acCycles', d.cycle_count + ' (' + d.cycle_node_count + ' nodes)');
         setText('filenameLabel', d.filename);
 
         // predicate table
@@ -482,17 +477,6 @@
             }
             renderSummary(d);
             show('analysisResults');
-
-            // Fire async total_cycles fetch (non-blocking)
-            apiGet(totalCyclesUrl).then(function (r) {
-                if (r && r.success) {
-                    setText('acTotalCycles', r.total_cycles.toLocaleString());
-                } else {
-                    setText('acTotalCycles', 'err');
-                }
-            }).catch(function () {
-                setText('acTotalCycles', 'err');
-            });
 
             return apiGet(variablesUrl);
         }).then(function (d) {
