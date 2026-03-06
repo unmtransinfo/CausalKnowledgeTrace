@@ -9,6 +9,7 @@ app_name = 'analysis'
 urlpatterns = [
     path('', views.CausalAnalysisView.as_view(), name='causal'),
     path('api/graph-summary/', views.get_graph_summary, name='graph_summary'),
+    path('api/total-cycles/', views.get_total_cycles, name='total_cycles'),
     path('api/variables/', views.get_dag_variables, name='variables'),
     path('api/causal-paths/', views.analyze_causal_paths, name='causal_paths'),
     # New pipeline-backed endpoints (stages 3-6)

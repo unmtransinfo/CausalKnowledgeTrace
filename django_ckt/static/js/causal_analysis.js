@@ -26,6 +26,10 @@
         setText('acNodes', d.node_count);
         setText('acEdges', d.edge_count);
         setText('acDensity', d.density.toFixed(6));
+        // total_cycles is loaded asynchronously — keep spinner if null
+        if (d.total_cycles !== null && d.total_cycles !== undefined) {
+            setText('acTotalCycles', d.total_cycles.toLocaleString());
+        }
         setText('acCycles', d.cycle_count + ' (' + d.cycle_node_count + ' nodes)');
         setText('filenameLabel', d.filename);
 
@@ -149,9 +153,9 @@
         apiPost(nodeRemovalUrl, body).then(function (d) {
             if (!d.success) { div.innerHTML = '<p class="text-danger">' + d.error + '</p>'; return; }
             var html = '<div class="row g-3 mb-3">';
-            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.baseline_cycles + '</strong><br>Baseline Cycles</div></div>';
-            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.combined_cycles + '</strong><br>After Removal</div></div>';
-            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.reduced_nodes + ' / ' + d.reduced_edges + '</strong><br>Nodes / Edges</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.baseline_cycles.toLocaleString() + '</strong><br>Baseline Cycles</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.combined_cycles.toLocaleString() + '</strong><br>Cycles After Removal</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.reduced_nodes + ' / ' + d.reduced_edges + '</strong><br>Reduced Graph (Nodes / Edges)</div></div>';
             html += '<div class="col-md-3"><div class="stat-box ' + (d.is_dag_after ? 'stat-success' : 'stat-warning') + '"><strong>' + (d.is_dag_after ? 'YES' : 'NO') + '</strong><br>Is DAG?</div></div>';
             html += '</div>';
 
@@ -371,6 +375,18 @@
             }
             renderSummary(d);
             show('analysisResults');
+
+            // Fire async total_cycles fetch (non-blocking)
+            apiGet(totalCyclesUrl).then(function (r) {
+                if (r && r.success) {
+                    setText('acTotalCycles', r.total_cycles.toLocaleString());
+                } else {
+                    setText('acTotalCycles', 'err');
+                }
+            }).catch(function () {
+                setText('acTotalCycles', 'err');
+            });
+
             return apiGet(variablesUrl);
         }).then(function (d) {
             if (d && d.success) {

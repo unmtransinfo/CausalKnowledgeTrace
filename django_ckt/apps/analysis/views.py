@@ -15,6 +15,7 @@ from apps.core.graph_utils import get_selected_graph
 from apps.analysis.pipeline_bridge import (
     cytoscape_to_networkx,
     analyze_graph_summary,
+    compute_total_cycles,
     analyze_cycles,
     analyze_node_removal,
     analyze_post_removal,
@@ -87,6 +88,20 @@ def get_graph_summary(request):
     summary['success'] = True
     summary['filename'] = filename
     return JsonResponse(summary)
+
+
+# ── API: total cycles (async, separate from summary) ─────────────────
+
+@require_http_methods(["GET"])
+def get_total_cycles(request):
+    """Compute total cycle count asynchronously (expensive)."""
+    try:
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
+    except (ValueError, FileNotFoundError) as exc:
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+    total_cycles = compute_total_cycles(G)
+    return JsonResponse({'success': True, 'total_cycles': total_cycles})
 
 
 # ── API: variables ───────────────────────────────────────────────────

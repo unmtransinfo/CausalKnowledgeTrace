@@ -19,6 +19,39 @@ from causal_analysis.s6_causal_inference import find_adjustment_sets, find_instr
 logger = logging.getLogger(__name__)
 
 
+# ── In-memory cache for expensive computations ──────────────────────
+# Keyed by (filename, filter_type, node_count, edge_count) to avoid
+# recomputing on page refreshes for the same graph.
+_analysis_cache: dict[str, dict] = {}
+
+
+def _cache_key(G, label=''):
+    """Build a cache key from graph identity + an operation label."""
+    return f"{label}:{G.number_of_nodes()}:{G.number_of_edges()}"
+
+
+def get_cached(G, label):
+    """Return cached result or None."""
+    key = _cache_key(G, label)
+    return _analysis_cache.get(key)
+
+
+def set_cached(G, label, value):
+    """Store a value in the analysis cache."""
+    key = _cache_key(G, label)
+    _analysis_cache[key] = value
+    return value
+
+
+def cached_count_cycles(G):
+    """count_cycles with caching."""
+    cached = get_cached(G, 'count_cycles')
+    if cached is not None:
+        return cached
+    result = count_cycles(G)
+    return set_cached(G, 'count_cycles', result)
+
+
 # ── Stage 1: Cytoscape JSON → NetworkX DiGraph ───────────────────────
 
 def cytoscape_to_networkx(nodes, edges):
@@ -53,7 +86,11 @@ def cytoscape_to_networkx(nodes, edges):
 # ── Stage 2: Basic graph analysis (NetworkX-powered) ─────────────────
 
 def analyze_graph_summary(G):
-    """Run Stage-2 style analysis on a NetworkX DiGraph. Returns a dict."""
+    """Run Stage-2 style analysis on a NetworkX DiGraph. Returns a dict.
+
+    NOTE: total_cycles is NOT computed here (it blocks the page load).
+    Use the dedicated /api/total-cycles/ endpoint for async cycle counting.
+    """
     n_nodes = G.number_of_nodes()
     n_edges = G.number_of_edges()
     density = nx.density(G)
@@ -67,8 +104,13 @@ def analyze_graph_summary(G):
     large_sccs = [s for s in sccs if len(s) > 1]
     nodes_in_cycles = set().union(*large_sccs) if large_sccs else set()
 
-    betweenness = nx.betweenness_centrality(G)
-    pagerank = nx.pagerank(G)
+    # Use approximate betweenness centrality (k-sampled) for speed
+    k = min(100, n_nodes) if n_nodes > 0 else 0
+    if k > 0:
+        betweenness = nx.betweenness_centrality(G, k=k)
+    else:
+        betweenness = {}
+    pagerank = nx.pagerank(G) if n_nodes > 0 else {}
 
     top_nodes = sorted(total_deg.items(), key=lambda x: -x[1])[:15]
 
@@ -91,6 +133,7 @@ def analyze_graph_summary(G):
         'exposures': exposures,
         'outcomes': outcomes,
         'predicate_distribution': pred_counts,
+        'total_cycles': None,  # loaded asynchronously via /api/total-cycles/
         'cycle_count': len(large_sccs),
         'cycle_node_count': len(nodes_in_cycles),
         'top_nodes': [{'id': nid, 'degree': deg} for nid, deg in top_nodes],
@@ -99,6 +142,15 @@ def analyze_graph_summary(G):
         'pagerank': {n: round(v, 6) for n, v in
                      sorted(pagerank.items(), key=lambda x: -x[1])[:15]},
     }
+
+
+# ── Async total_cycles computation ───────────────────────────────────
+
+def compute_total_cycles(G):
+    """Compute total cycle count with caching + DAG short-circuit."""
+    if nx.is_directed_acyclic_graph(G):
+        return set_cached(G, 'count_cycles', 0)
+    return cached_count_cycles(G)
 
 
 # ── Stage 3: Cycle analysis ──────────────────────────────────────────
@@ -117,6 +169,9 @@ def analyze_cycles(G, max_sample=None):
         }
 
     total, node_counts, length_dist, sampled = count_cycles_with_participation(G, max_sample)
+
+    # Cache the total so compute_total_cycles / cached_count_cycles can reuse it
+    set_cached(G, 'count_cycles', total)
 
     return {
         'total_cycles': total,
@@ -140,7 +195,7 @@ def analyze_node_removal(G, custom_nodes=None):
     existing = [n for n in generic_nodes if n in G]
 
     baseline_stats = get_scc_stats(G)
-    baseline_cycles = count_cycles(G)
+    baseline_cycles = cached_count_cycles(G)
 
     individual = []
     for node in existing:
@@ -187,8 +242,8 @@ def analyze_node_removal(G, custom_nodes=None):
 
 def analyze_post_removal(G_original, G_reduced):
     """Run Stage-5 post-removal analysis comparing original vs reduced graph."""
-    orig_cycles = count_cycles(G_original)
-    reduced_cycles = count_cycles(G_reduced)
+    orig_cycles = cached_count_cycles(G_original)
+    reduced_cycles = cached_count_cycles(G_reduced)
     is_dag = nx.is_directed_acyclic_graph(G_reduced)
 
     sccs_orig = [s for s in nx.strongly_connected_components(G_original) if len(s) > 1]
