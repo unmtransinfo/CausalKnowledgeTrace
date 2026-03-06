@@ -93,9 +93,9 @@ def find_instrumental_variables(G: nx.DiGraph, exposure: str, outcome: str) -> l
     if exposure not in G or outcome not in G:
         return []
 
-    # Build graph without exposure to check exclusion
-    G_no_exp = G.copy()
-    G_no_exp.remove_node(exposure)
+    # Build a subgraph view without exposure to check exclusion (no copy needed)
+    nodes_without_exp = set(G.nodes()) - {exposure}
+    G_no_exp = G.subgraph(nodes_without_exp)
     anc_out_no_exp = nx.ancestors(G_no_exp, outcome) if outcome in G_no_exp else set()
 
     parents_exp = set(G.predecessors(exposure))

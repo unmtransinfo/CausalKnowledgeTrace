@@ -164,6 +164,13 @@
                 });
                 html += '</tbody></table>';
             }
+
+            // Show saved reduced graph path for CLI usage
+            if (d.reduced_graph_path) {
+                html += '<div class="alert alert-info py-2 mt-3"><i class="fas fa-save"></i> <strong>Reduced graph saved:</strong> <code>' + d.reduced_graph_path + '</code>';
+                html += '<br><small class="text-muted">Use with CLI: <code>python run_bias_analysis.py ' + d.reduced_graph_path + ' &lt;exposure&gt; &lt;outcome&gt;</code></small></div>';
+            }
+
             div.innerHTML = html;
         }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
     }
