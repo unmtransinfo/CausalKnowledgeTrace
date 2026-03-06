@@ -158,9 +158,9 @@
 
             if (d.individual_impact && d.individual_impact.length > 0) {
                 html += '<h6>Individual Node Impact</h6>';
-                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycles Removed</th><th class="text-end">% Reduction</th><th class="text-end">Remaining SCCs</th></tr></thead><tbody>';
+                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycles Removed</th><th class="text-end">% Reduction</th></tr></thead><tbody>';
                 d.individual_impact.forEach(function (n) {
-                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.cycles_removed + '</td><td class="text-end">' + n.percent_reduction + '%</td><td class="text-end">' + n.remaining_sccs + '</td></tr>';
+                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.cycles_removed + '</td><td class="text-end">' + n.percent_reduction + '%</td></tr>';
                 });
                 html += '</tbody></table>';
             }
@@ -435,13 +435,16 @@
             var mb = d.mbias || {};
             html += '<h6 class="mt-4"><i class="fas fa-project-diagram"></i> M-Bias</h6>';
             if (mb.mbias_vars && mb.mbias_vars.length > 0) {
-                html += '<div class="alert alert-danger py-2 mb-2"><i class="fas fa-exclamation-circle"></i> <strong>' + mb.mbias_vars.length + ' M-bias variable(s) detected</strong> — do NOT condition on these</div>';
+                var cappedNote = mb.capped ? ' (showing top ' + mb.mbias_vars.length + ')' : '';
+                html += '<div class="alert alert-danger py-2 mb-2"><i class="fas fa-exclamation-circle"></i> <strong>' + mb.mbias_vars.length + ' M-bias variable(s) detected' + cappedNote + '</strong> — do NOT condition on these</div>';
                 mb.mbias_vars.forEach(function (v) {
                     var det = (mb.mbias_details && mb.mbias_details[v]) || {};
                     html += '<div class="mb-2"><span class="badge bg-danger me-1">' + v.replace(/_/g, ' ') + '</span>';
                     html += '<small class="text-muted">parents: </small>';
                     (det.parents || []).forEach(function (p) { html += '<span class="badge bg-secondary me-1">' + p.replace(/_/g, ' ') + '</span>'; });
-                    html += '<small class="text-muted ms-2">(' + (det.num_paths || 0) + ' path(s))</small>';
+                    if (det.sample_path && det.sample_path.length > 0) {
+                        html += '<small class="text-muted ms-2">path: ' + det.sample_path.join(' → ') + '</small>';
+                    }
                     html += '</div>';
                 });
             } else {
