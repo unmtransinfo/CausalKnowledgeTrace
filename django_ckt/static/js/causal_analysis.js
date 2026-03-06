@@ -356,9 +356,116 @@
             selExp.innerHTML += '<option value="' + v + '">' + label + '</option>';
             selOut.innerHTML += '<option value="' + v + '">' + label + '</option>';
         });
-        // Pre-select exposure/outcome if available
         if (exposures && exposures.length > 0) selExp.value = exposures[0];
         if (outcomes && outcomes.length > 0) selOut.value = outcomes[0];
+    }
+
+    // ── populate bias analysis dropdowns ──
+    function populateBiasDropdowns(variables, exposures, outcomes) {
+        var selExp = document.getElementById('biasExposure');
+        var selOut = document.getElementById('biasOutcome');
+        selExp.innerHTML = '';
+        selOut.innerHTML = '';
+        variables.forEach(function (v) {
+            var label = v.replace(/_/g, ' ');
+            selExp.innerHTML += '<option value="' + v + '">' + label + '</option>';
+            selOut.innerHTML += '<option value="' + v + '">' + label + '</option>';
+        });
+        if (exposures && exposures.length > 0) selExp.value = exposures[0];
+        if (outcomes && outcomes.length > 0) selOut.value = outcomes[0];
+    }
+
+    // ── bias analysis ──
+    function runBiasAnalysis() {
+        var exposure = document.getElementById('biasExposure').value;
+        var outcome = document.getElementById('biasOutcome').value;
+        var div = document.getElementById('biasResults');
+        if (!exposure || !outcome) { div.innerHTML = '<p class="text-muted">Select exposure and outcome.</p>'; return; }
+        if (exposure === outcome) { div.innerHTML = '<p class="text-warning">Exposure and outcome must differ.</p>'; return; }
+        div.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Running bias analysis…</div>';
+
+        apiPost(biasAnalysisUrl, { exposure: exposure, outcome: outcome }).then(function (d) {
+            if (!d.success) { div.innerHTML = '<p class="text-danger">' + (d.error || d.warnings.join(', ')) + '</p>'; return; }
+            var html = '';
+
+            // Warnings
+            if (d.warnings && d.warnings.length > 0) {
+                html += '<div class="alert alert-warning py-2 mb-2">';
+                d.warnings.forEach(function (w) { html += '<div><i class="fas fa-exclamation-triangle"></i> ' + w + '</div>'; });
+                html += '</div>';
+            }
+
+            // Graph info
+            html += '<div class="row g-3 mb-3">';
+            html += '<div class="col-md-3"><div class="stat-box ' + (d.is_dag ? 'stat-success' : 'stat-warning') + '"><strong>' + (d.is_dag ? 'DAG ✓' : 'Cyclic ✗') + '</strong><br>Graph Status</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box stat-success"><strong>Reduced Graph</strong><br>Analysis On</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.node_count + ' / ' + d.edge_count + '</strong><br>Nodes / Edges</div></div>';
+            html += '</div>';
+
+            // Variable Roles
+            var roles = d.roles || {};
+            html += '<h6 class="mt-3"><i class="fas fa-tags"></i> Variable Roles</h6>';
+            html += renderRoleSection('Confounders', roles.confounders, 'bg-warning text-dark');
+            html += renderRoleSection('Mediators', roles.mediators, 'bg-info');
+            html += renderRoleSection('Colliders', roles.colliders, 'bg-secondary');
+            html += renderRoleSection('Instrumental Variables', roles.instrumental_variables, 'bg-success');
+            html += renderRoleSection('Precision Variables', roles.precision_variables, 'bg-primary');
+            html += renderRoleSection('Adjustment Set', roles.adjustment_set, 'bg-dark');
+
+            // Butterfly Bias
+            var bfly = d.butterfly || {};
+            html += '<h6 class="mt-4"><i class="fas fa-bug"></i> Butterfly Bias</h6>';
+            if (bfly.butterfly_vars && bfly.butterfly_vars.length > 0) {
+                html += '<div class="alert alert-danger py-2 mb-2"><i class="fas fa-exclamation-circle"></i> <strong>' + bfly.butterfly_vars.length + ' butterfly bias variable(s) detected</strong></div>';
+                bfly.butterfly_vars.forEach(function (v) {
+                    var pars = (bfly.butterfly_parents && bfly.butterfly_parents[v]) || [];
+                    html += '<div class="mb-2"><span class="badge bg-danger me-1">' + v.replace(/_/g, ' ') + '</span>';
+                    html += '<small class="text-muted">parents: </small>';
+                    pars.forEach(function (p) { html += '<span class="badge bg-warning text-dark me-1">' + p.replace(/_/g, ' ') + '</span>'; });
+                    html += '</div>';
+                });
+                if (bfly.valid_sets && bfly.valid_sets.length > 0) {
+                    html += '<div class="mt-2"><strong>Valid adjustment sets (avoiding butterfly bias):</strong></div>';
+                    bfly.valid_sets.forEach(function (s, i) {
+                        html += '<div class="mb-1"><small class="text-muted">Set ' + (i + 1) + ':</small> ';
+                        s.forEach(function (n) { html += '<span class="badge bg-primary me-1 mb-1">' + n.replace(/_/g, ' ') + '</span>'; });
+                        html += '</div>';
+                    });
+                }
+            } else {
+                html += '<p class="text-success mb-2"><i class="fas fa-check-circle"></i> No butterfly bias detected.</p>';
+            }
+
+            // M-Bias
+            var mb = d.mbias || {};
+            html += '<h6 class="mt-4"><i class="fas fa-project-diagram"></i> M-Bias</h6>';
+            if (mb.mbias_vars && mb.mbias_vars.length > 0) {
+                html += '<div class="alert alert-danger py-2 mb-2"><i class="fas fa-exclamation-circle"></i> <strong>' + mb.mbias_vars.length + ' M-bias variable(s) detected</strong> — do NOT condition on these</div>';
+                mb.mbias_vars.forEach(function (v) {
+                    var det = (mb.mbias_details && mb.mbias_details[v]) || {};
+                    html += '<div class="mb-2"><span class="badge bg-danger me-1">' + v.replace(/_/g, ' ') + '</span>';
+                    html += '<small class="text-muted">parents: </small>';
+                    (det.parents || []).forEach(function (p) { html += '<span class="badge bg-secondary me-1">' + p.replace(/_/g, ' ') + '</span>'; });
+                    html += '<small class="text-muted ms-2">(' + (det.num_paths || 0) + ' path(s))</small>';
+                    html += '</div>';
+                });
+            } else {
+                html += '<p class="text-success mb-2"><i class="fas fa-check-circle"></i> No M-bias detected.</p>';
+            }
+
+            div.innerHTML = html;
+        }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
+    }
+
+    function renderRoleSection(label, items, badgeClass) {
+        var html = '<div class="mb-2"><small class="text-muted">' + label + ' (' + (items ? items.length : 0) + '):</small> ';
+        if (items && items.length > 0) {
+            html += renderBadgeList(items, badgeClass, 8);
+        } else {
+            html += '<span class="text-muted">None</span>';
+        }
+        html += '</div>';
+        return html;
     }
 
     // ── init ──
@@ -392,6 +499,7 @@
             if (d && d.success) {
                 populateDropdowns(d.variables, d.exposures, d.outcomes);
                 populateCIDropdowns(d.variables, d.exposures, d.outcomes);
+                populateBiasDropdowns(d.variables, d.exposures, d.outcomes);
             }
         }).catch(function () {
             hide('analysisLoading');
@@ -403,6 +511,7 @@
         document.getElementById('btnRunNodeRemoval').addEventListener('click', runNodeRemoval);
         document.getElementById('btnRunPostRemoval').addEventListener('click', runPostRemoval);
         document.getElementById('btnRunCausalInference').addEventListener('click', runCausalInference);
+        document.getElementById('btnRunBiasAnalysis').addEventListener('click', runBiasAnalysis);
     });
 })();
 

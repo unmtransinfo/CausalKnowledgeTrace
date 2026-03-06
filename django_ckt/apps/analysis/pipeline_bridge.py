@@ -15,6 +15,7 @@ from causal_analysis.config import GENERIC_NODES, CYCLE_CONFIG, NODE_REMOVAL_CON
 from causal_analysis.s3_cycle_analysis import count_cycles_with_participation
 from causal_analysis.s4_node_removal import count_cycles, get_scc_stats
 from causal_analysis.s6_causal_inference import find_adjustment_sets, find_instrumental_variables
+from causal_analysis.s7_bias_analysis import analyze_bias
 
 logger = logging.getLogger(__name__)
 
