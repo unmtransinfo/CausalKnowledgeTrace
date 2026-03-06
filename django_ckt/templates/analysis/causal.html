@@ -203,34 +203,6 @@
         </div>
     </div>
 
-    <!-- ── Stage 7: M-Bias & Butterfly Bias Analysis ── -->
-    <div class="row g-4 mt-2 mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-bug"></i> M-Bias &amp; Butterfly Bias Analysis (Reduced Graph)</span>
-                    <button class="btn btn-sm btn-outline-danger" id="btnRunBiasAnalysis">
-                        <i class="fas fa-play"></i> Run Bias Analysis
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div class="row g-2 mb-3">
-                        <div class="col">
-                            <label class="form-label form-label-sm">Exposure</label>
-                            <select class="form-select form-select-sm" id="biasExposure"></select>
-                        </div>
-                        <div class="col">
-                            <label class="form-label form-label-sm">Outcome</label>
-                            <select class="form-select form-select-sm" id="biasOutcome"></select>
-                        </div>
-                    </div>
-                    <div id="biasResults" class="analysis-results-placeholder">
-                        <p class="text-muted"><i class="fas fa-info-circle"></i> Run <strong>Node Removal</strong> first to create a reduced graph, then select exposure and outcome to run M-bias and butterfly bias detection.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 {% endblock %}
 
@@ -243,7 +215,6 @@
     const nodeRemovalUrl = '{% url "analysis:node_removal" %}';
     const postRemovalUrl = '{% url "analysis:post_removal" %}';
     const causalInferenceUrl = '{% url "analysis:causal_inference" %}';
-    const biasAnalysisUrl = '{% url "analysis:bias_analysis" %}';
     const csrfToken = '{{ csrf_token }}';
 </script>
 <script src="{% static 'js/causal_analysis.js' %}?v=1"></script>
