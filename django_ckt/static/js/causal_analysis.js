@@ -108,9 +108,11 @@
 
             if (d.node_participation && d.node_participation.length > 0) {
                 html += '<h6>Top Cycle-Participating Nodes</h6>';
-                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycle Count</th></tr></thead><tbody>';
+                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycle Count</th><th class="text-end">% of Total</th></tr></thead><tbody>';
+                var totalCycles = d.total_cycles || 1;
                 d.node_participation.forEach(function (n) {
-                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.count + '</td></tr>';
+                    var pct = ((n.count / totalCycles) * 100).toFixed(1);
+                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.count + '</td><td class="text-end">' + pct + '%</td></tr>';
                 });
                 html += '</tbody></table>';
             }
@@ -118,8 +120,12 @@
             if (d.sampled_cycles && d.sampled_cycles.length > 0) {
                 html += '<h6>Sample Cycles</h6><div class="path-list">';
                 d.sampled_cycles.slice(0, 10).forEach(function (c) {
+                    var cycleNodes = c.nodes.slice();
+                    if (cycleNodes.length > 0) {
+                        cycleNodes.push(cycleNodes[0]);
+                    }
                     html += '<div class="path-item"><span class="path-num">Len ' + c.length + '</span> ';
-                    html += c.nodes.map(function (n) { return '<span class="path-node">' + n.replace(/_/g, ' ') + '</span>'; }).join(' → ');
+                    html += cycleNodes.map(function (n) { return '<span class="path-node">' + n.replace(/_/g, ' ') + '</span>'; }).join(' → ');
                     html += '</div>';
                 });
                 html += '</div>';
