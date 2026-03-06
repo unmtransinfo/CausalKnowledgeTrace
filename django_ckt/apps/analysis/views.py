@@ -28,7 +28,6 @@ from apps.analysis.pipeline_bridge import (
     analyze_node_removal,
     analyze_post_removal,
     analyze_causal_inference,
-    analyze_bias,
 )
 
 logger = logging.getLogger(__name__)
@@ -306,50 +305,6 @@ def get_causal_inference(request):
         'has_reduced': has_reduced,
     })
 
-
-# ── API: bias analysis (M-bias + Butterfly bias) ─────────────────────
-
-@require_http_methods(["POST"])
-def get_bias_analysis(request):
-    """M-bias and butterfly bias analysis on the graph."""
-    try:
-        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
-    except (ValueError, FileNotFoundError) as exc:
-        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
-
-    data = json.loads(request.body)
-    exposure = data.get('exposure')
-    outcome = data.get('outcome')
-
-    if not exposure or not outcome:
-        return JsonResponse({
-            'success': False, 'error': 'Both exposure and outcome are required'
-        }, status=400)
-
-    # Bias analysis runs ONLY on the reduced graph
-    reduced_data = request.session.get('_reduced_graph_data')
-    if not reduced_data:
-        return JsonResponse({
-            'success': False,
-            'error': 'No reduced graph available. Run Node Removal first to create a reduced graph, then run bias analysis.'
-        }, status=400)
-
-    reduced_G = nx.DiGraph()
-    reduced_G.add_nodes_from(reduced_data['nodes'])
-    reduced_G.add_edges_from(reduced_data['edges'])
-
-    if exposure not in reduced_G or outcome not in reduced_G:
-        return JsonResponse({
-            'success': False,
-            'error': f'Exposure "{exposure}" or outcome "{outcome}" not found in the reduced graph. They may have been removed during node removal.'
-        }, status=400)
-
-    result = analyze_bias(reduced_G, exposure, outcome)
-    result['filename'] = filename
-    result['graph_type'] = 'reduced'
-    result['node_count'] = reduced_G.number_of_nodes()
-    result['edge_count'] = reduced_G.number_of_edges()
-    return JsonResponse(result)
 
 
 # ── Legacy endpoints (now backed by pipeline) ────────────────────────
