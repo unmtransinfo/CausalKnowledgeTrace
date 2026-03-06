@@ -91,27 +91,29 @@
             </div>
         </div>
 
-        <!-- Right: Causal Path Finder -->
+        <!-- Right: Causal Path Finder (abs-positioned so it never inflates row height) -->
         <div class="col-lg-6">
-            <div class="card">
-                <div class="card-header"><i class="fas fa-route"></i> Causal Path Finder</div>
-                <div class="card-body">
-                    <div class="row g-2 mb-3">
-                        <div class="col">
-                            <label class="form-label form-label-sm">From (source)</label>
-                            <select class="form-select form-select-sm" id="pathFrom"></select>
+            <div class="pathfinder-anchor">
+                <div class="card card-pathfinder d-flex flex-column">
+                    <div class="card-header"><i class="fas fa-route"></i> Causal Path Finder</div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="row g-2 mb-3">
+                            <div class="col">
+                                <label class="form-label form-label-sm">From (source)</label>
+                                <select class="form-select form-select-sm" id="pathFrom"></select>
+                            </div>
+                            <div class="col">
+                                <label class="form-label form-label-sm">To (target)</label>
+                                <select class="form-select form-select-sm" id="pathTo"></select>
+                            </div>
+                            <div class="col-auto d-flex align-items-end">
+                                <button class="btn btn-sm btn-primary" id="btnFindPaths">
+                                    <i class="fas fa-search"></i> Find Paths
+                                </button>
+                            </div>
                         </div>
-                        <div class="col">
-                            <label class="form-label form-label-sm">To (target)</label>
-                            <select class="form-select form-select-sm" id="pathTo"></select>
-                        </div>
-                        <div class="col-auto d-flex align-items-end">
-                            <button class="btn btn-sm btn-primary" id="btnFindPaths">
-                                <i class="fas fa-search"></i> Find Paths
-                            </button>
-                        </div>
+                        <div id="pathResults" class="path-results flex-grow-1"></div>
                     </div>
-                    <div id="pathResults" class="path-results"></div>
                 </div>
             </div>
         </div>

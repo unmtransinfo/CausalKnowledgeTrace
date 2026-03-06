@@ -133,21 +133,27 @@ function formatDefinition(defs) {
 function renderResultsTable(results, resultsDiv, selectedInput, sortState) {
     resultsDiv.empty();
 
+    // Column definitions: key, label, data accessor
+    var columns = [
+        { key: 'cui',        label: 'CUI',        accessor: function(r) { return r.cui; } },
+        { key: 'name',       label: 'Name',        accessor: function(r) { return r.name; } },
+        { key: 'definition', label: 'Definition',  accessor: function(r) { return formatDefinition(r.semtype_definition); } },
+        { key: 'type',       label: 'Type',         accessor: function(r) { return formatDefinition(r.semtype); } }
+    ];
+
     // Sort results if a column is selected
     if (sortState.col !== null) {
-        var col = sortState.col;
-        var asc = sortState.asc;
-        results = results.slice().sort(function(a, b) {
-            var valA, valB;
-            if (col === 'cui') { valA = a.cui; valB = b.cui; }
-            else if (col === 'name') { valA = a.name; valB = b.name; }
-            else { valA = formatDefinition(a.semtype_definition); valB = formatDefinition(b.semtype_definition); }
-            valA = (valA || '').toLowerCase();
-            valB = (valB || '').toLowerCase();
-            if (valA < valB) return asc ? -1 : 1;
-            if (valA > valB) return asc ? 1 : -1;
-            return 0;
-        });
+        var sortCol = columns.find(function(c) { return c.key === sortState.col; });
+        if (sortCol) {
+            var asc = sortState.asc;
+            results = results.slice().sort(function(a, b) {
+                var valA = (sortCol.accessor(a) || '').toLowerCase();
+                var valB = (sortCol.accessor(b) || '').toLowerCase();
+                if (valA < valB) return asc ? -1 : 1;
+                if (valA > valB) return asc ? 1 : -1;
+                return 0;
+            });
+        }
     }
 
     // Build table
@@ -158,21 +164,20 @@ function renderResultsTable(results, resultsDiv, selectedInput, sortState) {
     var headerRow = $('<tr></tr>');
     headerRow.append('<th class="cui-col-num">#</th>');
 
-    ['cui', 'name', 'definition'].forEach(function(colKey) {
-        var label = colKey === 'cui' ? 'CUI' : colKey === 'name' ? 'Name' : 'Definition';
-        var th = $('<th class="cui-col-sortable"></th>');
+    columns.forEach(function(col) {
+        var th = $('<th class="cui-col-sortable cui-col-' + col.key + '"></th>');
         var arrow = '';
-        if (sortState.col === colKey) {
-            arrow = sortState.asc ? ' ↑' : ' ↓';
+        if (sortState.col === col.key) {
+            arrow = sortState.asc ? ' ▲' : ' ▼';
         } else {
-            arrow = ' ↕';
+            arrow = ' ⇅';
         }
-        th.html(label + '<span class="sort-arrow">' + arrow + '</span>');
+        th.html(col.label + '<span class="sort-arrow">' + arrow + '</span>');
         th.on('click', function() {
-            if (sortState.col === colKey) {
+            if (sortState.col === col.key) {
                 sortState.asc = !sortState.asc;
             } else {
-                sortState.col = colKey;
+                sortState.col = col.key;
                 sortState.asc = true;
             }
             renderResultsTable(results, resultsDiv, selectedInput, sortState);
@@ -185,11 +190,13 @@ function renderResultsTable(results, resultsDiv, selectedInput, sortState) {
     // Body
     var tbody = $('<tbody></tbody>');
     results.forEach(function(item, idx) {
-        var row = $('<tr class="cui-result-row"></tr>');
+        var rowClass = 'cui-result-row' + (idx % 2 === 1 ? ' cui-row-stripe' : '');
+        var row = $('<tr class="' + rowClass + '"></tr>');
         row.append('<td class="cui-col-num">' + (idx + 1) + '</td>');
         row.append('<td class="cui-col-cui"><span class="cui-code">' + item.cui + '</span></td>');
         row.append('<td class="cui-col-name">' + item.name + '</td>');
         row.append('<td class="cui-col-def">' + formatDefinition(item.semtype_definition) + '</td>');
+        row.append('<td class="cui-col-type">' + formatDefinition(item.semtype) + '</td>');
         row.on('click', function() {
             addCUIToSelected(item.cui, selectedInput);
             $(this).addClass('cui-row-selected');
