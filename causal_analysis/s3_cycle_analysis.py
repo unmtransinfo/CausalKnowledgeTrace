@@ -38,7 +38,9 @@ def load_graph(exposure: str, outcome: str) -> nx.DiGraph:
 
 def count_cycles_with_participation(G: nx.DiGraph, max_sample: int = 50):
     """
-    Enumerate all simple cycles using NetworkX Johnson's algorithm.
+    Enumerate simple cycles using SCC-scoped Johnson's algorithm.
+    Only searches within strongly connected components (size > 1),
+    skipping acyclic parts of the graph entirely.
     Track per-node participation counts and cycle length distribution.
     Sample up to max_sample cycles for detailed reporting.
     """
@@ -47,17 +49,20 @@ def count_cycles_with_participation(G: nx.DiGraph, max_sample: int = 50):
     sampled_cycles: list[list[str]] = []
     total = 0
 
+    sccs = [s for s in nx.strongly_connected_components(G) if len(s) > 1]
     start = time.time()
-    for cycle in nx.simple_cycles(G):
-        total += 1
-        length_dist[len(cycle)] += 1
-        for node in cycle:
-            node_counts[node] += 1
-        if len(sampled_cycles) < max_sample:
-            sampled_cycles.append(cycle)
-        if total % 100_000 == 0:
-            elapsed = time.time() - start
-            print(f"  Found {total:,} cycles so far ({elapsed:.1f}s)...")
+    for scc in sccs:
+        sub = G.subgraph(scc)
+        for cycle in nx.simple_cycles(sub):
+            total += 1
+            length_dist[len(cycle)] += 1
+            for node in cycle:
+                node_counts[node] += 1
+            if len(sampled_cycles) < max_sample:
+                sampled_cycles.append(cycle)
+            if total % 100_000 == 0:
+                elapsed = time.time() - start
+                print(f"  Found {total:,} cycles so far ({elapsed:.1f}s)...")
 
     return total, node_counts, length_dist, sampled_cycles
 
