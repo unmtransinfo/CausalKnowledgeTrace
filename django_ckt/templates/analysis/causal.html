@@ -31,28 +31,35 @@
 
     <!-- Summary cards row -->
     <div class="row g-3 mb-4" id="summaryCards">
-        <div class="col-md-3 col-6">
+        <div class="col-md col-6">
             <div class="analysis-card card-nodes">
                 <div class="ac-icon"><i class="fas fa-circle"></i></div>
                 <div class="ac-value" id="acNodes">-</div>
                 <div class="ac-label">Nodes</div>
             </div>
         </div>
-        <div class="col-md-3 col-6">
+        <div class="col-md col-6">
             <div class="analysis-card card-edges">
                 <div class="ac-icon"><i class="fas fa-arrow-right"></i></div>
                 <div class="ac-value" id="acEdges">-</div>
                 <div class="ac-label">Edges</div>
             </div>
         </div>
-        <div class="col-md-3 col-6">
+        <div class="col-md col-6">
             <div class="analysis-card card-density">
                 <div class="ac-icon"><i class="fas fa-braille"></i></div>
                 <div class="ac-value" id="acDensity">-</div>
                 <div class="ac-label">Density</div>
             </div>
         </div>
-        <div class="col-md-3 col-6">
+        <div class="col-md col-6">
+            <div class="analysis-card card-totalcycles">
+                <div class="ac-icon"><i class="fas fa-sync-alt"></i></div>
+                <div class="ac-value" id="acTotalCycles"><span class="spinner-border spinner-border-sm"></span></div>
+                <div class="ac-label">Total Cycles</div>
+            </div>
+        </div>
+        <div class="col-md col-6">
             <div class="analysis-card card-cycles">
                 <div class="ac-icon"><i class="fas fa-recycle"></i></div>
                 <div class="ac-value" id="acCycles">-</div>
@@ -214,6 +221,7 @@
 {% block extra_js %}
 <script>
     const summaryUrl = '{% url "analysis:graph_summary" %}';
+    const totalCyclesUrl = '{% url "analysis:total_cycles" %}';
     const variablesUrl = '{% url "analysis:variables" %}';
     const causalPathsUrl = '{% url "analysis:causal_paths" %}';
     const cycleAnalysisUrl = '{% url "analysis:cycle_analysis" %}';

@@ -21,10 +21,11 @@
 .analysis-card .ac-value { font-size: 1.8rem; font-weight: 700; }
 .analysis-card .ac-label { font-size: .82rem; opacity: .9; }
 
-.card-nodes   { background: linear-gradient(135deg, #1976d2, #42a5f5); }
-.card-edges   { background: linear-gradient(135deg, #388e3c, #66bb6a); }
-.card-density { background: linear-gradient(135deg, #f57c00, #ffb74d); }
-.card-cycles  { background: linear-gradient(135deg, #7b1fa2, #ba68c8); }
+.card-nodes       { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+.card-edges       { background: linear-gradient(135deg, #388e3c, #66bb6a); }
+.card-density     { background: linear-gradient(135deg, #f57c00, #ffb74d); }
+.card-totalcycles { background: linear-gradient(135deg, #c62828, #ef5350); }
+.card-cycles      { background: linear-gradient(135deg, #7b1fa2, #ba68c8); }
 
 /* file info bar */
 .file-info-bar {
