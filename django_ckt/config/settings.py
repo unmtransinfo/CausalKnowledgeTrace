@@ -7,11 +7,17 @@ Environment-aware configuration:
 """
 
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Add the repository root to sys.path so that the causal_analysis package is importable.
+REPO_ROOT = BASE_DIR.parent
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 # Load .env file from the django_ckt directory as FALLBACK values.
 # override=False means Docker/shell env vars take precedence over the .env file.

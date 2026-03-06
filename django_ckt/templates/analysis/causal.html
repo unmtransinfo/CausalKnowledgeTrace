@@ -116,6 +116,96 @@
             </div>
         </div>
     </div>
+
+    <!-- ── Stage 3: Cycle Analysis ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-recycle"></i> Cycle Analysis (Stage 3)</span>
+                    <button class="btn btn-sm btn-outline-primary" id="btnRunCycles">
+                        <i class="fas fa-play"></i> Run Analysis
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="cycleResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Click "Run Analysis" to enumerate cycles and identify key nodes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 4: Node Removal Impact ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-minus-circle"></i> Node Removal Impact (Stage 4)</span>
+                    <div>
+                        <input type="text" class="form-control form-control-sm d-inline-block" id="customNodesToRemove"
+                               placeholder="Custom nodes (comma-separated)" style="width: 280px; display: inline-block !important;">
+                        <button class="btn btn-sm btn-outline-warning ms-1" id="btnRunNodeRemoval">
+                            <i class="fas fa-play"></i> Run Removal
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="nodeRemovalResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Analyze which nodes, when removed, break the most cycles.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 5: Post-Removal Analysis ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-chart-line"></i> Post-Removal Analysis (Stage 5)</span>
+                    <button class="btn btn-sm btn-outline-info" id="btnRunPostRemoval">
+                        <i class="fas fa-play"></i> Compare
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="postRemovalResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Run node removal first, then compare original vs reduced graph.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 6: Formal Causal Inference ── -->
+    <div class="row g-4 mt-2 mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-flask"></i> Formal Causal Inference (Stage 6)</div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <label class="form-label form-label-sm">Exposure</label>
+                            <select class="form-select form-select-sm" id="ciExposure"></select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label form-label-sm">Outcome</label>
+                            <select class="form-select form-select-sm" id="ciOutcome"></select>
+                        </div>
+                        <div class="col-auto d-flex align-items-end">
+                            <button class="btn btn-sm btn-success" id="btnRunCausalInference">
+                                <i class="fas fa-microscope"></i> Run Inference
+                            </button>
+                        </div>
+                    </div>
+                    <div id="causalInferenceResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Select exposure and outcome, then run formal backdoor criterion and IV identification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
@@ -124,6 +214,10 @@
     const summaryUrl = '{% url "analysis:graph_summary" %}';
     const variablesUrl = '{% url "analysis:variables" %}';
     const causalPathsUrl = '{% url "analysis:causal_paths" %}';
+    const cycleAnalysisUrl = '{% url "analysis:cycle_analysis" %}';
+    const nodeRemovalUrl = '{% url "analysis:node_removal" %}';
+    const postRemovalUrl = '{% url "analysis:post_removal" %}';
+    const causalInferenceUrl = '{% url "analysis:causal_inference" %}';
     const csrfToken = '{{ csrf_token }}';
 </script>
 <script src="{% static 'js/causal_analysis.js' %}?v=1"></script>

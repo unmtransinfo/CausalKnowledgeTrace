@@ -11,3 +11,6 @@ PyYAML
 python-dateutil
 pytest
 pytest-django
+networkx
+numpy
+scipy
