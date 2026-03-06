@@ -1,0 +1,65 @@
+/* ── Causal Analysis page ── */
+
+.analysis-page-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color, #3c8dbc);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--primary-color, #3c8dbc);
+}
+
+/* summary metric cards */
+.analysis-card {
+    border-radius: 10px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+.analysis-card .ac-icon { font-size: 1.6rem; margin-bottom: .4rem; opacity: .85; }
+.analysis-card .ac-value { font-size: 1.8rem; font-weight: 700; }
+.analysis-card .ac-label { font-size: .82rem; opacity: .9; }
+
+.card-nodes   { background: linear-gradient(135deg, #1976d2, #42a5f5); }
+.card-edges   { background: linear-gradient(135deg, #388e3c, #66bb6a); }
+.card-density { background: linear-gradient(135deg, #f57c00, #ffb74d); }
+.card-cycles  { background: linear-gradient(135deg, #7b1fa2, #ba68c8); }
+
+/* file info bar */
+.file-info-bar {
+    background: var(--bg-info-light, #d9edf7);
+    color: var(--text-info, #31708f);
+    padding: .6rem 1rem;
+    border-radius: 6px;
+    font-size: .9rem;
+}
+
+/* path results */
+.path-results { max-height: 400px; overflow-y: auto; }
+.path-list { display: flex; flex-direction: column; gap: .5rem; }
+.path-item {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: .5rem .75rem;
+    font-size: .85rem;
+    line-height: 1.6;
+}
+.path-num { font-weight: 700; color: var(--primary-color, #3c8dbc); margin-right: .4rem; }
+.path-node {
+    display: inline-block;
+    background: #e3f2fd;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-size: .82rem;
+    white-space: nowrap;
+}
+
+/* no-graph placeholder */
+.no-graph-placeholder {
+    text-align: center;
+    padding: 4rem 1rem;
+    color: #777;
+}
+
