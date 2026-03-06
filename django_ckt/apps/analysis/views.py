@@ -6,10 +6,18 @@ Uses the causal_analysis pipeline (stages s1-s6) via pipeline_bridge.
 import json
 import logging
 from collections import defaultdict, deque
+from datetime import datetime
+from pathlib import Path
 
+import networkx as nx
+from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView
+
+# Directory for persisted reduced graphs (inside BASE_DIR so it works in Docker)
+# On host: django_ckt/reduced_graphs/
+REDUCED_GRAPHS_DIR = Path(settings.BASE_DIR) / 'reduced_graphs'
 
 from apps.core.graph_utils import get_selected_graph
 from apps.analysis.pipeline_bridge import (
@@ -200,6 +208,22 @@ def get_node_removal(request):
         'nodes': [n for n in reduced_G.nodes()],
         'edges': [(u, v) for u, v in reduced_G.edges()],
     }
+
+    # Persist reduced graph to disk for CLI usage
+    try:
+        REDUCED_GRAPHS_DIR.mkdir(parents=True, exist_ok=True)
+        # Build a descriptive filename: <original_name>_reduced_<timestamp>.graphml
+        base = Path(filename).stem if filename else 'graph'
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        graphml_name = f"{base}_reduced_{timestamp}.graphml"
+        graphml_path = REDUCED_GRAPHS_DIR / graphml_name
+        nx.write_graphml(reduced_G, str(graphml_path))
+        result['reduced_graph_path'] = str(graphml_path)
+        logger.info("Saved reduced graph to %s", graphml_path)
+    except Exception as exc:
+        logger.warning("Could not save reduced graph to disk: %s", exc)
+        result['reduced_graph_path'] = None
+
     result['success'] = True
     result['filename'] = filename
     return JsonResponse(result)
@@ -223,7 +247,6 @@ def get_post_removal(request):
             'error': 'No node removal has been run yet. Run node removal first.'
         }, status=400)
 
-    import networkx as nx
     reduced_G = nx.DiGraph()
     reduced_G.add_nodes_from(reduced_data['nodes'])
     reduced_G.add_edges_from(reduced_data['edges'])
@@ -265,7 +288,6 @@ def get_causal_inference(request):
     has_reduced = False
     reduced_data = request.session.get('_reduced_graph_data')
     if reduced_data:
-        import networkx as nx
         reduced_G = nx.DiGraph()
         reduced_G.add_nodes_from(reduced_data['nodes'])
         reduced_G.add_edges_from(reduced_data['edges'])
@@ -312,8 +334,7 @@ def get_bias_analysis(request):
             'error': 'No reduced graph available. Run Node Removal first to create a reduced graph, then run bias analysis.'
         }, status=400)
 
-    import networkx as nx_local
-    reduced_G = nx_local.DiGraph()
+    reduced_G = nx.DiGraph()
     reduced_G.add_nodes_from(reduced_data['nodes'])
     reduced_G.add_edges_from(reduced_data['edges'])
 

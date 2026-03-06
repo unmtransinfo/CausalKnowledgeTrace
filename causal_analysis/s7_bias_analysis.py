@@ -22,18 +22,43 @@ from .s6_causal_inference import find_adjustment_sets, find_instrumental_variabl
 logger = logging.getLogger(__name__)
 
 
-# ── Helper: all simple paths (both directions, ignoring edge direction) ──
+# ── Helper: reachability on undirected skeleton ──────────────────────
 
-def _all_undirected_paths(G: nx.DiGraph, source: str, target: str,
-                          max_depth: int = 10) -> list[list[str]]:
-    """Find all simple paths between source and target on the *undirected*
-    skeleton of G (i.e. ignoring edge direction).  Capped at max_depth to
-    avoid combinatorial explosion on large graphs."""
+def _on_undirected_path(G: nx.DiGraph, source: str, target: str,
+                        node: str) -> bool:
+    """Check if *node* lies on some simple path between *source* and *target*
+    on the undirected skeleton of G.
+
+    Instead of enumerating all paths (exponential), we use a two-BFS trick:
+    remove *node* from the undirected skeleton and check whether *source* and
+    *target* become disconnected.  If they do, *node* is a cut-vertex on every
+    path.  If they don't, we still need to verify *node* is reachable from
+    both endpoints — which means it lies on *some* path.
+
+    Simplified O(n+e) approach: node is on some undirected path between
+    source and target iff node is in the same connected component as both
+    source and target on the undirected skeleton.
+    """
     U = G.to_undirected(as_view=True)
     try:
-        return list(nx.all_simple_paths(U, source, target, cutoff=max_depth))
+        component = nx.node_connected_component(U, source)
+        return target in component and node in component
     except (nx.NetworkXError, nx.NodeNotFound):
-        return []
+        return False
+
+
+def _sample_path_through(U: nx.Graph, source: str, target: str,
+                         node: str) -> list[str] | None:
+    """Find ONE sample undirected path from source→node→target (if exists).
+    Uses two shortest-path lookups on the pre-computed undirected skeleton *U*.
+    Returns None if no path found."""
+    try:
+        path_s_v = nx.shortest_path(U, source, node)
+        path_v_t = nx.shortest_path(U, node, target)
+        # Combine avoiding duplicate of node
+        return path_s_v + path_v_t[1:]
+    except (nx.NetworkXError, nx.NodeNotFound, nx.NetworkXNoPath):
+        return None
 
 
 # ── Variable role identification ─────────────────────────────────────
@@ -104,14 +129,19 @@ def _empty_roles(exposure: str, outcome: str) -> dict[str, Any]:
 
 # ── Butterfly bias analysis ──────────────────────────────────────────
 
-def analyze_butterfly_bias(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]:
+def analyze_butterfly_bias(G: nx.DiGraph, exposure: str, outcome: str,
+                           roles: dict[str, Any] | None = None) -> dict[str, Any]:
     """Detect butterfly bias: confounders with ≥2 confounder parents.
+
+    Args:
+        roles: Pre-computed variable roles (optional). If None, computed here.
 
     Returns dict with:
         roles, butterfly_vars, butterfly_parents,
         valid_sets, non_butterfly_confounders
     """
-    roles = identify_variable_roles(G, exposure, outcome)
+    if roles is None:
+        roles = identify_variable_roles(G, exposure, outcome)
     confounder_set = set(roles['confounders'])
 
     butterfly_vars: list[str] = []
@@ -191,13 +221,20 @@ def _build_butterfly_valid_sets(
 
 # ── M-bias analysis ──────────────────────────────────────────────────
 
-def analyze_m_bias(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]:
+def analyze_m_bias(G: nx.DiGraph, exposure: str, outcome: str,
+                   roles: dict[str, Any] | None = None) -> dict[str, Any]:
     """Detect M-bias: colliders on backdoor paths that should NOT be adjusted.
 
     An M-bias variable is a node that:
       1. Has ≥2 parents (collider structure)
       2. Is NOT in the adjustment set
       3. Lies on at least one undirected path between exposure and outcome
+
+    Uses O(n+e) reachability checks instead of exponential path enumeration.
+
+    Args:
+        roles: Pre-computed variable roles (optional). If None, adjustment set
+               is computed independently.
 
     Returns dict with:
         exposure, outcome, adjustment_set,
@@ -210,30 +247,51 @@ def analyze_m_bias(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]
             'mbias_vars': [], 'mbias_details': {},
         }
 
-    adjustment_set = set(find_adjustment_sets(G, exposure, outcome))
+    # Reuse adjustment set from pre-computed roles if available
+    if roles is not None:
+        adjustment_set = set(roles['adjustment_set'])
+    else:
+        adjustment_set = set(find_adjustment_sets(G, exposure, outcome))
+
     all_nodes = set(G.nodes()) - {exposure, outcome}
 
-    # Pre-compute all undirected paths once (expensive, but needed)
-    all_paths = _all_undirected_paths(G, exposure, outcome)
+    # Pre-compute undirected skeleton and connected component — O(n+e) once
+    U = G.to_undirected(as_view=True)
+    try:
+        component = nx.node_connected_component(U, exposure)
+    except (nx.NetworkXError, nx.NodeNotFound):
+        component = set()
+    outcome_reachable = outcome in component
+
+    # On cyclic graphs nearly every node qualifies; cap to keep it fast
+    MAX_MBIAS_REPORTED = 20
+    MAX_SAMPLE_PATHS = 10  # only compute sample paths for top N
 
     mbias_vars: list[str] = []
     mbias_details: dict[str, dict] = {}
 
     for v in sorted(all_nodes):
+        if len(mbias_vars) >= MAX_MBIAS_REPORTED:
+            break
         parents_v = list(G.predecessors(v))
         if len(parents_v) < 2:
             continue
         if v in adjustment_set:
             continue
 
-        # Check if v lies on any path between exposure and outcome
-        paths_through_v = [p for p in all_paths if v in p]
-        if paths_through_v:
+        # Check reachability: v is on some undirected path between
+        # exposure and outcome iff all three are in the same component
+        if outcome_reachable and v in component:
             mbias_vars.append(v)
+            # Only compute sample paths for the first few (expensive on big graphs)
+            if len(mbias_vars) <= MAX_SAMPLE_PATHS:
+                sample = _sample_path_through(U, exposure, outcome, v)
+                sample_path = [str(n) for n in sample] if sample else []
+            else:
+                sample_path = []
             mbias_details[v] = {
                 'parents': sorted(parents_v),
-                'num_paths': len(paths_through_v),
-                'sample_path': [str(n) for n in paths_through_v[0]],
+                'sample_path': sample_path,
             }
 
     return {
@@ -242,6 +300,7 @@ def analyze_m_bias(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]
         'adjustment_set': sorted(adjustment_set),
         'mbias_vars': mbias_vars,
         'mbias_details': mbias_details,
+        'capped': len(mbias_vars) >= MAX_MBIAS_REPORTED,
     }
 
 
@@ -274,8 +333,11 @@ def analyze_bias(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]:
             'Consider running node removal first to break cycles.'
         )
 
-    butterfly = analyze_butterfly_bias(G, exposure, outcome)
-    mbias = analyze_m_bias(G, exposure, outcome)
+    # Compute roles ONCE and share across both analyses
+    roles = identify_variable_roles(G, exposure, outcome)
+
+    butterfly = analyze_butterfly_bias(G, exposure, outcome, roles=roles)
+    mbias = analyze_m_bias(G, exposure, outcome, roles=roles)
 
     return {
         'success': True,
