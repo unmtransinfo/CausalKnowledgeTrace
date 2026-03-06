@@ -52,20 +52,7 @@
                 <div class="ac-label">Density</div>
             </div>
         </div>
-        <div class="col-md col-6">
-            <div class="analysis-card card-totalcycles">
-                <div class="ac-icon"><i class="fas fa-sync-alt"></i></div>
-                <div class="ac-value" id="acTotalCycles"><span class="spinner-border spinner-border-sm"></span></div>
-                <div class="ac-label">Total Cycles</div>
-            </div>
-        </div>
-        <div class="col-md col-6">
-            <div class="analysis-card card-cycles">
-                <div class="ac-icon"><i class="fas fa-recycle"></i></div>
-                <div class="ac-value" id="acCycles">-</div>
-                <div class="ac-label">Cycle Components</div>
-            </div>
-        </div>
+
     </div>
 
     <!-- File info bar -->
@@ -250,7 +237,6 @@
 {% block extra_js %}
 <script>
     const summaryUrl = '{% url "analysis:graph_summary" %}';
-    const totalCyclesUrl = '{% url "analysis:total_cycles" %}';
     const variablesUrl = '{% url "analysis:variables" %}';
     const causalPathsUrl = '{% url "analysis:causal_paths" %}';
     const cycleAnalysisUrl = '{% url "analysis:cycle_analysis" %}';
