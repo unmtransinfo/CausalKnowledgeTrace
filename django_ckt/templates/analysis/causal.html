@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Causal Analysis - CKT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/causal_analysis.css' %}?v=1">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="analysis-page-header">
+    <i class="fas fa-flask"></i> Causal Analysis
+</div>
+
+<!-- No-graph placeholder (shown when no graph loaded) -->
+<div class="no-graph-placeholder" id="noGraphPlaceholder" style="display:none;">
+    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+    <h5>No Graph Loaded</h5>
+    <p>Please upload or select a graph from the <a href="{% url 'upload:upload' %}">Data Upload</a> tab first.</p>
+</div>
+
+<!-- Loading spinner -->
+<div id="analysisLoading" class="text-center py-5" style="display:none;">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Analyzing graph…</p>
+</div>
+
+<!-- Results container (hidden until loaded) -->
+<div id="analysisResults" style="display:none;">
+
+    <!-- Summary cards row -->
+    <div class="row g-3 mb-4" id="summaryCards">
+        <div class="col-md-3 col-6">
+            <div class="analysis-card card-nodes">
+                <div class="ac-icon"><i class="fas fa-circle"></i></div>
+                <div class="ac-value" id="acNodes">-</div>
+                <div class="ac-label">Nodes</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analysis-card card-edges">
+                <div class="ac-icon"><i class="fas fa-arrow-right"></i></div>
+                <div class="ac-value" id="acEdges">-</div>
+                <div class="ac-label">Edges</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analysis-card card-density">
+                <div class="ac-icon"><i class="fas fa-braille"></i></div>
+                <div class="ac-value" id="acDensity">-</div>
+                <div class="ac-label">Density</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="analysis-card card-cycles">
+                <div class="ac-icon"><i class="fas fa-recycle"></i></div>
+                <div class="ac-value" id="acCycles">-</div>
+                <div class="ac-label">Cycle Components</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- File info bar -->
+    <div class="file-info-bar mb-4">
+        <i class="fas fa-file-code"></i>
+        <strong>Graph file:</strong> <span id="filenameLabel">-</span>
+    </div>
+
+    <!-- Two-column detail panels -->
+    <div class="row g-4">
+        <!-- Left: Predicate Distribution + Top Nodes -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-chart-bar"></i> Predicate Distribution</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped mb-0" id="predicateTable">
+                        <thead><tr><th>Predicate</th><th class="text-end">Count</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-sort-amount-down"></i> Top Nodes by Degree</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped mb-0" id="topNodesTable">
+                        <thead><tr><th>Node</th><th class="text-end">Degree</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Causal Path Finder -->
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-route"></i> Causal Path Finder</div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <label class="form-label form-label-sm">From (source)</label>
+                            <select class="form-select form-select-sm" id="pathFrom"></select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label form-label-sm">To (target)</label>
+                            <select class="form-select form-select-sm" id="pathTo"></select>
+                        </div>
+                        <div class="col-auto d-flex align-items-end">
+                            <button class="btn btn-sm btn-primary" id="btnFindPaths">
+                                <i class="fas fa-search"></i> Find Paths
+                            </button>
+                        </div>
+                    </div>
+                    <div id="pathResults" class="path-results"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const summaryUrl = '{% url "analysis:graph_summary" %}';
+    const variablesUrl = '{% url "analysis:variables" %}';
+    const causalPathsUrl = '{% url "analysis:causal_paths" %}';
+    const csrfToken = '{{ csrf_token }}';
+</script>
+<script src="{% static 'js/causal_analysis.js' %}?v=1"></script>
+{% endblock %}
+
