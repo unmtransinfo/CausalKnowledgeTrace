@@ -218,15 +218,14 @@ def get_post_removal(request):
     return JsonResponse(result)
 
 
-# ── API: causal inference (Stage 6 — formal backdoor + IV) ──────────
+# ── API: causal inference (formal backdoor + IV) ─────────────────────
 
 @require_http_methods(["POST"])
 def get_causal_inference(request):
     """
     Formal causal inference: backdoor criterion adjustment sets
     and instrumental variable identification using NetworkX.
-    Replaces the old heuristic calculate_adjustment_sets and
-    find_instrumental_variables endpoints.
+    Runs on both the original graph and the reduced graph (if available).
     """
     try:
         G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
@@ -242,10 +241,32 @@ def get_causal_inference(request):
             'success': False, 'error': 'Both exposure and outcome are required'
         }, status=400)
 
-    result = analyze_causal_inference(G, exposure, outcome)
-    result['success'] = True
-    result['filename'] = filename
-    return JsonResponse(result)
+    # Run on original graph
+    original_result = analyze_causal_inference(G, exposure, outcome)
+
+    # Run on reduced graph if available
+    reduced_result = None
+    has_reduced = False
+    reduced_data = request.session.get('_reduced_graph_data')
+    if reduced_data:
+        import networkx as nx
+        reduced_G = nx.DiGraph()
+        reduced_G.add_nodes_from(reduced_data['nodes'])
+        reduced_G.add_edges_from(reduced_data['edges'])
+        # Only run if exposure and outcome still exist in reduced graph
+        if exposure in reduced_G and outcome in reduced_G:
+            reduced_result = analyze_causal_inference(reduced_G, exposure, outcome)
+            has_reduced = True
+
+    return JsonResponse({
+        'success': True,
+        'filename': filename,
+        'exposure': exposure,
+        'outcome': outcome,
+        'original': original_result,
+        'reduced': reduced_result,
+        'has_reduced': has_reduced,
+    })
 
 
 # ── Legacy endpoints (now backed by pipeline) ────────────────────────

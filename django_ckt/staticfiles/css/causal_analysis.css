@@ -35,22 +35,8 @@
     font-size: .9rem;
 }
 
-/*
- * Path-finder card — absolute-positioned so it can never inflate the row
- * height.  The row height is set by the left column only.
- * .pathfinder-anchor fills the column via height:100%, then the card
- * fills the anchor via position:absolute + inset:0.
- */
-.pathfinder-anchor {
-    position: relative;
-    height: 100%;
-}
-.card-pathfinder {
-    position: absolute;
-    inset: 0;
-}
-.card-pathfinder .card-body { min-height: 0; }
-.path-results               { overflow-y: auto; min-height: 0; }
+/* path results — fills remaining card space and scrolls */
+.path-results { overflow-y: auto; min-height: 0; }
 .path-list { display: flex; flex-direction: column; gap: .5rem; }
 .path-item {
     background: #f8f9fa;

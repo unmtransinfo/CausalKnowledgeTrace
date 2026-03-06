@@ -4,12 +4,12 @@
 
 /* Page header */
 .viz-page-header {
-    background-color: var(--bg-success-light);
-    border-left: 4px solid var(--border-success);
+    background-color: var(--bg-info-light);
+    border-left: 4px solid var(--primary-color);
     padding: 12px 20px;
     font-size: 1.2rem;
     font-weight: 600;
-    color: var(--text-success);
+    color: var(--text-info);
     margin-bottom: 15px;
     border-radius: 0 4px 4px 0;
 }
@@ -142,6 +142,7 @@
 #cy {
     width: 100%;
     height: 100%;
+    background-color: #ffffff;
 }
 
 /* Prevent text selection while dragging */
@@ -218,52 +219,57 @@
     word-break: break-word;
 }
 
-/* Graph stats bar */
-.graph-stats-bar {
+/* Graph stats & legend bar (combined single row) */
+.graph-stats-legend-bar {
     display: flex;
-    gap: 20px;
-    padding: 6px 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    padding: 10px 16px;
     background-color: var(--bg-info-light);
     border-radius: 4px;
-    font-size: 0.85rem;
+    font-size: 1.05rem;
     color: var(--text-info);
     margin-bottom: 10px;
 }
 
-.graph-stats-bar .stat-item {
+.graph-stats-legend-bar .stat-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    font-size: 1.05rem;
 }
 
-.graph-stats-bar .stat-item i {
-    font-size: 0.9rem;
+.graph-stats-legend-bar .stat-item i {
+    font-size: 1.1rem;
 }
 
-/* Legend */
-.graph-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 6px 12px;
-    background-color: #fff;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    margin-bottom: 10px;
+.graph-stats-legend-bar .stat-item strong {
+    font-size: 1.1rem;
 }
 
-.legend-item {
+/* Divider between stats and legend */
+.graph-stats-legend-bar .bar-divider {
+    width: 1px;
+    height: 22px;
+    background-color: var(--primary-color);
+    opacity: 0.35;
+}
+
+.graph-stats-legend-bar .legend-item {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    font-size: 1.0rem;
+    font-weight: 500;
 }
 
-.legend-color {
-    width: 12px;
-    height: 12px;
+.graph-stats-legend-bar .legend-color {
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     display: inline-block;
+    border: 2px solid rgba(0,0,0,0.15);
 }
 
 /* No-graph placeholder */
