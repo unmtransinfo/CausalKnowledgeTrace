@@ -93,6 +93,164 @@
         });
     }
 
+    // ── Stage 3: cycle analysis ──
+    function runCycleAnalysis() {
+        var div = document.getElementById('cycleResults');
+        div.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Enumerating cycles…</div>';
+
+        apiGet(cycleAnalysisUrl).then(function (d) {
+            if (!d.success) { div.innerHTML = '<p class="text-danger">' + d.error + '</p>'; return; }
+            var html = '<div class="row g-3 mb-3">';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.total_cycles + '</strong><br>Total Cycles</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.nodes_in_cycles + '</strong><br>Nodes in Cycles</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + Object.keys(d.length_distribution || {}).length + '</strong><br>Distinct Lengths</div></div>';
+            html += '</div>';
+
+            if (d.node_participation && d.node_participation.length > 0) {
+                html += '<h6>Top Cycle-Participating Nodes</h6>';
+                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycle Count</th></tr></thead><tbody>';
+                d.node_participation.forEach(function (n) {
+                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.count + '</td></tr>';
+                });
+                html += '</tbody></table>';
+            }
+
+            if (d.sampled_cycles && d.sampled_cycles.length > 0) {
+                html += '<h6>Sample Cycles</h6><div class="path-list">';
+                d.sampled_cycles.slice(0, 10).forEach(function (c) {
+                    html += '<div class="path-item"><span class="path-num">Len ' + c.length + '</span> ';
+                    html += c.nodes.map(function (n) { return '<span class="path-node">' + n.replace(/_/g, ' ') + '</span>'; }).join(' → ');
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            div.innerHTML = html;
+        }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
+    }
+
+    // ── Stage 4: node removal ──
+    function runNodeRemoval() {
+        var div = document.getElementById('nodeRemovalResults');
+        var customInput = document.getElementById('customNodesToRemove').value.trim();
+        var body = {};
+        if (customInput) {
+            body.nodes_to_remove = customInput.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        }
+        div.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Analyzing removal impact…</div>';
+
+        apiPost(nodeRemovalUrl, body).then(function (d) {
+            if (!d.success) { div.innerHTML = '<p class="text-danger">' + d.error + '</p>'; return; }
+            var html = '<div class="row g-3 mb-3">';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.baseline_cycles + '</strong><br>Baseline Cycles</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.combined_cycles + '</strong><br>After Removal</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.reduced_nodes + ' / ' + d.reduced_edges + '</strong><br>Nodes / Edges</div></div>';
+            html += '<div class="col-md-3"><div class="stat-box ' + (d.is_dag_after ? 'stat-success' : 'stat-warning') + '"><strong>' + (d.is_dag_after ? 'YES' : 'NO') + '</strong><br>Is DAG?</div></div>';
+            html += '</div>';
+
+            html += '<p><strong>Nodes removed:</strong> ' + (d.nodes_removed || []).map(function (n) { return '<span class="badge bg-secondary me-1">' + n.replace(/_/g, ' ') + '</span>'; }).join('') + '</p>';
+
+            if (d.individual_impact && d.individual_impact.length > 0) {
+                html += '<h6>Individual Node Impact</h6>';
+                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycles Removed</th><th class="text-end">% Reduction</th><th class="text-end">Remaining SCCs</th></tr></thead><tbody>';
+                d.individual_impact.forEach(function (n) {
+                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.cycles_removed + '</td><td class="text-end">' + n.percent_reduction + '%</td><td class="text-end">' + n.remaining_sccs + '</td></tr>';
+                });
+                html += '</tbody></table>';
+            }
+            div.innerHTML = html;
+        }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
+    }
+
+    // ── Stage 5: post-removal ──
+    function runPostRemoval() {
+        var div = document.getElementById('postRemovalResults');
+        div.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Comparing graphs…</div>';
+
+        apiGet(postRemovalUrl).then(function (d) {
+            if (!d.success) { div.innerHTML = '<p class="text-danger">' + d.error + '</p>'; return; }
+            var html = '<div class="row g-3 mb-3">';
+            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.original_cycles + '</strong><br>Original Cycles</div></div>';
+            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_cycles + '</strong><br>Reduced Cycles</div></div>';
+            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.cycle_reduction_pct + '%</strong><br>Reduction</div></div>';
+            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_nodes + '</strong><br>Nodes Left</div></div>';
+            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_edges + '</strong><br>Edges Left</div></div>';
+            html += '<div class="col-md-2"><div class="stat-box ' + (d.is_dag ? 'stat-success' : 'stat-warning') + '"><strong>' + (d.is_dag ? 'DAG ✓' : 'Cyclic') + '</strong><br>Status</div></div>';
+            html += '</div>';
+
+            if (d.next_removal_candidates && d.next_removal_candidates.length > 0) {
+                html += '<h6>Suggested Next Removals</h6>';
+                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycle Participation</th></tr></thead><tbody>';
+                d.next_removal_candidates.forEach(function (n) {
+                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.count + '</td></tr>';
+                });
+                html += '</tbody></table>';
+            }
+            div.innerHTML = html;
+        }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
+    }
+
+    // ── Stage 6: causal inference ──
+    function runCausalInference() {
+        var exposure = document.getElementById('ciExposure').value;
+        var outcome = document.getElementById('ciOutcome').value;
+        var div = document.getElementById('causalInferenceResults');
+        if (!exposure || !outcome) { div.innerHTML = '<p class="text-muted">Select exposure and outcome.</p>'; return; }
+        if (exposure === outcome) { div.innerHTML = '<p class="text-warning">Exposure and outcome must differ.</p>'; return; }
+        div.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Running inference…</div>';
+
+        apiPost(causalInferenceUrl, { exposure: exposure, outcome: outcome }).then(function (d) {
+            if (!d.success) { div.innerHTML = '<p class="text-danger">' + d.error + '</p>'; return; }
+            var html = '';
+
+            // Warnings
+            if (d.warnings && d.warnings.length > 0) {
+                html += '<div class="alert alert-warning py-2">';
+                d.warnings.forEach(function (w) { html += '<div><i class="fas fa-exclamation-triangle"></i> ' + w + '</div>'; });
+                html += '</div>';
+            }
+
+            html += '<div class="row g-3 mb-3">';
+            html += '<div class="col-md-4"><div class="stat-box ' + (d.is_dag ? 'stat-success' : 'stat-warning') + '"><strong>' + (d.is_dag ? 'DAG ✓' : 'Cyclic ✗') + '</strong><br>Graph Status</div></div>';
+            html += '<div class="col-md-4"><div class="stat-box"><strong>' + (d.adjustment_sets || []).length + '</strong><br>Adjustment Variables</div></div>';
+            html += '<div class="col-md-4"><div class="stat-box"><strong>' + (d.instrumental_variables || []).length + '</strong><br>Instrumental Variables</div></div>';
+            html += '</div>';
+
+            // Adjustment sets
+            html += '<h6><i class="fas fa-shield-alt"></i> Adjustment Set (Backdoor Criterion)</h6>';
+            if (d.adjustment_sets && d.adjustment_sets.length > 0) {
+                html += '<div class="mb-3">' + d.adjustment_sets.map(function (n) { return '<span class="badge bg-primary me-1 mb-1">' + n.replace(/_/g, ' ') + '</span>'; }).join('') + '</div>';
+            } else {
+                html += '<p class="text-muted mb-3">No adjustment variables found.</p>';
+            }
+
+            // Instrumental variables
+            html += '<h6><i class="fas fa-key"></i> Instrumental Variables</h6>';
+            if (d.instrumental_variables && d.instrumental_variables.length > 0) {
+                html += '<div class="mb-3">' + d.instrumental_variables.map(function (n) { return '<span class="badge bg-success me-1 mb-1">' + n.replace(/_/g, ' ') + '</span>'; }).join('') + '</div>';
+            } else {
+                html += '<p class="text-muted mb-3">No instrumental variables found.</p>';
+            }
+
+            div.innerHTML = html;
+        }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
+    }
+
+    // ── populate causal inference dropdowns ──
+    function populateCIDropdowns(variables, exposures, outcomes) {
+        var selExp = document.getElementById('ciExposure');
+        var selOut = document.getElementById('ciOutcome');
+        selExp.innerHTML = '';
+        selOut.innerHTML = '';
+        variables.forEach(function (v) {
+            var label = v.replace(/_/g, ' ');
+            selExp.innerHTML += '<option value="' + v + '">' + label + '</option>';
+            selOut.innerHTML += '<option value="' + v + '">' + label + '</option>';
+        });
+        // Pre-select exposure/outcome if available
+        if (exposures && exposures.length > 0) selExp.value = exposures[0];
+        if (outcomes && outcomes.length > 0) selOut.value = outcomes[0];
+    }
+
     // ── init ──
     document.addEventListener('DOMContentLoaded', function () {
         show('analysisLoading');
@@ -107,16 +265,22 @@
             }
             renderSummary(d);
             show('analysisResults');
-            // also load variables for dropdowns
             return apiGet(variablesUrl);
         }).then(function (d) {
-            if (d && d.success) populateDropdowns(d.variables);
+            if (d && d.success) {
+                populateDropdowns(d.variables);
+                populateCIDropdowns(d.variables, d.exposures, d.outcomes);
+            }
         }).catch(function () {
             hide('analysisLoading');
             show('noGraphPlaceholder');
         });
 
         document.getElementById('btnFindPaths').addEventListener('click', findPaths);
+        document.getElementById('btnRunCycles').addEventListener('click', runCycleAnalysis);
+        document.getElementById('btnRunNodeRemoval').addEventListener('click', runNodeRemoval);
+        document.getElementById('btnRunPostRemoval').addEventListener('click', runPostRemoval);
+        document.getElementById('btnRunCausalInference').addEventListener('click', runCausalInference);
     });
 })();
 

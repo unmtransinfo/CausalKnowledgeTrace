@@ -1,6 +1,7 @@
 """
 Views for causal analysis.
 Runs analysis only on the graph explicitly loaded via Data Upload.
+Uses the causal_analysis pipeline (stages s1-s6) via pipeline_bridge.
 """
 import json
 import logging
@@ -11,11 +12,26 @@ from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView
 
 from apps.core.graph_utils import get_selected_graph
+from apps.analysis.pipeline_bridge import (
+    cytoscape_to_networkx,
+    analyze_graph_summary,
+    analyze_cycles,
+    analyze_node_removal,
+    analyze_post_removal,
+    analyze_causal_inference,
+)
 
 logger = logging.getLogger(__name__)
 
 
 # ── helpers ──────────────────────────────────────────────────────────
+
+def _get_graph_nx(session):
+    """Load the selected graph and return (nx_graph, nodes, edges, metadata, filename)."""
+    nodes, edges, metadata, filename = get_selected_graph(session)
+    G = cytoscape_to_networkx(nodes, edges)
+    return G, nodes, edges, metadata, filename
+
 
 def _build_adjacency(nodes, edges):
     """Build adjacency lists from Cytoscape-style nodes/edges."""
@@ -44,78 +60,6 @@ def _find_paths_bfs(successors, start, end, max_depth=6, limit=20):
     return paths
 
 
-def _ancestors(predecessors, node):
-    """Return set of ancestors of *node* (not including *node*)."""
-    visited = set()
-    stack = list(predecessors.get(node, []))
-    while stack:
-        n = stack.pop()
-        if n not in visited:
-            visited.add(n)
-            stack.extend(predecessors.get(n, []))
-    return visited
-
-
-def _scc_kosaraju(node_ids, successors, predecessors):
-    """Kosaraju's algorithm — returns list of SCCs (each a set)."""
-    order = []
-    visited = set()
-
-    def dfs1(n):
-        stack = [(n, False)]
-        while stack:
-            v, done = stack.pop()
-            if done:
-                order.append(v)
-                continue
-            if v in visited:
-                continue
-            visited.add(v)
-            stack.append((v, True))
-            for w in successors.get(v, []):
-                if w not in visited:
-                    stack.append((w, False))
-
-    for n in node_ids:
-        if n not in visited:
-            dfs1(n)
-
-    visited2 = set()
-    sccs = []
-
-    def dfs2(n):
-        comp = set()
-        stack = [n]
-        while stack:
-            v = stack.pop()
-            if v in visited2:
-                continue
-            visited2.add(v)
-            comp.add(v)
-            for w in predecessors.get(v, []):
-                if w not in visited2:
-                    stack.append(w)
-        return comp
-
-    for n in reversed(order):
-        if n not in visited2:
-            c = dfs2(n)
-            if len(c) > 1:
-                sccs.append(c)
-    return sccs
-
-
-def _degree_stats(nodes, edges):
-    """Return in-degree / out-degree dicts."""
-    in_deg = defaultdict(int)
-    out_deg = defaultdict(int)
-    for e in edges:
-        d = e['data']
-        out_deg[d['source']] += 1
-        in_deg[d['target']] += 1
-    return dict(in_deg), dict(out_deg)
-
-
 # ── page view ────────────────────────────────────────────────────────
 
 class CausalAnalysisView(TemplateView):
@@ -129,57 +73,20 @@ class CausalAnalysisView(TemplateView):
 
 
 
-# ── API: graph summary ──────────────────────────────────────────────
+# ── API: graph summary (Stage 2 — NetworkX-powered) ─────────────────
 
 @require_http_methods(["GET"])
 def get_graph_summary(request):
-    """Full structural summary of the currently selected graph."""
+    """Full structural summary using the causal_analysis pipeline."""
     try:
-        nodes, edges, metadata, filename = get_selected_graph(request.session)
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
     except (ValueError, FileNotFoundError) as exc:
         return JsonResponse({'success': False, 'error': str(exc)}, status=400)
 
-    node_ids = [n['data']['id'] for n in nodes]
-    in_deg, out_deg = _degree_stats(nodes, edges)
-
-    # Exposure / outcome from node_type
-    exposures = [n['data']['id'] for n in nodes
-                 if n['data'].get('node_type') == 'exposure']
-    outcomes = [n['data']['id'] for n in nodes
-                if n['data'].get('node_type') == 'outcome']
-
-    # Predicates distribution
-    pred_counts = defaultdict(int)
-    for e in edges:
-        pred_counts[e['data'].get('predicate', 'unknown')] += 1
-
-    # Cycles via SCC
-    succ, pred = _build_adjacency(nodes, edges)
-    sccs = _scc_kosaraju(set(node_ids), succ, pred)
-    cycle_node_count = sum(len(c) for c in sccs)
-
-    # Density
-    n = len(nodes)
-    m = len(edges)
-    density = m / (n * (n - 1)) if n > 1 else 0
-
-    # Top-degree nodes
-    total_deg = {nid: in_deg.get(nid, 0) + out_deg.get(nid, 0) for nid in node_ids}
-    top_nodes = sorted(total_deg.items(), key=lambda x: -x[1])[:15]
-
-    return JsonResponse({
-        'success': True,
-        'filename': filename,
-        'node_count': n,
-        'edge_count': m,
-        'density': round(density, 6),
-        'exposures': exposures,
-        'outcomes': outcomes,
-        'predicate_distribution': dict(pred_counts),
-        'cycle_count': len(sccs),
-        'cycle_node_count': cycle_node_count,
-        'top_nodes': [{'id': nid, 'degree': deg} for nid, deg in top_nodes],
-    })
+    summary = analyze_graph_summary(G)
+    summary['success'] = True
+    summary['filename'] = filename
+    return JsonResponse(summary)
 
 
 # ── API: variables ───────────────────────────────────────────────────
@@ -242,16 +149,112 @@ def analyze_causal_paths(request):
 
 
 
-# ── API: adjustment sets (heuristic) ────────────────────────────────
+# ── API: cycle analysis (Stage 3 — NetworkX) ────────────────────────
+
+@require_http_methods(["GET"])
+def get_cycle_analysis(request):
+    """Full cycle enumeration via the causal_analysis pipeline."""
+    try:
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
+    except (ValueError, FileNotFoundError) as exc:
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+    result = analyze_cycles(G)
+    result['success'] = True
+    result['filename'] = filename
+    return JsonResponse(result)
+
+
+# ── API: node removal impact (Stage 4 — NetworkX) ───────────────────
+
+@require_http_methods(["POST"])
+def get_node_removal(request):
+    """Analyze impact of removing generic/custom nodes on cycles."""
+    try:
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
+    except (ValueError, FileNotFoundError) as exc:
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+    data = json.loads(request.body) if request.body else {}
+    custom_nodes = data.get('nodes_to_remove')  # optional list
+
+    result, reduced_G = analyze_node_removal(G, custom_nodes)
+    # Store reduced graph in session for post-removal analysis
+    request.session['_reduced_graph_data'] = {
+        'nodes': [n for n in reduced_G.nodes()],
+        'edges': [(u, v) for u, v in reduced_G.edges()],
+    }
+    result['success'] = True
+    result['filename'] = filename
+    return JsonResponse(result)
+
+
+# ── API: post-removal analysis (Stage 5 — NetworkX) ─────────────────
+
+@require_http_methods(["GET"])
+def get_post_removal(request):
+    """Compare original vs reduced graph after node removal."""
+    try:
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
+    except (ValueError, FileNotFoundError) as exc:
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+    # Rebuild reduced graph from session data
+    reduced_data = request.session.get('_reduced_graph_data')
+    if not reduced_data:
+        return JsonResponse({
+            'success': False,
+            'error': 'No node removal has been run yet. Run node removal first.'
+        }, status=400)
+
+    import networkx as nx
+    reduced_G = nx.DiGraph()
+    reduced_G.add_nodes_from(reduced_data['nodes'])
+    reduced_G.add_edges_from(reduced_data['edges'])
+
+    result = analyze_post_removal(G, reduced_G)
+    result['success'] = True
+    result['filename'] = filename
+    return JsonResponse(result)
+
+
+# ── API: causal inference (Stage 6 — formal backdoor + IV) ──────────
+
+@require_http_methods(["POST"])
+def get_causal_inference(request):
+    """
+    Formal causal inference: backdoor criterion adjustment sets
+    and instrumental variable identification using NetworkX.
+    Replaces the old heuristic calculate_adjustment_sets and
+    find_instrumental_variables endpoints.
+    """
+    try:
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
+    except (ValueError, FileNotFoundError) as exc:
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+    data = json.loads(request.body)
+    exposure = data.get('exposure')
+    outcome = data.get('outcome')
+
+    if not exposure or not outcome:
+        return JsonResponse({
+            'success': False, 'error': 'Both exposure and outcome are required'
+        }, status=400)
+
+    result = analyze_causal_inference(G, exposure, outcome)
+    result['success'] = True
+    result['filename'] = filename
+    return JsonResponse(result)
+
+
+# ── Legacy endpoints (now backed by pipeline) ────────────────────────
 
 @require_http_methods(["POST"])
 def calculate_adjustment_sets(request):
-    """
-    Heuristic adjustment set: common ancestors of exposure and outcome
-    (excluding exposure/outcome themselves).
-    """
+    """Adjustment sets via formal backdoor criterion (replaces heuristic)."""
     try:
-        nodes, edges, metadata, filename = get_selected_graph(request.session)
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
     except (ValueError, FileNotFoundError) as exc:
         return JsonResponse({'success': False, 'error': str(exc)}, status=400)
 
@@ -259,36 +262,27 @@ def calculate_adjustment_sets(request):
     exposure = data.get('exposure')
     outcome = data.get('outcome')
 
-    node_ids = {n['data']['id'] for n in nodes}
-    if exposure not in node_ids or outcome not in node_ids:
-        return JsonResponse({'success': False, 'error': 'Exposure or outcome not in graph'}, status=400)
+    if not exposure or not outcome:
+        return JsonResponse({'success': False, 'error': 'Both exposure and outcome required'}, status=400)
 
-    _, pred = _build_adjacency(nodes, edges)
-    anc_exp = _ancestors(pred, exposure)
-    anc_out = _ancestors(pred, outcome)
-    shared = (anc_exp & anc_out) - {exposure, outcome}
-
+    result = analyze_causal_inference(G, exposure, outcome)
     return JsonResponse({
         'success': True,
         'filename': filename,
         'exposure': exposure,
         'outcome': outcome,
-        'adjustment_sets': [sorted(shared)],
-        'count': len(shared),
-        'message': f'{len(shared)} candidate confounders (common ancestors of both exposure and outcome)',
+        'adjustment_sets': [result['adjustment_sets']],
+        'count': len(result['adjustment_sets']),
+        'message': f'{len(result["adjustment_sets"])} adjustment variables (backdoor criterion)',
+        'warnings': result.get('warnings', []),
     })
 
 
-# ── API: instrumental variables (heuristic) ─────────────────────────
-
 @require_http_methods(["POST"])
 def find_instrumental_variables(request):
-    """
-    Heuristic: nodes that are parents of exposure but NOT ancestors of outcome
-    through any path that doesn't go through exposure.
-    """
+    """Instrumental variables via formal IV identification (replaces heuristic)."""
     try:
-        nodes, edges, metadata, filename = get_selected_graph(request.session)
+        G, nodes, edges, metadata, filename = _get_graph_nx(request.session)
     except (ValueError, FileNotFoundError) as exc:
         return JsonResponse({'success': False, 'error': str(exc)}, status=400)
 
@@ -296,33 +290,17 @@ def find_instrumental_variables(request):
     exposure = data.get('exposure')
     outcome = data.get('outcome')
 
-    node_ids = {n['data']['id'] for n in nodes}
-    if exposure not in node_ids or outcome not in node_ids:
-        return JsonResponse({'success': False, 'error': 'Exposure or outcome not in graph'}, status=400)
+    if not exposure or not outcome:
+        return JsonResponse({'success': False, 'error': 'Both exposure and outcome required'}, status=400)
 
-    succ, pred = _build_adjacency(nodes, edges)
-    parents_of_exp = set(pred.get(exposure, []))
-
-    # Build successors without going through exposure
-    succ_no_exp = {k: [v for v in vs if v != exposure] for k, vs in succ.items()}
-    # Ancestors of outcome excluding exposure path
-    anc_out_no_exp = set()
-    stack = list(pred.get(outcome, []))
-    while stack:
-        n = stack.pop()
-        if n == exposure or n in anc_out_no_exp:
-            continue
-        anc_out_no_exp.add(n)
-        stack.extend(pred.get(n, []))
-
-    instruments = sorted(parents_of_exp - anc_out_no_exp - {outcome})
-
+    result = analyze_causal_inference(G, exposure, outcome)
     return JsonResponse({
         'success': True,
         'filename': filename,
         'exposure': exposure,
         'outcome': outcome,
-        'instruments': instruments,
-        'count': len(instruments),
-        'message': f'{len(instruments)} candidate instrumental variables',
+        'instruments': result['instrumental_variables'],
+        'count': len(result['instrumental_variables']),
+        'message': f'{len(result["instrumental_variables"])} instrumental variables',
+        'warnings': result.get('warnings', []),
     })

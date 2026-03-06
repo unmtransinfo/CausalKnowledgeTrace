@@ -68,6 +68,7 @@ services:
     volumes:
       # Mount source code so Django's runserver auto-reloads on changes
       - ./django_ckt:/app
+      - ./causal_analysis:/app/causal_analysis:ro
       # Mount graph result files so the app can list/load them
       - ./graph_creation/result:/app/graph_data/result:ro
     # Override the production CMD — use Django's dev server for hot reload
