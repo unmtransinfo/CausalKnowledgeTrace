@@ -109,15 +109,15 @@ def search_cui(request):
             ]
 
         if search_type == 'subject':
-            results = SubjectSearch.objects.filter(name__icontains=query)[:50]
+            results = SubjectSearch.objects.filter(name__icontains=query)
             cui_list = _serialize(results)
         elif search_type == 'object':
-            results = ObjectSearch.objects.filter(name__icontains=query)[:50]
+            results = ObjectSearch.objects.filter(name__icontains=query)
             cui_list = _serialize(results)
         else:
             # 'both' — query both tables and combine, dedup by CUI
-            subj = SubjectSearch.objects.filter(name__icontains=query)[:50]
-            obj = ObjectSearch.objects.filter(name__icontains=query)[:50]
+            subj = SubjectSearch.objects.filter(name__icontains=query)
+            obj = ObjectSearch.objects.filter(name__icontains=query)
             seen = set()
             cui_list = []
             for r in list(subj) + list(obj):
