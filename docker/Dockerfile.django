@@ -43,15 +43,17 @@ COPY --from=builder /install /usr/local
 
 WORKDIR /app
 
-# Copy the Django project source code
+# Copy the Django project source code and required sibling packages
 COPY django_ckt/ /app/
+COPY causal_analysis/ /app/causal_analysis/
+COPY graph_creation/ /app/graph_creation/
 
 # Create a non-root user for security — never run production containers as root
 RUN groupadd -r django && useradd -r -g django django
 
 # Create directories for static files, media uploads, and logs.
 # Ownership is set to the non-root user so Gunicorn can write to them.
-RUN mkdir -p /app/staticfiles /app/media /app/logs \
+RUN mkdir -p /app/staticfiles /app/media /app/logs /app/graph_creation/result \
     && chown -R django:django /app
 
 # Collect static files at build time so they're ready to serve.
