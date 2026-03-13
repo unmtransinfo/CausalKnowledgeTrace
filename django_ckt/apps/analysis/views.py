@@ -5,6 +5,7 @@ Uses the causal_analysis pipeline (stages s1-s6) via pipeline_bridge.
 """
 import json
 import logging
+import os
 from collections import defaultdict, deque
 from datetime import datetime
 from pathlib import Path
