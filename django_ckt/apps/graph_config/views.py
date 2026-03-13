@@ -205,10 +205,13 @@ def generate_graph(request):
             'SemMedDBD_version': semmeddb_version,
         }
 
-        # Determine the path to user_input.yaml
-        # It should be in the project root directory
-        base_dir = settings.BASE_DIR.parent  # Go up one level from django_ckt to CausalKnowledgeTrace
-        yaml_path = os.path.join(base_dir, 'user_input.yaml')
+        # Create a unique task ID for tracking this graph creation
+        task_id = str(uuid.uuid4())
+
+        # Write config to user_input.yaml (synced to host via volume mount)
+        yaml_path = os.path.join(os.path.dirname(settings.BASE_DIR), 'user_input.yaml')
+        if str(settings.BASE_DIR.parent) == '/':
+            yaml_path = os.path.join(str(settings.BASE_DIR), 'user_input.yaml')
 
         # Save configuration to YAML file
         with open(yaml_path, 'w') as f:
@@ -226,10 +229,22 @@ def generate_graph(request):
         db_name = os.environ.get('DB_NAME', 'causalehr')
 
         # Build the graph creation command
-        project_root = str(settings.BASE_DIR.parent)
+        # Determine project root for running pushkin.py
+        if str(settings.BASE_DIR.parent) == '/':
+            project_root = str(settings.BASE_DIR)
+        else:
+            project_root = str(settings.BASE_DIR.parent)
+        
+        # Check if pushkin.py is available, adjust path based on docker vs native
+        pushkin_py = 'graph_creation/pushkin.py'
+        if os.path.exists(os.path.join(project_root, pushkin_py)):
+            pushkin_script = os.path.join(project_root, pushkin_py)
+        else:
+            pushkin_script = pushkin_py
+            
         cmd = [
-            'python', 'graph_creation/pushkin.py',
-            '--yaml-config', 'user_input.yaml',
+            'python', pushkin_script,
+            '--yaml-config', yaml_path,
             '--dbname', db_name,
             '--user', db_user,
             '--password', db_password,
@@ -238,8 +253,6 @@ def generate_graph(request):
             '--verbose',
         ]
 
-        # Create a unique task ID for tracking this graph creation
-        task_id = str(uuid.uuid4())
         with _graph_tasks_lock:
             _graph_tasks[task_id] = {
                 'status': 'running',

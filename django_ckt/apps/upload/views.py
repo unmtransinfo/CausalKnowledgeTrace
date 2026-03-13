@@ -24,7 +24,8 @@ def _is_allowed_file(filename):
 def _get_graph_dirs():
     """Return list of directories to search for graph files."""
     return [
-        os.path.join(settings.BASE_DIR, 'graph_data', 'result'),   # Docker mount
+        os.path.join(settings.BASE_DIR, 'graph_creation', 'result'),  # Docker: /app/graph_creation/result
+        os.path.join(settings.BASE_DIR, 'graph_data', 'result'),      # Docker: /app/graph_data/result
         os.path.join(settings.BASE_DIR.parent, 'graph_creation', 'result'),  # local dev
         os.path.join(settings.MEDIA_ROOT, 'graphs'),
     ]

@@ -12,27 +12,27 @@ services:
   db-dev:
     image: postgres:16
     container_name: db-dev
+    networks:
+      - ckt-dev-network
     env_file:
       - .env.dev
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      PGPORT: ${DB_PORT}
     ports:
-      - "0.0.0.0:${DB_PORT}:${DB_PORT}"
-    command:
-      - "postgres"
-      - "-c"
-      - "port=${DB_PORT}"
+      - "${DB_PORT}:${DB_PORT}"
+    # Note: We use the environment variable for the port in the command
+    command: ["postgres", "-c", "port=${DB_PORT}"]
     shm_size: 17g
     volumes:
       - ./causalehr_backup:/causalehr_backup:ro
       - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh:ro
       - pgdata-dev:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME} -p ${DB_PORT}"]
-      interval: 10s
+      # Using pg_isready ensures the DB is actually accepting connections
+      test: ["CMD-SHELL", "pg_isready -U $${DB_USER} -d $${DB_NAME} -p $${DB_PORT}"]
+      interval: 5s
       timeout: 5s
       retries: 5
     deploy:
@@ -47,35 +47,40 @@ services:
   # ---------------------------------------------------------------------------
   # Django Application
   # ---------------------------------------------------------------------------
-  # In development, we use Django's runserver for auto-reload on code changes.
-  # Source code is mounted as a volume so edits are reflected immediately.
-  # ---------------------------------------------------------------------------
   django-dev:
     build:
       context: .
       dockerfile: docker/Dockerfile.django
     container_name: django-dev
+    networks:
+      - ckt-dev-network
     ports:
-      - "0.0.0.0:${DJANGO_PORT:-3837}:${DJANGO_PORT:-3837}"
+      - "${DJANGO_PORT:-3837}:${DJANGO_PORT:-3837}"
     env_file:
       - .env.dev
     environment:
-      - DB_HOST=db-dev          # Override to use Docker network hostname
+      - DB_HOST=db-dev
+      - DB_PORT=${DB_PORT}
       - ENVIRONMENT=development
     depends_on:
       db-dev:
         condition: service_healthy
     volumes:
-      # Mount source code so Django's runserver auto-reloads on changes
       - ./django_ckt:/app
       - ./causal_analysis:/app/causal_analysis:ro
-      # Mount graph result files so the app can list/load them
-      - ./graph_creation/result:/app/graph_data/result:ro
-    # Override the production CMD — use Django's dev server for hot reload
+      - ./graph_creation:/app/graph_creation:ro
+      - graph-results-dev:/app/graph_creation/result
+      - ./user_input.yaml:/app/user_input.yaml
+    user: root
     command: >
-      sh -c "python manage.py migrate --noinput &&
+      sh -c "chown -R django:django /app/graph_creation/result &&
+             python manage.py migrate --noinput &&
              python manage.py runserver 0.0.0.0:${DJANGO_PORT:-3837}"
+
+networks:
+  ckt-dev-network:
+    driver: bridge
 
 volumes:
   pgdata-dev:
-
+  graph-results-dev:
