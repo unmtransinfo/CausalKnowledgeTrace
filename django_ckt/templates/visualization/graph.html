@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Graph Visualization - CKT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/graph_visualization.css' %}?v=5">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="viz-page-header">
+    <i class="fas fa-project-diagram"></i> Graph Visualization
+</div>
+
+<!-- Graph Stats & Legend (single row) -->
+<div class="graph-stats-legend-bar" id="graphStatsBar">
+    <div class="stat-item">
+        <i class="fas fa-circle"></i>
+        <span>Nodes: <strong id="statNodes">0</strong></span>
+    </div>
+    <div class="stat-item">
+        <i class="fas fa-arrow-right"></i>
+        <span>Edges: <strong id="statEdges">0</strong></span>
+    </div>
+    <div class="stat-item">
+        <i class="fas fa-file"></i>
+        <span>File: <strong id="statFilename">None loaded</strong></span>
+    </div>
+    <div class="bar-divider"></div>
+    <div class="legend-item"><span class="legend-color" style="background:#E53935"></span> Exposure</div>
+    <div class="legend-item"><span class="legend-color" style="background:#43A047"></span> Outcome</div>
+    <div class="legend-item"><span class="legend-color" style="background:#9E9E9E"></span> Other</div>
+</div>
+
+<!-- Toolbar -->
+<div class="viz-toolbar">
+    <button class="btn btn-sm btn-outline-primary" id="btnFit" title="Fit to screen">
+        <i class="fas fa-expand-arrows-alt"></i> Fit
+    </button>
+    <button class="btn btn-sm btn-outline-primary" id="btnZoomIn" title="Zoom in">
+        <i class="fas fa-search-plus"></i>
+    </button>
+    <button class="btn btn-sm btn-outline-primary" id="btnZoomOut" title="Zoom out">
+        <i class="fas fa-search-minus"></i>
+    </button>
+    <div class="separator"></div>
+    <button class="btn btn-sm btn-outline-danger" id="btnRemoveSelected" title="Remove selected element" disabled>
+        <i class="fas fa-trash"></i> Remove Selected
+    </button>
+    <button class="btn btn-sm btn-outline-warning" id="btnUndo" title="Undo last removal" disabled>
+        <i class="fas fa-undo"></i> Undo
+    </button>
+    <div class="separator"></div>
+    <select class="form-select form-select-sm" id="layoutSelect" style="width:auto;font-size:0.82rem;">
+        <option value="physics">Layout: Physics</option>
+    </select>
+    <button class="btn btn-sm btn-outline-secondary" id="btnRelayout" title="Re-run layout">
+        <i class="fas fa-sync-alt"></i> Re-layout
+    </button>
+    <!-- Physics strength slider — shown only when Physics layout is active -->
+    <div id="physicsControls" style="display:flex;align-items:center;gap:6px;margin-left:4px;">
+        <label for="physicsStrength" style="font-size:0.8rem;white-space:nowrap;margin:0;">
+            <i class="fas fa-atom"></i> Physics Strength:
+        </label>
+        <input type="range" id="physicsStrength" min="-500" max="0" step="10" value="-150"
+               style="width:110px;cursor:pointer;" title="Gravitational constant (more negative = stronger repulsion)">
+        <span id="physicsStrengthVal" style="font-size:0.8rem;min-width:52px;">-150</span>
+    </div>
+    <div class="separator"></div>
+    <button class="btn btn-sm btn-outline-info" id="btnToggleLayout" title="Toggle side-by-side / stacked layout">
+        <i class="fas fa-columns"></i> <span id="toggleLayoutLabel">Stack</span>
+    </button>
+    <div class="separator"></div>
+    <button class="btn btn-sm btn-outline-secondary" id="btnDownloadJson" title="Download graph as JSON">
+        <i class="fas fa-file-code"></i> Download JSON
+    </button>
+    <button class="btn btn-sm btn-outline-secondary" id="btnDownloadEvidence" title="Download HTML evidence report">
+        <i class="fas fa-file-alt"></i> Download Evidence
+    </button>
+</div>
+
+<!-- Main content: responsive graph + info panel (side-by-side ↔ stacked) -->
+<div class="resizable-wrapper mode-side" id="resizableWrapper">
+    <!-- Graph pane (left in side-by-side, top in stacked) -->
+    <div class="resizable-graph-pane" id="graphPane">
+        <div class="card-header graph-pane-header">
+            Interactive Causal Graph Explorer
+        </div>
+        <div id="cy-container">
+            <div id="cy"></div>
+            <!-- No-graph placeholder -->
+            <div class="no-graph-placeholder" id="noGraphPlaceholder">
+                <i class="fas fa-project-diagram"></i>
+                <p>No graph loaded. Upload or select a graph file from the <a href="{% url 'upload:upload' %}">Data Upload</a> tab.</p>
+            </div>
+        </div>
+    </div>
+    <!-- Vertical drag handle (side-by-side mode) -->
+    <div class="resize-handle resize-handle-vertical" id="resizeHandleV" title="Drag to resize columns"></div>
+    <!-- Horizontal drag handle (stacked mode) -->
+    <div class="resize-handle resize-handle-horizontal" id="resizeHandleH" title="Drag to resize rows"></div>
+    <!-- Info pane (right in side-by-side, bottom in stacked) -->
+    <div class="resizable-info-pane" id="infoPane">
+        <div class="info-panel" id="infoPanel">
+            <div class="card-header">
+                <i class="fas fa-info-circle"></i> Element Info
+            </div>
+            <div class="info-panel-body" id="infoPanelBody">
+                <p class="text-muted">Click on a node or edge to see details.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bottom drag handle (controls overall wrapper height in both modes) -->
+<div class="resize-handle resize-handle-bottom" id="resizeHandleBottom" title="Drag to resize overall height"></div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // API URLs for Django template tag resolution
+    const networkDataUrl = '{% url "visualization:network_data" %}';
+    const removeNodeUrl = '{% url "visualization:remove_node" %}';
+    const removeEdgeUrl = '{% url "visualization:remove_edge" %}';
+    const undoUrl = '{% url "visualization:undo" %}';
+    const csrfToken = '{{ csrf_token }}';
+</script>
+<script src="{% static 'js/graph_visualization.js' %}?v=7"></script>
+{% endblock %}
+

@@ -39,7 +39,7 @@ OPTIONAL:
   --db-host HOST            Database host [default: localhost]
   --db-port PORT            Database port [default: 5434]
   --db-name NAME            Database name [default: causalehr_db]
-  --output-dir DIR          Output directory [default: manjil_analysis/input]
+  --output-dir DIR          Output directory [default: graph_creation/result]
   --verbose                 Enable verbose output
   -h, --help                Show this help message
 
@@ -81,10 +81,10 @@ WORKFLOW:
   2. Run this script to generate the graph
   3. Run analysis scripts manually:
 
-     cd manjil_analysis/scripts
+     cd furtherAnalysis/post_ckt/scripts
      Rscript 01_parse_dagitty.R <exposure> <outcome>
      Rscript 02_basic_analysis.R <exposure> <outcome>
-     Rscript 03_cycle_detection.R <exposure> <outcome>
+     Rscript 04a_cycle_detection.R <exposure> <outcome>
      Rscript 03b_semantic_type_analysis.R <exposure> <outcome>
 
 EOF
@@ -173,7 +173,7 @@ CKT_ROOT="$(dirname "$PROJECT_ROOT")"
 
 # Default output directory if not specified
 if [[ -z "$OUTPUT_DIR" ]]; then
-    OUTPUT_DIR="$PROJECT_ROOT/input"
+    OUTPUT_DIR="$CKT_ROOT/graph_creation/result"
 fi
 
 mkdir -p "$OUTPUT_DIR"
@@ -232,46 +232,29 @@ echo "=========================================="
 echo ""
 
 # ============================================
-# RENAME FILES
+# REPORT OUTPUT FILES
 # ============================================
 
 # Try to extract exposure/outcome names from YAML
 EXPOSURE_NAME=$(grep -E "^exposure_name:" "$YAML_CONFIG" | awk '{print $2}' | tr -d '"' | tr -d "'" || echo "")
 OUTCOME_NAME=$(grep -E "^outcome_name:" "$YAML_CONFIG" | awk '{print $2}' | tr -d '"' | tr -d "'" || echo "")
 
-# If names are provided in YAML, rename the generated files
+# If names are provided in YAML, report the expected generated files
 if [[ -n "$EXPOSURE_NAME" && -n "$OUTCOME_NAME" ]]; then
-    echo "Renaming files using exposure: $EXPOSURE_NAME, outcome: $OUTCOME_NAME"
-
-    # Rename degree_N.R to {exposure}_{outcome}_degree_N.R
-    if [[ -f "$OUTPUT_DIR/degree_${DEGREE}.R" ]]; then
-        NEW_NAME="${EXPOSURE_NAME}_${OUTCOME_NAME}_degree_${DEGREE}.R"
-        mv "$OUTPUT_DIR/degree_${DEGREE}.R" "$OUTPUT_DIR/$NEW_NAME"
-        echo "  Renamed: degree_${DEGREE}.R -> $NEW_NAME"
-    fi
-
-    # Rename causal_assertions_N.json
-    if [[ -f "$OUTPUT_DIR/causal_assertions_${DEGREE}.json" ]]; then
-        NEW_JSON="${EXPOSURE_NAME}_${OUTCOME_NAME}_causal_assertions_${DEGREE}.json"
-        mv "$OUTPUT_DIR/causal_assertions_${DEGREE}.json" "$OUTPUT_DIR/$NEW_JSON"
-        echo "  Renamed: causal_assertions_${DEGREE}.json -> $NEW_JSON"
-    fi
+    GRAPH_FILE="$OUTPUT_DIR/${EXPOSURE_NAME}_to_${OUTCOME_NAME}_degree${DEGREE}.json"
+    ASSERTIONS_FILE="$OUTPUT_DIR/${EXPOSURE_NAME}_to_${OUTCOME_NAME}_degree${DEGREE}_causal_assertions.json"
 
     echo ""
     echo "Generated files:"
-    echo "  - $OUTPUT_DIR/${EXPOSURE_NAME}_${OUTCOME_NAME}_degree_${DEGREE}.R"
-    echo "  - $OUTPUT_DIR/${EXPOSURE_NAME}_${OUTCOME_NAME}_causal_assertions_${DEGREE}.json"
+    echo "  - $GRAPH_FILE"
+    echo "  - $ASSERTIONS_FILE"
     echo ""
 else
     echo "Note: exposure_name and outcome_name not found in YAML config."
-    echo "Files generated with default names (degree_${DEGREE}.R, causal_assertions_${DEGREE}.json)"
-    echo ""
-    echo "Generated files:"
-    echo "  - $OUTPUT_DIR/degree_${DEGREE}.R"
-    echo "  - $OUTPUT_DIR/causal_assertions_${DEGREE}.json"
-    echo ""
-    echo "To rename manually:"
-    echo "  mv $OUTPUT_DIR/degree_${DEGREE}.R $OUTPUT_DIR/<exposure>_<outcome>_degree_${DEGREE}.R"
+    echo "Files were written to: $OUTPUT_DIR"
+    echo "Expected naming pattern:"
+    echo "  - <Exposure>_to_<Outcome>_degreeN.json"
+    echo "  - <Exposure>_to_<Outcome>_degreeN_causal_assertions.json"
     echo ""
 fi
 
@@ -284,7 +267,7 @@ echo ""
 echo "  cd $SCRIPT_DIR"
 echo "  Rscript 01_parse_dagitty.R <exposure_name> <outcome_name>"
 echo "  Rscript 02_basic_analysis.R <exposure_name> <outcome_name>"
-echo "  Rscript 03_cycle_detection.R <exposure_name> <outcome_name>"
+echo "  Rscript 04a_cycle_detection.R <exposure_name> <outcome_name>"
 echo "  Rscript 03b_semantic_type_analysis.R <exposure_name> <outcome_name>"
 echo ""
 
@@ -294,7 +277,7 @@ if [[ -n "$EXPOSURE_NAME" && -n "$OUTCOME_NAME" ]]; then
     echo "  cd $SCRIPT_DIR"
     echo "  Rscript 01_parse_dagitty.R $EXPOSURE_NAME $OUTCOME_NAME"
     echo "  Rscript 02_basic_analysis.R $EXPOSURE_NAME $OUTCOME_NAME"
-    echo "  Rscript 03_cycle_detection.R $EXPOSURE_NAME $OUTCOME_NAME"
+    echo "  Rscript 04a_cycle_detection.R $EXPOSURE_NAME $OUTCOME_NAME"
     echo "  Rscript 03b_semantic_type_analysis.R $EXPOSURE_NAME $OUTCOME_NAME"
     echo ""
 fi

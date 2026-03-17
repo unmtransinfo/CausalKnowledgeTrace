@@ -1,56 +1,40 @@
+# =============================================================================
+# Production Docker Compose
+# =============================================================================
+# Usage: docker compose -f docker-compose.prod.yaml --env-file .env.prod up --build -d
+# Env:   Variables loaded from .env.prod
+#
+# Key production differences from dev:
+#   - No source code volumes (image is self-contained)
+#   - Gunicorn WSGI server instead of Django runserver
+#   - restart: unless-stopped for automatic recovery
+#   - PGTune-optimized Postgres settings for 16 CPU / 64GB RAM
+# =============================================================================
+
 services:
-  db:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL Database (production-tuned)
+  # ---------------------------------------------------------------------------
+  # PGTune settings: DB Version 16, OS Linux, DB Type web
+  # CPU: 16, Memory: 64GB, Connections: 100, Storage: HDD
+  # ---------------------------------------------------------------------------
+  db-prod:
     image: postgres:16
-    container_name: cwt-db-prod
+    container_name: db-prod
+    env_file:
+      - .env.prod
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       PGPORT: ${DB_PORT}
     ports:
-      - "${DB_PORT}:${DB_PORT}"
+      - "0.0.0.0:${DB_PORT}:${DB_PORT}"
     command:
       - "postgres"
       - "-c"
       - "port=${DB_PORT}"
-      - "-c"
-      - "listen_addresses=*"
-      # Performance tuning based on PGTune recommendations
-      # DB Version: 16, OS: Linux, DB Type: web, CPU: 16, Memory: 64GB, Connections: 100, Storage: HDD
-      - "-c"
-      - "max_connections=100"
-      - "-c"
-      - "shared_buffers=16GB"
-      - "-c"
-      - "effective_cache_size=48GB"
-      - "-c"
-      - "maintenance_work_mem=2GB"
-      - "-c"
-      - "checkpoint_completion_target=0.9"
-      - "-c"
-      - "wal_buffers=16MB"
-      - "-c"
-      - "default_statistics_target=100"
-      - "-c"
-      - "random_page_cost=4"
-      - "-c"
-      - "effective_io_concurrency=2"
-      - "-c"
-      - "work_mem=144631kB"
-      - "-c"
-      - "huge_pages=try"
-      - "-c"
-      - "min_wal_size=1GB"
-      - "-c"
-      - "max_wal_size=4GB"
-      - "-c"
-      - "max_worker_processes=16"
-      - "-c"
-      - "max_parallel_workers_per_gather=4"
-      - "-c"
-      - "max_parallel_workers=16"
-      - "-c"
-      - "max_parallel_maintenance_workers=4"
+    shm_size: 17g
     volumes:
       - ./causalehr_backup:/causalehr_backup:ro
       - ./restore.sh:/docker-entrypoint-initdb.d/restore.sh:ro
@@ -60,6 +44,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
     deploy:
       resources:
         limits:
@@ -69,31 +54,38 @@ services:
           cpus: '8'
           memory: 32G
 
-  cwt-app-prod:
-    image: causalknowledgetrace:prod
+  # ---------------------------------------------------------------------------
+  # Django Application (production)
+  # ---------------------------------------------------------------------------
+  # Uses Gunicorn as the WSGI server (configured in Dockerfile.django CMD).
+  # No source code volume — the image is fully self-contained.
+  # Static files are collected at build time via collectstatic.
+  # ---------------------------------------------------------------------------
+  django-prod:
+    image: causalknowledgetrace-django:prod
     build:
       context: .
-      dockerfile: docker/Dockerfile
-    container_name: cwt-app-prod
+      dockerfile: docker/Dockerfile.django
+    container_name: django-prod
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "0.0.0.0:${DJANGO_PORT:-3838}:${DJANGO_PORT:-3838}"
     env_file:
       - .env.prod
     environment:
-      - DB_HOST=db  # This overrides the DB_HOST from .env file
+      - DB_HOST=db-prod              # Override to use Docker network hostname
       - ENVIRONMENT=production
     depends_on:
-      db:
+      db-prod:
         condition: service_healthy
-    restart: unless-stopped  # Auto-restart in production
+    restart: unless-stopped      # Auto-restart on crash
     deploy:
       resources:
         limits:
-          cpus: '16'
-          memory: 64G
+          cpus: '4'
+          memory: 8G
         reservations:
-          cpus: '8'
-          memory: 32G
+          cpus: '2'
+          memory: 4G
 
 volumes:
   pgdata-prod:

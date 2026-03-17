@@ -1,0 +1,51 @@
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-custom">
+    <div class="container-fluid">
+        <!-- First Row: Brand Title Centered -->
+        <div class="navbar-brand-row">
+            <a class="navbar-brand-title" href="{% url 'core:home' %}">
+                CKT - Causal Knowledge Trace
+            </a>
+        </div>
+
+        <!-- Second Row: Navigation Links Centered -->
+        <div class="navbar-nav-row">
+            <!-- Toggler for mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'about' %}active{% endif %}" href="{% url 'core:about' %}">
+                            <i class="fas fa-info-circle"></i> About
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'create_graph' %}active{% endif %}" href="{% url 'graph_config:config' %}">
+                            <i class="fas fa-cogs"></i> Graph Configuration
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'upload' %}active{% endif %}" href="{% url 'upload:upload' %}">
+                            <i class="fas fa-upload"></i> Data Upload
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'dag' %}active{% endif %}" href="{% url 'visualization:graph' %}">
+                            <i class="fas fa-project-diagram"></i> Graph Visualization
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if active_tab == 'causal' %}active{% endif %}" href="{% url 'analysis:causal' %}">
+                            <i class="fas fa-search-plus"></i> Causal Analysis
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+

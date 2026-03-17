@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}CKT - Causal Knowledge Trace{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="fas fa-info-circle"></i> About CKT - Causal Knowledge Trace</h3>
+            </div>
+            <div class="card-body">
+                <!-- Application Overview -->
+                <div class="home-info-box home-what-is-ckt">
+                    <h4><i class="fas fa-info-circle"></i> What is CKT?</h4>
+                    <p class="mb-0">
+                        CKT (Causal Knowledge Trace) is an interactive web application for exploring and analyzing causal relationships in knowledge graphs. It provides tools for visualizing graphs (which may contain cycles), performing causal inference analysis, and understanding complex relationships between variables extracted from biomedical literature.
+                    </p>
+                </div>
+
+                <!-- Key Features -->
+                <div class="home-info-box home-key-features">
+                    <h4><i class="fas fa-star"></i> Key Features</h4>
+                    <ul>
+                        <li><strong>Interactive Graph Visualization:</strong> Explore causal graphs with zoom, pan, and physics-based layouts</li>
+                        <li><strong>Graph Editing:</strong> Remove nodes and edges, undo changes, and save modified graphs</li>
+                        <li><strong>Causal Analysis:</strong> Calculate adjustment sets, find instrumental variables, and analyze causal paths</li>
+                        <li><strong>Graph Configuration:</strong> Generate knowledge graphs from biomedical databases with customizable parameters</li>
+                        <li><strong>Multiple Export Options:</strong> Save graphs as R files or HTML reports</li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div class="home-info-box home-resources">
+                    <h4><i class="fas fa-link"></i> Resources</h4>
+                    <ul>
+                        <li>
+                            <i class="fab fa-github"></i> <strong>GitHub Repository:</strong>
+                            <a href="https://github.com/unmtransinfo/CausalKnowledgeTrace" target="_blank">
+                                https://github.com/unmtransinfo/CausalKnowledgeTrace
+                            </a>
+                        </li>
+                        <li>
+                            <i class="fas fa-book"></i> <strong>User Manual:</strong>
+                            <a href="https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing" target="_blank">
+                                View detailed user guide
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <hr>
+
+                <!-- User Guide -->
+                <h3 class="section-heading"><i class="fas fa-book"></i> User Guide</h3>
+
+                <!-- Step 1 -->
+                <div class="home-info-box home-step-1">
+                    <h4><i class="fas fa-cogs"></i> Step 1: Graph Configuration (Optional)</h4>
+                    <p>If you want to generate a new knowledge graph from the SemMedDB database:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Graph Configuration</strong> tab</li>
+                        <li>Enter the <strong>Exposure CUI</strong> (Concept Unique Identifier) - you can search for a word and select from available CUIs</li>
+                        <li>Enter the <strong>Outcome CUI</strong> - you can search for a word and select from available CUIs</li>
+                        <li>Configure optional parameters:
+                            <ul>
+                                <li><strong>Squelch Threshold:</strong> Minimum number of unique PMIDs (publications) required for an edge</li>
+                                <li><strong>Publication Year Cutoff:</strong> Only include publications from this year onwards</li>
+                                <li><strong>Degree:</strong> Maximum distance from exposure/outcome nodes to include</li>
+                                <li><strong>SemMedDB Version:</strong> Select the database version to use</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Generate Graph</strong> to create your knowledge graph</li>
+                        <li>Wait for the process to complete - this may take several minutes</li>
+                    </ol>
+                    <p class="mb-0"><strong>Note:</strong> If you already have a graph file, you can skip this step and go directly to Data Upload.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="home-info-box home-step-2">
+                    <h4><i class="fas fa-upload"></i> Step 2: Data Upload</h4>
+                    <p>Load a graph file into the application:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Data Upload</strong> tab</li>
+                        <li>Choose one of two methods:
+                            <ul>
+                                <li><strong>Method 1 - Select Existing File:</strong> Choose a file from the dropdown (files in graph_creation/result directory) and click 'Load Selected Graph'</li>
+                                <li><strong>Method 2 - Upload New File:</strong> Use the file upload interface to upload an R file containing your DAG definition</li>
+                            </ul>
+                        </li>
+                        <li>Optional: Apply filtering to remove leaf nodes (nodes with only one connection)</li>
+                        <li>Wait for the graph to load - you'll see a progress indicator</li>
+                    </ol>
+                    <p class="mb-0"><strong>Required File Format:</strong> Your R file must contain a dagitty graph definition assigned to variable 'g'</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="home-info-box home-step-3">
+                    <h4><i class="fas fa-project-diagram"></i> Step 3: Graph Visualization</h4>
+                    <p>Explore and modify your causal graph:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Graph Visualization</strong> tab</li>
+                        <li>Interact with the graph:
+                            <ul>
+                                <li><strong>Zoom:</strong> Use mouse wheel or pinch gesture</li>
+                                <li><strong>Pan:</strong> Click and drag the background</li>
+                                <li><strong>Select Nodes/Edges:</strong> Click on them to view details</li>
+                                <li><strong>Move Nodes:</strong> Drag nodes to reposition them</li>
+                            </ul>
+                        </li>
+                        <li>View edge information in the table below the graph</li>
+                        <li>Modify the graph:
+                            <ul>
+                                <li>Select a node and click <strong>Remove Selected Node</strong></li>
+                                <li>Select an edge and click <strong>Remove Selected Edge</strong></li>
+                                <li>Click <strong>Undo Last Removal</strong> to revert changes</li>
+                            </ul>
+                        </li>
+                        <li>Adjust physics settings for better layout</li>
+                        <li>Save your work:
+                            <ul>
+                                <li><strong>Save DAG:</strong> Download modified graph as an R file</li>
+                                <li><strong>Save HTML:</strong> Export as a readable HTML report</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    <p class="mb-0">
+                        <strong>Node Colors:</strong>
+                        <span class="badge bg-danger">Red</span> = Exposure |
+                        <span class="badge badge-cyan">Cyan</span> = Outcome |
+                        <span class="badge bg-secondary">Gray</span> = Other variables
+                    </p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="home-info-box home-step-4">
+                    <h4><i class="fas fa-search-plus"></i> Step 4: Causal Analysis</h4>
+                    <p>Perform statistical causal inference analysis:</p>
+                    <ol>
+                        <li>Navigate to the <strong>Causal Analysis</strong> tab</li>
+                        <li>Select your <strong>Exposure Variable</strong> from the dropdown</li>
+                        <li>Select your <strong>Outcome Variable</strong> from the dropdown</li>
+                        <li>Choose the <strong>Effect Type</strong> (Total Effect or Direct Effect)</li>
+                        <li>Run analyses:
+                            <ul>
+                                <li><strong>Calculate Adjustment Sets:</strong> Find variables to control for to estimate causal effects</li>
+                                <li><strong>Find Instrumental Variables:</strong> Identify variables for instrumental variable analysis</li>
+                                <li><strong>Analyze Causal Paths:</strong> Examine all paths between exposure and outcome</li>
+                                <li><strong>Run Complete Analysis:</strong> Execute all analyses at once</li>
+                            </ul>
+                        </li>
+                        <li>Review results in the tabbed panels</li>
+                    </ol>
+                </div>
+
+                <hr>
+
+                <!-- Understanding Causal Concepts -->
+                <h3 class="section-heading"><i class="fas fa-graduation-cap"></i> Understanding Causal Concepts</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Adjustment Sets -->
+                        <div class="home-info-box home-concept-adjustment">
+                            <h5><i class="fas fa-sliders-h"></i> Adjustment Sets</h5>
+                            <p class="mb-0">
+                                <strong>What it is:</strong> A set of variables to control for in your analysis. When you control for these variables (e.g., by including them in a regression model), you can estimate the causal effect of the exposure on the outcome, blocking all backdoor paths that create spurious associations.
+                            </p>
+                        </div>
+
+                        <!-- Instrumental Variables -->
+                        <div class="home-info-box home-concept-instrumental">
+                            <h5><i class="fas fa-tools"></i> Instrumental Variables</h5>
+                            <p class="mb-0">
+                                <strong>What it is:</strong> A variable that affects the outcome only through its effect on the exposure, and is not associated with any confounders. IVs can be used to estimate causal effects when randomization is not possible and confounding is present.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <!-- Causal Paths -->
+                        <div class="home-info-box home-concept-paths">
+                            <h5><i class="fas fa-route"></i> Causal Paths</h5>
+                            <p class="mb-0">
+                                <strong>What it is:</strong> All directed paths from the exposure to the outcome. These paths represent the mechanisms through which the exposure may causally affect the outcome. Understanding these paths helps identify mediators and direct vs. indirect effects.
+                            </p>
+                        </div>
+
+                        <!-- Useful Links -->
+                        <div class="home-info-box home-concept-links">
+                            <h5><i class="fas fa-external-link-alt"></i> Useful Links</h5>
+                            <p class="mb-0">
+                                <strong>Example:</strong> Visit the <a href="http://dagitty.net/" target="_blank">dagitty.net</a> website - a popular tool for drawing and analyzing causal diagrams. Many concepts in CKT are based on dagitty's methodology.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

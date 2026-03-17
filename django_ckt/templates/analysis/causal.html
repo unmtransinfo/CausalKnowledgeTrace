@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Causal Analysis - CKT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/causal_analysis.css' %}?v=1">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="analysis-page-header">
+    <i class="fas fa-flask"></i> Causal Analysis
+</div>
+
+<!-- No-graph placeholder (shown when no graph loaded) -->
+<div class="no-graph-placeholder" id="noGraphPlaceholder" style="display:none;">
+    <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+    <h5>No Graph Loaded</h5>
+    <p>Please upload or select a graph from the <a href="{% url 'upload:upload' %}">Data Upload</a> tab first.</p>
+</div>
+
+<!-- Loading spinner -->
+<div id="analysisLoading" class="text-center py-5" style="display:none;">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Analyzing graph…</p>
+</div>
+
+<!-- Results container (hidden until loaded) -->
+<div id="analysisResults" style="display:none;">
+
+    <!-- Summary cards row -->
+    <div class="row g-3 mb-4" id="summaryCards">
+        <div class="col-md col-6">
+            <div class="analysis-card card-nodes">
+                <div class="ac-icon"><i class="fas fa-circle"></i></div>
+                <div class="ac-value" id="acNodes">-</div>
+                <div class="ac-label">Nodes</div>
+            </div>
+        </div>
+        <div class="col-md col-6">
+            <div class="analysis-card card-edges">
+                <div class="ac-icon"><i class="fas fa-arrow-right"></i></div>
+                <div class="ac-value" id="acEdges">-</div>
+                <div class="ac-label">Edges</div>
+            </div>
+        </div>
+        <div class="col-md col-6">
+            <div class="analysis-card card-density">
+                <div class="ac-icon"><i class="fas fa-braille"></i></div>
+                <div class="ac-value" id="acDensity">-</div>
+                <div class="ac-label">Density</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- File info bar -->
+    <div class="file-info-bar mb-4">
+        <i class="fas fa-file-code"></i>
+        <strong>Graph file:</strong> <span id="filenameLabel">-</span>
+    </div>
+
+    <!-- Two-column detail panels -->
+    <div class="row g-4">
+        <!-- Left: Predicate Distribution + Top Nodes -->
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header"><i class="fas fa-chart-bar"></i> Predicate Distribution</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped mb-0" id="predicateTable">
+                        <thead><tr><th>Predicate</th><th class="text-end">Count</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><i class="fas fa-sort-amount-down"></i> Top Nodes by Degree</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-striped mb-0" id="topNodesTable">
+                        <thead><tr><th>Node</th><th class="text-end">Degree</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Causal Path Finder (abs-positioned so it never inflates row height) -->
+        <div class="col-lg-6">
+            <div class="pathfinder-anchor">
+                <div class="card card-pathfinder d-flex flex-column">
+                    <div class="card-header"><i class="fas fa-route"></i> Causal Path Finder</div>
+                    <div class="card-body d-flex flex-column">
+                        <div class="row g-2 mb-3">
+                            <div class="col">
+                                <label class="form-label form-label-sm">From (source)</label>
+                                <select class="form-select form-select-sm" id="pathFrom"></select>
+                            </div>
+                            <div class="col">
+                                <label class="form-label form-label-sm">To (target)</label>
+                                <select class="form-select form-select-sm" id="pathTo"></select>
+                            </div>
+                            <div class="col-auto d-flex align-items-end">
+                                <button class="btn btn-sm btn-primary" id="btnFindPaths">
+                                    <i class="fas fa-search"></i> Find Paths
+                                </button>
+                            </div>
+                        </div>
+                        <div id="pathResults" class="path-results flex-grow-1"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 3: Cycle Analysis ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-recycle"></i> Cycle Analysis</span>
+                    <button class="btn btn-sm btn-outline-primary" id="btnRunCycles">
+                        <i class="fas fa-redo"></i> Re-run
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="cycleResults" class="analysis-results-placeholder">
+                        <div class="text-center"><div class="spinner-border spinner-border-sm"></div> Auto-loading cycle analysis…</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 4: Node Removal Impact ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-minus-circle"></i> Node Removal Impact</span>
+                    <div>
+                        <input type="text" class="form-control form-control-sm d-inline-block" id="customNodesToRemove"
+                               placeholder="Custom nodes (comma-separated)" style="width: 280px; display: inline-block !important;">
+                        <button class="btn btn-sm btn-outline-warning ms-1" id="btnRunNodeRemoval">
+                            <i class="fas fa-play"></i> Run Removal
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div id="nodeRemovalResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Analyze which nodes, when removed, break the most cycles.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 5: Post-Removal Analysis ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-chart-line"></i> Post-Removal Analysis</span>
+                    <button class="btn btn-sm btn-outline-info" id="btnRunPostRemoval">
+                        <i class="fas fa-play"></i> Compare
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="postRemovalResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Run node removal first, then compare original vs reduced graph.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 6: Formal Causal Inference ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-flask"></i> Formal Causal Inference</div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col">
+                            <label class="form-label form-label-sm">Exposure</label>
+                            <select class="form-select form-select-sm" id="ciExposure"></select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label form-label-sm">Outcome</label>
+                            <select class="form-select form-select-sm" id="ciOutcome"></select>
+                        </div>
+                        <div class="col-auto d-flex align-items-end">
+                            <button class="btn btn-sm btn-success" id="btnRunCausalInference">
+                                <i class="fas fa-microscope"></i> Run Inference
+                            </button>
+                        </div>
+                    </div>
+                    <div id="causalInferenceResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Select exposure and outcome, then run formal backdoor criterion and IV identification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const summaryUrl = '{% url "analysis:graph_summary" %}';
+    const variablesUrl = '{% url "analysis:variables" %}';
+    const causalPathsUrl = '{% url "analysis:causal_paths" %}';
+    const cycleAnalysisUrl = '{% url "analysis:cycle_analysis" %}';
+    const nodeRemovalUrl = '{% url "analysis:node_removal" %}';
+    const postRemovalUrl = '{% url "analysis:post_removal" %}';
+    const causalInferenceUrl = '{% url "analysis:causal_inference" %}';
+    const csrfToken = '{{ csrf_token }}';
+</script>
+<script src="{% static 'js/causal_analysis.js' %}?v=2"></script>
+{% endblock %}
+

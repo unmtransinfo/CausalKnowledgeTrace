@@ -1,0 +1,380 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Data Upload - CKT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/upload.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="upload-page-header">
+    <i class="fas fa-file-import"></i> Graph File Selection &amp; Loading
+</div>
+
+<!-- Status Alert -->
+<div id="graphStatusAlert" class="upload-status-alert">
+    <i class="fas fa-info-circle"></i>
+    <strong>No graph file is currently loaded.</strong>
+    Please select or upload a graph file below to get started. Once loaded, you'll be able to explore it in the Graph Visualization tab.
+</div>
+
+<!-- Current Graph Status -->
+<div class="graph-status-box mt-3">
+    <span class="status-label"><i class="fas fa-chart-network"></i> Current Graph Status:</span>
+    <span id="currentGraphStatus" class="status-value ms-2">No DAG Loaded</span>
+</div>
+
+<!-- Two Column Layout -->
+<div class="row mt-3">
+    <!-- Left Column: Load Graph from Existing File -->
+    <div class="col-md-6">
+        <div class="upload-section-card">
+            <div class="card-header">
+                <i class="fas fa-folder-open"></i> Load Graph from Existing File
+                <i class="fas fa-question-circle header-info-icon"
+                   tabindex="0"
+                   data-bs-toggle="popover"
+                   data-bs-trigger="hover focus"
+                   data-bs-html="true"
+                   data-bs-custom-class="upload-popover"
+                   data-bs-placement="bottom"
+                   title="Loading Instructions"
+                   data-bs-content="<p class='mb-1'>Place files in the <code>graph_creation/result</code> directory:</p><ul><li>Place in the <code>graph_creation/result</code> directory (generated graphs are automatically saved here)</li><li>Click &lsquo;Refresh File List&rsquo; and select your file</li><li>Click &lsquo;Load Selected DAG&rsquo;</li></ul>"></i>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-2">Select a graph file from the dropdown below:</p>
+
+                <!-- File Dropdown -->
+                <div class="mb-3">
+                    <label for="graphFileSelect" class="form-label fw-bold">Choose Graph File:</label>
+                    <select class="form-select" id="graphFileSelect">
+                        <option value="">Loading files...</option>
+                    </select>
+                </div>
+
+                <!-- Filtering Options -->
+                <div class="filter-options-box">
+                    <h6><i class="fas fa-filter"></i> Graph Filtering Options</h6>
+                    <p class="text-muted mb-2 filter-method-text">Select filtering method:</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="filterType" id="filterNone" value="none" checked>
+                        <label class="form-check-label" for="filterNone">
+                            No filtering - Load original graph
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="filterType" id="filterLeaf" value="remove_leaf">
+                        <label class="form-check-label" for="filterLeaf">
+                            Remove leaf nodes only (degree = 1)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Spacer to push button to bottom -->
+                <div style="flex:1;"></div>
+
+                <!-- Load Button -->
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-load-graph" id="loadGraphBtn">
+                            <i class="fas fa-download"></i> Load Graph
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Upload New Graph File -->
+    <div class="col-md-6">
+        <div class="upload-section-card">
+            <div class="card-header">
+                <i class="fas fa-cloud-upload-alt"></i> Upload New Graph File
+                <i class="fas fa-question-circle header-info-icon"
+                   tabindex="0"
+                   data-bs-toggle="popover"
+                   data-bs-trigger="hover focus"
+                   data-bs-html="true"
+                   data-bs-custom-class="upload-popover"
+                   data-bs-placement="bottom"
+                   title="Upload &amp; File Format"
+                   data-bs-content="<p class='mb-1'>Select an R file and click &ldquo;Upload &amp; Load&rdquo;.</p><p class='mb-1'>Your R file should contain a dagitty graph definition like:</p><pre style='background:#272822;color:#f8f8f2;padding:8px;border-radius:4px;font-size:0.8rem;white-space:pre;overflow-x:auto;'>g &lt;- dagitty( &quot;dag {&#10;    Variable1 [exposure]&#10;    Variable2 [outcome]&#10;    Variable3&#10;    Variable4&#10;&#10;    Variable1 -&gt; Variable2&#10;    Variable2 -&gt; Variable3&#10;    Variable3 -&gt; Variable4&#10;}&quot; )</pre><p class='mt-1 mb-0' style='font-size:0.83rem;'><i class='fas fa-exclamation-circle'></i> The variable name must be <strong>g</strong> for the app to recognize it.</p>"></i>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-2">Upload a new R file containing your graph definition:</p>
+
+                <!-- File Upload -->
+                <div class="mb-3">
+                    <label for="graphFileUpload" class="form-label fw-bold">Choose R File:</label>
+                    <input class="form-control" type="file" id="graphFileUpload" accept=".R,.r">
+                </div>
+
+                <!-- Filtering Options for Upload -->
+                <div class="filter-options-box">
+                    <h6><i class="fas fa-filter"></i> Graph Filtering Options</h6>
+                    <p class="text-muted mb-2 filter-method-text">Select filtering method:</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="uploadFilterType" id="uploadFilterNone" value="none" checked>
+                        <label class="form-check-label" for="uploadFilterNone">
+                            No filtering - Load original graph
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="uploadFilterType" id="uploadFilterLeaf" value="remove_leaf">
+                        <label class="form-check-label" for="uploadFilterLeaf">
+                            Remove leaf nodes only (degree = 1)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Spacer to push button to bottom -->
+                <div style="flex:1;"></div>
+
+                <!-- Upload Button (bottom-right, mirrors left column) -->
+                <div class="row">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-upload-load" id="uploadAndLoadBtn" disabled>
+                            <i class="fas fa-upload"></i> Upload &amp; Load
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upload Progress -->
+                <div class="upload-progress-section" id="uploadProgressSection">
+                    <div class="progress">
+                        <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;">
+                            <span id="uploadProgressText">Uploading...</span>
+                        </div>
+                    </div>
+                    <div class="upload-progress-status" id="uploadProgressStatus">
+                        Status: Preparing upload...
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Progress (full width, for graph loading) -->
+<div class="upload-progress-section" id="loadProgressSection">
+    <div class="upload-section-card">
+        <div class="card-header">
+            <i class="fas fa-spinner fa-spin"></i> Loading Graph...
+        </div>
+        <div class="card-body">
+            <div class="progress">
+                <div id="loadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">
+                    <span id="loadProgressText">Initializing...</span>
+                </div>
+            </div>
+            <div class="upload-progress-status" id="loadProgressStatus">
+                Status: Preparing to load graph...
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // API URLs
+    const listFilesUrl = '{% url "upload:list_files" %}';
+    const loadFileUrl = '{% url "upload:load_file" %}';
+    const uploadFileUrl = '{% url "upload:upload_file" %}';
+    const csrfToken = '{{ csrf_token }}';
+
+    // DOM elements
+    const graphFileSelect = document.getElementById('graphFileSelect');
+
+    const loadGraphBtn = document.getElementById('loadGraphBtn');
+    const graphFileUpload = document.getElementById('graphFileUpload');
+    const uploadAndLoadBtn = document.getElementById('uploadAndLoadBtn');
+    const graphStatusAlert = document.getElementById('graphStatusAlert');
+    const currentGraphStatus = document.getElementById('currentGraphStatus');
+
+    // Initialize popovers and load files on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize all Bootstrap popovers
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function(el) {
+            new bootstrap.Popover(el);
+        });
+
+        loadFileList();
+    });
+
+    // Enable upload button when file is selected
+    graphFileUpload.addEventListener('change', function() {
+        uploadAndLoadBtn.disabled = !this.files.length;
+    });
+
+    // Load file list from API
+    function loadFileList() {
+        fetch(listFilesUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    populateFileList(data.files);
+                } else {
+                    showStatus('Error loading file list: ' + data.error, 'error');
+                }
+            })
+            .catch(err => {
+                showStatus('Error connecting to server: ' + err.message, 'error');
+                graphFileSelect.innerHTML = '<option value="">Error loading files</option>';
+
+            });
+    }
+
+    // Populate dropdown
+    function populateFileList(files) {
+        graphFileSelect.innerHTML = '';
+
+        if (files.length === 0) {
+            graphFileSelect.innerHTML = '<option value="">No files available</option>';
+            return;
+        }
+
+        files.forEach(function(file) {
+            const option = document.createElement('option');
+            option.value = file.name;
+            option.textContent = file.name;
+            graphFileSelect.appendChild(option);
+        });
+    }
+
+    // Load selected graph
+    loadGraphBtn.addEventListener('click', function() {
+        const filename = graphFileSelect.value;
+        if (!filename) {
+            showStatus('Please select a file first.', 'error');
+            return;
+        }
+
+        const filterType = document.querySelector('input[name="filterType"]:checked').value;
+        showLoadProgress(true);
+        updateLoadProgress(20, 'Loading graph file...', 'Reading ' + filename);
+
+        fetch(loadFileUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({ filename: filename, filter_type: filterType })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateLoadProgress(100, 'Complete', data.message);
+                showStatus(data.message, 'success');
+                currentGraphStatus.textContent = 'Loaded: ' + filename;
+                currentGraphStatus.classList.remove('status-value');
+                currentGraphStatus.style.color = '#3c763d';
+                setTimeout(() => showLoadProgress(false), 1500);
+
+                // Show top notification banner
+                if (typeof showTopNotification === 'function') {
+                    showTopNotification({
+                        title: 'Graph Ready for Visualization!',
+                        body: data.message + ' — Go to Graph Visualization to explore your graph.',
+                        type: 'success',
+                        duration: 8000,
+                        action: { text: 'Go to Graph Visualization', url: '/visualization/' }
+                    });
+                }
+            } else {
+                showStatus('Error: ' + data.error, 'error');
+                showLoadProgress(false);
+            }
+        })
+        .catch(err => {
+            showStatus('Error: ' + err.message, 'error');
+            showLoadProgress(false);
+        });
+    });
+
+    // Upload and load new file
+    uploadAndLoadBtn.addEventListener('click', function() {
+        const file = graphFileUpload.files[0];
+        if (!file) return;
+
+        const uploadFilterType = document.querySelector('input[name="uploadFilterType"]:checked').value;
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('filter_type', uploadFilterType);
+
+        showUploadProgress(true);
+        updateUploadProgress(30, 'Uploading...', 'Uploading ' + file.name);
+
+        fetch(uploadFileUrl, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfToken },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                updateUploadProgress(100, 'Complete', data.message);
+                showStatus(data.message, 'success');
+                loadFileList(); // Refresh file list
+                setTimeout(() => showUploadProgress(false), 1500);
+
+                // Show top notification banner
+                if (typeof showTopNotification === 'function') {
+                    showTopNotification({
+                        title: 'Graph Ready for Visualization!',
+                        body: data.message + ' — Go to Graph Visualization to explore your graph.',
+                        type: 'success',
+                        duration: 8000,
+                        action: { text: 'Go to Graph Visualization', url: '/visualization/' }
+                    });
+                }
+            } else {
+                showStatus('Upload error: ' + data.error, 'error');
+                showUploadProgress(false);
+            }
+        })
+        .catch(err => {
+            showStatus('Upload error: ' + err.message, 'error');
+            showUploadProgress(false);
+        });
+    });
+
+    // Helper functions
+    function showStatus(message, type) {
+        graphStatusAlert.className = 'upload-status-alert' + (type === 'success' ? ' status-success' : type === 'error' ? ' status-error' : '');
+        const icon = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle';
+        graphStatusAlert.innerHTML = '<i class="fas fa-' + icon + '"></i> ' + message;
+    }
+
+    function showLoadProgress(show) {
+        document.getElementById('loadProgressSection').style.display = show ? 'block' : 'none';
+    }
+
+    function updateLoadProgress(percent, text, status) {
+        const bar = document.getElementById('loadProgressBar');
+        bar.style.width = percent + '%';
+        document.getElementById('loadProgressText').textContent = text;
+        document.getElementById('loadProgressStatus').textContent = 'Status: ' + status;
+    }
+
+    function showUploadProgress(show) {
+        document.getElementById('uploadProgressSection').style.display = show ? 'block' : 'none';
+    }
+
+    function updateUploadProgress(percent, text, status) {
+        const bar = document.getElementById('uploadProgressBar');
+        bar.style.width = percent + '%';
+        document.getElementById('uploadProgressText').textContent = text;
+        document.getElementById('uploadProgressStatus').textContent = 'Status: ' + status;
+    }
+</script>
+{% endblock %}
+

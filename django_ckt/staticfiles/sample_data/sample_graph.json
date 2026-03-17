@@ -1,0 +1,1694 @@
+{
+  "elements": {
+    "nodes": [
+      {
+        "data": {
+          "id": "n2",
+          "label": "Obesity",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n3",
+          "label": "Smoking",
+          "type": "exposure",
+          "color": "#e74c3c"
+        }
+      },
+      {
+        "data": {
+          "id": "n4",
+          "label": "Physical Inactivity",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n5",
+          "label": "High Cholesterol",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      
+      {
+        "data": {
+          "id": "n9",
+          "label": "Atrial Fibrillation",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      
+      {
+        "data": {
+          "id": "n12",
+          "label": "Sleep Apnea",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n13",
+          "label": "Depression",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n14",
+          "label": "Anxiety",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+  
+      {
+        "data": {
+          "id": "n16",
+          "label": "Age",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n17",
+          "label": "Gender",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n18",
+          "label": "Genetic Predisposition",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n19",
+          "label": "Family History CVD",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n20",
+          "label": "Diet Quality",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n21",
+          "label": "Stress",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+     
+      {
+        "data": {
+          "id": "n23",
+          "label": "Socioeconomic Status",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n24",
+          "label": "Education Level",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n25",
+          "label": "BMI",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n26",
+          "label": "Blood Pressure Systolic",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n27",
+          "label": "Blood Pressure Diastolic",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n28",
+          "label": "HbA1c",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n29",
+          "label": "LDL Cholesterol",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n30",
+          "label": "HDL Cholesterol",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n31",
+          "label": "Triglycerides",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n32",
+          "label": "C Reactive Protein",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n33",
+          "label": "Insulin Resistance",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n34",
+          "label": "Endothelial Dysfunction",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n35",
+          "label": "Atherosclerosis",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n36",
+          "label": "Left Ventricular Hypertrophy",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n37",
+          "label": "Proteinuria",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+    
+    
+     
+      {
+        "data": {
+          "id": "n44",
+          "label": "Metabolic Syndrome",
+          "type": "collider",
+          "color": "#9b59b6"
+        }
+      },
+      {
+        "data": {
+          "id": "n45",
+          "label": "COPD",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n46",
+          "label": "Rheumatoid Arthritis",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n47",
+          "label": "Lupus",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n48",
+          "label": "Statin Use",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n49",
+          "label": "ACE Inhibitor Use",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n50",
+          "label": "Beta Blocker Use",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n51",
+          "label": "Aspirin Use",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n52",
+          "label": "Metformin Use",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n53",
+          "label": "Exercise Program",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n54",
+          "label": "Mediterranean Diet",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n55",
+          "label": "Weight Loss Surgery",
+          "type": "instrument",
+          "color": "#1abc9c"
+        }
+      },
+      {
+        "data": {
+          "id": "n56",
+          "label": "Inflammation",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n57",
+          "label": "Oxidative Stress",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n58",
+          "label": "Platelet Aggregation",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n59",
+          "label": "Thrombus Formation",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+   
+      {
+        "data": {
+          "id": "n67",
+          "label": "Liver Disease",
+          "type": "outcome",
+          "color": "#2ecc71"
+        }
+      },
+      {
+        "data": {
+          "id": "n68",
+          "label": "Vitamin D Deficiency",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n69",
+          "label": "Iron Deficiency",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n70",
+          "label": "Thyroid Disorder",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n71",
+          "label": "Microbiome Dysbiosis",
+          "type": "confounder",
+          "color": "#3498db"
+        }
+      },
+      {
+        "data": {
+          "id": "n72",
+          "label": "Epigenetic Modification",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n73",
+          "label": "Telomere Length",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n74",
+          "label": "Cortisol Level",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n75",
+          "label": "Homocysteine",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n76",
+          "label": "Uric Acid",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      },
+      {
+        "data": {
+          "id": "n77",
+          "label": "Fibrinogen",
+          "type": "mediator",
+          "color": "#f39c12"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "id": "e0",
+          "source": "n0",
+          "target": "n6",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e1",
+          "source": "n0",
+          "target": "n7",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e2",
+          "source": "n0",
+          "target": "n8",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e3",
+          "source": "n0",
+          "target": "n10",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e4",
+          "source": "n0",
+          "target": "n11",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e5",
+          "source": "n1",
+          "target": "n6",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e6",
+          "source": "n1",
+          "target": "n10",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e7",
+          "source": "n1",
+          "target": "n38",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e8",
+          "source": "n1",
+          "target": "n39",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e9",
+          "source": "n2",
+          "target": "n0",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e10",
+          "source": "n2",
+          "target": "n1",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e11",
+          "source": "n2",
+          "target": "n5",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e12",
+          "source": "n2",
+          "target": "n25",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e13",
+          "source": "n3",
+          "target": "n6",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e14",
+          "source": "n3",
+          "target": "n7",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e15",
+          "source": "n3",
+          "target": "n45",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e16",
+          "source": "n3",
+          "target": "n35",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e17",
+          "source": "n4",
+          "target": "n2",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e18",
+          "source": "n4",
+          "target": "n0",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e19",
+          "source": "n4",
+          "target": "n1",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e20",
+          "source": "n5",
+          "target": "n35",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e21",
+          "source": "n5",
+          "target": "n6",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e22",
+          "source": "n5",
+          "target": "n11",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e23",
+          "source": "n9",
+          "target": "n7",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e24",
+          "source": "n9",
+          "target": "n59",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e25",
+          "source": "n12",
+          "target": "n0",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e26",
+          "source": "n12",
+          "target": "n9",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e27",
+          "source": "n13",
+          "target": "n6",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e28",
+          "source": "n13",
+          "target": "n7",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e29",
+          "source": "n14",
+          "target": "n0",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e30",
+          "source": "n14",
+          "target": "n13",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e31",
+          "source": "n15",
+          "target": "n65",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e32",
+          "source": "n15",
+          "target": "n6",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e33",
+          "source": "n16",
+          "target": "n0",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e34",
+          "source": "n16",
+          "target": "n1",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e35",
+          "source": "n16",
+          "target": "n6",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e36",
+          "source": "n16",
+          "target": "n40",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e37",
+          "source": "n17",
+          "target": "n6",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e38",
+          "source": "n18",
+          "target": "n0",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e39",
+          "source": "n18",
+          "target": "n1",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e40",
+          "source": "n18",
+          "target": "n6",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e41",
+          "source": "n19",
+          "target": "n6",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e42",
+          "source": "n19",
+          "target": "n0",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e43",
+          "source": "n20",
+          "target": "n5",
+          "relationship": "AFFECTS",
+          "label": "Affects"
+        }
+      },
+      {
+        "data": {
+          "id": "e44",
+          "source": "n20",
+          "target": "n2",
+          "relationship": "AFFECTS",
+          "label": "Affects"
+        }
+      },
+      {
+        "data": {
+          "id": "e45",
+          "source": "n20",
+          "target": "n6",
+          "relationship": "PREVENTS",
+          "label": "Prevents"
+        }
+      },
+      {
+        "data": {
+          "id": "e46",
+          "source": "n21",
+          "target": "n0",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e47",
+          "source": "n21",
+          "target": "n6",
+          "relationship": "PREDISPOSES",
+          "label": "Predisposes"
+        }
+      },
+      {
+        "data": {
+          "id": "e48",
+          "source": "n21",
+          "target": "n72",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e49",
+          "source": "n22",
+          "target": "n6",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e50",
+          "source": "n22",
+          "target": "n7",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e51",
+          "source": "n22",
+          "target": "n45",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e52",
+          "source": "n23",
+          "target": "n20",
+          "relationship": "AFFECTS",
+          "label": "Affects"
+        }
+      },
+      {
+        "data": {
+          "id": "e53",
+          "source": "n23",
+          "target": "n16",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e54",
+          "source": "n24",
+          "target": "n20",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e55",
+          "source": "n24",
+          "target": "n23",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e56",
+          "source": "n25",
+          "target": "n0",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e57",
+          "source": "n25",
+          "target": "n1",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e58",
+          "source": "n25",
+          "target": "n44",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e59",
+          "source": "n26",
+          "target": "n0",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e60",
+          "source": "n26",
+          "target": "n36",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e61",
+          "source": "n27",
+          "target": "n0",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e62",
+          "source": "n28",
+          "target": "n1",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e63",
+          "source": "n28",
+          "target": "n33",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e64",
+          "source": "n29",
+          "target": "n35",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e65",
+          "source": "n29",
+          "target": "n5",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e66",
+          "source": "n30",
+          "target": "n35",
+          "relationship": "INHIBITS",
+          "label": "Inhibits"
+        }
+      },
+      {
+        "data": {
+          "id": "e67",
+          "source": "n30",
+          "target": "n6",
+          "relationship": "PREVENTS",
+          "label": "Prevents"
+        }
+      },
+      {
+        "data": {
+          "id": "e68",
+          "source": "n31",
+          "target": "n35",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e69",
+          "source": "n31",
+          "target": "n44",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e70",
+          "source": "n32",
+          "target": "n54",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e71",
+          "source": "n32",
+          "target": "n35",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e72",
+          "source": "n33",
+          "target": "n1",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e73",
+          "source": "n33",
+          "target": "n28",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e74",
+          "source": "n34",
+          "target": "n35",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e75",
+          "source": "n34",
+          "target": "n54",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e76",
+          "source": "n35",
+          "target": "n6",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e77",
+          "source": "n35",
+          "target": "n7",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e78",
+          "source": "n35",
+          "target": "n11",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e79",
+          "source": "n35",
+          "target": "n58",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e80",
+          "source": "n36",
+          "target": "n8",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e81",
+          "source": "n36",
+          "target": "n0",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e82",
+          "source": "n37",
+          "target": "n10",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e83",
+          "source": "n37",
+          "target": "n64",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e84",
+          "source": "n44",
+          "target": "n2",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e85",
+          "source": "n44",
+          "target": "n0",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e86",
+          "source": "n44",
+          "target": "n1",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e87",
+          "source": "n47",
+          "target": "n29",
+          "relationship": "INHIBITS",
+          "label": "Inhibits"
+        }
+      },
+      {
+        "data": {
+          "id": "e88",
+          "source": "n47",
+          "target": "n5",
+          "relationship": "INHIBITS",
+          "label": "Inhibits"
+        }
+      },
+      {
+        "data": {
+          "id": "e89",
+          "source": "n47",
+          "target": "n35",
+          "relationship": "INHIBITS",
+          "label": "Inhibits"
+        }
+      },
+      {
+        "data": {
+          "id": "e90",
+          "source": "n48",
+          "target": "n26",
+          "relationship": "INHIBITS",
+          "label": "Inhibits"
+        }
+      },
+      {
+        "data": {
+          "id": "e91",
+          "source": "n48",
+          "target": "n0",
+          "relationship": "TREATS",
+          "label": "Treats"
+        }
+      },
+      {
+        "data": {
+          "id": "e92",
+          "source": "n49",
+          "target": "n9",
+          "relationship": "TREATS",
+          "label": "Treats"
+        }
+      },
+      {
+        "data": {
+          "id": "e93",
+          "source": "n49",
+          "target": "n8",
+          "relationship": "TREATS",
+          "label": "Treats"
+        }
+      },
+      {
+        "data": {
+          "id": "e94",
+          "source": "n50",
+          "target": "n57",
+          "relationship": "INHIBITS",
+          "label": "Inhibits"
+        }
+      },
+      {
+        "data": {
+          "id": "e95",
+          "source": "n50",
+          "target": "n6",
+          "relationship": "PREVENTS",
+          "label": "Prevents"
+        }
+      },
+      {
+        "data": {
+          "id": "e96",
+          "source": "n51",
+          "target": "n1",
+          "relationship": "TREATS",
+          "label": "Treats"
+        }
+      },
+      {
+        "data": {
+          "id": "e97",
+          "source": "n51",
+          "target": "n33",
+          "relationship": "INHIBITS",
+          "label": "Inhibits"
+        }
+      },
+      {
+        "data": {
+          "id": "e98",
+          "source": "n52",
+          "target": "n2",
+          "relationship": "PREVENTS",
+          "label": "Prevents"
+        }
+      },
+      {
+        "data": {
+          "id": "e99",
+          "source": "n52",
+          "target": "n6",
+          "relationship": "PREVENTS",
+          "label": "Prevents"
+        }
+      },
+      {
+        "data": {
+          "id": "e100",
+          "source": "n53",
+          "target": "n20",
+          "relationship": "STIMULATES",
+          "label": "Stimulates"
+        }
+      },
+      {
+        "data": {
+          "id": "e101",
+          "source": "n53",
+          "target": "n54",
+          "relationship": "PREVENTS",
+          "label": "Prevents"
+        }
+      },
+      {
+        "data": {
+          "id": "e102",
+          "source": "n54",
+          "target": "n35",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e103",
+          "source": "n54",
+          "target": "n57",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e104",
+          "source": "n54",
+          "target": "n32",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e105",
+          "source": "n55",
+          "target": "n54",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e106",
+          "source": "n55",
+          "target": "n34",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e107",
+          "source": "n56",
+          "target": "n57",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e108",
+          "source": "n56",
+          "target": "n59",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e109",
+          "source": "n57",
+          "target": "n58",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e110",
+          "source": "n57",
+          "target": "n60",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e111",
+          "source": "n58",
+          "target": "n63",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e112",
+          "source": "n40",
+          "target": "n43",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e113",
+          "source": "n40",
+          "target": "n42",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e114",
+          "source": "n41",
+          "target": "n40",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e115",
+          "source": "n41",
+          "target": "n43",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e116",
+          "source": "n42",
+          "target": "n43",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e117",
+          "source": "n43",
+          "target": "n40",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e118",
+          "source": "n54",
+          "target": "n8",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e119",
+          "source": "n54",
+          "target": "n59",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e120",
+          "source": "n66",
+          "target": "n0",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e121",
+          "source": "n67",
+          "target": "n5",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e122",
+          "source": "n68",
+          "target": "n44",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e123",
+          "source": "n68",
+          "target": "n25",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e124",
+          "source": "n69",
+          "target": "n54",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e125",
+          "source": "n70",
+          "target": "n54",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e126",
+          "source": "n70",
+          "target": "n72",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e127",
+          "source": "n71",
+          "target": "n35",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e128",
+          "source": "n71",
+          "target": "n57",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e129",
+          "source": "n72",
+          "target": "n21",
+          "relationship": "ASSOCIATED_WITH",
+          "label": "Associated With"
+        }
+      },
+      {
+        "data": {
+          "id": "e130",
+          "source": "n72",
+          "target": "n0",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e131",
+          "source": "n73",
+          "target": "n57",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e132",
+          "source": "n73",
+          "target": "n58",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e133",
+          "source": "n74",
+          "target": "n10",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e134",
+          "source": "n74",
+          "target": "n64",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      },
+      {
+        "data": {
+          "id": "e135",
+          "source": "n75",
+          "target": "n57",
+          "relationship": "CAUSES",
+          "label": "Causes"
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "name": "Cardiovascular Disease Causal Network",
+    "description": "Sample causal knowledge graph showing relationships between cardiovascular risk factors, biomarkers, and outcomes",
+    "node_count": 78,
+    "edge_count": 136
+  }
+}
