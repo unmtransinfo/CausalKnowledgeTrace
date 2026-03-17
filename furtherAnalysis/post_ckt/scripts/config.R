@@ -11,7 +11,7 @@
 # ============================================
 # post_ckt/
 # ├── scripts/                          # R scripts
-# ├── input/                            # Original CKT input files (.R, .json)
+# ├── input/                            # Legacy/manual input files (.R, .json)
 # ├── .env                              # Database credentials (create from .env.example)
 # └── data/
 #     └── {Exposure}_{Outcome}/
@@ -242,12 +242,17 @@ VIZ_CONFIG <- list(
 # ============================================
 # FILE NAMING CONVENTION
 # ============================================
-# Input file pattern: {Exposure}_{Outcome}_degree_{N}.R
+# Primary graph source: ../../graph_creation/result/
+# Primary graph JSON pattern: {Exposure}_to_{Outcome}_degree{N}.json
+# Primary assertions JSON pattern: {Exposure}_to_{Outcome}_degree{N}_causal_assertions.json
+# Legacy input pattern: {Exposure}_{Outcome}_degree_{N}.R
 # Output subdirectory: {Exposure}_{Outcome}/
 
 FILE_CONFIG <- list(
-  input_pattern = "%s_%s_degree_%d.R",              # exposure, outcome, degree
-  json_pattern = "%s_%s_causal_assertions_%d.json"  # exposure, outcome, degree
+  graph_json_pattern = "%s_to_%s_degree%d.json",
+  assertions_json_pattern = "%s_to_%s_degree%d_causal_assertions.json",
+  legacy_dagitty_pattern = "%s_%s_degree_%d.R",
+  legacy_assertions_pattern = "%s_%s_causal_assertions_%d.json"
 )
 
 # ============================================

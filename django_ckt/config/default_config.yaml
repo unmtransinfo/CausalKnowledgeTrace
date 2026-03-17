@@ -1,0 +1,21 @@
+exposure_cuis:
+  - C0020538
+  - C4013784
+  - C0221155
+  - C0745114
+  - C0745135
+outcome_cuis:
+  - C2677888
+  - C0750901
+  - C0494463
+  - C0002395
+blocklist_cuis: null
+exposure_name: Hypertension
+outcome_name: Alzheimers
+min_pmids_degree1: 10
+min_pmids_degree2: 100
+min_pmids_degree3: 200
+pub_year_cutoff: 2015
+degree: 3
+predication_type: CAUSES
+SemMedDBD_version: heuristic

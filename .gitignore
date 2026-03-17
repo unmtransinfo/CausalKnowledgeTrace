@@ -15,6 +15,8 @@ user_input.yaml
 
 .augment/
 logs/
+reduced_graphs/
+django_ckt/reduced_graphs/
 
 semmed_database.tar.gz
 causalehr.dump

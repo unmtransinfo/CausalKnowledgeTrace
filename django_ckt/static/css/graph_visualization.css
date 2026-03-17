@@ -1,0 +1,454 @@
+/* ========================================
+   Graph Visualization Page Styles
+   ======================================== */
+
+/* Page header */
+.viz-page-header {
+    background-color: var(--bg-info-light);
+    border-left: 4px solid var(--primary-color);
+    padding: 12px 20px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-info);
+    margin-bottom: 15px;
+    border-radius: 0 4px 4px 0;
+}
+
+/* ── Resizable responsive layout (side-by-side ↔ stacked) ── */
+.resizable-wrapper {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #f9f9f9;
+}
+
+/* ── Side-by-side mode (default) ── */
+.resizable-wrapper.mode-side {
+    flex-direction: row;
+    height: 650px;
+}
+.mode-side .resizable-graph-pane {
+    flex: 1 1 75%;
+    min-width: 250px;
+    overflow: hidden;
+    position: relative;
+}
+.mode-side .resizable-info-pane {
+    flex: 0 0 25%;
+    min-width: 200px;
+    overflow-y: auto;
+    background: #fff;
+}
+.mode-side .resize-handle-vertical { display: flex; }
+.mode-side .resize-handle-horizontal { display: none; }
+
+/* ── Stacked mode ── */
+.resizable-wrapper.mode-stacked {
+    flex-direction: column;
+    height: 700px;
+}
+.mode-stacked .resizable-graph-pane {
+    flex: 0 0 70%;
+    min-height: 150px;
+    overflow: hidden;
+    position: relative;
+}
+.mode-stacked .resizable-info-pane {
+    flex: 0 0 calc(30% - 6px);
+    min-height: 80px;
+    overflow-y: auto;
+    background: #fff;
+}
+.mode-stacked .resize-handle-vertical { display: none; }
+.mode-stacked .resize-handle-horizontal { display: flex; }
+
+/* ── Shared handle base ── */
+.resize-handle {
+    flex: 0 0 6px;
+    background: #e0e0e0;
+    transition: background 0.15s;
+    position: relative;
+    z-index: 10;
+}
+.resize-handle:hover,
+.resize-handle.active {
+    background: var(--primary-color);
+}
+
+/* Vertical handle (col-resize) */
+.resize-handle-vertical {
+    cursor: col-resize;
+    width: 6px;
+}
+
+/* Horizontal handle (row-resize) */
+.resize-handle-horizontal {
+    cursor: row-resize;
+    height: 6px;
+}
+
+/* Bottom handle (overall wrapper height — always visible) */
+.resize-handle-bottom {
+    height: 6px;
+    cursor: row-resize;
+    background: #e0e0e0;
+    border-radius: 0 0 4px 4px;
+    transition: background 0.15s;
+    position: relative;
+    z-index: 10;
+}
+.resize-handle-bottom:hover,
+.resize-handle-bottom.active {
+    background: var(--primary-color);
+}
+
+/* Pane borders — use inset box-shadow so they're visible inside overflow:hidden wrapper */
+.resizable-graph-pane {
+    display: flex;
+    flex-direction: column;
+    box-shadow: inset 0 0 0 1px #bbb, 0 1px 3px rgba(0,0,0,0.08);
+}
+.resizable-info-pane {
+    box-shadow: inset 0 0 0 1px #bbb, 0 1px 3px rgba(0,0,0,0.08);
+}
+
+/* Graph pane header — matches info panel .card-header */
+.graph-pane-header {
+    flex: 0 0 auto;
+}
+
+/* Ensure both pane headers share identical sizing */
+.graph-pane-header,
+.info-panel .card-header {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+    line-height: 1.5;
+    min-height: 38px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+}
+
+/* Cytoscape container */
+#cy-container {
+    position: relative;
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#cy {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+}
+
+/* Prevent text selection while dragging */
+.resizing-v {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: col-resize;
+}
+.resizing-h {
+    user-select: none;
+    -webkit-user-select: none;
+    cursor: row-resize;
+}
+
+/* Toolbar */
+.viz-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 8px 12px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.viz-toolbar .btn {
+    font-size: 0.82rem;
+    padding: 4px 10px;
+}
+
+.viz-toolbar .btn i {
+    margin-right: 4px;
+}
+
+.viz-toolbar .separator {
+    width: 1px;
+    height: 24px;
+    background-color: #ddd;
+    margin: 0 4px;
+}
+
+/* Info panel */
+.info-panel {
+    border: none;
+    border-radius: 0;
+    background-color: #fff;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* .info-panel .card-header sizing is now in the shared rule above */
+
+.info-panel-body {
+    padding: 12px;
+    font-size: 0.85rem;
+}
+
+.info-panel-body .info-row {
+    display: flex;
+    padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-panel-body .info-label {
+    font-weight: 600;
+    min-width: 100px;
+    color: #555;
+}
+
+.info-panel-body .info-value {
+    color: #333;
+    word-break: break-word;
+}
+
+/* Graph stats & legend bar (combined single row) */
+.graph-stats-legend-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    padding: 10px 16px;
+    background-color: var(--bg-info-light);
+    border-radius: 4px;
+    font-size: 1.05rem;
+    color: var(--text-info);
+    margin-bottom: 10px;
+}
+
+.graph-stats-legend-bar .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.05rem;
+}
+
+.graph-stats-legend-bar .stat-item i {
+    font-size: 1.1rem;
+}
+
+.graph-stats-legend-bar .stat-item strong {
+    font-size: 1.1rem;
+}
+
+/* Divider between stats and legend */
+.graph-stats-legend-bar .bar-divider {
+    width: 1px;
+    height: 22px;
+    background-color: var(--primary-color);
+    opacity: 0.35;
+}
+
+.graph-stats-legend-bar .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.0rem;
+    font-weight: 500;
+}
+
+.graph-stats-legend-bar .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid rgba(0,0,0,0.15);
+}
+
+/* No-graph placeholder */
+.no-graph-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    color: #999;
+}
+
+.no-graph-placeholder i {
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+
+.no-graph-placeholder p {
+    font-size: 1.1rem;
+}
+
+/* ── Small-screen fallback: force stacked layout before JS initializes ── */
+@media (max-width: 767px) {
+    .resizable-wrapper.mode-side {
+        flex-direction: column;
+        height: 700px;
+    }
+    .mode-side .resizable-graph-pane {
+        flex: 0 0 70%;
+        min-width: 0;
+        min-height: 150px;
+    }
+    .mode-side .resizable-info-pane {
+        flex: 0 0 calc(30% - 6px);
+        min-width: 0;
+        min-height: 80px;
+    }
+    .mode-side .resize-handle-vertical { display: none; }
+    .mode-side .resize-handle-horizontal { display: flex; }
+}
+
+/* Selection highlight for connected elements panel */
+.connected-list {
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0;
+    list-style: none;
+    margin: 0;
+}
+
+.connected-list li {
+    padding: 3px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.83rem;
+    cursor: pointer;
+}
+
+.connected-list li:hover {
+    background-color: var(--bg-info-light);
+}
+
+
+
+/* ── Evidence Table ── */
+.evidence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.evidence-title {
+    margin: 0;
+    color: #00838f;
+    font-size: 0.92rem;
+}
+
+.evidence-search label {
+    font-size: 0.82rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.evidence-search input {
+    padding: 3px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    width: 140px;
+}
+
+.evidence-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 8px;
+}
+
+.evidence-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+}
+
+.evidence-table th {
+    background-color: #00acc1;
+    color: #fff;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+    border: 1px solid #0097a7;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.evidence-table td {
+    padding: 6px 10px;
+    border: 1px solid #e0e0e0;
+    vertical-align: top;
+}
+
+.evidence-table tbody tr:nth-child(even) {
+    background-color: #f7f7f7;
+}
+
+.evidence-table tbody tr:hover {
+    background-color: #e0f7fa;
+}
+
+.evidence-table td.sentence-cell {
+    max-width: 320px;
+    word-break: break-word;
+    line-height: 1.4;
+}
+
+.evidence-table a {
+    color: #0277bd;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.evidence-table a:hover {
+    text-decoration: underline;
+}
+
+/* Evidence pagination */
+.evidence-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.8rem;
+}
+
+.evidence-page-info {
+    color: #666;
+}
+
+.evidence-page-buttons {
+    display: flex;
+    gap: 3px;
+    align-items: center;
+}
+
+.evidence-page-buttons .btn {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    min-width: 30px;
+}
+
+/* Node info summary above evidence table */
+.node-info-summary {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e0e0e0;
+}

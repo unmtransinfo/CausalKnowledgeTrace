@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Graph Configuration - CKT{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/graph_config.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="config-box">
+            <div class="config-header">
+                <h3 class="mb-0"><i class="fas fa-cogs"></i> Knowledge Graph Configuration</h3>
+            </div>
+            
+            <!-- Instructions -->
+            <div class="alert alert-info-custom" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>Instructions:</strong>
+                Configure the parameters below to generate your knowledge graph.
+                All fields marked with * are required.
+            </div>
+            
+            <!-- Configuration Form -->
+            <form id="graphConfigForm">
+                {% csrf_token %}
+                
+                <!-- Three Column Layout -->
+                <div class="row">
+                    <!-- Column 1: Exposure -->
+                    <div class="col-md-4">
+                        <!-- Exposure CUIs Search -->
+                        <div class="mb-3">
+                            <label for="exposure_cuis" class="form-label label-with-tooltip">Search Exposure CUIs *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Type at least 3 characters and press Enter to search. All matching results will be shown. Click on results to select CUIs.</span>
+                            </label>
+                            <textarea
+                                class="form-control"
+                                id="exposure_cuis"
+                                name="exposure_cuis"
+                                rows="3"
+                                placeholder="Search for exposure concepts (e.g., hypertension, diabetes)... (Press Enter to search)"
+                            ></textarea>
+                            <div id="exposure_search_results" class="cui-search-results"></div>
+                        </div>
+                        
+                        <!-- Selected Exposure CUIs -->
+                        <div class="mb-3">
+                            <label for="exposure_cuis_selected" class="form-label label-with-tooltip">Selected CUIs:<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">You can also manually enter CUI codes here (format: C followed by 7 digits).</span>
+                            </label>
+                            <textarea
+                                class="form-control"
+                                id="exposure_cuis_selected"
+                                name="exposure_cuis_selected"
+                                rows="3"
+                            >{{ default_exposure_cuis_selected }}</textarea>
+                            <button type="button" class="btn btn-warning btn-sm btn-clear mt-2" id="clear_exposure">Clear Selection</button>
+                        </div>
+
+                        <!-- Consolidated Exposure Name -->
+                        <div class="mb-3">
+                            <label for="exposure_name" class="form-label label-with-tooltip">Consolidated Exposure Name *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Single consolidated name representing all exposure concepts. Spaces will be automatically converted to underscores.</span>
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="exposure_name"
+                                name="exposure_name"
+                                value="{{ default_exposure_name }}"
+                                placeholder="e.g., Hypertension, Diabetes"
+                            >
+                        </div>
+
+                        <!-- Publication Year Cutoff -->
+                        <div class="mb-3">
+                            <label for="pub_year_cutoff" class="form-label label-with-tooltip">Publication Year Cutoff *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Only include citations published on or after this year.</span>
+                            </label>
+                            <select class="form-select" id="pub_year_cutoff" name="pub_year_cutoff">
+                                {% for year in year_range %}
+                                    <option value="{{ year }}" {% if year == default_year %}selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Predication Types -->
+                        <div class="mb-3">
+                            <label for="PREDICATION_TYPE" class="form-label label-with-tooltip">Predication Types *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Select one or more predication types. CAUSES is selected by default. Hold Ctrl/Cmd to select multiple. Selected items will be highlighted.</span>
+                            </label>
+                            <select class="form-select" id="PREDICATION_TYPE" name="PREDICATION_TYPE" multiple>
+                                <option value="CAUSES" {% if default_predication_type == 'CAUSES' %}selected{% endif %}>CAUSES</option>
+                                <option value="AFFECTS" {% if default_predication_type == 'AFFECTS' %}selected{% endif %}>AFFECTS</option>
+                                <option value="AUGMENTS" {% if default_predication_type == 'AUGMENTS' %}selected{% endif %}>AUGMENTS</option>
+                                <option value="COMPLICATES" {% if default_predication_type == 'COMPLICATES' %}selected{% endif %}>COMPLICATES</option>
+                                <option value="DISRUPTS" {% if default_predication_type == 'DISRUPTS' %}selected{% endif %}>DISRUPTS</option>
+                                <option value="INHIBITS" {% if default_predication_type == 'INHIBITS' %}selected{% endif %}>INHIBITS</option>
+                                <option value="PRECEDES" {% if default_predication_type == 'PRECEDES' %}selected{% endif %}>PRECEDES</option>
+                                <option value="PREDISPOSES" {% if default_predication_type == 'PREDISPOSES' %}selected{% endif %}>PREDISPOSES</option>
+                                <option value="PREVENTS" {% if default_predication_type == 'PREVENTS' %}selected{% endif %}>PREVENTS</option>
+                                <option value="PRODUCES" {% if default_predication_type == 'PRODUCES' %}selected{% endif %}>PRODUCES</option>
+                                <option value="STIMULATES" {% if default_predication_type == 'STIMULATES' %}selected{% endif %}>STIMULATES</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Outcome -->
+                    <div class="col-md-4">
+                        <!-- Outcome CUIs Search -->
+                        <div class="mb-3">
+                            <label for="outcome_cuis" class="form-label label-with-tooltip">Search Outcome CUIs *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Type at least 3 characters and press Enter to search. All matching results will be shown. Click on results to select CUIs.</span>
+                            </label>
+                            <textarea
+                                class="form-control"
+                                id="outcome_cuis"
+                                name="outcome_cuis"
+                                rows="3"
+                                placeholder="Search for outcome concepts (e.g., alzheimer, stroke)... (Press Enter to search)"
+                            ></textarea>
+                            <div id="outcome_search_results" class="cui-search-results"></div>
+                        </div>
+
+                        <!-- Selected Outcome CUIs -->
+                        <div class="mb-3">
+                            <label for="outcome_cuis_selected" class="form-label label-with-tooltip">Selected CUIs:<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">You can also manually enter CUI codes here (format: C followed by 7 digits).</span>
+                            </label>
+                            <textarea
+                                class="form-control"
+                                id="outcome_cuis_selected"
+                                name="outcome_cuis_selected"
+                                rows="3"
+                            >{{ default_outcome_cuis_selected }}</textarea>
+                            <button type="button" class="btn btn-warning btn-sm btn-clear mt-2" id="clear_outcome">Clear Selection</button>
+                        </div>
+
+                        <!-- Consolidated Outcome Name -->
+                        <div class="mb-3">
+                            <label for="outcome_name" class="form-label label-with-tooltip">Consolidated Outcome Name *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Single consolidated name representing all outcome concepts. Spaces will be automatically converted to underscores.</span>
+                            </label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="outcome_name"
+                                name="outcome_name"
+                                value="{{ default_outcome_name }}"
+                                placeholder="e.g., Alzheimers, Cancer"
+                            >
+                        </div>
+
+                        <!-- SemMedDB Version -->
+                        <div class="mb-3">
+                            <label for="SemMedDBD_version" class="form-label label-with-tooltip">SemMedDB Version *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">SemMedDB version by filtering method.</span>
+                            </label>
+                            <select class="form-select" id="SemMedDBD_version" name="SemMedDBD_version">
+                                <option value="heuristic" {% if default_semmeddb_version == 'heuristic' %}selected{% endif %}>heuristic</option>
+                                <option value="LLM-based" {% if default_semmeddb_version == 'LLM-based' %}selected{% endif %}>LLM-based</option>
+                                <option value="heuristic+LLM-based" {% if default_semmeddb_version == 'heuristic+LLM-based' %}selected{% endif %}>heuristic+LLM-based</option>
+                            </select>
+                        </div>
+
+
+                    </div>
+
+                    <!-- Column 3: Blocklist and Degree -->
+                    <div class="col-md-4">
+                        <!-- Blocklist CUIs Search -->
+                        <div class="mb-3">
+                            <label for="blocklist_cuis" class="form-label label-with-tooltip">Search Blocklist CUIs<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Type at least 3 characters and press Enter to search for concepts to exclude.</span>
+                            </label>
+                            <textarea
+                                class="form-control"
+                                id="blocklist_cuis"
+                                name="blocklist_cuis"
+                                rows="2"
+                                placeholder="Search for concepts to exclude from analysis (e.g., demographics, age)... (Press Enter to search)"
+                            ></textarea>
+                            <div id="blocklist_search_results" class="cui-search-results"></div>
+                        </div>
+
+                        <!-- Selected Blocklist CUIs -->
+                        <div class="mb-3">
+                            <label for="blocklist_cuis_selected" class="form-label label-with-tooltip">Selected CUIs:<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">You can also manually enter CUI codes here (format: C followed by 7 digits). These concepts will be filtered out during graph creation.</span>
+                            </label>
+                            <textarea
+                                class="form-control"
+                                id="blocklist_cuis_selected"
+                                name="blocklist_cuis_selected"
+                                rows="2"
+                                placeholder="Selected CUI codes will appear here (comma-separated)"
+                            >{{ default_blocklist_cuis_selected }}</textarea>
+                            <button type="button" class="btn btn-warning btn-sm btn-clear mt-2" id="clear_blocklist">Clear Selection</button>
+                        </div>
+
+                        <!-- Degree -->
+                        <div class="mb-3">
+                            <label for="degree" class="form-label label-with-tooltip">Degree *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Number of degrees for graph traversal (1-3). Controls the depth of relationships included in the graph.</span>
+                            </label>
+                            <select class="form-select" id="degree" name="degree">
+                                <option value="1" {% if default_degree == 1 %}selected{% endif %}>1</option>
+                                <option value="2" {% if default_degree == 2 %}selected{% endif %}>2</option>
+                                <option value="3" {% if default_degree == 3 %}selected{% endif %}>3</option>
+                            </select>
+                        </div>
+
+                        <!-- Squelch Thresholds (moved from second row) -->
+                        <div class="squelch-thresholds-section">
+                            <h5 class="label-with-tooltip">Squelch Thresholds (minimum unique PMIDs) *<i class="fas fa-question-circle tooltip-icon"></i>
+                                <span class="tooltip-text">Minimum number of unique PMIDs required for each degree level (1-1000). Fields are enabled based on selected degree.</span>
+                            </h5>
+                            <div class="mb-3">
+                                <label for="min_pmids_degree1" class="form-label">Threshold for 1st Degree:</label>
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree1" name="min_pmids_degree1" value="{{ default_min_pmids_degree1 }}" min="1" max="1000" step="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="min_pmids_degree2" class="form-label">Threshold for 2nd Degree:</label>
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree2" name="min_pmids_degree2" value="{{ default_min_pmids_degree2 }}" min="1" max="1000" step="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="min_pmids_degree3" class="form-label">Threshold for 3rd Degree:</label>
+                                <input type="number" class="form-control threshold-field" id="min_pmids_degree3" name="min_pmids_degree3" value="{{ default_min_pmids_degree3 }}" min="1" max="1000" step="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr>
+
+                <!-- Action Button and Status -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-create-graph w-100" id="create_graph_btn">
+                            <i class="fas fa-cogs"></i> Create Graph
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Validation Feedback -->
+                        <div id="validation_feedback_area">
+                            <div class="alert alert-success-custom mb-0">
+                                <i class="fas fa-check-circle"></i>
+                                <strong> Ready to create graph</strong><br>
+                                All inputs are valid. Click 'Create Graph' to proceed.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section (initially hidden) -->
+                <div id="graph_progress_section">
+                    <h4><i class="fas fa-spinner fa-spin"></i> Creating Graph...</h4>
+                    <div class="progress-container">
+                        <p>Please wait while your graph is being created. This process may take several minutes.</p>
+                        <div class="progress">
+                            <div id="graph_progress_bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;">
+                                <span id="graph_progress_text">Initializing...</span>
+                            </div>
+                        </div>
+                        <div id="graph_progress_status">
+                            Status: Ready to start...
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/graph_config.js' %}"></script>
+<script>
+    // Set URL endpoints for JavaScript (must be after graph_config.js loads)
+    searchCuiUrl = '{% url "graph_config:search_cui" %}';
+    generateGraphUrl = '{% url "graph_config:generate" %}';
+    checkStatusBaseUrl = '{% url "graph_config:config" %}' + 'api/status/';
+</script>
+{% endblock %}
+
+

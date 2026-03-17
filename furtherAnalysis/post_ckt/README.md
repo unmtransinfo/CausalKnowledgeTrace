@@ -7,6 +7,7 @@ Analyze CKT-generated causal graphs, prune generic hubs, discover confounders, a
 ```bash
 cd furtherAnalysis/post_ckt
 
+<<<<<<< HEAD
 # Configure DB credentials (used by semantic analysis and evidence extraction)
 cp .env.example .env
 
@@ -43,14 +44,32 @@ You can get these files either by:
 
 1. Downloading from the CKT app.
 2. Generating from YAML config via `scripts/generate_graph.sh`.
+=======
+1. Generate the graph with the Python pipeline.
+2. Use the files already written to `graph_creation/result/`:
+   - `<Exposure>_to_<Outcome>_degreeN.json` - graph JSON used by Stage 1
+   - `<Exposure>_to_<Outcome>_degreeN_causal_assertions.json` - assertions JSON used by semantic analysis
+3. Example:
+   ```bash
+   ls ../../graph_creation/result/Hypertension_to_Alzheimers_degree2.json
+   ls ../../graph_creation/result/Hypertension_to_Alzheimers_degree2_causal_assertions.json
+   ```
+>>>>>>> feature/django
 
 ---
 
 ## Step 2: Setup
 
 ```bash
+<<<<<<< HEAD
 cd furtherAnalysis/post_ckt
 mkdir -p input data
+=======
+# Create required directories
+mkdir -p data
+
+# Set up database credentials (for semantic type analysis)
+>>>>>>> feature/django
 cp .env.example .env
 # Edit .env with your PostgreSQL credentials
 ```
@@ -94,12 +113,18 @@ The full pipeline runs these scripts in order:
 ```bash
 cd scripts
 
+<<<<<<< HEAD
 # Stage 1: Graph preparation and pruning
 Rscript 01_parse_dagitty.R Hypertension Alzheimers 3
 Rscript 01a_calculate_centrality.R Hypertension Alzheimers 3
 Rscript 01b_node_removal_impact.R Hypertension Alzheimers 3
 Rscript 01c_prune_generic_hubs.R Hypertension Alzheimers 3
 Rscript 01d_post_node_removal_analysis.R Hypertension Alzheimers 3
+=======
+# Stage 1: Load graph_creation/result JSON graph
+# (script name kept for compatibility)
+Rscript 01_parse_dagitty.R Hypertension Alzheimers
+>>>>>>> feature/django
 
 # Stage 2: Basic + semantic analysis
 Rscript 02_basic_analysis.R Hypertension Alzheimers 3
@@ -145,6 +170,7 @@ data/<Exposure>_<Outcome>/
 
 | Stage | File | Description |
 |-------|------|-------------|
+<<<<<<< HEAD
 | S1 | `s1_graph/parsed_graph.rds` | Parsed graph from DAGitty input |
 | S1 | `s1_graph/all_nodes_centrality.csv` | Degree/betweenness for all nodes |
 | S1 | `s1_graph/pruned_graph.rds` | Graph after removing generic hubs |
@@ -172,6 +198,13 @@ The pipeline can report different confounder counts by design:
 2. `s4_butterfly_bias/butterfly_analysis_results.csv`: Structural confounders from dagitty parents/children logic.
 
 These are related but not guaranteed to be equal.
+=======
+| S1 | `s1_graph/parsed_graph.rds` | igraph built from `graph_creation/result/*.json` |
+| S2 | `s2_semantic/node_centrality_and_cycles.csv` | Node metrics + cycle info |
+| S3 | `s3_cycles/node_cycle_participation.csv` | Cycle counts per node |
+| S4 | `s4_node_removal/reduced_graph.rds` | **Pruned graph** |
+| S5 | `s5_post_removal/top_nodes_by_cycles.csv` | Remaining problematic nodes |
+>>>>>>> feature/django
 
 ---
 
