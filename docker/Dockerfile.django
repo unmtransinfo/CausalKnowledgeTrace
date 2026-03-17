@@ -61,7 +61,11 @@ RUN mkdir -p /app/staticfiles /app/media /app/logs /app/graph_creation/result \
 # so collectstatic doesn't fail; the real key comes from env at runtime.
 RUN DJANGO_SECRET_KEY=build-placeholder \
     ENVIRONMENT=production \
-    python manage.py collectstatic --noinput
+    python manage.py collectstatic --noinput --clear && \
+    echo "Static files collected. Contents of /app/staticfiles:" && \
+    ls -la /app/staticfiles/ && \
+    echo "CSS files:" && \
+    ls -la /app/staticfiles/css/ || echo "No CSS directory found"
 
 # Switch to non-root user
 USER django
@@ -80,7 +84,12 @@ EXPOSE 3838
 # Workers can be overridden at runtime via GUNICORN_WORKERS env var.
 # ---------------------------------------------------------------------------
 CMD ["sh", "-c", \
-    "python manage.py migrate --noinput && \
+    "echo 'Starting Django production server...' && \
+     echo 'Collecting static files...' && \
+     python manage.py collectstatic --noinput --clear && \
+     echo 'Running database migrations...' && \
+     python manage.py migrate --noinput && \
+     echo 'Starting Gunicorn server...' && \
      gunicorn config.wsgi:application \
        --bind 0.0.0.0:${DJANGO_PORT:-3838} \
        --workers ${GUNICORN_WORKERS:-4} \

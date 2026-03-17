@@ -80,6 +80,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -152,6 +153,25 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+# Static files storage configuration
+# Use different backends for development vs production for better reliability
+if IS_PRODUCTION:
+    # In production, use WhiteNoise with compression but without manifest for better compatibility
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+else:
+    # In development, use Django's default static files storage
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+# For Django 4.2+ compatibility, also set STORAGES
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': STATICFILES_STORAGE,
+    },
+}
+
 # Media files (user uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -205,6 +225,25 @@ if _log_dir.exists():
         'formatter': 'verbose',
     }
     LOGGING['root']['handlers'].append('file')
+
+# ---------------------------------------------------------------------------
+# Production-specific Configuration
+# ---------------------------------------------------------------------------
+if IS_PRODUCTION:
+    # Debug static files configuration in production
+    import os
+    print(f"[PRODUCTION] STATIC_ROOT: {STATIC_ROOT}")
+    print(f"[PRODUCTION] STATIC_URL: {STATIC_URL}")
+    print(f"[PRODUCTION] STATICFILES_DIRS: {STATICFILES_DIRS}")
+    print(f"[PRODUCTION] STATICFILES_STORAGE: {STATICFILES_STORAGE}")
+    if os.path.exists(STATIC_ROOT):
+        try:
+            static_files_count = len(os.listdir(STATIC_ROOT))
+            print(f"[PRODUCTION] Static files found: {static_files_count}")
+        except Exception as e:
+            print(f"[PRODUCTION] Error reading static files: {e}")
+    else:
+        print(f"[PRODUCTION] Static files directory does not exist: {STATIC_ROOT}")
 
 # ---------------------------------------------------------------------------
 # Production Security Hardening
