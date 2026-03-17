@@ -4,6 +4,7 @@ django-environ
 daphne
 uvicorn[standard]
 gunicorn
+whitenoise
 psycopg2-binary
 requests
 python-dotenv

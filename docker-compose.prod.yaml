@@ -68,7 +68,7 @@ services:
       dockerfile: docker/Dockerfile.django
     container_name: django-prod
     ports:
-      - "${DJANGO_PORT:-3838}:${DJANGO_PORT:-3838}"
+      - "0.0.0.0:${DJANGO_PORT:-3838}:${DJANGO_PORT:-3838}"
     env_file:
       - .env.prod
     environment:
