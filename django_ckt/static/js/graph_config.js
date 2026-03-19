@@ -365,9 +365,9 @@ function setupFormSubmission() {
  */
 function handleFormSuccess(response) {
     if (response.success && response.task_id) {
-        // Show "in progress" state
-        $('#graph_progress_text').text('Graph creation in progress...');
-        $('#graph_progress_bar').css('width', '50%');
+        // Show "in progress" state - start at 0% for consistent progress tracking
+        $('#graph_progress_text').text('Initializing...');
+        $('#graph_progress_bar').css('width', '0%');
         $('#graph_progress_status').html(
             '<strong style="color: #17a2b8;"><i class="fas fa-spinner fa-spin"></i> ' +
             response.message + '</strong>'
@@ -398,28 +398,80 @@ function handleFormSuccess(response) {
  */
 function pollTaskStatus(taskId) {
     var statusUrl = checkStatusBaseUrl + taskId + '/';
-    var pollInterval = 3000;  // Poll every 3 seconds
+    var pollInterval = 5000;  // Poll every 5 seconds (reduced frequency)
+    var maxRetries = 1000;    // 1000 * 5 seconds = ~83 minutes max polling time
+    var retryCount = 0;
+    var consecutiveErrors = 0;
 
     var poller = setInterval(function() {
+        retryCount++;
+
+        // Check if we've exceeded maximum polling time
+        if (retryCount > maxRetries) {
+            clearInterval(poller);
+            showFormError('Graph creation is taking longer than expected. Please check the logs or try again.');
+            return;
+        }
+
         $.ajax({
             url: statusUrl,
             method: 'GET',
+            timeout: 30000,  // 30 second timeout for each request
             success: function(statusResponse) {
+                consecutiveErrors = 0;  // Reset error counter on success
+
                 if (statusResponse.status === 'completed') {
                     clearInterval(poller);
                     showGraphSuccess(statusResponse);
                 } else if (statusResponse.status === 'failed') {
                     clearInterval(poller);
                     showGraphFailure(statusResponse);
+                } else if (statusResponse.status === 'running') {
+                    // Update progress message if available
+                    if (statusResponse.message) {
+                        $('#graph_progress_status').html(
+                            '<strong style="color: #17a2b8;"><i class="fas fa-spinner fa-spin"></i> ' +
+                            statusResponse.message + '</strong>'
+                        );
+                    }
+
+                    // Update progress bar with smooth incremental progress
+                    // Use a more gradual progress calculation that doesn't reset
+                    var baseProgress = 10; // Start with 10% after first successful poll
+                    var timeProgress = Math.min(80, (retryCount / maxRetries) * 80); // Max 80% from time
+                    var totalProgress = baseProgress + timeProgress;
+
+                    // Update progress bar text based on progress level
+                    var progressText = 'Graph creation in progress...';
+                    if (totalProgress < 30) {
+                        progressText = 'Initializing graph creation...';
+                    } else if (totalProgress < 60) {
+                        progressText = 'Processing graph data...';
+                    } else if (totalProgress < 85) {
+                        progressText = 'Building graph structure...';
+                    } else {
+                        progressText = 'Finalizing graph...';
+                    }
+
+                    $('#graph_progress_bar').css('width', totalProgress + '%');
+                    $('#graph_progress_text').text(progressText);
                 }
                 // If still 'running', keep polling
             },
-            error: function() {
-                // On network error, keep polling (transient failure)
-                logger_warn_count = (logger_warn_count || 0) + 1;
-                if (logger_warn_count > 20) {
+            error: function(xhr, status, error) {
+                consecutiveErrors++;
+                console.warn('Status check failed (attempt ' + consecutiveErrors + '): ' + error);
+
+                // Only fail after many consecutive errors (not just network blips)
+                if (consecutiveErrors > 120) {  // 120 consecutive errors = 10 minutes of failures
                     clearInterval(poller);
-                    showFormError('Lost connection while checking graph creation status.');
+                    showFormError('Lost connection while checking graph creation status. The process may still be running in the background. Please check the logs.');
+                } else if (consecutiveErrors > 30) {
+                    // Show warning but keep trying
+                    $('#graph_progress_status').html(
+                        '<strong style="color: #ffc107;"><i class="fas fa-exclamation-triangle"></i> ' +
+                        'Connection issues detected, but still trying... (' + consecutiveErrors + ' errors)</strong>'
+                    );
                 }
             }
         });

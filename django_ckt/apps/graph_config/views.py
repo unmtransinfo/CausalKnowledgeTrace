@@ -15,13 +15,19 @@ import logging
 import threading
 import uuid
 from datetime import datetime
+from django.utils import timezone
+from django.core.cache import cache
 
 logger = logging.getLogger(__name__)
 
-# In-memory store for graph generation task statuses
-# Maps task_id -> { 'status': 'running'|'completed'|'failed', 'message': str, 'graph_name': str, ... }
-_graph_tasks = {}
-_graph_tasks_lock = threading.Lock()
+def _get_task(task_id):
+    """Get task from cache (shared across Gunicorn workers)"""
+    data = cache.get(f'graph_task_{task_id}')
+    return json.loads(data) if data else None
+
+def _set_task(task_id, task_data):
+    """Set task in cache with 1 hour timeout"""
+    cache.set(f'graph_task_{task_id}', json.dumps(task_data), timeout=3600)
 
 
 class _IndentedListDumper(yaml.Dumper):
@@ -253,60 +259,71 @@ def generate_graph(request):
             '--verbose',
         ]
 
-        with _graph_tasks_lock:
-            _graph_tasks[task_id] = {
-                'status': 'running',
-                'graph_name': graph_name,
-                'exposure_name': exposure_name,
-                'outcome_name': outcome_name,
-                'degree': degree,
-                'message': f'Graph generation for "{graph_name}" is in progress...',
-            }
+        _set_task(task_id, {
+            'status': 'running',
+            'graph_name': graph_name,
+            'exposure_name': exposure_name,
+            'outcome_name': outcome_name,
+            'degree': degree,
+            'message': f'Graph generation for "{graph_name}" (Degree {degree}) is in progress...',
+            'started_at': timezone.now().isoformat(),
+        })
 
         # Run the command asynchronously in a background thread
         def _run_graph_creation():
             try:
+                logger.info(f"Starting graph creation: {graph_name}")
+                
+                # Increase timeout for degree 3+ graphs
+                timeout_seconds = 7200 if degree >= 3 else 3600  # 2 hours for degree 3+, 1 hour for others
+
                 result = subprocess.run(
                     cmd,
                     cwd=project_root,
                     capture_output=True,
                     text=True,
-                    timeout=3600,  # 1 hour timeout
+                    timeout=timeout_seconds,
                 )
-                with _graph_tasks_lock:
-                    if result.returncode != 0:
-                        logger.error(
-                            "Graph creation failed for '%s'.\nstderr: %s\nstdout: %s",
-                            graph_name, result.stderr, result.stdout,
-                        )
-                        _graph_tasks[task_id]['status'] = 'failed'
-                        _graph_tasks[task_id]['message'] = (
-                            f'Graph creation failed for "{graph_name}". '
-                            f'Error: {result.stderr[:500] if result.stderr else "Unknown error"}'
-                        )
-                    else:
-                        logger.info(
-                            "Graph creation completed for '%s'.\nstdout: %s",
-                            graph_name, result.stdout,
-                        )
-                        _graph_tasks[task_id]['status'] = 'completed'
-                        _graph_tasks[task_id]['message'] = (
-                            f'Graph "{graph_name}" created successfully!'
-                        )
+                
+                if result.returncode == 0:
+                    logger.info(f"✓ Graph created successfully: {graph_name}")
+                    _set_task(task_id, {
+                        'status': 'completed',
+                        'graph_name': graph_name,
+                        'exposure_name': exposure_name,
+                        'outcome_name': outcome_name,
+                        'degree': degree,
+                        'message': f'Graph "{graph_name}" created successfully.',
+                    })
+                else:
+                    logger.error(f"✗ Graph creation failed: {graph_name}")
+                    _set_task(task_id, {
+                        'status': 'failed',
+                        'graph_name': graph_name,
+                        'exposure_name': exposure_name,
+                        'outcome_name': outcome_name,
+                        'degree': degree,
+                        'message': f'Graph creation failed. Error: {result.stderr[:200] if result.stderr else "Unknown error"}',
+                    })
+                    
             except subprocess.TimeoutExpired:
-                logger.error("Graph creation timed out for '%s'.", graph_name)
-                with _graph_tasks_lock:
-                    _graph_tasks[task_id]['status'] = 'failed'
-                    _graph_tasks[task_id]['message'] = (
-                        f'Graph creation timed out for "{graph_name}".'
-                    )
+                timeout_hours = timeout_seconds / 3600
+                logger.error(f"✗ Graph creation timed out: {graph_name} after {timeout_hours} hours")
+                _set_task(task_id, {
+                    'status': 'failed',
+                    'graph_name': graph_name,
+                    'exposure_name': exposure_name,
+                    'outcome_name': outcome_name,
+                    'degree': degree,
+                    'message': f'Graph creation timed out after {timeout_hours} hours. Degree {degree} graphs may require more time or resources.'
+                })
             except Exception as exc:
-                logger.exception("Unexpected error during graph creation for '%s': %s", graph_name, exc)
-                with _graph_tasks_lock:
-                    _graph_tasks[task_id]['status'] = 'failed'
-                    _graph_tasks[task_id]['message'] = (
-                        f'Unexpected error during graph creation: {exc}'
-                    )
+                logger.error(f"✗ Graph creation error: {graph_name} - {str(exc)}")
+                _set_task(task_id, {
+                    'status': 'failed',
+                    'graph_name': graph_name,
+                    'message': f'Unexpected error: {str(exc)}'
+                })
 
         thread = threading.Thread(target=_run_graph_creation, daemon=True)
         thread.start()
@@ -331,31 +348,14 @@ def generate_graph(request):
 
 @require_http_methods(["GET"])
 def check_generation_status(request, task_id):
-    """
-    API endpoint to check graph generation status.
-    """
-    try:
-        with _graph_tasks_lock:
-            task = _graph_tasks.get(task_id)
-
-        if task is None:
-            return JsonResponse({
-                'success': False,
-                'error': f'Unknown task ID: {task_id}'
-            }, status=404)
-
+    """Check status of graph generation task"""
+    task = _get_task(task_id)
+    
+    if not task:
         return JsonResponse({
-            'success': True,
-            'status': task['status'],
-            'message': task.get('message', ''),
-            'graph_name': task.get('graph_name', ''),
-            'exposure_name': task.get('exposure_name', ''),
-            'outcome_name': task.get('outcome_name', ''),
-            'degree': task.get('degree', 0),
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=400)
+            'status': 'not_found',
+            'message': 'Task not found or expired'
+        }, status=404)
+    
+    return JsonResponse(task)
 
