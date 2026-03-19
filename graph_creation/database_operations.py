@@ -300,48 +300,62 @@ class DatabaseOperations:
             return {}
 
     def fetch_causal_sentences(self, cursor, pmid_list: List[str]) -> Dict[str, List[str]]:
-        """Fetch causal sentences from the causalsentence table for given PMIDs."""
+        """Fetch causal sentences from the causalsentence table for given PMIDs with batching for performance."""
         if not pmid_list:
             return {}
 
-        # Optimized query using ANY operator with array
-        query = f"""
-        SELECT pmid, sentence
-        FROM {self.sentence_schema}.{self.sentence_table}
-        WHERE pmid = ANY(%s)
-        ORDER BY pmid, sentence
-        """
+        # PERFORMANCE FIX: Batch large queries to avoid long-running queries
+        BATCH_SIZE = 1000  # Process 1000 PMIDs at a time
+        total_pmids = len(pmid_list)
+        pmid_sentences = {}
 
-        try:
-            execute_query_with_logging(cursor, query, [pmid_list])
-            results = cursor.fetchall()
+        print(f"Fetching causal sentences for {total_pmids} PMIDs in batches of {BATCH_SIZE}...")
 
-            # Create mapping dictionary: PMID -> list of unique sentences
-            pmid_sentences = {}
-            for row in results:
-                pmid = str(row[0])  # Ensure PMID is string
-                sentence = row[1]
-                if pmid not in pmid_sentences:
-                    pmid_sentences[pmid] = []
-                pmid_sentences[pmid].append(sentence)
+        # Process in batches
+        for i in range(0, total_pmids, BATCH_SIZE):
+            batch_end = min(i + BATCH_SIZE, total_pmids)
+            batch_pmids = pmid_list[i:batch_end]
 
-            # Remove duplicate sentences for each PMID to optimize storage
-            for pmid in pmid_sentences:
-                pmid_sentences[pmid] = list(set(pmid_sentences[pmid]))
+            print(f"Processing batch {i//BATCH_SIZE + 1}/{(total_pmids + BATCH_SIZE - 1)//BATCH_SIZE} ({len(batch_pmids)} PMIDs)...")
 
-            return pmid_sentences
+            # Optimized query using ANY operator with array
+            query = f"""
+            SELECT pmid, sentence
+            FROM {self.sentence_schema}.{self.sentence_table}
+            WHERE pmid = ANY(%s)
+            ORDER BY pmid, sentence
+            """
 
-        except psycopg2.errors.InFailedSqlTransaction:
-            # Transaction already failed from a previous error - skip sentence fetching
-            print(f"⚠ Skipping sentence fetch due to failed transaction state")
-            return {}
-        except Exception as e:
-            # Error already logged by execute_query_with_logging
-            print(f"⚠ Continuing analysis without sentence data for this batch...")
-            return {}
+            try:
+                execute_query_with_logging(cursor, query, [batch_pmids])
+                results = cursor.fetchall()
+
+                # Create mapping dictionary: PMID -> list of unique sentences
+                for row in results:
+                    pmid = str(row[0])  # Ensure PMID is string
+                    sentence = row[1]
+                    if pmid not in pmid_sentences:
+                        pmid_sentences[pmid] = []
+                    pmid_sentences[pmid].append(sentence)
+
+            except psycopg2.errors.InFailedSqlTransaction:
+                # Transaction already failed from a previous error - skip sentence fetching
+                print(f"⚠ Skipping sentence fetch for batch {i//BATCH_SIZE + 1} due to failed transaction state")
+                continue
+            except Exception as e:
+                # Error already logged by execute_query_with_logging
+                print(f"⚠ Error in batch {i//BATCH_SIZE + 1}, continuing with next batch...")
+                continue
+
+        # Remove duplicate sentences for each PMID to optimize storage
+        for pmid in pmid_sentences:
+            pmid_sentences[pmid] = list(set(pmid_sentences[pmid]))
+
+        print(f"Successfully fetched sentences for {len(pmid_sentences)} PMIDs")
+        return pmid_sentences
 
     def fetch_causal_sentences_by_sentence_id(self, cursor, pmid_sentence_pairs: List[str]) -> Dict[str, List[str]]:
-        """Fetch causal sentences from the causalsentence table using PMID and sentence_id pairs."""
+        """Fetch causal sentences from the causalsentence table using PMID and sentence_id pairs with batching for performance."""
         if not pmid_sentence_pairs:
             return {}
 
@@ -358,45 +372,58 @@ class DatabaseOperations:
         if not pmid_list:
             return {}
 
-        # Optimized query using ANY operator with arrays
-        # Both pmid and sentence_id are text type in database, so use text[] casting
-        query = f"""
-        SELECT pmid, sentence_id, sentence
-        FROM {self.sentence_schema}.{self.sentence_table}
-        WHERE pmid = ANY(CAST(%s AS text[]))
-          AND sentence_id = ANY(CAST(%s AS text[]))
-        ORDER BY pmid, sentence_id
-        """
+        # PERFORMANCE FIX: Batch large queries to avoid long-running queries
+        BATCH_SIZE = 1000  # Process 1000 PMIDs at a time
+        total_pairs = len(pmid_list)
+        pmid_sentences = {}
 
-        try:
-            # Use concise logging for sentence fetching to avoid terminal clutter
-            print(f"Fetching causal sentences for {len(pmid_list)} PMID-sentence_id pairs...")
-            execute_query_with_logging(cursor, query, [pmid_list, sentence_id_list])
-            results = cursor.fetchall()
+        print(f"Fetching causal sentences for {total_pairs} PMID-sentence_id pairs in batches of {BATCH_SIZE}...")
 
-            # Create mapping dictionary: PMID -> list of unique sentences
-            pmid_sentences = {}
-            for row in results:
-                pmid = str(row[0])  # Ensure PMID is string
-                sentence = row[2]
-                if pmid not in pmid_sentences:
-                    pmid_sentences[pmid] = []
-                pmid_sentences[pmid].append(sentence)
+        # Process in batches
+        for i in range(0, total_pairs, BATCH_SIZE):
+            batch_end = min(i + BATCH_SIZE, total_pairs)
+            batch_pmids = pmid_list[i:batch_end]
+            batch_sentence_ids = sentence_id_list[i:batch_end]
 
-            # Remove duplicate sentences for each PMID to optimize storage
-            for pmid in pmid_sentences:
-                pmid_sentences[pmid] = list(set(pmid_sentences[pmid]))
+            print(f"Processing batch {i//BATCH_SIZE + 1}/{(total_pairs + BATCH_SIZE - 1)//BATCH_SIZE} ({len(batch_pmids)} pairs)...")
 
-            return pmid_sentences
+            # Optimized query using ANY operator with arrays
+            # Both pmid and sentence_id are text type in database, so use text[] casting
+            query = f"""
+            SELECT pmid, sentence_id, sentence
+            FROM {self.sentence_schema}.{self.sentence_table}
+            WHERE pmid = ANY(CAST(%s AS text[]))
+              AND sentence_id = ANY(CAST(%s AS text[]))
+            ORDER BY pmid, sentence_id
+            """
 
-        except psycopg2.errors.InFailedSqlTransaction:
-            # Transaction already failed from a previous error - skip sentence fetching
-            print(f"⚠ Skipping sentence fetch due to failed transaction state")
-            return {}
-        except Exception as e:
-            # Error already logged by execute_query_with_logging
-            print(f"⚠ Continuing analysis without sentence data for this batch...")
-            return {}
+            try:
+                execute_query_with_logging(cursor, query, [batch_pmids, batch_sentence_ids])
+                results = cursor.fetchall()
+
+                # Create mapping dictionary: PMID -> list of unique sentences
+                for row in results:
+                    pmid = str(row[0])  # Ensure PMID is string
+                    sentence = row[2]
+                    if pmid not in pmid_sentences:
+                        pmid_sentences[pmid] = []
+                    pmid_sentences[pmid].append(sentence)
+
+            except psycopg2.errors.InFailedSqlTransaction:
+                # Transaction already failed from a previous error - skip sentence fetching
+                print(f"⚠ Skipping sentence fetch for batch {i//BATCH_SIZE + 1} due to failed transaction state")
+                continue
+            except Exception as e:
+                # Error already logged by execute_query_with_logging
+                print(f"⚠ Error in batch {i//BATCH_SIZE + 1}, continuing with next batch...")
+                continue
+
+        # Remove duplicate sentences for each PMID to optimize storage
+        for pmid in pmid_sentences:
+            pmid_sentences[pmid] = list(set(pmid_sentences[pmid]))
+
+        print(f"Successfully fetched sentences for {len(pmid_sentences)} PMIDs")
+        return pmid_sentences
 
 
 

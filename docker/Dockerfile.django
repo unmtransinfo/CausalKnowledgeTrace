@@ -49,12 +49,20 @@ COPY causal_analysis/ /app/causal_analysis/
 COPY graph_creation/ /app/graph_creation/
 
 # Create a non-root user for security — never run production containers as root
-RUN groupadd -r django && useradd -r -g django django
+# Use build args to match host UID/GID
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+
+RUN groupadd -g ${GROUP_ID} django && \
+    useradd -u ${USER_ID} -g django -m -s /bin/bash django
 
 # Create directories for static files, media uploads, and logs.
 # Ownership is set to the non-root user so Gunicorn can write to them.
 RUN mkdir -p /app/staticfiles /app/media /app/logs /app/graph_creation/result \
     && chown -R django:django /app
+
+# Switch to non-root user BEFORE any operations
+USER django
 
 # Collect static files at build time so they're ready to serve.
 # DJANGO_SECRET_KEY is provided as a dummy value — it's only needed here
@@ -66,9 +74,6 @@ RUN DJANGO_SECRET_KEY=build-placeholder \
     ls -la /app/staticfiles/ && \
     echo "CSS files:" && \
     ls -la /app/staticfiles/css/ || echo "No CSS directory found"
-
-# Switch to non-root user
-USER django
 
 # Expose the Django port (documentation; actual mapping is in docker-compose)
 # Dev uses 3837, Prod uses 3838 — set via DJANGO_PORT env var
@@ -85,8 +90,6 @@ EXPOSE 3838
 # ---------------------------------------------------------------------------
 CMD ["sh", "-c", \
     "echo 'Starting Django production server...' && \
-     echo 'Collecting static files...' && \
-     python manage.py collectstatic --noinput --clear && \
      echo 'Running database migrations...' && \
      python manage.py migrate --noinput && \
      echo 'Starting Gunicorn server...' && \

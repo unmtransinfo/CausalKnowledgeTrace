@@ -119,6 +119,11 @@ DATABASES = {
         'PASSWORD': os.environ.get('DB_PASSWORD', 'Software292'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
         'PORT': os.environ.get('DB_PORT', '5433'),
+        'OPTIONS': {
+            'connect_timeout': 10,
+        },
+        'CONN_MAX_AGE': int(os.environ.get('DB_REUSE_TIMEOUT', '600')),  # Connection pooling
+        'CONN_HEALTH_CHECKS': True,
     }
 }
 
@@ -277,4 +282,12 @@ if IS_PRODUCTION:
 
     # X-Frame-Options — prevent clickjacking
     X_FRAME_OPTIONS = 'DENY'
+
+# Cache configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'django_cache_table',
+    }
+}
 

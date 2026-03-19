@@ -1,10 +1,6 @@
 
-Django
-django-environ
-daphne
-uvicorn[standard]
-gunicorn
-whitenoise
+redis>=5.0.0
+django-redis>=5.4.0
 psycopg2-binary
 requests
 python-dotenv
@@ -15,3 +11,5 @@ pytest-django
 networkx
 numpy
 scipy
+gunicorn>=21.2.0
+whitenoise>=6.6.0

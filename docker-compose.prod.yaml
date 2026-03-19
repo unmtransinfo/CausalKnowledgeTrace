@@ -13,6 +13,21 @@
 
 services:
   # ---------------------------------------------------------------------------
+  # Redis Database
+  # ---------------------------------------------------------------------------
+  redis-prod:
+    image: redis:7-alpine
+    container_name: redis-prod
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
   # PostgreSQL Database (production-tuned)
   # ---------------------------------------------------------------------------
   # PGTune settings: DB Version 16, OS Linux, DB Type web
@@ -34,6 +49,42 @@ services:
       - "postgres"
       - "-c"
       - "port=${DB_PORT}"
+      - "-c"
+      - "shared_buffers=16GB"
+      - "-c"
+      - "effective_cache_size=48GB"
+      - "-c"
+      - "maintenance_work_mem=2GB"
+      - "-c"
+      - "checkpoint_completion_target=0.9"
+      - "-c"
+      - "wal_buffers=16MB"
+      - "-c"
+      - "default_statistics_target=100"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "effective_io_concurrency=200"
+      - "-c"
+      - "work_mem=256MB"
+      - "-c"
+      - "min_wal_size=1GB"
+      - "-c"
+      - "max_wal_size=4GB"
+      - "-c"
+      - "max_worker_processes=16"
+      - "-c"
+      - "max_parallel_workers_per_gather=8"
+      - "-c"
+      - "max_parallel_workers=16"
+      - "-c"
+      - "max_parallel_maintenance_workers=8"
+      - "-c"
+      - "statement_timeout=300000"
+      - "-c"
+      - "lock_timeout=30000"
+      - "-c"
+      - "idle_in_transaction_session_timeout=600000"
     shm_size: 17g
     volumes:
       - ./causalehr_backup:/causalehr_backup:ro
@@ -66,6 +117,9 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.django
+      args:
+        USER_ID: ${UID:-1007}
+        GROUP_ID: ${GID:-1007}
     container_name: django-prod
     ports:
       - "0.0.0.0:${DJANGO_PORT:-3838}:${DJANGO_PORT:-3838}"
@@ -74,18 +128,31 @@ services:
     environment:
       - DB_HOST=db-prod              # Override to use Docker network hostname
       - ENVIRONMENT=production
+      - GUNICORN_WORKERS=8  # Increase workers for better performance
+      - REDIS_URL=redis://redis-prod:6379/0
     depends_on:
       db-prod:
+        condition: service_healthy
+      redis-prod:
         condition: service_healthy
     restart: unless-stopped      # Auto-restart on crash
     deploy:
       resources:
         limits:
-          cpus: '4'
-          memory: 8G
+          cpus: '16'
+          memory: 32G
         reservations:
-          cpus: '2'
-          memory: 4G
+          cpus: '8'
+          memory: 16G
+    volumes:
+      - ./graph_creation/result:/app/graph_creation/result:rw  # Add :rw for read-write
+    command: >
+      sh -c "echo 'Starting Django production server...' &&
+             echo 'Running database migrations...' &&
+             python manage.py migrate --noinput &&
+             echo 'Starting Gunicorn with ${GUNICORN_WORKERS:-8} workers...' &&
+             gunicorn config.wsgi:application --bind 0.0.0.0:3838 --workers ${GUNICORN_WORKERS:-8} --timeout 7200 --max-requests 1000 --max-requests-jitter 100 --preload --access-logfile - --error-logfile -"
+    # Remove user override - use the one from Dockerfile
 
 volumes:
   pgdata-prod:
