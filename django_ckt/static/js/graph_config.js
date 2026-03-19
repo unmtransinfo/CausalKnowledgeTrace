@@ -7,6 +7,7 @@
 var searchCuiUrl;
 var generateGraphUrl;
 var checkStatusBaseUrl;  // Base URL for status polling, e.g. '/config/api/status/'
+var uploadUrl;
 
 $(document).ready(function() {
     
@@ -508,7 +509,7 @@ function showGraphSuccess(response) {
                 body: notifBody,
                 type: 'success',
                 duration: 0,
-                action: { text: 'Go to Data Upload', url: '/upload/' }
+                action: { text: 'Go to Data Upload', url: uploadUrl }
             });
         }
 

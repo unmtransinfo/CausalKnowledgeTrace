@@ -57,7 +57,8 @@ _allowed = os.environ.get('DJANGO_ALLOWED_HOSTS', '')
 if _allowed:
     ALLOWED_HOSTS = [h.strip() for h in _allowed.split(',') if h.strip()]
 elif IS_PRODUCTION:
-    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+    # Add common production hosts
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', '206.192.180.170', 'habanero.health.unm.edu']
 else:
     ALLOWED_HOSTS = ['*']  # permissive in dev only
 
@@ -154,7 +155,12 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = '/static/'
+# Support for subpath deployment (e.g., /CKT/)
+FORCE_SCRIPT_NAME = os.environ.get('FORCE_SCRIPT_NAME', '')
+if FORCE_SCRIPT_NAME:
+    STATIC_URL = f'{FORCE_SCRIPT_NAME}/static/'
+else:
+    STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
@@ -178,7 +184,11 @@ STORAGES = {
 }
 
 # Media files (user uploads)
-MEDIA_URL = '/media/'
+# Support for subpath deployment (e.g., /CKT/)
+if FORCE_SCRIPT_NAME:
+    MEDIA_URL = f'{FORCE_SCRIPT_NAME}/media/'
+else:
+    MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
@@ -186,6 +196,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Application port configuration (used by Gunicorn via DJANGO_PORT env var)
 DJANGO_PORT = int(os.environ.get('DJANGO_PORT', '3838'))
+
+# Reverse proxy configuration
+# Set USE_X_FORWARDED_HOST=True when behind a reverse proxy
+USE_X_FORWARDED_HOST = os.environ.get('USE_X_FORWARDED_HOST', 'False') == 'True'
+USE_X_FORWARDED_PORT = os.environ.get('USE_X_FORWARDED_PORT', 'False') == 'True'
+
+# Trusted proxy IPs (for X-Forwarded-For headers)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') if IS_PRODUCTION else None
 
 # File upload settings
 FILE_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB
@@ -262,6 +280,13 @@ if IS_PRODUCTION:
     _csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
     if _csrf_origins:
         CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_origins.split(',') if o.strip()]
+    else:
+        # Default trusted origins for production
+        CSRF_TRUSTED_ORIGINS = [
+            'https://habanero.health.unm.edu',
+            'http://206.192.180.170:3838',
+            'https://206.192.180.170:3838'
+        ]
 
     # Cookie security — mark cookies Secure so they're only sent over HTTPS.
     # Set to False if running behind a TLS-terminating proxy on plain HTTP internally.
