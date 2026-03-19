@@ -285,7 +285,7 @@
                         body: data.message + ' — Go to Graph Visualization to explore your graph.',
                         type: 'success',
                         duration: 8000,
-                        action: { text: 'Go to Graph Visualization', url: '/visualization/' }
+                        action: { text: 'Go to Graph Visualization', url: '{% url "visualization:graph" %}' }
                     });
                 }
             } else {
@@ -333,7 +333,7 @@
                         body: data.message + ' — Go to Graph Visualization to explore your graph.',
                         type: 'success',
                         duration: 8000,
-                        action: { text: 'Go to Graph Visualization', url: '/visualization/' }
+                        action: { text: 'Go to Graph Visualization', url: '{% url "visualization:graph" %}' }
                     });
                 }
             } else {
