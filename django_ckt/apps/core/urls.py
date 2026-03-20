@@ -7,7 +7,9 @@ from . import views
 app_name = 'core'
 
 urlpatterns = [
-    path('', views.HomeView.as_view(), name='home'),
+    # Root path points to AboutView (consolidated home/about page)
+    path('', views.AboutView.as_view(), name='home'),
+    # Keep 'about' URL for backward compatibility
     path('about/', views.AboutView.as_view(), name='about'),
 ]
 
