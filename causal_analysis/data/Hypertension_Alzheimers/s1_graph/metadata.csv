@@ -1,7 +1,0 @@
-key,value
-exposure,Hypertension
-outcome,Alzheimers
-input_file,/home/rajesh/CausalKnowledgeTrace/graph_creation/result/Hypertension_to_Alzheimers_degree2_causal_assertions.json
-input_format,causal_assertions
-n_nodes,889
-n_edges,1649
