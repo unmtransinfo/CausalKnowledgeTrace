@@ -256,7 +256,7 @@ def analyze_post_removal(G_original, G_reduced):
         try:
             _, node_counts, _, _ = count_cycles_with_participation(G_reduced, 200)
             top_candidates = [
-                {'node': n, 'count': c} for n, c in node_counts.most_common(10)
+                {'node': n, 'count': c} for n, c in node_counts.most_common(20)
             ]
         except Exception:
             pass

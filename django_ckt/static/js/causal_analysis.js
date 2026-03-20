@@ -135,8 +135,11 @@
         }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
     }
 
-    // ── Stage 4: node removal ──
+    // ── Interactive Removal (Merged Stage 4 & 5) ──
     var defaultGenericNodes = [];  // Will be populated from backend
+    var suggestedNodes = [];  // Suggested nodes from post-removal analysis
+    var currentPage = 1;
+    var nodesPerPage = 10;
 
     function populateDefaultNodes(nodes) {
         defaultGenericNodes = nodes || [];
@@ -144,6 +147,67 @@
         if (textarea) {
             textarea.value = defaultGenericNodes.join(', ');
         }
+    }
+
+    window.addNodeToRemovalList = function(nodeName) {
+        var textarea = document.getElementById('nodesToRemove');
+        var currentNodes = textarea.value.trim();
+        var nodeList = currentNodes ? currentNodes.split(',').map(function(s) { return s.trim(); }) : [];
+
+        // Check if node already exists
+        if (nodeList.indexOf(nodeName) === -1) {
+            nodeList.push(nodeName);
+            textarea.value = nodeList.join(', ');
+
+            // Visual feedback
+            var btn = event.target;
+            var originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i> Added';
+            btn.classList.remove('btn-outline-primary');
+            btn.classList.add('btn-success');
+            setTimeout(function() {
+                btn.innerHTML = originalText;
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-outline-primary');
+            }, 1500);
+        }
+    };
+
+    function renderSuggestedNodes() {
+        if (suggestedNodes.length === 0) {
+            document.getElementById('suggestedRemovalsSection').style.display = 'none';
+            return;
+        }
+
+        document.getElementById('suggestedRemovalsSection').style.display = 'block';
+
+        var startIdx = (currentPage - 1) * nodesPerPage;
+        var endIdx = Math.min(startIdx + nodesPerPage, suggestedNodes.length);
+        var pageNodes = suggestedNodes.slice(startIdx, endIdx);
+
+        var html = '<table class="table table-sm table-hover"><thead><tr><th>Node</th><th class="text-end">Cycle Participation</th><th class="text-end">Action</th></tr></thead><tbody>';
+        pageNodes.forEach(function(n) {
+            html += '<tr>';
+            html += '<td>' + n.node.replace(/_/g, ' ') + '</td>';
+            html += '<td class="text-end">' + n.count.toLocaleString() + '</td>';
+            html += '<td class="text-end"><button class="btn btn-sm btn-outline-primary" onclick="addNodeToRemovalList(\'' + n.node + '\')"><i class="fas fa-plus"></i> Click to add to removal list</button></td>';
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+
+        document.getElementById('suggestedRemovalsTable').innerHTML = html;
+
+        // Update pagination info
+        document.getElementById('pageInfo').textContent = (startIdx + 1) + '-' + endIdx + ' of ' + suggestedNodes.length;
+
+        // Update pagination buttons
+        document.getElementById('btnPrevPage').disabled = (currentPage === 1);
+        document.getElementById('btnNextPage').disabled = (endIdx >= suggestedNodes.length);
+    }
+
+    function changePage(direction) {
+        currentPage += direction;
+        renderSuggestedNodes();
     }
 
     function runNodeRemoval() {
@@ -174,58 +238,56 @@
                 html += '<h6>Individual Node Impact</h6>';
                 html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycles Removed</th><th class="text-end">% Reduction</th></tr></thead><tbody>';
                 d.individual_impact.forEach(function (n) {
-                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.cycles_removed + '</td><td class="text-end">' + n.percent_reduction + '%</td></tr>';
+                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.cycles_removed.toLocaleString() + '</td><td class="text-end">' + n.percent_reduction + '%</td></tr>';
                 });
                 html += '</tbody></table>';
-            }
-
-            // Show saved reduced graph path for CLI usage
-            if (d.reduced_graph_path) {
-                html += '<div class="alert alert-info py-2 mt-3"><i class="fas fa-save"></i> <strong>Reduced graph saved:</strong> <code>' + d.reduced_graph_path + '</code>';
-                html += '<br><small class="text-muted">Use with CLI: <code>python run_bias_analysis.py ' + d.reduced_graph_path + ' &lt;exposure&gt; &lt;outcome&gt;</code></small></div>';
             }
 
             div.innerHTML = html;
 
             // Show download button after successful removal
             document.getElementById('btnDownloadReducedGraph').style.display = 'inline-block';
+
+            // Automatically fetch post-removal analysis to get suggested nodes
+            fetchPostRemovalAnalysis();
         }).catch(function () {
             div.innerHTML = '<p class="text-danger">Request failed.</p>';
             document.getElementById('btnDownloadReducedGraph').style.display = 'none';
         });
     }
 
+    function fetchPostRemovalAnalysis() {
+        apiGet(postRemovalUrl).then(function (d) {
+            if (!d.success) return;
+
+            // Display post-removal stats
+            var statsHtml = '<div class="row g-3 mb-3">';
+            statsHtml += '<div class="col-md-2"><div class="stat-box"><strong>' + d.original_cycles.toLocaleString() + '</strong><br>Original Cycles</div></div>';
+            statsHtml += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_cycles.toLocaleString() + '</strong><br>Reduced Cycles</div></div>';
+            statsHtml += '<div class="col-md-2"><div class="stat-box"><strong>' + d.cycle_reduction_pct + '%</strong><br>Reduction</div></div>';
+            statsHtml += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_nodes + '</strong><br>Nodes Left</div></div>';
+            statsHtml += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_edges + '</strong><br>Edges Left</div></div>';
+            statsHtml += '<div class="col-md-2"><div class="stat-box ' + (d.is_dag ? 'stat-success' : 'stat-warning') + '"><strong>' + (d.is_dag ? 'DAG ✓' : 'Cyclic') + '</strong><br>Status</div></div>';
+            statsHtml += '</div>';
+            document.getElementById('postRemovalStats').innerHTML = statsHtml;
+            document.getElementById('postRemovalStats').style.display = 'block';
+
+            // Update suggested nodes and render
+            if (d.next_removal_candidates && d.next_removal_candidates.length > 0) {
+                suggestedNodes = d.next_removal_candidates;
+                currentPage = 1;
+                renderSuggestedNodes();
+            } else {
+                document.getElementById('suggestedRemovalsSection').style.display = 'none';
+            }
+        }).catch(function () {
+            // Silently fail - post-removal is optional
+        });
+    }
+
     function downloadReducedGraph() {
         // Trigger download of reduced graph JSON files
         window.location.href = downloadReducedGraphUrl;
-    }
-
-    // ── Stage 5: post-removal ──
-    function runPostRemoval() {
-        var div = document.getElementById('postRemovalResults');
-        div.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Comparing graphs…</div>';
-
-        apiGet(postRemovalUrl).then(function (d) {
-            if (!d.success) { div.innerHTML = '<p class="text-danger">' + d.error + '</p>'; return; }
-            var html = '<div class="row g-3 mb-3">';
-            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.original_cycles + '</strong><br>Original Cycles</div></div>';
-            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_cycles + '</strong><br>Reduced Cycles</div></div>';
-            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.cycle_reduction_pct + '%</strong><br>Reduction</div></div>';
-            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_nodes + '</strong><br>Nodes Left</div></div>';
-            html += '<div class="col-md-2"><div class="stat-box"><strong>' + d.reduced_edges + '</strong><br>Edges Left</div></div>';
-            html += '<div class="col-md-2"><div class="stat-box ' + (d.is_dag ? 'stat-success' : 'stat-warning') + '"><strong>' + (d.is_dag ? 'DAG ✓' : 'Cyclic') + '</strong><br>Status</div></div>';
-            html += '</div>';
-
-            if (d.next_removal_candidates && d.next_removal_candidates.length > 0) {
-                html += '<h6>Suggested Next Removals</h6>';
-                html += '<table class="table table-sm table-striped"><thead><tr><th>Node</th><th class="text-end">Cycle Participation</th></tr></thead><tbody>';
-                d.next_removal_candidates.forEach(function (n) {
-                    html += '<tr><td>' + n.node.replace(/_/g, ' ') + '</td><td class="text-end">' + n.count + '</td></tr>';
-                });
-                html += '</tbody></table>';
-            }
-            div.innerHTML = html;
-        }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
     }
 
     // ── causal inference ──
@@ -424,9 +486,12 @@
         document.getElementById('btnFindPaths').addEventListener('click', findPaths);
         document.getElementById('btnRunCycles').addEventListener('click', runCycleAnalysis);
         document.getElementById('btnRunNodeRemoval').addEventListener('click', runNodeRemoval);
-        document.getElementById('btnRunPostRemoval').addEventListener('click', runPostRemoval);
         document.getElementById('btnRunCausalInference').addEventListener('click', runCausalInference);
         document.getElementById('btnDownloadReducedGraph').addEventListener('click', downloadReducedGraph);
+
+        // Pagination buttons for suggested removals
+        document.getElementById('btnPrevPage').addEventListener('click', function() { changePage(-1); });
+        document.getElementById('btnNextPage').addEventListener('click', function() { changePage(1); });
     });
 })();
 
