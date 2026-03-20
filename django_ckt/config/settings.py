@@ -164,22 +164,14 @@ else:
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
-# Static files storage configuration
+# Static files storage configuration (Django 4.2+)
 # Use different backends for development vs production for better reliability
-if IS_PRODUCTION:
-    # In production, use WhiteNoise with compression but without manifest for better compatibility
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-else:
-    # In development, use Django's default static files storage
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
-# For Django 4.2+ compatibility, also set STORAGES
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        'BACKEND': STATICFILES_STORAGE,
+        'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage' if IS_PRODUCTION else 'django.contrib.staticfiles.storage.StaticFilesStorage',
     },
 }
 
@@ -258,7 +250,7 @@ if IS_PRODUCTION:
     print(f"[PRODUCTION] STATIC_ROOT: {STATIC_ROOT}")
     print(f"[PRODUCTION] STATIC_URL: {STATIC_URL}")
     print(f"[PRODUCTION] STATICFILES_DIRS: {STATICFILES_DIRS}")
-    print(f"[PRODUCTION] STATICFILES_STORAGE: {STATICFILES_STORAGE}")
+    print(f"[PRODUCTION] STATICFILES_STORAGE: {STORAGES['staticfiles']['BACKEND']}")
     if os.path.exists(STATIC_ROOT):
         try:
             static_files_count = len(os.listdir(STATIC_ROOT))
@@ -309,10 +301,24 @@ if IS_PRODUCTION:
     X_FRAME_OPTIONS = 'DENY'
 
 # Cache configuration
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        'LOCATION': 'django_cache_table',
+# Use database cache in production for persistence, local memory cache in development
+if IS_PRODUCTION:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+            'LOCATION': 'django_cache_table',
+        }
     }
-}
+else:
+    # In development, use local memory cache (in-memory, no database table needed)
+    # This works for single-process development server and persists during the session
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'unique-snowflake',
+            'OPTIONS': {
+                'MAX_ENTRIES': 1000,
+            }
+        }
+    }
 
