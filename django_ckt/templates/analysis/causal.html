@@ -132,29 +132,6 @@
         </div>
     </div>
 
-    <!-- ── Stage 4: Node Removal Impact ── -->
-    <div class="row g-4 mt-2">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-minus-circle"></i> Node Removal Impact</span>
-                    <div>
-                        <input type="text" class="form-control form-control-sm d-inline-block" id="customNodesToRemove"
-                               placeholder="Custom nodes (comma-separated)" style="width: 280px; display: inline-block !important;">
-                        <button class="btn btn-sm btn-outline-warning ms-1" id="btnRunNodeRemoval">
-                            <i class="fas fa-play"></i> Run Removal
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div id="nodeRemovalResults" class="analysis-results-placeholder">
-                        <p class="text-muted">Analyze which nodes, when removed, break the most cycles.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- ── Stage 5: Post-Removal Analysis ── -->
     <div class="row g-4 mt-2">
         <div class="col-12">
@@ -168,6 +145,39 @@
                 <div class="card-body">
                     <div id="postRemovalResults" class="analysis-results-placeholder">
                         <p class="text-muted">Run node removal first, then compare original vs reduced graph.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Stage 4: Node Removal Impact ── -->
+    <div class="row g-4 mt-2">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="fas fa-minus-circle"></i> Node Removal Impact</span>
+                    <div>
+                        <button class="btn btn-sm btn-outline-warning ms-1" id="btnRunNodeRemoval">
+                            <i class="fas fa-play"></i> Run Removal
+                        </button>
+                        <button class="btn btn-sm btn-success ms-1" id="btnDownloadReducedGraph" style="display:none;">
+                            <i class="fas fa-download"></i> Download Reduced Graph
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Default nodes to remove -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nodes to Remove:</label>
+                        <div class="alert alert-info py-2 mb-2">
+                            <small><i class="fas fa-info-circle"></i> Default generic nodes are pre-selected. You can remove any from the list or add custom nodes (comma-separated).</small>
+                        </div>
+                        <textarea class="form-control form-control-sm" id="nodesToRemove" rows="3"
+                                  placeholder="Loading default nodes..."></textarea>
+                    </div>
+                    <div id="nodeRemovalResults" class="analysis-results-placeholder">
+                        <p class="text-muted">Modify the nodes list above, then click "Run Removal" to analyze which nodes, when removed, break the most cycles.</p>
                     </div>
                 </div>
             </div>
@@ -215,8 +225,9 @@
     const nodeRemovalUrl = '{% url "analysis:node_removal" %}';
     const postRemovalUrl = '{% url "analysis:post_removal" %}';
     const causalInferenceUrl = '{% url "analysis:causal_inference" %}';
+    const downloadReducedGraphUrl = '{% url "analysis:download_reduced_graph" %}';
     const csrfToken = '{{ csrf_token }}';
 </script>
-<script src="{% static 'js/causal_analysis.js' %}?v=2"></script>
+<script src="{% static 'js/causal_analysis.js' %}?v=3"></script>
 {% endblock %}
 

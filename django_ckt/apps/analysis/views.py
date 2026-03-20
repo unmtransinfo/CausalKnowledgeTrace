@@ -11,14 +11,9 @@ from datetime import datetime
 from pathlib import Path
 
 import networkx as nx
-from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.generic import TemplateView
-
-# Directory for persisted reduced graphs (inside BASE_DIR so it works in Docker)
-# On host: django_ckt/reduced_graphs/
-REDUCED_GRAPHS_DIR = Path(settings.BASE_DIR) / 'reduced_graphs'
 
 from apps.core.graph_utils import get_selected_graph
 from apps.analysis.pipeline_bridge import (
@@ -30,6 +25,7 @@ from apps.analysis.pipeline_bridge import (
     analyze_post_removal,
     analyze_causal_inference,
 )
+from causal_analysis.config import GENERIC_NODES
 
 logger = logging.getLogger(__name__)
 
@@ -96,6 +92,7 @@ def get_graph_summary(request):
     summary = analyze_graph_summary(G)
     summary['success'] = True
     summary['filename'] = filename
+    summary['generic_nodes_available'] = GENERIC_NODES
     return JsonResponse(summary)
 
 
@@ -208,21 +205,6 @@ def get_node_removal(request):
         'nodes': [n for n in reduced_G.nodes()],
         'edges': [(u, v) for u, v in reduced_G.edges()],
     }
-
-    # Persist reduced graph to disk for CLI usage
-    try:
-        REDUCED_GRAPHS_DIR.mkdir(parents=True, exist_ok=True)
-        # Build a descriptive filename: <original_name>_reduced_<timestamp>.graphml
-        base = Path(filename).stem if filename else 'graph'
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        graphml_name = f"{base}_reduced_{timestamp}.graphml"
-        graphml_path = REDUCED_GRAPHS_DIR / graphml_name
-        nx.write_graphml(reduced_G, str(graphml_path))
-        result['reduced_graph_path'] = str(graphml_path)
-        logger.info("Saved reduced graph to %s", graphml_path)
-    except Exception as exc:
-        logger.warning("Could not save reduced graph to disk: %s", exc)
-        result['reduced_graph_path'] = None
 
     result['success'] = True
     result['filename'] = filename
@@ -364,3 +346,99 @@ def find_instrumental_variables(request):
         'message': f'{len(result["instrumental_variables"])} instrumental variables',
         'warnings': result.get('warnings', []),
     })
+
+
+# ── API: download reduced graph ─────────────────────────────────────
+
+@require_http_methods(["GET"])
+def download_reduced_graph(request):
+    """
+    Download the reduced graph (after node removal) as JSON files.
+    Returns a ZIP file containing:
+      - reduced_graph.json (Cytoscape format)
+      - causal_assertions.json (metadata/evidence)
+    """
+    from django.http import HttpResponse
+    import zipfile
+    from io import BytesIO
+
+    try:
+        # Get original graph info
+        nodes, edges, metadata, filename = get_selected_graph(request.session)
+    except (ValueError, FileNotFoundError) as exc:
+        return JsonResponse({'success': False, 'error': str(exc)}, status=400)
+
+    # Get reduced graph from session
+    reduced_data = request.session.get('_reduced_graph_data')
+    if not reduced_data:
+        return JsonResponse({
+            'success': False,
+            'error': 'No reduced graph available. Run node removal first.'
+        }, status=400)
+
+    # Rebuild reduced graph
+    reduced_G = nx.DiGraph()
+    reduced_G.add_nodes_from(reduced_data['nodes'])
+    reduced_G.add_edges_from(reduced_data['edges'])
+
+    # Build reduced nodes/edges in Cytoscape format
+    reduced_node_ids = set(reduced_G.nodes())
+    reduced_nodes = [n for n in nodes if n['data']['id'] in reduced_node_ids]
+
+    # Build reduced edges
+    reduced_edges = []
+    for u, v in reduced_G.edges():
+        # Find matching edge from original
+        for edge in edges:
+            if edge['data']['source'] == u and edge['data']['target'] == v:
+                reduced_edges.append(edge)
+                break
+
+    # Build reduced graph JSON
+    reduced_graph_json = {
+        'elements': {
+            'nodes': reduced_nodes,
+            'edges': reduced_edges,
+        },
+        'metadata': {
+            'node_count': len(reduced_nodes),
+            'edge_count': len(reduced_edges),
+            'source': f'Reduced from {filename}',
+            'timestamp': datetime.now().isoformat(),
+        }
+    }
+
+    # Build causal assertions JSON (simplified - just edge metadata)
+    causal_assertions = []
+    for edge in reduced_edges:
+        edge_data = edge['data']
+        assertion = {
+            'subject_cui': edge_data.get('source'),
+            'object_cui': edge_data.get('target'),
+            'predicate': edge_data.get('predicate', 'UNKNOWN'),
+            'pmids': edge_data.get('pmids', []),
+        }
+        causal_assertions.append(assertion)
+
+    # Create ZIP file in memory
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        # Add reduced graph JSON
+        zip_file.writestr(
+            'reduced_graph.json',
+            json.dumps(reduced_graph_json, indent=2)
+        )
+        # Add causal assertions JSON
+        zip_file.writestr(
+            'causal_assertions.json',
+            json.dumps(causal_assertions, indent=2)
+        )
+
+    # Prepare response
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer.read(), content_type='application/zip')
+    base_name = Path(filename).stem if filename else 'graph'
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    response['Content-Disposition'] = f'attachment; filename="{base_name}_reduced_{timestamp}.zip"'
+
+    return response

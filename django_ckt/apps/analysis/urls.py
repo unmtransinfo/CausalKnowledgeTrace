@@ -17,6 +17,7 @@ urlpatterns = [
     path('api/node-removal/', views.get_node_removal, name='node_removal'),
     path('api/post-removal/', views.get_post_removal, name='post_removal'),
     path('api/causal-inference/', views.get_causal_inference, name='causal_inference'),
+    path('api/download-reduced-graph/', views.download_reduced_graph, name='download_reduced_graph'),
     # Legacy endpoints (now backed by pipeline instead of heuristics)
     path('api/adjustment-sets/', views.calculate_adjustment_sets, name='adjustment_sets'),
     path('api/instrumental-variables/', views.find_instrumental_variables, name='instrumental_variables'),

@@ -102,15 +102,23 @@
                    data-bs-custom-class="upload-popover"
                    data-bs-placement="bottom"
                    title="Upload &amp; File Format"
-                   data-bs-content="<p class='mb-1'>Select an R file and click &ldquo;Upload &amp; Load&rdquo;.</p><p class='mb-1'>Your R file should contain a dagitty graph definition like:</p><pre style='background:#272822;color:#f8f8f2;padding:8px;border-radius:4px;font-size:0.8rem;white-space:pre;overflow-x:auto;'>g &lt;- dagitty( &quot;dag {&#10;    Variable1 [exposure]&#10;    Variable2 [outcome]&#10;    Variable3&#10;    Variable4&#10;&#10;    Variable1 -&gt; Variable2&#10;    Variable2 -&gt; Variable3&#10;    Variable3 -&gt; Variable4&#10;}&quot; )</pre><p class='mt-1 mb-0' style='font-size:0.83rem;'><i class='fas fa-exclamation-circle'></i> The variable name must be <strong>g</strong> for the app to recognize it.</p>"></i>
+                   data-bs-content="<p class='mb-1'>Select a JSON file and click &ldquo;Upload &amp; Load&rdquo;.</p><p class='mb-1'>Accepted formats:</p><ul class='mb-1'><li>Original graph files in Cytoscape JSON format</li><li>Reduced graphs exported from the Analysis tab (ZIP files will be auto-extracted)</li></ul><p class='mb-0' style='font-size:0.83rem;'><i class='fas fa-info-circle'></i> The file must contain <code>elements.nodes</code> and <code>elements.edges</code> arrays.</p>"></i>
             </div>
             <div class="card-body">
-                <p class="text-muted mb-2">Upload a new R file containing your graph definition:</p>
+                <p class="text-muted mb-2">Upload a new graph file (JSON format):</p>
+                <div class="alert alert-info py-2 mb-3">
+                    <small><i class="fas fa-info-circle"></i> You can upload:
+                        <ul class="mb-0 mt-1" style="font-size: 0.9em;">
+                            <li>Original graph files (JSON format)</li>
+                            <li>Reduced graphs exported from the Analysis tab</li>
+                        </ul>
+                    </small>
+                </div>
 
                 <!-- File Upload -->
                 <div class="mb-3">
-                    <label for="graphFileUpload" class="form-label fw-bold">Choose R File:</label>
-                    <input class="form-control" type="file" id="graphFileUpload" accept=".R,.r">
+                    <label for="graphFileUpload" class="form-label fw-bold">Choose File:</label>
+                    <input class="form-control" type="file" id="graphFileUpload" accept=".json,.zip">
                 </div>
 
                 <!-- Filtering Options for Upload -->

@@ -4,6 +4,8 @@ Views for file upload and graph loading.
 import json
 import logging
 import os
+import zipfile
+from io import BytesIO
 
 from django.conf import settings
 from django.core.files.storage import default_storage
@@ -13,7 +15,7 @@ from django.views.generic import TemplateView
 
 logger = logging.getLogger(__name__)
 
-ALLOWED_EXTENSIONS = ('.json',)
+ALLOWED_EXTENSIONS = ('.json', '.zip')
 
 
 def _is_allowed_file(filename):
@@ -257,7 +259,10 @@ def load_graph_file(request):
 @require_http_methods(["POST"])
 def upload_graph_file(request):
     """
-    API endpoint to upload a new graph file (.json).
+    API endpoint to upload a new graph file (.json or .zip).
+    Supports:
+      - Regular JSON graph files
+      - ZIP files containing reduced_graph.json (from Analysis tab export)
     """
     try:
         if 'file' not in request.FILES:
@@ -271,27 +276,59 @@ def upload_graph_file(request):
         if not _is_allowed_file(uploaded_file.name):
             return JsonResponse({
                 'success': False,
-                'error': f'Only JSON files ({", ".join(ALLOWED_EXTENSIONS)}) are allowed'
+                'error': f'Only JSON or ZIP files ({", ".join(ALLOWED_EXTENSIONS)}) are allowed'
             }, status=400)
 
-        # Reject causal assertions files — they are supporting evidence data,
-        # not graph files, and would not appear in the file listing.
-        if '_causal_assertions' in uploaded_file.name:
-            return JsonResponse({
-                'success': False,
-                'error': 'Causal assertions files cannot be uploaded directly. '
-                         'Please upload a graph file instead.'
-            }, status=400)
+        # Handle ZIP files (reduced graphs from Analysis tab)
+        if uploaded_file.name.lower().endswith('.zip'):
+            try:
+                content = uploaded_file.read()
+                zip_buffer = BytesIO(content)
+                with zipfile.ZipFile(zip_buffer, 'r') as zip_file:
+                    # Look for reduced_graph.json in the ZIP
+                    if 'reduced_graph.json' not in zip_file.namelist():
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'ZIP file must contain reduced_graph.json'
+                        }, status=400)
 
-        # Validate JSON content
-        try:
-            content = uploaded_file.read()
-            graph_data = json.loads(content)
-            uploaded_file.seek(0)
-        except json.JSONDecodeError as e:
-            return JsonResponse(
-                {'success': False, 'error': f'Invalid JSON file: {e}'}, status=400
-            )
+                    # Extract and parse the graph JSON
+                    graph_json = zip_file.read('reduced_graph.json').decode('utf-8')
+                    graph_data = json.loads(graph_json)
+
+                    # Use the original filename but change extension to .json
+                    json_filename = uploaded_file.name.rsplit('.', 1)[0] + '.json'
+            except zipfile.BadZipFile:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Invalid ZIP file'
+                }, status=400)
+            except json.JSONDecodeError as e:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Invalid JSON in reduced_graph.json: {e}'
+                }, status=400)
+        else:
+            # Handle regular JSON files
+            # Reject causal assertions files — they are supporting evidence data,
+            # not graph files, and would not appear in the file listing.
+            if '_causal_assertions' in uploaded_file.name:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Causal assertions files cannot be uploaded directly. '
+                             'Please upload a graph file instead.'
+                }, status=400)
+
+            # Validate JSON content
+            try:
+                content = uploaded_file.read()
+                graph_data = json.loads(content)
+                uploaded_file.seek(0)
+                json_filename = uploaded_file.name
+            except json.JSONDecodeError as e:
+                return JsonResponse(
+                    {'success': False, 'error': f'Invalid JSON file: {e}'}, status=400
+                )
 
         # Validate structure
         elements = graph_data.get('elements', graph_data)
@@ -317,11 +354,11 @@ def upload_graph_file(request):
             settings.BASE_DIR.parent, 'graph_creation', 'result'
         )
         os.makedirs(result_dir, exist_ok=True)
-        dest_path = os.path.join(result_dir, uploaded_file.name)
+        dest_path = os.path.join(result_dir, json_filename)
 
-        with open(dest_path, 'wb') as f:
-            for chunk in uploaded_file.chunks():
-                f.write(chunk)
+        # Write the graph JSON to disk
+        with open(dest_path, 'w') as f:
+            json.dump(graph_data, f, indent=2)
 
         # Also load into session
         filter_type = request.POST.get('filter_type', 'none')
@@ -329,7 +366,7 @@ def upload_graph_file(request):
 
         request.session.pop('graph_data', None)
         request.session['graph_source'] = {
-            'filename': uploaded_file.name,
+            'filename': json_filename,
             'filter_type': filter_type,
         }
         request.session['graph_deletions'] = {'nodes': [], 'edges': []}
@@ -338,7 +375,7 @@ def upload_graph_file(request):
 
         return JsonResponse({
             'success': True,
-            'message': f'Graph {uploaded_file.name} uploaded and verified for visualization '
+            'message': f'Graph {json_filename} uploaded and verified for visualization '
                        f'({len(nodes)} nodes, {len(edges)} edges)',
             'file_path': dest_path,
             'nodes': nodes,
