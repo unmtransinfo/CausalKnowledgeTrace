@@ -136,17 +136,31 @@
     }
 
     // ── Stage 4: node removal ──
+    var defaultGenericNodes = [];  // Will be populated from backend
+
+    function populateDefaultNodes(nodes) {
+        defaultGenericNodes = nodes || [];
+        var textarea = document.getElementById('nodesToRemove');
+        if (textarea) {
+            textarea.value = defaultGenericNodes.join(', ');
+        }
+    }
+
     function runNodeRemoval() {
         var div = document.getElementById('nodeRemovalResults');
-        var customInput = document.getElementById('customNodesToRemove').value.trim();
+        var nodesInput = document.getElementById('nodesToRemove').value.trim();
         var body = {};
-        if (customInput) {
-            body.nodes_to_remove = customInput.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+        if (nodesInput) {
+            body.nodes_to_remove = nodesInput.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
         }
         div.innerHTML = '<div class="text-center"><div class="spinner-border spinner-border-sm"></div> Analyzing removal impact…</div>';
 
         apiPost(nodeRemovalUrl, body).then(function (d) {
-            if (!d.success) { div.innerHTML = '<p class="text-danger">' + d.error + '</p>'; return; }
+            if (!d.success) {
+                div.innerHTML = '<p class="text-danger">' + d.error + '</p>';
+                document.getElementById('btnDownloadReducedGraph').style.display = 'none';
+                return;
+            }
             var html = '<div class="row g-3 mb-3">';
             html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.baseline_cycles.toLocaleString() + '</strong><br>Baseline Cycles</div></div>';
             html += '<div class="col-md-3"><div class="stat-box"><strong>' + d.combined_cycles.toLocaleString() + '</strong><br>Cycles After Removal</div></div>';
@@ -172,7 +186,18 @@
             }
 
             div.innerHTML = html;
-        }).catch(function () { div.innerHTML = '<p class="text-danger">Request failed.</p>'; });
+
+            // Show download button after successful removal
+            document.getElementById('btnDownloadReducedGraph').style.display = 'inline-block';
+        }).catch(function () {
+            div.innerHTML = '<p class="text-danger">Request failed.</p>';
+            document.getElementById('btnDownloadReducedGraph').style.display = 'none';
+        });
+    }
+
+    function downloadReducedGraph() {
+        // Trigger download of reduced graph JSON files
+        window.location.href = downloadReducedGraphUrl;
     }
 
     // ── Stage 5: post-removal ──
@@ -377,6 +402,11 @@
             renderSummary(d);
             show('analysisResults');
 
+            // Populate default generic nodes for removal
+            if (d.generic_nodes_available) {
+                populateDefaultNodes(d.generic_nodes_available);
+            }
+
             // Auto-fire cycle analysis in background (non-blocking)
             runCycleAnalysis();
 
@@ -396,6 +426,7 @@
         document.getElementById('btnRunNodeRemoval').addEventListener('click', runNodeRemoval);
         document.getElementById('btnRunPostRemoval').addEventListener('click', runPostRemoval);
         document.getElementById('btnRunCausalInference').addEventListener('click', runCausalInference);
+        document.getElementById('btnDownloadReducedGraph').addEventListener('click', downloadReducedGraph);
     });
 })();
 
