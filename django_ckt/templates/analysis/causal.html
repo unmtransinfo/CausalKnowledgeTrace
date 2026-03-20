@@ -132,31 +132,12 @@
         </div>
     </div>
 
-    <!-- ── Stage 5: Post-Removal Analysis ── -->
+    <!-- ── Interactive Removal (Merged Stage 4 & 5) ── -->
     <div class="row g-4 mt-2">
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-chart-line"></i> Post-Removal Analysis</span>
-                    <button class="btn btn-sm btn-outline-info" id="btnRunPostRemoval">
-                        <i class="fas fa-play"></i> Compare
-                    </button>
-                </div>
-                <div class="card-body">
-                    <div id="postRemovalResults" class="analysis-results-placeholder">
-                        <p class="text-muted">Run node removal first, then compare original vs reduced graph.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ── Stage 4: Node Removal Impact ── -->
-    <div class="row g-4 mt-2">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <span><i class="fas fa-minus-circle"></i> Node Removal Impact</span>
+                    <span><i class="fas fa-minus-circle"></i> Interactive Removal</span>
                     <div>
                         <button class="btn btn-sm btn-outline-warning ms-1" id="btnRunNodeRemoval">
                             <i class="fas fa-play"></i> Run Removal
@@ -167,7 +148,31 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <!-- Default nodes to remove -->
+                    <!-- Suggested Next Removals Section -->
+                    <div id="suggestedRemovalsSection" style="display:none;" class="mb-4">
+                        <h6 class="mb-3"><i class="fas fa-lightbulb"></i> Suggested Next Removals</h6>
+                        <div id="suggestedRemovalsTable"></div>
+                        <!-- Pagination Controls -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <small class="text-muted">Showing <span id="pageInfo"></span></small>
+                            </div>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary" id="btnPrevPage" disabled>
+                                    <i class="fas fa-chevron-left"></i> Previous
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnNextPage">
+                                    Next <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <hr class="my-4">
+                    </div>
+
+                    <!-- Post-Removal Stats (shown after running removal) -->
+                    <div id="postRemovalStats" style="display:none;" class="mb-4"></div>
+
+                    <!-- Nodes to Remove Section -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nodes to Remove:</label>
                         <div class="alert alert-info py-2 mb-2">
@@ -176,6 +181,8 @@
                         <textarea class="form-control form-control-sm" id="nodesToRemove" rows="3"
                                   placeholder="Loading default nodes..."></textarea>
                     </div>
+
+                    <!-- Results Section -->
                     <div id="nodeRemovalResults" class="analysis-results-placeholder">
                         <p class="text-muted">Modify the nodes list above, then click "Run Removal" to analyze which nodes, when removed, break the most cycles.</p>
                     </div>
@@ -228,6 +235,6 @@
     const downloadReducedGraphUrl = '{% url "analysis:download_reduced_graph" %}';
     const csrfToken = '{{ csrf_token }}';
 </script>
-<script src="{% static 'js/causal_analysis.js' %}?v=3"></script>
+<script src="{% static 'js/causal_analysis.js' %}?v=4"></script>
 {% endblock %}
 
