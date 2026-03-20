@@ -159,17 +159,11 @@
             nodeList.push(nodeName);
             textarea.value = nodeList.join(', ');
 
-            // Visual feedback
-            var btn = event.target;
-            var originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Added';
-            btn.classList.remove('btn-outline-primary');
-            btn.classList.add('btn-success');
-            setTimeout(function() {
-                btn.innerHTML = originalText;
-                btn.classList.remove('btn-success');
-                btn.classList.add('btn-outline-primary');
-            }, 1500);
+            // Remove the node from suggestedNodes array
+            suggestedNodes = suggestedNodes.filter(function(n) { return n.node !== nodeName; });
+
+            // Re-render the table to remove the added node
+            renderSuggestedNodes();
         }
     };
 
@@ -222,7 +216,7 @@
         apiPost(nodeRemovalUrl, body).then(function (d) {
             if (!d.success) {
                 div.innerHTML = '<p class="text-danger">' + d.error + '</p>';
-                document.getElementById('btnDownloadReducedGraph').style.display = 'none';
+                document.getElementById('downloadReducedGraphContainer').style.display = 'none';
                 return;
             }
             var html = '<div class="row g-3 mb-3">';
@@ -246,13 +240,13 @@
             div.innerHTML = html;
 
             // Show download button after successful removal
-            document.getElementById('btnDownloadReducedGraph').style.display = 'inline-block';
+            document.getElementById('downloadReducedGraphContainer').style.display = 'block';
 
             // Automatically fetch post-removal analysis to get suggested nodes
             fetchPostRemovalAnalysis();
         }).catch(function () {
             div.innerHTML = '<p class="text-danger">Request failed.</p>';
-            document.getElementById('btnDownloadReducedGraph').style.display = 'none';
+            document.getElementById('downloadReducedGraphContainer').style.display = 'none';
         });
     }
 
@@ -471,6 +465,9 @@
 
             // Auto-fire cycle analysis in background (non-blocking)
             runCycleAnalysis();
+
+            // Auto-fire node removal analysis with default nodes
+            runNodeRemoval();
 
             return apiGet(variablesUrl);
         }).then(function (d) {
