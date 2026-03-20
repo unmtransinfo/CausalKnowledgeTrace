@@ -70,7 +70,6 @@ services:
       - ./causal_analysis:/app/causal_analysis:ro
       - ./graph_creation:/app/graph_creation:ro
       - graph-results-dev:/app/graph_creation/result
-      - ./user_input.yaml:/app/user_input.yaml
     user: root
     command: >
       sh -c "chown -R django:django /app/graph_creation/result &&
