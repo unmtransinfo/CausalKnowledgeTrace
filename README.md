@@ -18,10 +18,12 @@ CKT queries SemMedDB, a database containing subject-predicate-object triples (e.
 
 ## System Architecture
 
-CKT consists of two integrated components:
+CKT is built as a modern Django web application with the following components:
 
-- **Python engine**: Implements graph construction, causal structure learning algorithms, and exports results for statistical analysis
-- **Shiny web application**: Provides interactive visualization, parameter configuration, and iterative graph refinement
+- **Django web framework**: Provides the web interface, user authentication, and request handling
+- **Python graph engine**: Implements graph construction, causal structure learning algorithms, and exports results for statistical analysis
+- **PostgreSQL database**: Stores SemMedDB data and application state
+- **Interactive visualization**: Browser-based DAG exploration with zoom, pan, and node interaction capabilities
 
 ## Workflow
 
@@ -77,18 +79,18 @@ This framework supports rigorous causal inference from observational biomedical 
 - **📊 Evidence Analysis**: PMID-based evidence tracking and strength assessment
 - **⚡ Performance Optimized**: Binary formats, caching, and vectorized operations for large graphs
 - **🎯 Configurable Analysis**: Enter multiple CUIs for the exposure and/or outcome; Examine 1st, 2nd, or 3rd degree relationships
-- **📁 Multiple Formats**: R DAG files, JSON assertions, optimized binary formats
+- **📁 Multiple Formats**: JSON assertions, optimized binary formats
 
 ## Key Features
 
-### 🌐 Shiny Web Application
+### 🌐 Django Web Application
 
 - **Interactive Network Visualization**: Explore DAGs with zoom, pan, and node selection capabilities
 - **Dynamic Node Information**: Click on nodes to see detailed information and evidence
 - **Physics Controls**: Adjust network layout parameters in real-time
 - **Statistics Dashboard**: View network statistics and node distributions
 - **Color-coded Categories**: Three-category system (Exposure/Outcome/Other) with optimized performance
-- **Flexible Data Loading**: Load DAG structures from generated files or upload custom R files
+- **Flexible Data Loading**: Load DAG structures from generated files or upload custom graph files
 - **Graph Configuration Interface**: Configure parameters for knowledge graph generation
 - **Enhanced CUI Search**: Searchable interface for medical concept selection with semantic type information
 - **Efficient Loading**: Fast loading for large graphs
@@ -100,7 +102,7 @@ This framework supports rigorous causal inference from observational biomedical 
 - **K-hop Analysis**: Configurable relationship depth (1-3 hops) for comprehensive graph traversal
 - **Markov Blanket Analysis**: Advanced causal inference with Markov blanket computation
 - **Blacklist Filtering**: Filter out generic or unwanted concepts during graph creation
-- **Multiple Output Formats**: Generate R DAG objects, JSON assertion files, and optimized binary formats
+- **Multiple Output Formats**: Generate JSON assertion files and optimized binary formats
 - **Performance Monitoring**: Detailed timing analysis and execution metrics
 
 ## Prerequisites
@@ -123,9 +125,10 @@ CausalKnowledgeTrace extracts causal relationships from SemMedDB, which is deriv
 
 ### System Requirements
 
-- **Disk Space**: At least 50GB free (for database and dependencies)
+- **Docker Desktop**: Required for running the application
+- **Disk Space**: At least 50GB free (for database and Docker images)
 - **RAM**: 8GB minimum, 16GB recommended
-- **Operating System**: Linux, macOS, or Windows
+- **Operating System**: Linux, macOS, or Windows with Docker support
 
 ## Installation
 
@@ -200,45 +203,28 @@ You should see multiple `.dat.gz` files and a `toc.dat` file in the `causalehr_b
 
 #### Step 4: Configure Environment Variables (Preview)
 
-Both installation methods require setting up database credentials in a `.env` file. Here's a quick preview:
+Docker installation requires setting up database credentials in a `.env.dev` file. Here's a quick preview:
 
 ```bash
 # Copy the sample environment file
-cp doc/sample.env .env
+cp doc/sample.env .env.dev
 
 # Edit with your credentials (detailed instructions in installation guides)
-nano .env  # or use your preferred editor
+nano .env.dev  # or use your preferred editor
 ```
 
-**Note**: Detailed instructions for configuring the `.env` file are provided in each installation guide below. You can complete this step now or during the installation process.
+**Note**: Detailed instructions for configuring the `.env.dev` file are provided in each installation guide below. You can complete this step now or during the installation process.
 
 ---
 
-### Choose Your Installation Method
+### 🐳 Docker Installation
 
-Now that you have completed the common setup steps, choose your installation method:
-
-### 🐳 Docker Installation (Recommended)
-
-**Best for:** Quick setup, testing, and most users
 **Time:** ~20 minutes (including database restoration)
 **Prerequisites:** Docker and Docker Compose only
 
-Docker provides a containerized environment with all dependencies pre-configured. This is the fastest and easiest way to get started.
+CausalKnowledgeTrace is deployed exclusively through Docker, which provides a containerized environment with all dependencies pre-configured. This ensures consistent setup across different systems.
 
 **📖 [Complete Docker Installation Guide →](doc/DOCKER_INSTALLATION.md)**
-
----
-
-### 🔧 Manual Installation
-
-**Best for:** Development, customization, and advanced users
-**Time:** ~45 minutes
-**Prerequisites:** PostgreSQL 16, Conda, Python 3.11, R 4.5.1
-
-Manual installation gives you full control over the environment and is recommended for development and production deployments.
-
-**📖 [Complete Manual Installation Guide →](doc/MANUAL_INSTALLATION.md)**
 
 ---
 ## Usage
@@ -247,19 +233,18 @@ For detailed usage instructions, see: [CKT Usage Instructions](https://docs.goog
 
 ## Troubleshooting
 
-For troubleshooting help, please refer to the installation guide you used:
+For troubleshooting help, please refer to the Docker installation guide:
 
 - **Docker Installation**: See [Docker Troubleshooting](doc/DOCKER_INSTALLATION.md#troubleshooting)
-- **Manual Installation**: See [Manual Troubleshooting](doc/MANUAL_INSTALLATION.md#troubleshooting)
 
 ### Getting Help
 
 If you encounter issues not covered in the installation guides:
 
-1. **Check the logs:** The application outputs detailed error messages to the console
+1. **Check the logs:** Use `docker compose -f docker-compose.dev.yaml logs -f` to view detailed error messages
 2. **GitHub Issues:** [Open an issue](https://github.com/unmtransinfo/CausalKnowledgeTrace/issues) with:
    - Your operating system and version
-   - Installation method (Docker or Manual)
+   - Docker and Docker Compose versions
    - Error messages (copy the full text)
    - Steps you've already tried
 3. **Email support:** Contact Scott Malec (SMalec@salud.unm.edu) or Rajesh Upadhayaya (RAJESHUPADHAYAYA@salud.unm.edu) to schedule a walk-through session

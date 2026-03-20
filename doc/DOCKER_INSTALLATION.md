@@ -4,12 +4,12 @@ This guide provides step-by-step instructions for setting up CausalKnowledgeTrac
 
 ## Why Docker?
 
-Docker provides a containerized environment with all dependencies pre-configured, making setup quick and consistent across different systems. This is the **recommended installation method** for most users.
+Docker provides a containerized environment with all dependencies pre-configured, making setup quick and consistent across different systems. This is the **only supported installation method** for CausalKnowledgeTrace.
 
 **Included Software Versions:**
 - PostgreSQL 16 (database server)
-- R 4.5.1 (statistical computing)
-- Python 3.11 (graph creation engine)
+- Python 3.11 (Django web application and graph creation engine)
+- Django 5 (web framework)
 
 ## Prerequisites
 
@@ -40,7 +40,7 @@ After installing Docker, verify it's working correctly:
 
 ```bash
 docker --version
-docker-compose --version
+docker compose version
 ```
 
 You should see version information for both commands.
@@ -49,27 +49,26 @@ You should see version information for both commands.
 
 ### Step 1: Configure Environment Variables
 
-Create a `.env` file with your database credentials:
+Create a `.env.dev` file with your database credentials:
 
 ```bash
 # Copy the sample environment file
-cp doc/sample.env .env
+cp doc/sample.env .env.dev
 
-# Edit the .env file with your preferred editor
-nano .env  # or use: vim .env, code .env, etc.
+# Edit the .env.dev file with your preferred editor
+nano .env.dev  # or use: vim .env.dev, code .env.dev, etc.
 ```
 
-Update the `.env` file with your desired credentials:
+Update the `.env.dev` file with your desired credentials:
 
 ```bash
-# Database Configuration
-# For Docker: Set DB_HOST=db (service name in docker-compose.yaml)
-DB_HOST=db
-DB_PORT=5432
-DB_USER=postgres  # Change to your preferred username
-DB_PASSWORD=your_secure_password  # Change to a secure password
+# Development Environment
+ENVIRONMENT=development
+DB_HOST=db-dev
+DB_PORT=5433
+DB_USER=<username>  # Change to your preferred username
+DB_PASSWORD=<password>  # Change to a secure password
 DB_NAME=causalehr
-DB_SCHEMA=causalehr
 
 # Database Schema and Table Configuration
 DB_SENTENCE_SCHEMA=public
@@ -84,15 +83,21 @@ DB_SUBJECT_SEARCH_TABLE=subject_search
 
 DB_OBJECT_SEARCH_SCHEMA=filtered
 DB_OBJECT_SEARCH_TABLE=object_search
+
+# Django Configuration
+DJANGO_PORT=3837
+DJANGO_SECRET_KEY=django-insecure-dev-key-change-in-production
+DJANGO_ALLOWED_HOSTS=*
 ```
 
 **Important Notes:**
 
-- For Docker setup, `DB_HOST` **must** be set to `db` (the PostgreSQL service name in docker-compose.yaml)
+- For Docker setup, `DB_HOST` should be set to `db-dev` (the PostgreSQL service name in docker-compose.dev.yaml)
+- `DB_PORT` should be `5433` for the development environment
 - Choose a strong password for `DB_PASSWORD`
-- The `.env` file is ignored by git for security
+- The `.env.dev` file is ignored by git for security
 - Keep this file secure and never commit it to version control
-- Docker Compose automatically loads environment variables from the `.env` file
+- Docker Compose automatically loads environment variables from the `.env.dev` file
 
 ### Step 2: Build and Start the Application
 
@@ -100,10 +105,10 @@ Build and start all services using Docker Compose:
 
 ```bash
 # Build and start services in detached mode
-docker-compose up -d
+docker compose -f docker-compose.dev.yaml up -d
 
 # View logs to monitor startup progress
-docker-compose logs -f
+docker compose -f docker-compose.dev.yaml logs -f
 ```
 
 **What happens during startup:**
@@ -111,7 +116,7 @@ docker-compose logs -f
 1. PostgreSQL database container starts
 2. Database is automatically restored from backup (first time only, takes ~10-15 minutes)
 3. Application container builds (first time only, takes ~5-10 minutes)
-4. Shiny application starts on port 3838
+4. Django application starts on port 3837
 
 **First-time startup** may take 15-20 minutes due to database restoration and image building.
 
@@ -119,7 +124,7 @@ docker-compose logs -f
 
 Once the services are running, access the application:
 
-**URL**: [http://localhost:3838](http://localhost:3838)
+**URL**: [http://localhost:3837](http://localhost:3837)
 
 The application should open in your web browser. If it doesn't open automatically, copy the URL above.
 
@@ -129,33 +134,33 @@ The application should open in your web browser. If it doesn't open automaticall
 
 ```bash
 # Start services
-docker-compose up -d
+docker compose -f docker-compose.dev.yaml up -d
 
 # Stop services
-docker-compose down
+docker compose -f docker-compose.dev.yaml down
 
 # View logs
-docker-compose logs -f
+docker compose -f docker-compose.dev.yaml logs -f
 
 # View logs for specific service
-docker-compose logs -f cwt-app  # Application logs
-docker-compose logs -f db       # Database logs
+docker compose -f docker-compose.dev.yaml logs -f cwt-app  # Application logs
+docker compose -f docker-compose.dev.yaml logs -f db       # Database logs
 
 # Restart services
-docker-compose restart
+docker compose -f docker-compose.dev.yaml restart
 
 # Rebuild application (after code changes)
-docker-compose up -d --build cwt-app
+docker compose -f docker-compose.dev.yaml up -d --build cwt-app
 
 # Run start the container without building
-docker-compose up --no-build
+docker compose -f docker-compose.dev.yaml up --no-build
 ```
 
 ### Checking Service Status
 
 ```bash
 # Check running containers
-docker-compose ps
+docker compose -f docker-compose.dev.yaml ps
 
 # Check container health
 docker ps
@@ -165,42 +170,42 @@ docker ps
 
 ```bash
 # Access PostgreSQL database shell
-docker-compose exec db psql -U postgres -d causalehr
+docker compose -f docker-compose.dev.yaml exec db psql -U postgres -d causalehr
 
 # Backup database
-docker-compose exec db pg_dump -U postgres causalehr > backup.sql
+docker compose -f docker-compose.dev.yaml exec db pg_dump -U postgres causalehr > backup.sql
 
 # View database logs
-docker-compose logs -f db
+docker compose -f docker-compose.dev.yaml logs -f db
 ```
 
 ## Troubleshooting
 
 ### Port Already in Use
 
-If port 3838 or 5432 is already in use:
+If port 3837 or 5433 is already in use:
 
 **Option 1**: Stop the conflicting service
 
 ```bash
-# Find process using port 3838
-lsof -i :3838  # macOS/Linux
-netstat -ano | findstr :3838  # Windows
+# Find process using port 3837
+lsof -i :3837  # macOS/Linux
+netstat -ano | findstr :3837  # Windows
 
 # Kill the process or stop the service
 ```
 
-**Option 2**: Change ports in `docker-compose.yaml`
+**Option 2**: Change ports in `docker-compose.dev.yaml`
 
 ```yaml
 services:
   db:
     ports:
-      - "5433:5432"  # Change host port to 5433
-  
+      - "5434:5433"  # Change host port to 5434
+
   cwt-app:
     ports:
-      - "3839:3838"  # Change host port to 3839
+      - "3838:3837"  # Change host port to 3838
 ```
 
 ### Database Restoration Issues
@@ -209,24 +214,24 @@ If database restoration fails:
 
 ```bash
 # Check database logs
-docker-compose logs db
+docker compose -f docker-compose.dev.yaml logs db
 
 # Manually restore database
-docker-compose exec db pg_restore -U postgres -d causalehr -Fd -j 4 /causalehr_backup
+docker compose -f docker-compose.dev.yaml exec db pg_restore -U postgres -d causalehr -Fd -j 4 /causalehr_backup
 ```
 
 ### Application Won't Start
 
 ```bash
 # Check application logs
-docker-compose logs cwt-app
+docker compose -f docker-compose.dev.yaml logs cwt-app
 
 # Rebuild application container
-docker-compose down
-docker-compose up -d --build
+docker compose -f docker-compose.dev.yaml down
+docker compose -f docker-compose.dev.yaml up -d --build
 
 # Check if database is ready
-docker-compose exec db pg_isready -U postgres
+docker compose -f docker-compose.dev.yaml exec db pg_isready -U postgres
 ```
 
 ### Out of Disk Space
@@ -241,7 +246,7 @@ docker system df
 docker system prune -a
 
 # Remove specific volumes (WARNING: deletes data)
-docker-compose down -v
+docker compose -f docker-compose.dev.yaml down -v
 ```
 
 ### Permission Issues (Linux)
@@ -264,6 +269,6 @@ To update to the latest version:
 git pull origin main
 
 # Rebuild and restart services
-docker-compose down
-docker-compose up -d --build
+docker compose -f docker-compose.dev.yaml down
+docker compose -f docker-compose.dev.yaml up -d --build
 ```

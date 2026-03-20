@@ -170,7 +170,7 @@ if (test_results$failed == 0) {
 
 ### Integration Tests
 - Database connectivity (PostgreSQL)
-- `.env` file with database credentials
+- `.env.dev` file with database credentials
 - Python 3.x with required packages
 
 ### Shiny App Tests
@@ -199,7 +199,7 @@ fi
 - Check that test files follow the `test_*.R` naming pattern
 
 ### Database Connection Errors
-- Verify `.env` file exists with correct credentials
+- Verify `.env.dev` file exists with correct credentials
 - Check database is running and accessible
 - Ensure database schema is properly set up
 
