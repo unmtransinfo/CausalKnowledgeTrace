@@ -75,17 +75,24 @@ django_ckt/
    python manage.py migrate
    ```
 
-6. **Create superuser (optional):**
+6. **Create cache table:**
+   ```bash
+   python manage.py createcachetable
+   ```
+
+   This creates the database table required for Django's caching system, which stores temporary data to improve application performance.
+
+7. **Create superuser (optional):**
    ```bash
    python manage.py createsuperuser
    ```
 
-7. **Collect static files:**
+8. **Collect static files:**
    ```bash
    python manage.py collectstatic --noinput
    ```
 
-8. **Run development server:**
+9. **Run development server:**
    ```bash
    # Using Django development server
    python manage.py runserver 0.0.0.0:3838

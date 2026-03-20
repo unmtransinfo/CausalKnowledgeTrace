@@ -52,11 +52,15 @@ fi
 echo "🗄️  Running database migrations..."
 python manage.py migrate
 
-# Step 8: Collect static files
+# Step 8: Create cache table
+echo "💾 Creating database cache table..."
+python manage.py createcachetable
+
+# Step 9: Collect static files
 echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Step 9: Create superuser (optional)
+# Step 10: Create superuser (optional)
 echo ""
 echo "========================================="
 echo "Would you like to create a superuser? (y/n)"

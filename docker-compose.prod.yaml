@@ -150,6 +150,8 @@ services:
       sh -c "echo 'Starting Django production server...' &&
              echo 'Running database migrations...' &&
              python manage.py migrate --noinput &&
+             echo 'Creating cache table...' &&
+             python manage.py createcachetable &&
              echo 'Starting Gunicorn with ${GUNICORN_WORKERS:-8} workers...' &&
              gunicorn config.wsgi:application --bind 0.0.0.0:3838 --workers ${GUNICORN_WORKERS:-8} --timeout 7200 --max-requests 1000 --max-requests-jitter 100 --preload --access-logfile - --error-logfile -"
     # Remove user override - use the one from Dockerfile
