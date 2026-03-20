@@ -69,9 +69,8 @@ mkdir -p input data
 mkdir -p data
 
 # Set up database credentials (for semantic type analysis)
->>>>>>> feature/django
-cp .env.example .env
-# Edit .env with your PostgreSQL credentials
+cp .env.example .env.dev
+# Edit .env.dev with your PostgreSQL credentials
 ```
 
 Notes:
