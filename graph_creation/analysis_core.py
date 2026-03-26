@@ -522,8 +522,11 @@ if (lightweight_result$success) {{
                         # everywhere (graph, Cytoscape, assertions export).
                         cui_to_display_name = self._build_cui_to_display_name(cui_to_name_mapping)
 
-                        # Add edges resolved through CUI → display name
-                        for src_cui, dst_cui in cui_links:
+                        # Build graph from detailed_assertions to ensure consistency
+                        # with the causal_assertions.json file (not from cui_links)
+                        for assertion in detailed_assertions:
+                            src_cui = assertion.get("subject_cui", "")
+                            dst_cui = assertion.get("object_cui", "")
                             src = cui_to_display_name.get(src_cui)
                             dst = cui_to_display_name.get(dst_cui)
                             if src and dst and src != dst:
@@ -739,8 +742,11 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                         # Build the single CUI → display-name mapping
                         cui_to_display_name = self._build_cui_to_display_name(cui_to_name_mapping)
 
-                        # Add edges resolved through CUI → display name
-                        for src_cui, dst_cui in cui_links:
+                        # Build graph from detailed_assertions to ensure consistency
+                        # with the causal_assertions.json file (not from cui_links)
+                        for assertion in detailed_assertions:
+                            src_cui = assertion.get("subject_cui", "")
+                            dst_cui = assertion.get("object_cui", "")
                             src = cui_to_display_name.get(src_cui)
                             dst = cui_to_display_name.get(dst_cui)
                             if src and dst and src != dst:

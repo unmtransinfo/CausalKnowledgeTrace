@@ -68,8 +68,8 @@ services:
     volumes:
       - ./django_ckt:/app
       - ./causal_analysis:/app/causal_analysis:ro
-      - ./graph_creation:/app/graph_creation:ro
-      - graph-results-dev:/app/graph_creation/result
+      - ./graph_creation:/app/graph_creation
+      - ./graph_creation/result:/app/graph_creation/result
     user: root
     command: >
       sh -c "chown -R django:django /app/graph_creation/result &&
@@ -82,4 +82,3 @@ networks:
 
 volumes:
   pgdata-dev:
-  graph-results-dev:
