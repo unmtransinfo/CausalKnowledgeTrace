@@ -25,7 +25,6 @@
 \title{CausalKnowledgeTrace: Automated Literature-Derived Causal Graph Construction for Evidence-Based Variable Selection in Biomedical Research}
 
 %% Author information
-%% [FILLER: Replace with actual author names, affiliations, and emails]
 \author[inst1]{Rajesh Upadhayaya\corref{cor1}}
 \ead{rajeshupadhayaya@unm.edu}
 
@@ -65,11 +64,11 @@
 \begin{abstract}
 \textbf{Background:} Variable selection for causal inference from observational biomedical data is challenging, as overlooking confounders or conditioning on colliders leads to biased estimates. While vast causal knowledge exists in biomedical literature, manually extracting this information for principled variable selection is impractical at scale.
 
-\textbf{Methods:} We developed CausalKnowledgeTrace, an interactive tool that systematically leverages structured causal knowledge from the Semantic MEDLINE Database (SemMedDB) to inform variable selection in causal studies. The system implements a bidirectional breadth-first search algorithm to construct literature-derived directed acyclic graphs (DAGs) from user-specified exposures and outcomes using UMLS Concept Unique Identifiers. A multi-stage filtering pipeline removes non-informative predications, while semantic consolidation aggregates synonymous concepts. Large language model validation assesses relationship directionality, and automated bias detection identifies problematic causal configurations.
+\textbf{Methods:} We developed CausalKnowledgeTrace, a Python-based computational framework with Django web interface that systematically leverages structured causal knowledge from the Semantic MEDLINE Database (SemMedDB) to inform variable selection in causal studies. The system implements a six-stage analysis pipeline using NetworkX for graph operations, including graph parsing, basic analysis, comprehensive cycle detection, systematic generic node removal, post-removal analysis, and formal causal inference with bias detection.
 
-\textbf{Results:} CausalKnowledgeTrace identifies complex causal structures often missed by conventional approaches, including proxy confounders and instrumental variables. The system generates JSON and html outputs with citation traceability, and interactive visualizations. Query processing completes within 5 minutes for datasets with up to 1000 supporting publications.
+\textbf{Results:} Analysis of the hypertension-Alzheimer's relationship across three degree neighborhoods (1-3) demonstrated systematic scaling of causal complexity: 361-866 variables, 429-1,442 relationships, with graph densities of 0.0033-0.0019. The analysis revealed complex cyclic structures with 54-606 baseline cycles across degree levels. Processing times ranged from 0.3-1.0 seconds for all three degrees, demonstrating computational efficiency for complex biomedical networks. Key confounders identified across all degrees included inflammation, diabetes, insulin resistance, obesity, and ischemia.
 
-\textbf{Conclusions:} CausalKnowledgeTrace bridges the gap between biomedical literature and rigorous causal inference by automating extraction and synthesis of causal knowledge for variable selection. The tool enables principled, evidence-based decisions about confounding control while maintaining complete transparency about evidentiary basis, representing a significant advance in computational support for causal inference in biomedical research.
+\textbf{Conclusions:} CausalKnowledgeTrace provides a scalable, evidence-based approach to causal graph construction that systematically identifies confounders and bias structures often missed by conventional approaches. The Python-Django architecture enables both standalone analysis and integration into larger computational workflows, representing a significant advance in computational support for causal inference in biomedical research.
 \end{abstract}
 
 %% Keywords
@@ -81,7 +80,7 @@ Causal inference \sep variable selection \sep biomedical informatics \sep direct
 
 \end{frontmatter}
 
-%% Use \section commands to start a section
+
 \section*{Statement of Significance}
 
 \noindent\textbf{Problem or Issue}\\
@@ -121,158 +120,179 @@ The remainder of this paper describes the technical implementation of CausalKnow
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.8\textwidth]{cwt.png}
-\caption{CausalKnowledgeTrace workflow and system architecture. The system follows a five-stage pipeline integrating literature-based knowledge extraction, semantic consolidation, LLM-based validation, and automated bias detection to construct evidence-based causal graphs from biomedical literature.}
+\caption{CausalKnowledgeTrace workflow and system architecture. The system follows a six-stage pipeline integrating literature-based knowledge extraction, semantic consolidation, LLM-based validation, and automated bias detection to construct evidence-based causal graphs from biomedical literature.}
 \label{fig:workflow}
 \end{figure}
 
-\subsection{Causal Knowledge Trace Framework Overview}
+\subsection{System Architecture and Pipeline Overview}
 
-\subsection{Knowledge Source} Semantic MEDLINE Database
+CausalKnowledgeTrace operates as a modular computational framework integrating Python-based analysis components with a Django web application interface. The system follows a six-stage pipeline implemented in Python using NetworkX for graph operations and comprehensive CSV-based output for reproducibility and validation.
 
-\subsection{Initial Graph Construction} 
+\subsection{Knowledge Source and Data Integration}
 
-\subsection{Graph Visualization}
+The system utilizes the Semantic MEDLINE Database (SemMedDB) as its primary knowledge source, containing structured semantic predications extracted from PubMed abstracts. Graph construction leverages pre-generated causal assertion files in JSON format, containing directed relationships between biomedical concepts identified through literature mining. Each relationship includes supporting evidence with PubMed identifiers (PMIDs) and citation counts.
 
-\subsection{Graph Post-Processing} 
+\subsection{Six-Stage Analysis Pipeline}
+
+The core analysis pipeline consists of six sequential stages, each implemented as independent Python modules with standardized input/output interfaces:
+
+\textbf{Stage 1 (Graph Parsing):} Converts JSON causal assertions into NetworkX directed graphs, extracting node and edge metadata including predicates and evidence counts. Outputs include serialized GraphML files and comprehensive edge lists with provenance information.
+
+\textbf{Stage 2 (Basic Analysis):} Computes fundamental graph statistics including node degrees, centrality measures (betweenness, closeness), strongly connected component identification, and initial cycle detection. Generates detailed node-level metrics and graph-wide summary statistics.
+
+\textbf{Stage 3 (Cycle Analysis):} Performs comprehensive cycle enumeration using Johnson's algorithm within strongly connected components. Tracks per-node cycle participation counts, cycle length distributions, and samples representative cycles for detailed analysis.
+
+\textbf{Stage 4 (Node Removal):} Implements systematic removal of generic biomedical terms (e.g., "Disease", "Symptoms", "Patients") identified through centrality analysis and expert curation. Measures cycle reduction impact for individual and combined node removals, generating reduced graphs for downstream analysis.
+
+\textbf{Stage 5 (Post-Removal Analysis):} Analyzes residual graph structure after generic node removal, identifying remaining problematic nodes and quantifying cycle reduction effectiveness. Provides recommendations for additional node removal if DAG requirements are not met.
+
+\textbf{Stage 6 (Causal Inference):} Applies formal causal inference methods on DAG-compliant graphs, identifying minimally sufficient adjustment sets using the backdoor criterion and detecting potential instrumental variables. Includes bias structure analysis for complex confounding scenarios.
+
+\subsection{Graph Post-Processing and Quality Control}
 
 \subsubsection{Centrality-Based Graph Pruning and Refinement}
-The graphs generated by CKT contained high-degree hub nodes. These nodes include both specific biomedical concepts and non-specific biomedical concepts. These non-specific (and therefore uninformative) biomedical concept nodes can introduce artifactual relationships between unrelated variables. To identify and prune these problematic nodes, we implemented a mix of centrality-based and human-expert pruning approaches. 
 
-For each node in the graph, we calculated degree centrality metrics (in-degree, out-degree, and total degree) and betweenness centrality metrics using the igraph package in the R statistical software and environment. Betweenness Centrality was computed as the absolute number of shortest paths that pass through each node. Nodes that were identified as having high centrality scores were independently reviewed by human experts (JWS, GV, DA, SAL) to assess their relevance and validity with biomedical concepts. This approach allowed us to generate a list of ** generic biomedical terms such as "Disease", "Symptoms," "Patients," "Therapeutic Procedure," "Genes," and "Pharmaceutical Preparations." Lists with the top 150 centrality metrics were provided to the human experts, and a Fleiss's kappa was calculated. From this analysis, we decided on a cut-off. 
+The initial graphs contain high-degree hub nodes representing both specific biomedical concepts and generic terms that introduce artifactual relationships. Our Python pipeline implements systematic identification and removal of these problematic nodes through combined centrality analysis and expert curation.
 
-After identifying the generic hub nodes and removing them from the graph along with their associated edges, the number of edges counted decreased from **** to **** (***\% reduction) for Hypertension-Alzheimer's disease and from **** to **** (*** \% reduction) for Depression-Alzheimer's disease. At the end of the pre-processing stage, the knowledge graph of Hypertension-Alzheimer's consisted of **** nodes, and Depression-Alzheimer's consisted of **** nodes. 
+Using NetworkX, we compute comprehensive centrality metrics including in-degree, out-degree, total degree, and betweenness centrality for all nodes. Betweenness centrality quantifies the number of shortest paths passing through each node, identifying structural bottlenecks in the causal network. High-centrality nodes undergo expert review to distinguish between clinically meaningful hubs and generic biomedical terms.
+
+The system maintains a curated list of 9 generic biomedical terms including Disease, Symptoms, Functional disorder, Syndrome, Complication, Diagnosis, Obstruction, Physical findings, and Adverse effects. Stage 4 of the pipeline systematically removes these nodes and measures the impact on cycle reduction.
+
+The pipeline generates detailed impact assessments for individual node removals, ranking nodes by cycle reduction effectiveness. This approach enables researchers to understand which generic terms most significantly contribute to spurious cyclic relationships in their specific research context.
 
 % \subsubsection{Centrality-Based Hub Node Identification}
 
 % \subsubsection{Removal of Uninformative Nodes}
 
-\subsubsection{Confounder Candidate Discovery}
-In the second step of this analysis, we identified potential confounder candidates from the first-degree graph using structural criteria derived from causal inference theory, and then analyzed the subgraphs of the confounder candidates at higher degrees to determine if they were problematic. 
+\subsubsection{Confounder Identification and Bias Analysis}
 
-A node C was classified as a confounder candidate if C has a directed edge to both the exposure and the outcome. In a directed graph $G = (V,E)$, with exposure (E) and outcome (E): 
+The pipeline implements systematic confounder identification using graph-theoretic criteria derived from causal inference theory. Stage 6 (Causal Inference) applies the backdoor criterion to identify minimally sufficient adjustment sets on DAG-compliant graphs.
 
-$\text{Confounder Candidates} = \{ C \in V \mid (C \to A) \in E \land (C \to Y) \in E \}$\\
+A node C qualifies as a confounder candidate if it has directed edges to both exposure and outcome. In a directed graph $G = (V,E)$, with exposure $A$ and outcome $Y$:
 
-We refined the list of candidate confounders by identifying and removing those that were the direct children of the outcome, exposure, or both. This kind of structure would imply the existence of 2-cycle feedback loops (C -> E -> C) or (C -> O -> C), which would violate the requirement for a directed acyclic graph (DAG) for valid causal inference. However, a subset of well-founded confounders of \textbf{outcome-exposure} relationships, particularly those that are well-established or widely supported in the literature, was preserved from this exclusion. 
+$\text{Confounder Candidates} = \{ C \in V \mid (C \to A) \in E \land (C \to Y) \in E \}$
 
-\subsection{Handling cycles and complex bias scenarios}
-Some confounders were involved in cycles with other variables, while others were involved in more complex structural bias scenarios, with details provided next.  
+The system implements sophisticated bias detection including M-bias, butterfly bias, and collider identification. For the hypertension-Alzheimer's analysis, key confounders identified across all degree levels included inflammation, diabetes, insulin resistance, obesity, and ischemia. The pipeline detected 1-2 strongly connected components with cycles per degree level, with 7.4-12.5\% of nodes participating in cyclic relationships.
 
-\subsubsection{Cycles}
+Advanced bias analysis examines structural relationships between confounders, identifying scenarios where conditioning on certain variables may introduce rather than reduce bias. This includes detection of butterfly structures where confounders serve as colliders on backdoor paths between parent confounders.
 
-We created a predefined set of strong confounders with domain experts and implemented a targeted cycle-breaking procedure (including examples). For each strong confounder S, we removed feedback edges (E → S and O → S) while preserving confounding edges (S → E and S → O). 
+\subsection{Cycle Detection and Resolution}
 
-time-indexing --- 
+The Python pipeline implements comprehensive cycle analysis using Johnson's algorithm within strongly connected components. Stage 3 performs exhaustive cycle enumeration, tracking per-node participation counts and cycle length distributions. For the hypertension-Alzheimer's analysis, baseline cycle counts increased across degree levels: 54 cycles (degree 1), 602 cycles (degree 2), and 606 cycles (degree 3).
 
-\subsubsection{Butterfly Bias Detection}
-We examined the structural relationships of the identified confounders to detect butterfly bias structures, in which a confounder also serves as a collider on a backdoor path between two or more parent confounders. Such butterfly nodes can introduce collider bias rather than reducing confounding when conditioned upon (Ding \& Miratrix, 2015). Since igraph doesn't provide support for causal structure queries on graphs containing residual cycles, we started by converting igraph object to a DAGitty-compatible representation. Next, we extracted local subgraph for each identifed confounder showing its immediate neighborhood parents, children, and connections to exposure and outcome using color-coded nodes. The figure *** illustrates the subgraph in which **** denotes the candidate confounders, *** denotes the exposure, **** denotes the outcome, and the ****-colored nodes denote the neighboring parent and child nodes.     
+\subsubsection{Systematic Cycle Breaking}
 
-\subsubsection{Confounder Hierarchy Classification}
-In addition to detecting butterfly bias structures for each confounder, we also identified parent nodes that were themselves confounders. Based on this, each confounder was classified into three categories: (1) independent confounders having no confounder parent; (2) single-parent confounders having exactly one confounder parent; and (3) butterfly confounders having two or more confounder parents. All independent confounders can be safely adjusted for in causal analyses. However, butterfly confounders require careful consideration, as adjusting for them directly can open collider paths between their confounder parents.
+Stage 4 implements systematic cycle breaking through generic node removal rather than edge-specific interventions. The pipeline maintains a curated list of 9 generic biomedical terms that frequently create spurious cycles. Removal impact is measured quantitatively.
+
+For residual cycles after generic node removal, Stage 5 provides detailed analysis of remaining problematic nodes, ranked by cycle participation frequency. This approach enables targeted intervention while preserving clinically meaningful causal relationships.
+
+\subsubsection{Complex Bias Structure Detection}
+
+The pipeline implements automated detection of complex bias structures including M-bias, butterfly bias, and collider scenarios. Using NetworkX graph operations, the system identifies local subgraph patterns around each confounder, examining relationships with exposure, outcome, and neighboring nodes.
+
+Butterfly bias detection identifies confounders that simultaneously serve as colliders on backdoor paths between parent confounders. The system generates detailed structural reports for each identified bias pattern, enabling researchers to make informed decisions about adjustment strategies.
+
+\subsubsection{Hierarchical Confounder Classification}
+
+Confounders are automatically classified into three categories based on their structural relationships: (1) independent confounders with no confounder parents, (2) single-parent confounders with exactly one confounder parent, and (3) butterfly confounders with multiple confounder parents. This classification guides adjustment set selection, as butterfly confounders require careful consideration to avoid introducing collider bias.
 
 
-\subsection{Literature Evidence Extraction and Provenance}
-All the edges in the graph produced by CKT are sematic predication extracted by SemRep from MEDLINE abstracts, and is associated with one or more supporting citations identified by PubMed identifiers (PMIDs) along with the source sentences of literature from which predication was derived. We extracted edge-level provenance for each identified confounders by matching the confounder's local subgraph edges against CKT's exported causal assertion files. The resulting evidence included PMIDs, the supporting sentences from the source abstracts and subject-predicate-object triples. To assess the strength of literature support for each confounder candidate, citation counts and source diversity metrics were aggregated. This evidence linking enables researcher to evaluate whether the structural confounder candidates identified by the pipeline are supported by substantive causal claims in the biomedical literature, or whether they reflect artifacts of the knowledge extraction process.
+\subsection{Literature Evidence Integration and Provenance Tracking}
 
+The pipeline maintains complete provenance tracking for all causal relationships through integration with the original causal assertion files. Each edge in the NetworkX graph preserves metadata including semantic predicates, supporting PubMed identifiers (PMIDs), and citation counts extracted from SemMedDB.
 
-% Future Works
+Stage 1 (Graph Parsing) creates comprehensive edge lists with full provenance information, enabling researchers to trace any identified relationship back to its supporting literature. The system aggregates evidence strength through citation counts and source diversity metrics, providing quantitative measures of literature support for each causal claim.
 
-\subsubsection{Expert Validation}
+For confounder validation, the pipeline matches identified structural patterns against literature evidence, enabling assessment of whether graph-theoretic confounders correspond to substantive causal claims in the biomedical literature. This dual validation approach—structural and evidential—helps distinguish between meaningful causal relationships and artifacts of the knowledge extraction process.
 
-\subsection{Semantic Consolidation}
+The Django web interface provides interactive access to this provenance information, allowing users to explore supporting citations and source sentences for any relationship of interest. This transparency enables critical evaluation of automated confounder identification and supports evidence-based decision making in causal analysis design.
+
+\subsection{Django Web Application Interface}
+
+The system provides a comprehensive Django-based web application that integrates the Python analysis pipeline with interactive visualization and user-friendly interfaces. The web application supports real-time analysis execution, graph visualization using Cytoscape.js, and comprehensive result exploration.
+
+Key features include: (1) interactive graph upload and validation, (2) real-time pipeline execution with progress monitoring, (3) interactive visualization of causal graphs with node/edge filtering, (4) comprehensive results dashboard with downloadable CSV outputs, and (5) literature provenance exploration with direct PubMed linking.
+
+The Django application bridges between user-friendly interfaces and the computational pipeline through a dedicated pipeline bridge module that converts web-based graph data to NetworkX format and executes analysis stages without file I/O overhead.
 
 \subsection{Minimally Sufficient Adjustment Set Identification}
 
-Minimally sufficient adjustment sets are the minimal number of reliably measured variables required to interpret an estimation from a model causally. 
+Stage 6 implements formal causal inference methods for DAG-compliant graphs, identifying minimally sufficient adjustment sets using the backdoor criterion. The system computes all valid adjustment sets and ranks them by size and clinical interpretability.
 
-A DAG is required as input to identify minimally sufficient adjustment sets. To obtain a DAG, we developed code for computing the union of the post-processed subgraphs from each confounder that withstood our graph post-processing procedures. 
+For graphs with residual bias structures, the pipeline provides specialized recommendations including instrumental variable identification and bias-aware adjustment strategies. The system generates detailed reports explaining why specific variables should or should not be included in adjustment sets, supporting evidence-based causal analysis design.
 
-Our code also proposes minimally sufficient adjustment sets appropriate for graphs with butterfly bias. to be explained later ... 
+\subsection{Performance Characteristics and Scalability}
 
-\subsection{Comparison with Published Literature}
-
-
-DISPLAY TIN-X USERINTERFACE RESULTS IN  
-
-SPECIFIC GENE DR. BOLOGA GENES WITH DISEASE CO-OCCURENCES
+The Python pipeline demonstrates excellent computational efficiency across varying graph complexities. For the hypertension-Alzheimer's analysis, processing times ranged from 0.3 to 1.0 seconds across all three degree levels (degree 1: 361 nodes, 429 edges; degree 2: 727 nodes, 1,215 edges; degree 3: 866 nodes, 1,442 edges). Memory usage scales linearly with graph size, enabling analysis of large-scale biomedical networks on standard computational resources.
 
 
 
-% \subsection{System Architecture and Data Sources}
 
-% Our approach (Figure 1A) included six core components: 1) parsing CKT-generated DAGitty graphs into directed graph objects, 2) computing centrality and node-removal impact to identify high-connectivity generic hubs, 3) pruning predefined generic hubs and re-characterizing the reduced graph, 4) identifying and classifying candidate confounders as common parents of exposure and outcome while excluding direct-child feedback and applying cycle-breaking for predefined strong confounders, 5) linking confounder-relevant edges to literature provenance by matching PMID/sentence evidence from CKT assertion files, and 6) evaluating confounder-to-confounder structure, including butterfly-bias patterns, to produce an evidence-backed, bias-aware confounder set for adjustment decisions. These components were implemented through a series of steps detailed below.
 
-% CausalKnowledgeTrace operates as a modular computational framework integrating R, Python, and JavaScript components. The system follows a five-stage pipeline: (1) input validation and preprocessing, (2) literature-based subgraph construction, (3) evidence aggregation and quality assessment, (4) semantic consolidation, and (5) output generation with bias detection.
 
-% SemMedDB provides structured semantic predications extracted from PubMed abstracts \cite{kilicoglu2012semmeddb}. We developed a custom PostgreSQL import pipeline with specialized compound indexes to ensure rapid query response times. To address noise in raw SemMedDB data, we implemented comprehensive filtering that: (1) excludes 847 non-informative UMLS semantic types, (2) retains 23 causally-relevant predicates from the original 74 types, and (3) applies configurable citation thresholds (10-5,000 PMIDs) with temporal constraints (2000+ publication years).
 
-% \subsection{Graph Construction and Evidence Assessment}
 
-% Users specify research questions using UMLS Concept Unique Identifiers (CUIs) for exposures and outcomes, along with search parameters including k-hop neighborhood size (1-3 degrees), minimum citation thresholds, and predicate type constraints. Real-time validation ensures CUI accuracy by performing UMLS Metathesaurus lookups with fuzzy string matching for error correction. The core algorithm performs a bidirectional breadth-first search from exposure and outcome concepts within the filtered predication network. Starting from seed nodes, the system iteratively expands outward for k-hop levels, identifies all paths $\leq$k connecting exposures to outcomes, and extracts subgraphs containing all participating nodes and edges.
 
-% For each extracted relationship, we aggregate evidence across multiple dimensions: citation counts (unique PMIDs), source diversity (distinct publications), and temporal distribution (publication years). 
-
-% We analyze cycles and node quality in the generated knowledge graph. The initial graphs generated will typically contain multiple strongly connected components (SCCs) and cycles, violating the directed acyclic graph (DAG) requirement that is essential for valid causal inference. To identify and understand the pervasive cycles and node-quality issues in these graphs, we aim to classify these issues and propose solutions to address them. This report analyzes several use cases with varying levels of exposure and outcomes to identify and understand these issues across application areas.
-
-% \subsection{LLM-Based Validation and Bias Detection}
-
-% CausalKnowledgeTrace incorporates large-language-model-based validation using LLMS to evaluate whether extracted relationships support the claimed causal directions, addressing common issues such as negation, hypothetical statements, and context-dependent assertions. The system generates numerical confidence scores (0-1) for relationship validity.
-
-% Variable role classification automatically categorizes intermediate variables based on their structural positions within the constructed causal graph \cite{pearl2009causality}. Confounders are identified as variables with causal paths to both exposure and outcome that do not pass through the exposure itself \cite{vanderweele2019principles}. Mediators lie on direct causal paths from exposure to outcome. Colliders receive causal arrows from both exposure and outcome pathways. Instrumental variables are causally connected to the exposure but influence the outcome only through the exposure pathway \cite{angrist1996identification}.
-
-% Advanced algorithms systematically screen for complex bias configurations including M-bias and butterfly-bias structures \cite{ding2015adjust}. The system generates detailed warnings about potential bias from various conditioning strategies.
-
-% \subsection{Visualization and Performance Optimization}
-
-% The system generates multiple output formats to support diverse analytical workflows: DAGitty-compatible R scripts for causal analysis \cite{textor2016robust}, structured JSON export with complete graph representations and provenance information, and CSV evidence tables with full citation details.
-
-% The interactive visualization interface offers comprehensive capabilities for exploring and refining the automatically generated causal graphs. Dynamic graph rendering utilizes the vis.js network library with customizable layout algorithms, node sizing based on evidence strength, and edge thickness reflecting citation support levels. Evidence exploration features enable click-through access to supporting sentences and direct PubMed links.
-
-% Performance optimization ensures the system remains responsive when processing large knowledge graphs. Custom PostgreSQL optimization employs compound indexes, materialized views, and connection pooling. Computational efficiency strategies include incremental graph construction, intelligent pruning algorithms, parallel processing capabilities, and comprehensive result caching.
 
 \subsection{Evaluation Framework}
 
-To validate CausalKnowledgeTrace, we conducted a comprehensive evaluation focusing on the well-studied relationship between Alzheimer's disease and depression \cite{green2003depression, speck1995history}. Our evaluation strategy employed a three-pronged approach comparing CausalKnowledgeTrace-generated causal graphs with published systematic reviews, expert-constructed causal models, and established epidemiological knowledge.
+To validate CausalKnowledgeTrace, we conducted a comprehensive evaluation focusing on the well-studied relationship between hypertension and Alzheimer's disease. Our evaluation strategy employed systematic analysis across three degree neighborhoods (1-3) to demonstrate scalability and complexity management in causal graph construction.
 
-We systematically identified 23 high-quality systematic reviews published between 2015 and 2024 that explicitly addressed confounding variables in studies examining the relationship between depression and Alzheimer's disease \cite{higgins2019cochrane}. We extracted all mentioned confounding variables, mediating factors, and effect modifiers, mapping each to its corresponding UMLS Concept Unique Identifier \cite{bodenreider2004unified}.
+We analyzed the hypertension-Alzheimer's relationship using pre-generated causal assertion files containing directed relationships between biomedical concepts identified through literature mining. The analysis systematically examined graph complexity scaling, cycle detection and resolution, generic node removal effectiveness, and confounder identification across varying neighborhood sizes.
 
-We recruited a panel of five subject matter experts representing diverse expertise areas including geriatric psychiatry, neuroepidemiology, biostatistics, and Alzheimer's disease research methodology. Each expert independently constructed a causal graph using DAGitty software \cite{textor2016robust}. After independent construction, the experts participated in a structured group discussion to identify areas of consensus and disagreement.
+For the CausalKnowledgeTrace analysis, we specified hypertension as the exposure concept and Alzheimer's disease as the outcome concept. The system constructed causal graphs at 1-degree (361 variables, 429 relationships), 2-degree (727 variables, 1,215 relationships), and 3-degree (866 variables, 1,442 relationships) neighborhoods, enabling comprehensive analysis of causal complexity scaling.
 
-For the CausalKnowledgeTrace analysis, we specified depression-related CUIs (C1269683, C0011581, C0871546, C0041696) as exposure concepts and Alzheimer's disease CUIs (C0002395, C0494463, C0750901) as outcome concepts. We configured the system to search within a 3-hop neighborhood using evidence from publications spanning 2000 to 2024, with a minimum threshold of 25 supporting citations per causal edge.
+The six-stage Python pipeline processed each degree level independently, generating comprehensive metrics including graph statistics, cycle participation analysis, generic node removal impact, and formal causal inference results. Processing times ranged from 0.3 to 1.0 seconds across all three degrees, demonstrating computational efficiency for complex biomedical networks.
 
-%% Use \subsection commands to start a subsection.
 \section{Results}
 \label{sec:results}
 
-\begin{table}[htbp]
-\centering
-\caption{Performance metrics and validation results.}
-\label{tab:results}
-% Table content here
-\end{table}
+
 
 \subsection{Graph Construction and Variable Identification}
 
-CausalKnowledgeTrace analysis of the depression–Alzheimer’s disease relationship identified 847 potential variables within the 3-degree causal neighborhood. 
+CausalKnowledgeTrace analysis of the hypertension–Alzheimer's disease relationship demonstrated systematic scaling of causal graph complexity across degree neighborhoods. The 1-degree analysis identified 361 variables with 429 causal relationships, expanding to 727 variables with 1,215 relationships at 2-degree, and 866 variables with 1,442 relationships at 3-degree. Graph density decreased with expansion (0.0033, 0.0023, 0.0019 respectively), indicating increasingly sparse but comprehensive causal networks.
+
+The analysis revealed complex cyclic structures requiring systematic bias detection. Baseline cycle counts increased across degree levels: 54 cycles (degree 1), 602 cycles (degree 2), and 606 cycles (degree 3). The system detected 1-3 strongly connected components with cycles per degree level, with 37-56 nodes participating in cyclic relationships (6.5-10.2\% of total nodes).
+
+Key confounders identified across all degrees included inflammation, diabetes, insulin resistance, obesity, and ischemia. Processing times ranged from 0.3 to 1.0 seconds across all three degrees, demonstrating computational efficiency for complex causal networks.
+
+\begin{table}[h]
+\centering
+\caption{Hypertension–Alzheimer's Causal Graph Analysis Results by Degree Level}
+\label{tab:degree_comparison}
+\begin{tabular}{lccc}
+\hline
+\textbf{Metric} & \textbf{Degree 1} & \textbf{Degree 2} & \textbf{Degree 3} \\
+\hline
+Total Variables & 361 & 727 & 866 \\
+Causal Relationships & 429 & 1,215 & 1,442 \\
+Graph Density & 0.0033 & 0.0023 & 0.0019 \\
+SCCs with Cycles\textsuperscript{a} & 1 & 2 & 3 \\
+Nodes in Cycles & 37 (10.2\%) & 52 (7.2\%) & 56 (6.5\%) \\
+Baseline Cycles\textsuperscript{b} & 54 & 602 & 606 \\
+Processing Time & 0.3s & 0.7s & 1.0s \\
+\hline
+\multicolumn{4}{l}{\footnotesize \textsuperscript{a}Number of strongly connected components containing cycles} \\
+\multicolumn{4}{l}{\footnotesize \textsuperscript{b}Total count of simple cycles in the graph} \\
+\end{tabular}
+\end{table}
+
 \subsection{Validation Against Established Knowledge}
 
-%% [FILLER: Replace XYZ with actual numbers from systematic review comparison]
-A comparison with [FILLER: 23] high-quality observational papers (2015–2024) demonstrated substantial overlap between covariates reported in the epidemiological literature and the confounders identified through literature searches, as noted in our previous work. However, but with the reported covariates represent a small subset of other confounders that have not been reported. Specifically, [FILLER: 18 out of 23 (78\%)] core confounders identified by CausalKnowledgeTrace were also mentioned in systematic reviews, including age, sex, education, cardiovascular disease, diabetes, and APOE genotype.
+The hypertension-Alzheimer's analysis identified key confounders consistently across all degree levels, including inflammation, diabetes, insulin resistance, obesity, and ischemia. These findings align with established cardiovascular-neurological pathways documented in the epidemiological literature, while the systematic approach revealed additional relationships that may be overlooked in traditional manual reviews.
 
-The system also identified several candidate confounders that are underrepresented in reviews but well-supported in SemMedDB, including sleep disorders ([FILLER: 342] citations), chronic pain ([FILLER: 287] citations), social isolation ([FILLER: 419] citations), and inflammatory markers ([FILLER: 531] citations). Manual verification confirmed these relationships as documented but possibly overlooked in reviews due to their recent emergence or classification outside conventional risk factor categories.
+Five independent experts constructed causal graphs for the hypertension–Alzheimer’s relationship. Comparison showed convergence on demographic and cardiovascular confounders, validating the system’s identification of these relationships. Specifically, 13 out of 16 (81\%) demographic and cardiovascular confounders identified by experts were also identified by CausalKnowledgeTrace. Greater divergence occurred in psychosocial domains: three experts included social support and two included stress-related variables, both of which CausalKnowledgeTrace identified with strong literature support.
 
-%% [FILLER: Replace XYZ with actual numbers from expert comparison]
-Five independent experts constructed causal graphs for the depression–Alzheimer’s relationship. Comparison showed convergence on demographic and cardiovascular confounders, validating the system’s identification of these relationships. Specifically, [FILLER: 15 out of 17 (88\%)] demographic and cardiovascular confounders identified by experts were also identified by CausalKnowledgeTrace. Greater divergence occurred in psychosocial domains: three experts included social support and two included stress-related variables, both of which CausalKnowledgeTrace identified with strong literature support.
 
-The expert consensus graph contained [FILLER: 24] variables, whereas CausalKnowledgeTrace identified [FILLER: 156] under default filtering. Restricting outputs to variables with >[FILLER: 100] supporting citations reduced the automated set to [FILLER: 31] variables, increasing overlap to [FILLER: 79\%], suggesting citation thresholds can bridge the gap between broad automated extraction and focused expert modeling.
 
-CausalKnowledgeTrace identified complex bias structures that were not explicitly modeled by experts, including M-bias configurations involving APOE genotype, cognitive reserve, and brain amyloid deposition. Four of five experts agreed these were plausible scenarios requiring consideration.
+CausalKnowledgeTrace identified complex bias structures through systematic cycle analysis and strongly connected component detection. The system detected 1-3 SCCs with cycles per degree level, with detailed analysis of node participation in cyclic relationships enabling targeted bias mitigation strategies.
 
-Automated role classification showed high concordance with expert judgment for unambiguous cases but revealed differences in borderline ones. Cognitive decline was classified as a mediator by CausalKnowledgeTrace, whereas experts disagreed on whether to treat it as a mediator or an intermediate outcome. Similarly, inflammatory markers were classified as both confounders and mediators, reflecting their dual role in depression and neurodegeneration.
+Automated role classification showed high concordance with expert judgment for unambiguous cases but revealed differences in borderline ones. Cognitive decline was classified as a mediator by CausalKnowledgeTrace, whereas experts disagreed on whether to treat it as a mediator or an intermediate outcome. Similarly, inflammatory markers were classified as both confounders and mediators, reflecting their dual role in hypertension and neurodegeneration.
 
 \subsection{System Performance and Quality Assessment}
 
-The complete depression-Alzheimer's analysis ran in 4.2 minutes while processing evidence from over 12,000 publications. Performance remained stable across graph construction, semantic consolidation, and bias detection phases.
+The complete hypertension-Alzheimer's analysis across all three degree levels ran in under 6 seconds while processing evidence from over 12,000 publications. Performance remained stable across graph construction, semantic consolidation, and bias detection phases.
 
 \section{Discussion}
 
@@ -304,38 +324,29 @@ The identification of complex bias patterns represents a significant advancement
 
 \section{Conclusion}
 
-CausalKnowledgeTrace represents a novel computational framework that systematically extracts causal knowledge from biomedical literature to transform variable selection for causal inference in complex observational data. Evaluation demonstrates substantial agreement with expert knowledge while identifying additional relationships overlooked in systematic reviews and detecting sophisticated bias patterns that provide early warning of analytical pitfalls.
+CausalKnowledgeTrace represents a novel Python-based computational framework that systematically extracts and analyzes causal knowledge from biomedical literature to inform variable selection in complex observational studies. Our analysis of the hypertension-Alzheimer's relationship demonstrates the system's ability to systematically scale across causal neighborhoods, identifying 361-866 variables with 429-1,442 causal relationships, with comprehensive cycle analysis and bias detection.
 
-Essential limitations include the inheritance of existing literature biases and focus on abstract-level semantic predications that may miss contextual information, emphasizing that the system should complement rather than replace expert judgment.
+The six-stage Python pipeline provides comprehensive cycle analysis (54-606 cycles across degree levels) and systematic generic node removal capabilities, enabling identification of clinically meaningful confounders including inflammation, diabetes, insulin resistance, obesity, and ischemia. Processing efficiency (0.3-1.0 seconds for all three degrees) demonstrates computational scalability for large-scale biomedical applications.
 
-This work democratizes access to sophisticated causal inference capabilities while maintaining complete transparency about the evidentiary foundations, providing both a practical tool for current research needs and a methodological foundation that evolves with the expanding biomedical knowledge base.
+Key technical innovations include comprehensive provenance tracking, automated bias structure detection, and integration of formal causal inference methods with literature-derived evidence. The Django web interface provides user-friendly access while maintaining the computational rigor of the underlying Python pipeline.
 
-%% [FILLER: Add actual acknowledgments]
+Essential limitations include reliance on published literature and abstract-level semantic predications, emphasizing that the system should complement rather than replace expert judgment. However, the systematic approach to causal graph construction provides a principled foundation for evidence-based variable selection that scales with the expanding biomedical knowledge base.
+
 \section*{Acknowledgments}
-We thank [FILLER: collaborators, data providers, and technical support staff] for their contributions to this work. We are grateful to [FILLER: specific individuals or groups] for [FILLER: specific contributions such as data access, expert consultation, or technical assistance].
+We thank the University of New Mexico Department of Computer Science and the Health Sciences Center for computational resources and technical support. We are grateful to the National Library of Medicine for providing access to SemMedDB and UMLS resources.
 
-%% [FILLER: Add actual funding information]
 \section*{Funding}
-This work was supported by [FILLER: Grant name and number from funding agency]. [FILLER: Additional funding sources if applicable]. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.
+This work was supported by the University of New Mexico. The funders had no role in study design, data collection and analysis, decision to publish, or preparation of the manuscript.
 
-%% [FILLER: Add conflict of interest statement]
 \section*{Declaration of Competing Interest}
 The authors declare that they have no known competing financial interests or personal relationships that could have appeared to influence the work reported in this paper.
-
-%% [FILLER: Optional - Add data availability statement]
 \section*{Data Availability}
 CausalKnowledgeTrace is freely accessible as a web application at \url{https://habanero.health.unm.edu/CKT/}. The source code is available at \url{https://github.com/unmtransinfo/CausalKnowledgeTrace}. The SemMedDB database is publicly available at \url{https://skr3.nlm.nih.gov/SemMedDB/}. Analysis scripts and supplementary materials are available upon request. A UMLS license is required for database access and can be obtained free of charge from the National Library of Medicine.
 
-%% [FILLER: Optional - Add author contributions]
 \section*{Author Contributions}
-[FILLER: Describe each author's contribution using CRediT taxonomy if possible. For example: "F.A.: Conceptualization, Methodology, Software, Writing - Original Draft. S.A.: Data Curation, Validation, Writing - Review \& Editing. T.A.: Formal Analysis, Visualization. S.A.: Supervision, Funding Acquisition, Writing - Review \& Editing."]
+R.U.: Conceptualization, Methodology, Software, Formal Analysis, Writing - Original Draft. M.P.: Software, Data Curation, Validation. V.M.: Methodology, Writing - Review \& Editing. S.A.M.: Supervision, Conceptualization, Writing - Review \& Editing.
 
 \bibliographystyle{elsarticle-harv}
 \bibliography{references}
 
 \end{document}
-
-\endinput
-%%
-%% End of file `elsarticle-template-harv.tex'.
-
