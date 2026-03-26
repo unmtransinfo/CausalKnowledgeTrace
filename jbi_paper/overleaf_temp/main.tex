@@ -1,7 +1,5 @@
-%\documentclass[preprint,12pt,authoryear]{elsarticle}
 \documentclass[preprint,12pt,numbers,sort&compress]{elsarticle}
 
-%% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
 %% The amsmath package provides various useful equation environments.
 \usepackage{amsmath}
@@ -31,10 +29,10 @@
 \author[inst1]{Manjil Pradhan}
 \ead{mapradhan@unm.edu}
 
-\author[inst3]{Vincent Metzger}
+\author[inst2]{Vincent Metzger}
 \ead{vtmetzger@salud.unm.edu}
 
-\author[inst3]{Scott Alexander Malec}
+\author[inst2]{Scott Alexander Malec}
 \ead{smalec@salud.unm.edu}
 
 \cortext[cor1]{Corresponding author}
@@ -46,14 +44,8 @@
             state={New Mexico},
             country={United States}}
 
-\affiliation[inst2]{organization={University of New Mexico},
-            addressline={MSC01 1130 1 University of New Mexico},
-            city={Albuquerque},
-            postcode={87131},
-            state={New Mexico},
-            country={United States}}
 
-\affiliation[inst3]{organization={Division of Translational Informatics, University of New Mexico Health Sciences Center},
+\affiliation[inst2]{organization={Division of Translational Informatics, University of New Mexico Health Sciences Center},
             addressline={MSC01 1130 1 University of New Mexico},
             city={Albuquerque},
             postcode={87131},
@@ -119,7 +111,7 @@ The remainder of this paper describes the technical implementation of CausalKnow
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.8\textwidth]{cwt.png}
+\includegraphics[width=0.8\textwidth]{ckt.png}
 \caption{CausalKnowledgeTrace workflow and system architecture. The system follows a six-stage pipeline integrating literature-based knowledge extraction, semantic consolidation, LLM-based validation, and automated bias detection to construct evidence-based causal graphs from biomedical literature.}
 \label{fig:workflow}
 \end{figure}
