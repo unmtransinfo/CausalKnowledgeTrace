@@ -105,10 +105,6 @@ class GraphAnalyzer:
         """Generate the DAG filename based on exposure, outcome, and degree."""
         return f"{self._get_name_prefix()}.R"
 
-    def get_causal_assertions_filename(self) -> str:
-        """Generate the causal assertions filename based on exposure, outcome, and degree."""
-        return f"{self._get_name_prefix()}_causal_assertions.json"
-
     def get_cytoscape_filename(self) -> str:
         """Generate the Cytoscape.js JSON filename based on exposure, outcome, and degree."""
         return f"{self._get_name_prefix()}.json"
@@ -278,32 +274,6 @@ class GraphAnalyzer:
 
             print(f"Cytoscape.js JSON saved: {self.output_dir}/{cytoscape_filename}")
             print(f"  Nodes: {len(cytoscape_nodes)}, Edges: {len(cytoscape_edges)}")
-
-    def save_results_and_metadata(
-        self,
-        timing_results: Dict,
-        detailed_assertions: List[Dict],
-        cui_to_display_name: Dict[str, str] = None
-    ):
-        """Save analysis results, timing data, and configuration metadata with optimization."""
-        output_path = self.output_dir
-
-        # Save detailed assertions with degree suffix using optimized serialization
-        causal_assertions_filename = self.get_causal_assertions_filename()
-        print(f"Saving {len(detailed_assertions)} assertions to {causal_assertions_filename}...")
-
-        # Use optimized JSON serialization for large files
-        self.save_optimized_json(
-            detailed_assertions,
-            output_path / causal_assertions_filename,
-            cui_to_display_name
-        )
-
-        # Automatically create optimized formats for large files
-        file_size_mb = (output_path / causal_assertions_filename).stat().st_size / (1024 * 1024)
-        if file_size_mb > 50:  # For files larger than 50MB
-            print(f"Large file detected ({file_size_mb:.1f}MB) - creating optimized formats...")
-            self.create_optimized_formats(output_path / causal_assertions_filename)
 
     def save_optimized_json(
         self,
@@ -519,11 +489,10 @@ if (lightweight_result$success) {{
                         G = nx.DiGraph()
 
                         # Build the single CUI → display-name mapping used
-                        # everywhere (graph, Cytoscape, assertions export).
+                        # everywhere (graph, Cytoscape JSON export).
                         cui_to_display_name = self._build_cui_to_display_name(cui_to_name_mapping)
 
-                        # Build graph from detailed_assertions to ensure consistency
-                        # with the causal_assertions.json file (not from cui_links)
+                        # Build graph from detailed_assertions
                         for assertion in detailed_assertions:
                             src_cui = assertion.get("subject_cui", "")
                             dst_cui = assertion.get("object_cui", "")
@@ -544,13 +513,6 @@ if (lightweight_result$success) {{
                     self.generate_cytoscape_json(
                         all_nodes, all_edges, exposure_nodes, outcome_nodes,
                         detailed_assertions, cui_to_display_name
-                    )
-
-                    # Save all results and metadata
-                    self.save_results_and_metadata(
-                        self.timing_data,
-                        detailed_assertions,
-                        cui_to_display_name
                     )
 
         return self.timing_data
@@ -609,8 +571,7 @@ if (lightweight_result$success) {{
         print(f"Description: {self.config.description}")
 
         print("\nGenerated files:")
-        print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
-        print(f"  - {self.get_cytoscape_filename()}: Cytoscape.js JSON for graph visualization (degree={self.degree})")
+        print(f"  - {self.get_cytoscape_filename()}: Self-contained Cytoscape.js JSON (nodes, edges, evidence) (degree={self.degree})")
 
         print("\nTo visualize results, load the Cytoscape.js JSON in the visualization app:")
         print(f"  {output_path}/{self.get_cytoscape_filename()}")
@@ -710,8 +671,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
         print(f"Description: {self.config.description}")
 
         print("\nGenerated files:")
-        print(f"  - {self.get_causal_assertions_filename()}: Detailed causal relationships")
-        print(f"  - {self.get_cytoscape_filename()}: Cytoscape.js JSON for graph visualization (degree={self.degree})")
+        print(f"  - {self.get_cytoscape_filename()}: Self-contained Cytoscape.js JSON (nodes, edges, evidence) (degree={self.degree})")
         print(f"  - MarkovBlanket_Union.R: R script for Markov blanket analysis")
 
         print("\nTo visualize results, load the Cytoscape.js JSON in the visualization app:")
@@ -742,8 +702,7 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                         # Build the single CUI → display-name mapping
                         cui_to_display_name = self._build_cui_to_display_name(cui_to_name_mapping)
 
-                        # Build graph from detailed_assertions to ensure consistency
-                        # with the causal_assertions.json file (not from cui_links)
+                        # Build graph from detailed_assertions
                         for assertion in detailed_assertions:
                             src_cui = assertion.get("subject_cui", "")
                             dst_cui = assertion.get("object_cui", "")
@@ -770,13 +729,6 @@ class MarkovBlanketAnalyzer(GraphAnalyzer):
                     self.generate_markov_blanket_dagitty_script(all_edges, mb_union)
 
                     print(f"  - {self.output_dir}/MarkovBlanket_Union.R")
-
-                    # Save all results and metadata
-                    self.save_results_and_metadata(
-                        self.timing_data,
-                        detailed_assertions,
-                        cui_to_display_name
-                    )
 
         print("\nMarkov blanket analysis complete!")
         return self.timing_data

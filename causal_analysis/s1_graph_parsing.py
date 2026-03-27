@@ -1,8 +1,8 @@
 """
 s1_graph_parsing.py
-Stage 1: Parse causal assertions JSON into a NetworkX directed graph.
+Stage 1: Parse the self-contained Cytoscape graph JSON into a NetworkX directed graph.
 
-Input:  graph_creation/result/{Exposure}_to_{Outcome}_degreeN_causal_assertions.json
+Input:  graph_creation/result/{Exposure}_to_{Outcome}_degreeN.json
 Output: data/{Exposure}_{Outcome}/s1_graph/
           - graph.graphml   (NetworkX graph serialized)
           - metadata.csv    (exposure, outcome, node/edge counts)
@@ -17,7 +17,6 @@ import networkx as nx
 
 from .config import GRAPH_CONFIG
 from .utils import (
-    find_assertions_json,
     find_graph_json,
     get_s1_graph_dir,
     ensure_dir,
@@ -25,43 +24,6 @@ from .utils import (
     print_complete,
     parse_args,
 )
-
-
-def parse_assertions_json(filepath: Path) -> nx.DiGraph:
-    """Build a NetworkX DiGraph from a causal_assertions JSON file."""
-    with open(filepath) as f:
-        data = json.load(f)
-
-    assertions = data.get("assertions", [])
-    if not assertions:
-        raise ValueError(f"No assertions found in {filepath}")
-
-    G = nx.DiGraph()
-
-    for a in assertions:
-        subj = a["subj"]
-        obj = a["obj"]
-        predicate = a.get("predicate", "CAUSES")
-        ev_count = a.get("ev_count", 0)
-        subj_cui = a.get("subj_cui", "")
-        obj_cui = a.get("obj_cui", "")
-
-        # Add nodes with CUI metadata
-        if subj not in G:
-            G.add_node(subj, cui=subj_cui, node_type="regular")
-        if obj not in G:
-            G.add_node(obj, cui=obj_cui, node_type="regular")
-
-        # Add or update edge (keep highest evidence count if duplicate)
-        if G.has_edge(subj, obj):
-            existing = G[subj][obj].get("ev_count", 0)
-            if ev_count > existing:
-                G[subj][obj]["ev_count"] = ev_count
-                G[subj][obj]["predicate"] = predicate
-        else:
-            G.add_edge(subj, obj, predicate=predicate, ev_count=ev_count)
-
-    return G
 
 
 def parse_graph_json(filepath: Path) -> nx.DiGraph:
@@ -119,17 +81,10 @@ def run_stage1(exposure: str, outcome: str, degree: int = 2) -> nx.DiGraph:
     output_dir = get_s1_graph_dir(exposure, outcome)
     ensure_dir(output_dir)
 
-    # Prefer assertions JSON (richer metadata), fall back to graph JSON
-    assertions_file = find_assertions_json(exposure, outcome, degree)
+    # Use the self-contained Cytoscape graph JSON (pmid_data is embedded per edge)
     graph_file = find_graph_json(exposure, outcome, degree)
 
-    if assertions_file:
-        print(f"Input file: {assertions_file}")
-        print("Input format: causal_assertions JSON")
-        G = parse_assertions_json(assertions_file)
-        input_format = "causal_assertions"
-        input_file = str(assertions_file)
-    elif graph_file:
+    if graph_file:
         print(f"Input file: {graph_file}")
         print("Input format: Cytoscape graph JSON")
         G = parse_graph_json(graph_file)
@@ -137,7 +92,8 @@ def run_stage1(exposure: str, outcome: str, degree: int = 2) -> nx.DiGraph:
         input_file = str(graph_file)
     else:
         raise FileNotFoundError(
-            f"No input JSON found for {exposure} -> {outcome} (degree {degree})"
+            f"No graph JSON found for {exposure} -> {outcome} (degree {degree}). "
+            f"Expected: graph_creation/result/{exposure}_to_{outcome}_degree{degree}.json"
         )
 
     # Apply exposure/outcome roles

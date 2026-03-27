@@ -158,7 +158,7 @@ def list_available_files(request):
             for filename in sorted(os.listdir(directory)):
                 if (not _is_allowed_file(filename)
                         or filename in seen
-                        or '_causal_assertions' in filename):
+                        or '_causal_assertions' in filename):  # skip legacy assertion files
                     continue
                 seen.add(filename)
                 full_path = os.path.join(directory, filename)
@@ -310,15 +310,6 @@ def upload_graph_file(request):
                 }, status=400)
         else:
             # Handle regular JSON files
-            # Reject causal assertions files — they are supporting evidence data,
-            # not graph files, and would not appear in the file listing.
-            if '_causal_assertions' in uploaded_file.name:
-                return JsonResponse({
-                    'success': False,
-                    'error': 'Causal assertions files cannot be uploaded directly. '
-                             'Please upload a graph file instead.'
-                }, status=400)
-
             # Validate JSON content
             try:
                 content = uploaded_file.read()
