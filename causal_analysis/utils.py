@@ -100,32 +100,12 @@ def create_all_stage_dirs(exposure: str, outcome: str) -> None:
 
 def extract_degree_from_path(filepath: str) -> int | None:
     filename = os.path.basename(filepath)
-    m = re.search(r"_degree(\d+)(?:_causal_assertions)?\.json$", filename)
+    m = re.search(r"_degree(\d+)\.json$", filename)
     if m:
         return int(m.group(1))
     m = re.search(r"_degree_(\d+)\.(R|json)$", filename)
     if m:
         return int(m.group(1))
-    return None
-
-
-def find_assertions_json(exposure: str, outcome: str, degree: int = 2) -> Path | None:
-    """Find the causal assertions JSON file for an exposure/outcome pair."""
-    search_dirs = [get_graph_creation_result_dir()]
-    for d in search_dirs:
-        exact = d / FILE_CONFIG["assertions_json_pattern"].format(
-            exposure=exposure, outcome=outcome, degree=degree
-        )
-        if exact.is_file():
-            return exact
-    # Fallback: glob for any matching file
-    for d in search_dirs:
-        if not d.is_dir():
-            continue
-        pattern = f"{exposure}_to_{outcome}_degree*_causal_assertions.json"
-        matches = sorted(d.glob(pattern), reverse=True)
-        if matches:
-            return matches[0]
     return None
 
 
@@ -142,9 +122,9 @@ def find_graph_json(exposure: str, outcome: str, degree: int = 2) -> Path | None
         if not d.is_dir():
             continue
         pattern = f"{exposure}_to_{outcome}_degree*.json"
-        matches = [p for p in d.glob(pattern) if "causal_assertions" not in p.name]
+        matches = sorted(d.glob(pattern), reverse=True)
         if matches:
-            return sorted(matches, reverse=True)[0]
+            return matches[0]
     return None
 
 

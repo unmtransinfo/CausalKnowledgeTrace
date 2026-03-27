@@ -68,9 +68,7 @@ VIZ_CONFIG = {
 # ============================================
 FILE_CONFIG = {
     "graph_json_pattern": "{exposure}_to_{outcome}_degree{degree}.json",
-    "assertions_json_pattern": "{exposure}_to_{outcome}_degree{degree}_causal_assertions.json",
     "legacy_dagitty_pattern": "{exposure}_{outcome}_degree_{degree}.R",
-    "legacy_assertions_pattern": "{exposure}_{outcome}_causal_assertions_{degree}.json",
 }
 
 # ============================================

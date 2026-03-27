@@ -353,10 +353,8 @@ def find_instrumental_variables(request):
 @require_http_methods(["GET"])
 def download_reduced_graph(request):
     """
-    Download the reduced graph (after node removal) as JSON files.
-    Returns a ZIP file containing:
-      - reduced_graph.json (Cytoscape format)
-      - causal_assertions.json (metadata/evidence)
+    Download the reduced graph (after node removal) as a ZIP file containing:
+      - reduced_graph.json (self-contained Cytoscape format with pmid_data embedded in edges)
     """
     from django.http import HttpResponse
     import zipfile
@@ -408,30 +406,13 @@ def download_reduced_graph(request):
         }
     }
 
-    # Build causal assertions JSON (simplified - just edge metadata)
-    causal_assertions = []
-    for edge in reduced_edges:
-        edge_data = edge['data']
-        assertion = {
-            'subject_cui': edge_data.get('source'),
-            'object_cui': edge_data.get('target'),
-            'predicate': edge_data.get('predicate', 'UNKNOWN'),
-            'pmids': edge_data.get('pmids', []),
-        }
-        causal_assertions.append(assertion)
-
     # Create ZIP file in memory
     zip_buffer = BytesIO()
     with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        # Add reduced graph JSON
+        # Add self-contained reduced graph JSON (pmid_data is embedded in each edge)
         zip_file.writestr(
             'reduced_graph.json',
             json.dumps(reduced_graph_json, indent=2)
-        )
-        # Add causal assertions JSON
-        zip_file.writestr(
-            'causal_assertions.json',
-            json.dumps(causal_assertions, indent=2)
         )
 
     # Prepare response
