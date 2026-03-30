@@ -5,12 +5,16 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
+    <node id="Diet">
+      <data key="d0">C0012155</data>
+      <data key="d1">regular</data>
+    </node>
     <node id="Injury">
       <data key="d0">C0175677</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Diet">
-      <data key="d0">C0012155</data>
+    <node id="Oxidative_Stress">
+      <data key="d0">C0242606</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">
@@ -21,18 +25,6 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Oxidative_Stress">
-      <data key="d0">C0242606</data>
-      <data key="d1">regular</data>
-    </node>
-    <edge source="Injury" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">19</data>
-    </edge>
-    <edge source="Injury" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">35</data>
-    </edge>
     <edge source="Diet" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">18</data>
@@ -49,9 +41,13 @@
       <data key="d2">CAUSES</data>
       <data key="d3">194</data>
     </edge>
-    <edge source="Hypertension" target="Alzheimers">
+    <edge source="Injury" target="Alzheimers">
       <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
+      <data key="d3">19</data>
+    </edge>
+    <edge source="Injury" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">35</data>
     </edge>
     <edge source="Oxidative_Stress" target="Alzheimers">
       <data key="d2">CAUSES</data>
@@ -60,6 +56,10 @@
     <edge source="Oxidative_Stress" target="Hypertension">
       <data key="d2">CAUSES</data>
       <data key="d3">96</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
     </edge>
   </graph>
 </graphml>

@@ -9,10 +9,6 @@
       <data key="d0">C0175677</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Cerebrovascular_accident">
-      <data key="d0">C0038454</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Disability_NOS">
       <data key="d0">C0231170</data>
       <data key="d1">regular</data>
@@ -25,6 +21,10 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
+    <node id="Cerebrovascular_accident">
+      <data key="d0">C0038454</data>
+      <data key="d1">regular</data>
+    </node>
     <edge source="Injury" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">19</data>
@@ -36,14 +36,6 @@
     <edge source="Injury" target="Disability_NOS">
       <data key="d2">CAUSES</data>
       <data key="d3">443</data>
-    </edge>
-    <edge source="Cerebrovascular_accident" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">22</data>
-    </edge>
-    <edge source="Cerebrovascular_accident" target="Disability_NOS">
-      <data key="d2">CAUSES</data>
-      <data key="d3">964</data>
     </edge>
     <edge source="Alzheimers" target="Disability_NOS">
       <data key="d2">CAUSES</data>
@@ -60,6 +52,14 @@
     <edge source="Hypertension" target="Disability_NOS">
       <data key="d2">CAUSES</data>
       <data key="d3">24</data>
+    </edge>
+    <edge source="Cerebrovascular_accident" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">22</data>
+    </edge>
+    <edge source="Cerebrovascular_accident" target="Disability_NOS">
+      <data key="d2">CAUSES</data>
+      <data key="d3">964</data>
     </edge>
   </graph>
 </graphml>

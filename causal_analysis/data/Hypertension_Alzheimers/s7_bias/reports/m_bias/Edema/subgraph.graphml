@@ -9,6 +9,10 @@
       <data key="d0">C0013604</data>
       <data key="d1">regular</data>
     </node>
+    <node id="Serotonin">
+      <data key="d0">C0036751</data>
+      <data key="d1">regular</data>
+    </node>
     <node id="Injection_procedure">
       <data key="d0">C1533685</data>
       <data key="d1">regular</data>
@@ -21,10 +25,14 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Serotonin">
-      <data key="d0">C0036751</data>
-      <data key="d1">regular</data>
-    </node>
+    <edge source="Serotonin" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">14</data>
+    </edge>
+    <edge source="Serotonin" target="Edema">
+      <data key="d2">CAUSES</data>
+      <data key="d3">142</data>
+    </edge>
     <edge source="Injection_procedure" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">44</data>
@@ -44,14 +52,6 @@
     <edge source="Hypertension" target="Edema">
       <data key="d2">CAUSES</data>
       <data key="d3">28</data>
-    </edge>
-    <edge source="Serotonin" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">14</data>
-    </edge>
-    <edge source="Serotonin" target="Edema">
-      <data key="d2">CAUSES</data>
-      <data key="d3">142</data>
     </edge>
   </graph>
 </graphml>

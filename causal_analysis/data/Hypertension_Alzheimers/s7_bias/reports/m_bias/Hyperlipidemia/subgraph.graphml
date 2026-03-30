@@ -9,12 +9,12 @@
       <data key="d0">C0521974</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Hyperlipidemia">
-      <data key="d0">C0020473</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Diet">
       <data key="d0">C0012155</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Hyperlipidemia">
+      <data key="d0">C0020473</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">

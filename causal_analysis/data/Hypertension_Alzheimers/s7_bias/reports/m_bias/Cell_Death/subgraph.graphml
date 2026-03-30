@@ -5,8 +5,8 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Cell_Death">
-      <data key="d0">C0007587</data>
+    <node id="Ethanol">
+      <data key="d0">C0001962</data>
       <data key="d1">regular</data>
     </node>
     <node id="APP_gene">
@@ -21,10 +21,18 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Ethanol">
-      <data key="d0">C0001962</data>
+    <node id="Cell_Death">
+      <data key="d0">C0007587</data>
       <data key="d1">regular</data>
     </node>
+    <edge source="Ethanol" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">78</data>
+    </edge>
+    <edge source="Ethanol" target="Cell_Death">
+      <data key="d2">CAUSES</data>
+      <data key="d3">154</data>
+    </edge>
     <edge source="APP_gene" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">240</data>
@@ -36,14 +44,6 @@
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
-    </edge>
-    <edge source="Ethanol" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">78</data>
-    </edge>
-    <edge source="Ethanol" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">154</data>
     </edge>
   </graph>
 </graphml>

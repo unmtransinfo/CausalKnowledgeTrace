@@ -5,10 +5,6 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Agent">
-      <data key="d0">C0450442</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Reactive_Oxygen_Species">
       <data key="d0">C0162772</data>
       <data key="d1">regular</data>
@@ -17,8 +13,8 @@
       <data key="d0">C0023810</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Toxic_effect">
-      <data key="d0">C0600688</data>
+    <node id="Agent">
+      <data key="d0">C0450442</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">
@@ -29,18 +25,10 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <edge source="Agent" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">21</data>
-    </edge>
-    <edge source="Agent" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">31</data>
-    </edge>
-    <edge source="Agent" target="Toxic_effect">
-      <data key="d2">CAUSES</data>
-      <data key="d3">254</data>
-    </edge>
+    <node id="Toxic_effect">
+      <data key="d0">C0600688</data>
+      <data key="d1">regular</data>
+    </node>
     <edge source="Reactive_Oxygen_Species" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">20</data>
@@ -65,6 +53,22 @@
       <data key="d2">CAUSES</data>
       <data key="d3">147</data>
     </edge>
+    <edge source="Agent" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">21</data>
+    </edge>
+    <edge source="Agent" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">31</data>
+    </edge>
+    <edge source="Agent" target="Toxic_effect">
+      <data key="d2">CAUSES</data>
+      <data key="d3">254</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
     <edge source="Toxic_effect" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">49</data>
@@ -72,10 +76,6 @@
     <edge source="Toxic_effect" target="Hypertension">
       <data key="d2">CAUSES</data>
       <data key="d3">14</data>
-    </edge>
-    <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
     </edge>
   </graph>
 </graphml>

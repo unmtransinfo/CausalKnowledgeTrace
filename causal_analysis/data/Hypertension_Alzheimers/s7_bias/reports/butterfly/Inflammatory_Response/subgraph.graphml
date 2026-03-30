@@ -9,12 +9,12 @@
       <data key="d0">C0023810</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Injury">
-      <data key="d0">C0175677</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Inflammatory_Response">
       <data key="d0">C1155266</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Injury">
+      <data key="d0">C0175677</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">
@@ -41,6 +41,14 @@
       <data key="d2">CAUSES</data>
       <data key="d3">1616</data>
     </edge>
+    <edge source="Inflammatory_Response" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">28</data>
+    </edge>
+    <edge source="Inflammatory_Response" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
     <edge source="Injury" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">19</data>
@@ -52,14 +60,6 @@
     <edge source="Injury" target="Inflammatory_Response">
       <data key="d2">CAUSES</data>
       <data key="d3">164</data>
-    </edge>
-    <edge source="Inflammatory_Response" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">28</data>
-    </edge>
-    <edge source="Inflammatory_Response" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
     </edge>
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>

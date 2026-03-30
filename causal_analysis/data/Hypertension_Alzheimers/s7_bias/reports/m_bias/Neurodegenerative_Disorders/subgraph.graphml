@@ -9,8 +9,8 @@
       <data key="d0">C0524851</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Mutation">
-      <data key="d0">C0026882</data>
+    <node id="Oxidative_Stress">
+      <data key="d0">C0242606</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">
@@ -21,33 +21,13 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Oxidative_Stress">
-      <data key="d0">C0242606</data>
+    <node id="Mutation">
+      <data key="d0">C0026882</data>
       <data key="d1">regular</data>
     </node>
     <edge source="Neurodegenerative_Disorders" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">35</data>
-    </edge>
-    <edge source="Mutation" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">188</data>
-    </edge>
-    <edge source="Mutation" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">82</data>
-    </edge>
-    <edge source="Mutation" target="Neurodegenerative_Disorders">
-      <data key="d2">CAUSES</data>
-      <data key="d3">444</data>
-    </edge>
-    <edge source="Alzheimers" target="Neurodegenerative_Disorders">
-      <data key="d2">CAUSES</data>
-      <data key="d3">29</data>
-    </edge>
-    <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
     </edge>
     <edge source="Oxidative_Stress" target="Alzheimers">
       <data key="d2">CAUSES</data>
@@ -60,6 +40,26 @@
     <edge source="Oxidative_Stress" target="Neurodegenerative_Disorders">
       <data key="d2">CAUSES</data>
       <data key="d3">150</data>
+    </edge>
+    <edge source="Alzheimers" target="Neurodegenerative_Disorders">
+      <data key="d2">CAUSES</data>
+      <data key="d3">29</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Mutation" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">188</data>
+    </edge>
+    <edge source="Mutation" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">82</data>
+    </edge>
+    <edge source="Mutation" target="Neurodegenerative_Disorders">
+      <data key="d2">CAUSES</data>
+      <data key="d3">444</data>
     </edge>
   </graph>
 </graphml>

@@ -9,25 +9,33 @@
       <data key="d0">C0027746</data>
       <data key="d1">regular</data>
     </node>
-    <node id="MAPT">
-      <data key="d0">4137</data>
+    <node id="Ethanol">
+      <data key="d0">C0001962</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">
       <data key="d0">C0002395</data>
       <data key="d1">outcome</data>
     </node>
+    <node id="MAPT">
+      <data key="d0">4137</data>
+      <data key="d1">regular</data>
+    </node>
     <node id="Hypertension">
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Ethanol">
-      <data key="d0">C0001962</data>
-      <data key="d1">regular</data>
-    </node>
     <edge source="Nerve_Degeneration" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">83</data>
+    </edge>
+    <edge source="Ethanol" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">78</data>
+    </edge>
+    <edge source="Ethanol" target="Nerve_Degeneration">
+      <data key="d2">CAUSES</data>
+      <data key="d3">113</data>
     </edge>
     <edge source="MAPT" target="Alzheimers">
       <data key="d2">CAUSES</data>
@@ -40,14 +48,6 @@
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
-    </edge>
-    <edge source="Ethanol" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">78</data>
-    </edge>
-    <edge source="Ethanol" target="Nerve_Degeneration">
-      <data key="d2">CAUSES</data>
-      <data key="d3">113</data>
     </edge>
   </graph>
 </graphml>

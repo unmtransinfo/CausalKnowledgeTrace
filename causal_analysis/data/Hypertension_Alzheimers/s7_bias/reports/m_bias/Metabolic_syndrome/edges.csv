@@ -1,11 +1,11 @@
 from,to
-Obesity,Alzheimers
-Obesity,Hypertension
-Obesity,Metabolic_syndrome
-Metabolic_syndrome,Hypertension
 Diet,Alzheimers
 Diet,Hypertension
 Diet,Metabolic_syndrome
 Diet,Obesity
+Obesity,Alzheimers
+Obesity,Hypertension
+Obesity,Metabolic_syndrome
+Metabolic_syndrome,Hypertension
 Hypertension,Alzheimers
 Hypertension,Obesity

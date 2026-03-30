@@ -5,10 +5,6 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Diabetes">
-      <data key="d0">C0011847</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Diabetes_Mellitus">
       <data key="d0">C0011849</data>
       <data key="d1">regular</data>
@@ -25,18 +21,10 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <edge source="Diabetes" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">22</data>
-    </edge>
-    <edge source="Diabetes" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">43</data>
-    </edge>
-    <edge source="Diabetes" target="Kidney_Failure_Chronic">
-      <data key="d2">CAUSES</data>
-      <data key="d3">187</data>
-    </edge>
+    <node id="Diabetes">
+      <data key="d0">C0011847</data>
+      <data key="d1">regular</data>
+    </node>
     <edge source="Diabetes_Mellitus" target="Hypertension">
       <data key="d2">CAUSES</data>
       <data key="d3">15</data>
@@ -64,6 +52,18 @@
     <edge source="Hypertension" target="Kidney_Failure_Chronic">
       <data key="d2">CAUSES</data>
       <data key="d3">127</data>
+    </edge>
+    <edge source="Diabetes" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">22</data>
+    </edge>
+    <edge source="Diabetes" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">43</data>
+    </edge>
+    <edge source="Diabetes" target="Kidney_Failure_Chronic">
+      <data key="d2">CAUSES</data>
+      <data key="d3">187</data>
     </edge>
   </graph>
 </graphml>

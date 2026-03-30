@@ -2,6 +2,6 @@ from,to
 Reactive_Oxygen_Species,Alzheimers
 Reactive_Oxygen_Species,Hypertension
 Reactive_Oxygen_Species,Lesion
-Hypertension,Alzheimers
 Ethanol,Hypertension
 Ethanol,Lesion
+Hypertension,Alzheimers

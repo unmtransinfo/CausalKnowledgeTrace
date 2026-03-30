@@ -17,13 +17,13 @@
       <data key="d0">C0002395</data>
       <data key="d1">outcome</data>
     </node>
-    <node id="Infection">
-      <data key="d0">C0021311</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Hypertension">
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
+    </node>
+    <node id="Infection">
+      <data key="d0">C0021311</data>
+      <data key="d1">regular</data>
     </node>
     <edge source="Agent" target="Alzheimers">
       <data key="d2">CAUSES</data>

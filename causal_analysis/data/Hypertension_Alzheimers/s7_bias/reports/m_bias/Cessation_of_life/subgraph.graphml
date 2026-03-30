@@ -5,12 +5,12 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="APP_gene">
-      <data key="d0">C1364818</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Cessation_of_life">
       <data key="d0">C0011065</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="APP_gene">
+      <data key="d0">C1364818</data>
       <data key="d1">regular</data>
     </node>
     <node id="Atherosclerosis">

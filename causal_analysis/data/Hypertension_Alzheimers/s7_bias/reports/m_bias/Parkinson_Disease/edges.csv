@@ -1,11 +1,11 @@
 from,to
-Parkinson_Disease,Alzheimers
-Mutation,Alzheimers
-Mutation,Hypertension
-Mutation,Parkinson_Disease
 Degenerative_abnormality,Alzheimers
 Degenerative_abnormality,Hypertension
 Degenerative_abnormality,Parkinson_Disease
+Parkinson_Disease,Alzheimers
 Alzheimers,Degenerative_abnormality
 Alzheimers,Parkinson_Disease
 Hypertension,Alzheimers
+Mutation,Alzheimers
+Mutation,Hypertension
+Mutation,Parkinson_Disease

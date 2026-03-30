@@ -1,8 +1,8 @@
 from,to
+Serotonin,Hypertension
+Serotonin,Edema
 Injection_procedure,Alzheimers
 Injection_procedure,Hypertension
 Injection_procedure,Edema
 Hypertension,Alzheimers
 Hypertension,Edema
-Serotonin,Hypertension
-Serotonin,Edema

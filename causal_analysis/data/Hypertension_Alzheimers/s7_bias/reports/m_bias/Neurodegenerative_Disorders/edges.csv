@@ -1,10 +1,10 @@
 from,to
 Neurodegenerative_Disorders,Alzheimers
-Mutation,Alzheimers
-Mutation,Hypertension
-Mutation,Neurodegenerative_Disorders
-Alzheimers,Neurodegenerative_Disorders
-Hypertension,Alzheimers
 Oxidative_Stress,Alzheimers
 Oxidative_Stress,Hypertension
 Oxidative_Stress,Neurodegenerative_Disorders
+Alzheimers,Neurodegenerative_Disorders
+Hypertension,Alzheimers
+Mutation,Alzheimers
+Mutation,Hypertension
+Mutation,Neurodegenerative_Disorders

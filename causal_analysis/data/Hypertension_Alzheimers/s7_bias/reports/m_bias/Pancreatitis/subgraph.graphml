@@ -5,16 +5,16 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Pancreatitis">
-      <data key="d0">C0030305</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Arginine">
       <data key="d0">C0003765</data>
       <data key="d1">regular</data>
     </node>
     <node id="Injection_procedure">
       <data key="d0">C1533685</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Pancreatitis">
+      <data key="d0">C0030305</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">

@@ -5,16 +5,12 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Diabetes">
-      <data key="d0">C0011847</data>
+    <node id="Diet">
+      <data key="d0">C0012155</data>
       <data key="d1">regular</data>
     </node>
     <node id="Injection_procedure">
       <data key="d0">C1533685</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Diet">
-      <data key="d0">C0012155</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">
@@ -25,13 +21,21 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <edge source="Diabetes" target="Alzheimers">
+    <node id="Diabetes">
+      <data key="d0">C0011847</data>
+      <data key="d1">regular</data>
+    </node>
+    <edge source="Diet" target="Alzheimers">
       <data key="d2">CAUSES</data>
-      <data key="d3">22</data>
+      <data key="d3">18</data>
     </edge>
-    <edge source="Diabetes" target="Hypertension">
+    <edge source="Diet" target="Hypertension">
       <data key="d2">CAUSES</data>
-      <data key="d3">43</data>
+      <data key="d3">263</data>
+    </edge>
+    <edge source="Diet" target="Diabetes">
+      <data key="d2">CAUSES</data>
+      <data key="d3">193</data>
     </edge>
     <edge source="Injection_procedure" target="Alzheimers">
       <data key="d2">CAUSES</data>
@@ -45,18 +49,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">322</data>
     </edge>
-    <edge source="Diet" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">18</data>
-    </edge>
-    <edge source="Diet" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">263</data>
-    </edge>
-    <edge source="Diet" target="Diabetes">
-      <data key="d2">CAUSES</data>
-      <data key="d3">193</data>
-    </edge>
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
@@ -64,6 +56,14 @@
     <edge source="Hypertension" target="Diabetes">
       <data key="d2">CAUSES</data>
       <data key="d3">21</data>
+    </edge>
+    <edge source="Diabetes" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">22</data>
+    </edge>
+    <edge source="Diabetes" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">43</data>
     </edge>
   </graph>
 </graphml>

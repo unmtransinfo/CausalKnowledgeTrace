@@ -5,6 +5,6 @@ Agent,Injury
 Agent,Toxic_effect
 Injury,Alzheimers
 Injury,Hypertension
+Hypertension,Alzheimers
 Toxic_effect,Alzheimers
 Toxic_effect,Hypertension
-Hypertension,Alzheimers

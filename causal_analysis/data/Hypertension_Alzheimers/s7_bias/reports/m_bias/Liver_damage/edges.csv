@@ -2,6 +2,6 @@ from,to
 Lipopolysaccharides,Alzheimers
 Lipopolysaccharides,Hypertension
 Lipopolysaccharides,Liver_damage
-Hypertension,Alzheimers
 Ethanol,Hypertension
 Ethanol,Liver_damage
+Hypertension,Alzheimers

@@ -13,8 +13,8 @@
       <data key="d0">C0175677</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Toxic_effect">
-      <data key="d0">C0600688</data>
+    <node id="Oxidative_Stress">
+      <data key="d0">C0242606</data>
       <data key="d1">regular</data>
     </node>
     <node id="Alzheimers">
@@ -25,8 +25,8 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Oxidative_Stress">
-      <data key="d0">C0242606</data>
+    <node id="Toxic_effect">
+      <data key="d0">C0600688</data>
       <data key="d1">regular</data>
     </node>
     <edge source="Reactive_Oxygen_Species" target="Alzheimers">
@@ -57,18 +57,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">35</data>
     </edge>
-    <edge source="Toxic_effect" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">49</data>
-    </edge>
-    <edge source="Toxic_effect" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">14</data>
-    </edge>
-    <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
-    </edge>
     <edge source="Oxidative_Stress" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">232</data>
@@ -76,6 +64,18 @@
     <edge source="Oxidative_Stress" target="Hypertension">
       <data key="d2">CAUSES</data>
       <data key="d3">96</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Toxic_effect" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">49</data>
+    </edge>
+    <edge source="Toxic_effect" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">14</data>
     </edge>
   </graph>
 </graphml>

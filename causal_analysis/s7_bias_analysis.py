@@ -810,8 +810,7 @@ def _save_mbias_reports(
         p2 = detail.get("p2_outcome_side", "?")
         plot_title = (
             f"{node} [M-BIAS COLLIDER]\n"
-            f"{exposure} ← {p1} → {node} ← {p2} → {outcome}\n"
-            f"WARNING: DO NOT condition on this node"
+            f"{exposure} ← {p1} → {node} ← {p2} → {outcome}"
         )
 
         plot_file = node_dir / f"MBIAS_{safe_name}.png"

@@ -1649,7 +1649,7 @@
       <data key="d0">C0003972</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Carrageenan">
+    <node id="carrageenan">
       <data key="d0">C0007289</data>
       <data key="d1">regular</data>
     </node>
@@ -2761,7 +2761,7 @@
       <data key="d0">C0011854</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Diabetic">
+    <node id="diabetic">
       <data key="d0">C0241863</data>
       <data key="d1">regular</data>
     </node>
@@ -2911,562 +2911,6 @@
     </node>
     <node id="Zymosan">
       <data key="d0">C0043552</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Carcinogenesis">
-      <data key="d0">C0596263</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Mammary_Neoplasms">
-      <data key="d0">C1458155</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Acetic_Acid">
-      <data key="d0">C0000983</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Acinetobacter_baumannii">
-      <data key="d0">C0314787</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Adenosine">
-      <data key="d0">C0001443</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Age_related_macular_degeneration">
-      <data key="d0">C0242383</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Amphetamine">
-      <data key="d0">C0002658</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Aneurysm_Ruptured">
-      <data key="d0">C0162869</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Antibodies">
-      <data key="d0">C0003241</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Antibodies_Anti_Idiotypic">
-      <data key="d0">C0003242</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Antineoplastic_Agents">
-      <data key="d0">C0003392</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="apoptogenic_cytochrome_c_release_channel_activity">
-      <data key="d0">C1153488</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Autophagy">
-      <data key="d0">C0004391</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cell_Cycle_Arrest">
-      <data key="d0">C1155873</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="arsenic_trioxide">
-      <data key="d0">C0052416</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Urinary_tract_infection">
-      <data key="d0">C0042029</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="BAX_gene_BAX">
-      <data key="d0">C0812198</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Bicuculline">
-      <data key="d0">C0005372</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Pulmonary_Fibrosis">
-      <data key="d0">C0034069</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="bortezomib">
-      <data key="d0">C1176309</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Caerulein">
-      <data key="d0">C0006639</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Camptothecin">
-      <data key="d0">C0006812</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Candida_albicans">
-      <data key="d0">C0006837</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Candida_species">
-      <data key="d0">C1299082</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Hyperalgesia">
-      <data key="d0">C0020429</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Pleurisy">
-      <data key="d0">C0032231</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="caspase">
-      <data key="d0">C0010656</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="caspase_3">
-      <data key="d0">C0291573</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="caspase_activation">
-      <data key="d0">C1159825</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Castor_Oil">
-      <data key="d0">C0007343</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cataract">
-      <data key="d0">C0086543</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cell_Cycle">
-      <data key="d0">C0007586</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cell_Cycle_Progression">
-      <data key="d0">C1516334</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cell_Growth">
-      <data key="d0">C0007595</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cell_Proliferation">
-      <data key="d0">C0596290</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cell_Survival">
-      <data key="d0">C0007620</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Chemotherapeutic_agent">
-      <data key="d0">C0729502</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Chlamydia_trachomatis">
-      <data key="d0">C0008151</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Pathological_accumulation_of_air_in_tissues">
-      <data key="d0">C0013990</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Toxic_nephropathy">
-      <data key="d0">C0595916</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Ototoxicity">
-      <data key="d0">C0235280</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Vomiting">
-      <data key="d0">C0042963</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Collagen">
-      <data key="d0">C0009325</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Constriction_injury">
-      <data key="d0">C0332680</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Curcumin">
-      <data key="d0">C0010467</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cycloheximide">
-      <data key="d0">C0010572</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cystitis">
-      <data key="d0">C0010692</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="CYTOCHROME_C">
-      <data key="d0">C0010749</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Colitis">
-      <data key="d0">C0009319</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Ulcerative_Colitis">
-      <data key="d0">C0009324</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Diabetic_Retinopathy">
-      <data key="d0">C0011884</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="DNA_Fragmentation">
-      <data key="d0">C0376669</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Cardiotoxicity">
-      <data key="d0">C0876994</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Uveitis">
-      <data key="d0">C0042164</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Enterobacteriaceae">
-      <data key="d0">C0014346</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="epigallocatechin_gallate">
-      <data key="d0">C0059438</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Escherichia_coli">
-      <data key="d0">C0014834</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Etoposide">
-      <data key="d0">C0015133</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="FAS">
-      <data key="d0">355</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Inflammatory_pain">
-      <data key="d0">C0234251</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="fungus">
-      <data key="d0">C0016832</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="G2_Phase">
-      <data key="d0">C0079396</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="gemcitabine">
-      <data key="d0">C0045093</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Gentamicins">
-      <data key="d0">C0017436</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="insulin_secretion">
-      <data key="d0">C1256369</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Gram_negative_bacillus">
-      <data key="d0">C0314752</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Gram_Negative_Bacteria">
-      <data key="d0">C0018150</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Gram_Positive_Bacteria">
-      <data key="d0">C0018154</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Chronic_gastritis_NOS">
-      <data key="d0">C0085695</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Gastritis">
-      <data key="d0">C0017152</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Malignant_neoplasm_of_stomach">
-      <data key="d0">C0024623</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Peptic_Ulcer">
-      <data key="d0">C0030920</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Primary_carcinoma_of_the_liver_cells">
-      <data key="d0">C0019204</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Chronic_liver_disease_NOS">
-      <data key="d0">C0341439</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Hepatitis_Chronic">
-      <data key="d0">C0019189</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Falls">
-      <data key="d0">C0085639</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="HIV">
-      <data key="d0">C0019682</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Human_Papillomavirus">
-      <data key="d0">C0021344</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Iron_deficiency">
-      <data key="d0">C0240066</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Kainate">
-      <data key="d0">C0205812</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Kainic_Acid">
-      <data key="d0">C0022471</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Klebsiella_pneumonia_bacterium">
-      <data key="d0">C0001699</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="sarcoma">
-      <data key="d0">C1261473</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Microorganism">
-      <data key="d0">C0445623</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Monoclonal_Antibodies">
-      <data key="d0">C0003250</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="MRSA_Methicillin_resistant_Staphylococcus_aureus_infection">
-      <data key="d0">C0343401</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Multidrug_resistant_bacteria">
-      <data key="d0">C4076168</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Mycobacterium_bovis">
-      <data key="d0">C0026917</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Mycoplasma_pneumoniae">
-      <data key="d0">C0026941</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Neisseria_meningitidis">
-      <data key="d0">C0027575</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Nerve_injury_NOS">
-      <data key="d0">C0161479</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="NF_kappa_B">
-      <data key="d0">C0079904</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Oestrogen_deficiency">
-      <data key="d0">C0853662</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Ovariectomy">
-      <data key="d0">C0029936</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="oxaliplatin">
-      <data key="d0">C0069717</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Retinal_Diseases">
-      <data key="d0">C0035309</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Paclitaxel">
-      <data key="d0">C0144576</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Parasites">
-      <data key="d0">C0030498</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Parathyroid_Adenoma">
-      <data key="d0">C0262587</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Osteolysis">
-      <data key="d0">C0029435</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="pentylenetetrazole">
-      <data key="d0">C0030903</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Phosphorylation">
-      <data key="d0">C0031715</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Pilocarpine">
-      <data key="d0">C0031923</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Plasmodium_falciparum">
-      <data key="d0">C0032150</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Plasmodium_vivax">
-      <data key="d0">C0032154</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Proteasome_inhibitor">
-      <data key="d0">C1443643</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Proto_Oncogene_Proteins_c_akt_AKT1">
-      <data key="d0">C0164786</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Pseudomonas_aeruginosa">
-      <data key="d0">C0033809</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Quercetin">
-      <data key="d0">C0034392</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Resistant_bacteria">
-      <data key="d0">C1444090</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Resistant_organism">
-      <data key="d0">C1444089</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Respiratory_syncytial_virus">
-      <data key="d0">C0035236</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="resveratrol">
-      <data key="d0">C0073096</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="ROS1">
-      <data key="d0">6098</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Puncture_procedure">
-      <data key="d0">C0034117</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Signal_Transduction">
-      <data key="d0">C0037083</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Signal_Transduction_Pathways">
-      <data key="d0">C0086982</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Staphylococcus_aureus">
-      <data key="d0">C0038172</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Staphylococcus_coagulase_negative">
-      <data key="d0">C0445625</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Staphylococcus_epidermidis">
-      <data key="d0">C0038174</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Staurosporine">
-      <data key="d0">C0075193</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="STN_gene_EEF1A2">
-      <data key="d0">C1420485</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Streptococcus_pneumoniae">
-      <data key="d0">C0038410</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="epithelial_to_mesenchymal_transition">
-      <data key="d0">C1523298</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Thrombin">
-      <data key="d0">C0040018</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="TNF_gene_TNF">
-      <data key="d0">C0812246</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="TNFRSF6_gene_FAS">
-      <data key="d0">C1367443</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="TP53_gene_TP53">
-      <data key="d0">C0079419</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Tretinoin">
-      <data key="d0">C0040845</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Tumor_Necrosis_Factor_alpha_TNF">
-      <data key="d0">C1456820</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Tumor_Necrosis_Factor_Ligand_Superfamily_Member_6_FAS">
-      <data key="d0">C0253023</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Tumor_Necrosis_Factors">
-      <data key="d0">C0041368</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Tunicamycin">
-      <data key="d0">C0041385</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Vaccination">
-      <data key="d0">C0042196</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Antibody_Formation">
-      <data key="d0">C0003261</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Autoimmune_thrombocytopenia">
-      <data key="d0">C0242584</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Immunity">
-      <data key="d0">C0020964</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Protection">
-      <data key="d0">C1545588</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="WDTC1">
-      <data key="d0">23038</data>
       <data key="d1">regular</data>
     </node>
     <edge source="20_hydroxy_5_8_11_14_eicosatetraenoic_acid" target="Hypertension">
@@ -6853,7 +6297,7 @@
       <data key="d2">CAUSES</data>
       <data key="d3">244</data>
     </edge>
-    <edge source="Streptozocin" target="Diabetic">
+    <edge source="Streptozocin" target="diabetic">
       <data key="d2">CAUSES</data>
       <data key="d3">9020</data>
     </edge>
@@ -7189,10 +6633,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">494</data>
     </edge>
-    <edge source="1_Methyl_4_phenyl_1_2_3_6_tetrahydropyridine" target="Parkinsonian_Disorders">
-      <data key="d2">CAUSES</data>
-      <data key="d3">280</data>
-    </edge>
     <edge source="2019_novel_coronavirus" target="COVID_19">
       <data key="d2">CAUSES</data>
       <data key="d3">5207</data>
@@ -7201,25 +6641,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">114</data>
     </edge>
-    <edge source="2019_novel_coronavirus" target="Communicable_Diseases">
-      <data key="d2">CAUSES</data>
-      <data key="d3">519</data>
-    </edge>
-    <edge source="2019_novel_coronavirus" target="Pneumonia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">250</data>
-    </edge>
     <edge source="9_10_Dimethyl_1_2_benzanthracene" target="Neoplasm">
       <data key="d2">CAUSES</data>
       <data key="d3">206</data>
-    </edge>
-    <edge source="9_10_Dimethyl_1_2_benzanthracene" target="Carcinogenesis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">238</data>
-    </edge>
-    <edge source="9_10_Dimethyl_1_2_benzanthracene" target="Mammary_Neoplasms">
-      <data key="d2">CAUSES</data>
-      <data key="d3">433</data>
     </edge>
     <edge source="Acetaminophen" target="Injury">
       <data key="d2">CAUSES</data>
@@ -7229,25 +6653,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">167</data>
     </edge>
-    <edge source="Acetaminophen" target="Hepatotoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">955</data>
-    </edge>
-    <edge source="Acetaminophen" target="Liver_damage">
-      <data key="d2">CAUSES</data>
-      <data key="d3">316</data>
-    </edge>
-    <edge source="Acetaminophen" target="Liver_Failure_Acute">
-      <data key="d2">CAUSES</data>
-      <data key="d3">307</data>
-    </edge>
     <edge source="Acetylcholine" target="Pathological_Dilatation">
       <data key="d2">CAUSES</data>
       <data key="d3">205</data>
-    </edge>
-    <edge source="Acetylcholine" target="Vasodilation">
-      <data key="d2">CAUSES</data>
-      <data key="d3">785</data>
     </edge>
     <edge source="Acids" target="Injury">
       <data key="d2">CAUSES</data>
@@ -7289,10 +6697,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">255</data>
     </edge>
-    <edge source="Adriamycin" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">237</data>
-    </edge>
     <edge source="Infection" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
       <data key="d3">1506</data>
@@ -7309,21 +6713,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">178</data>
     </edge>
-    <edge source="Infection" target="Immune_response">
-      <data key="d2">CAUSES</data>
-      <data key="d3">255</data>
-    </edge>
-    <edge source="Infection" target="Septicemia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">255</data>
-    </edge>
     <edge source="Allergens" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">510</data>
-    </edge>
-    <edge source="Allergens" target="Asthma">
-      <data key="d2">CAUSES</data>
-      <data key="d3">574</data>
     </edge>
     <edge source="Alloxan" target="Diabetes">
       <data key="d2">CAUSES</data>
@@ -7337,10 +6729,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">106</data>
     </edge>
-    <edge source="Alloxan" target="Diabetic">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1017</data>
-    </edge>
     <edge source="alpha_Synuclein" target="Nerve_Degeneration">
       <data key="d2">CAUSES</data>
       <data key="d3">150</data>
@@ -7348,18 +6736,6 @@
     <edge source="alpha_Synuclein" target="Parkinson_Disease">
       <data key="d2">CAUSES</data>
       <data key="d3">430</data>
-    </edge>
-    <edge source="Apoptosis" target="Autophagy">
-      <data key="d2">CAUSES</data>
-      <data key="d3">210</data>
-    </edge>
-    <edge source="Apoptosis" target="Cell_Cycle_Arrest">
-      <data key="d2">CAUSES</data>
-      <data key="d3">269</data>
-    </edge>
-    <edge source="Apoptosis" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">950</data>
     </edge>
     <edge source="Amyotrophic_Lateral_Sclerosis" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -7380,14 +6756,6 @@
     <edge source="Anti_Inflammatory_Agents_Non_Steroidal" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">319</data>
-    </edge>
-    <edge source="Anti_Inflammatory_Agents_Non_Steroidal" target="Ulcer">
-      <data key="d2">CAUSES</data>
-      <data key="d3">305</data>
-    </edge>
-    <edge source="Cell_Death" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">386</data>
     </edge>
     <edge source="Arsenic" target="Oxidative_Stress">
       <data key="d2">CAUSES</data>
@@ -7429,26 +6797,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">142</data>
     </edge>
-    <edge source="Bacteria" target="Communicable_Diseases">
-      <data key="d2">CAUSES</data>
-      <data key="d3">354</data>
-    </edge>
-    <edge source="Bacteria" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1469</data>
-    </edge>
-    <edge source="Bacteria" target="Pneumonia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">246</data>
-    </edge>
-    <edge source="Bacteria" target="Septicemia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">219</data>
-    </edge>
-    <edge source="Bacteria" target="Urinary_tract_infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">266</data>
-    </edge>
     <edge source="Bacterial_Infections" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
       <data key="d3">157</data>
@@ -7468,10 +6816,6 @@
     <edge source="Bleomycin" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">525</data>
-    </edge>
-    <edge source="Bleomycin" target="Pulmonary_Fibrosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1588</data>
     </edge>
     <edge source="Bradykinin" target="Edema">
       <data key="d2">CAUSES</data>
@@ -7493,18 +6837,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">500</data>
     </edge>
-    <edge source="Carbon_Tetrachloride" target="Fibrosis_Liver">
-      <data key="d2">CAUSES</data>
-      <data key="d3">578</data>
-    </edge>
-    <edge source="Carbon_Tetrachloride" target="Hepatotoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">342</data>
-    </edge>
-    <edge source="Carbon_Tetrachloride" target="Liver_damage">
-      <data key="d2">CAUSES</data>
-      <data key="d3">308</data>
-    </edge>
     <edge source="Carbon_tetrachloride_homeopathic_preparation" target="Fibrosis">
       <data key="d2">CAUSES</data>
       <data key="d3">113</data>
@@ -7516,10 +6848,6 @@
     <edge source="Carcinogens" target="Neoplasm">
       <data key="d2">CAUSES</data>
       <data key="d3">537</data>
-    </edge>
-    <edge source="Carcinogens" target="Malignant_Neoplasms">
-      <data key="d2">CAUSES</data>
-      <data key="d3">298</data>
     </edge>
     <edge source="Cardiomyopathies_Primary" target="Heart_failure">
       <data key="d2">CAUSES</data>
@@ -7545,21 +6873,13 @@
       <data key="d2">CAUSES</data>
       <data key="d3">115</data>
     </edge>
-    <edge source="Carrageenan" target="Edema">
+    <edge source="carrageenan" target="Edema">
       <data key="d2">CAUSES</data>
       <data key="d3">2729</data>
     </edge>
-    <edge source="Carrageenan" target="Inflammation">
+    <edge source="carrageenan" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">742</data>
-    </edge>
-    <edge source="Carrageenan" target="Hyperalgesia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">266</data>
-    </edge>
-    <edge source="Carrageenan" target="Pleurisy">
-      <data key="d2">CAUSES</data>
-      <data key="d3">335</data>
     </edge>
     <edge source="CD69_protein_human_CD69" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -7601,18 +6921,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">147</data>
     </edge>
-    <edge source="Chemokine_C_C_Motif_Ligand_4_CCL4" target="Fibrosis_Liver">
-      <data key="d2">CAUSES</data>
-      <data key="d3">627</data>
-    </edge>
-    <edge source="Chemokine_C_C_Motif_Ligand_4_CCL4" target="Hepatotoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">409</data>
-    </edge>
-    <edge source="Chemokine_C_C_Motif_Ligand_4_CCL4" target="Liver_damage">
-      <data key="d2">CAUSES</data>
-      <data key="d3">323</data>
-    </edge>
     <edge source="Chlorpyrifos" target="Toxic_effect">
       <data key="d2">CAUSES</data>
       <data key="d3">100</data>
@@ -7649,10 +6957,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">135</data>
     </edge>
-    <edge source="Cigarette_smoke" target="Pathological_accumulation_of_air_in_tissues">
-      <data key="d2">CAUSES</data>
-      <data key="d3">201</data>
-    </edge>
     <edge source="Cisplatin" target="Kidney_Failure_Acute">
       <data key="d2">CAUSES</data>
       <data key="d3">417</data>
@@ -7669,38 +6973,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">156</data>
     </edge>
-    <edge source="Cisplatin" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1699</data>
-    </edge>
-    <edge source="Cisplatin" target="Toxic_nephropathy">
-      <data key="d2">CAUSES</data>
-      <data key="d3">397</data>
-    </edge>
-    <edge source="Cisplatin" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">406</data>
-    </edge>
-    <edge source="Cisplatin" target="cytotoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">329</data>
-    </edge>
-    <edge source="Cisplatin" target="DNA_Damage">
-      <data key="d2">CAUSES</data>
-      <data key="d3">255</data>
-    </edge>
-    <edge source="Cisplatin" target="NEPHROTOXICITY">
-      <data key="d2">CAUSES</data>
-      <data key="d3">966</data>
-    </edge>
-    <edge source="Cisplatin" target="Ototoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">301</data>
-    </edge>
-    <edge source="Cisplatin" target="Vomiting">
-      <data key="d2">CAUSES</data>
-      <data key="d3">539</data>
-    </edge>
     <edge source="COLLAGENASE" target="Cerebral_hemisphere_hemorrhage">
       <data key="d2">CAUSES</data>
       <data key="d3">201</data>
@@ -7712,10 +6984,6 @@
     <edge source="Concanavalin_A" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">234</data>
-    </edge>
-    <edge source="Concanavalin_A" target="Hepatitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">343</data>
     </edge>
     <edge source="Contrast_Media" target="Kidney_Diseases">
       <data key="d2">CAUSES</data>
@@ -7761,10 +7029,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">207</data>
     </edge>
-    <edge source="Cyclophosphamide" target="Cystitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">266</data>
-    </edge>
     <edge source="Rheumatoid_Arthritis" target="Disability_NOS">
       <data key="d2">CAUSES</data>
       <data key="d3">131</data>
@@ -7781,10 +7045,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">478</data>
     </edge>
-    <edge source="Degenerative_polyarthritis" target="Pain">
-      <data key="d2">CAUSES</data>
-      <data key="d3">575</data>
-    </edge>
     <edge source="Dextran" target="Edema">
       <data key="d2">CAUSES</data>
       <data key="d3">152</data>
@@ -7793,25 +7053,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">101</data>
     </edge>
-    <edge source="Dextran_Sulfate" target="Colitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">914</data>
-    </edge>
     <edge source="Dextran_Sulfate_Sodium" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">214</data>
-    </edge>
-    <edge source="Dextran_Sulfate_Sodium" target="Colitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">3266</data>
-    </edge>
-    <edge source="Dextran_Sulfate_Sodium" target="Mouse_Model">
-      <data key="d2">CAUSES</data>
-      <data key="d3">339</data>
-    </edge>
-    <edge source="Dextran_Sulfate_Sodium" target="Ulcerative_Colitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">680</data>
     </edge>
     <edge source="Diarrhea" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -7820,10 +7064,6 @@
     <edge source="Diarrheal_disorder" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
       <data key="d3">105</data>
-    </edge>
-    <edge source="Non_alcoholic_Fatty_Liver_Disease" target="Chronic_liver_disease_NOS">
-      <data key="d2">CAUSES</data>
-      <data key="d3">414</data>
     </edge>
     <edge source="Disease_Progression" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -7849,26 +7089,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">161</data>
     </edge>
-    <edge source="Doxorubicin" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">985</data>
-    </edge>
-    <edge source="Doxorubicin" target="Cardiotoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1009</data>
-    </edge>
-    <edge source="Doxorubicin" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">245</data>
-    </edge>
-    <edge source="Doxorubicin" target="cytotoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">246</data>
-    </edge>
-    <edge source="Cytokinesis_of_the_fertilized_ovum" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">292</data>
-    </edge>
     <edge source="Endotoxins" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">408</data>
@@ -7881,21 +7101,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">451</data>
     </edge>
-    <edge source="Endotoxins" target="Acute_Lung_Injury">
-      <data key="d2">CAUSES</data>
-      <data key="d3">285</data>
-    </edge>
-    <edge source="Endotoxins" target="Uveitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">380</data>
-    </edge>
     <edge source="Epilepsy" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
       <data key="d3">175</data>
-    </edge>
-    <edge source="Epilepsy" target="Seizures">
-      <data key="d2">CAUSES</data>
-      <data key="d3">212</data>
     </edge>
     <edge source="Lesion" target="Degenerative_abnormality">
       <data key="d2">CAUSES</data>
@@ -7933,29 +7141,13 @@
       <data key="d2">CAUSES</data>
       <data key="d3">112</data>
     </edge>
-    <edge source="Fluorouracil" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">393</data>
-    </edge>
     <edge source="Formalin" target="Edema">
       <data key="d2">CAUSES</data>
       <data key="d3">132</data>
     </edge>
-    <edge source="Formalin" target="Pain">
-      <data key="d2">CAUSES</data>
-      <data key="d3">418</data>
-    </edge>
     <edge source="Freund_s_Adjuvant" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">350</data>
-    </edge>
-    <edge source="Freund_s_Adjuvant" target="Arthritis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">286</data>
-    </edge>
-    <edge source="Freund_s_Adjuvant" target="Inflammatory_pain">
-      <data key="d2">CAUSES</data>
-      <data key="d3">239</data>
     </edge>
     <edge source="Galactosamine" target="Injury">
       <data key="d2">CAUSES</data>
@@ -7981,14 +7173,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">321</data>
     </edge>
-    <edge source="Glucose" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">648</data>
-    </edge>
-    <edge source="Glucose" target="insulin_secretion">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1413</data>
-    </edge>
     <edge source="glucose_high" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">113</data>
@@ -8009,14 +7193,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">220</data>
     </edge>
-    <edge source="Glutamate" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">399</data>
-    </edge>
-    <edge source="Glutamate" target="depolarization">
-      <data key="d2">CAUSES</data>
-      <data key="d3">206</data>
-    </edge>
     <edge source="Glycerol" target="Kidney_Failure_Acute">
       <data key="d2">CAUSES</data>
       <data key="d3">234</data>
@@ -8032,22 +7208,6 @@
     <edge source="Helicobacter_pylori" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">202</data>
-    </edge>
-    <edge source="Helicobacter_pylori" target="Chronic_gastritis_NOS">
-      <data key="d2">CAUSES</data>
-      <data key="d3">358</data>
-    </edge>
-    <edge source="Helicobacter_pylori" target="Gastritis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">625</data>
-    </edge>
-    <edge source="Helicobacter_pylori" target="Malignant_neoplasm_of_stomach">
-      <data key="d2">CAUSES</data>
-      <data key="d3">536</data>
-    </edge>
-    <edge source="Helicobacter_pylori" target="Peptic_Ulcer">
-      <data key="d2">CAUSES</data>
-      <data key="d3">498</data>
     </edge>
     <edge source="Hemolytic_Uremic_Syndrome" target="Kidney_Failure_Acute">
       <data key="d2">CAUSES</data>
@@ -8065,10 +7225,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">114</data>
     </edge>
-    <edge source="Hepatitis_B_Virus" target="Primary_carcinoma_of_the_liver_cells">
-      <data key="d2">CAUSES</data>
-      <data key="d3">327</data>
-    </edge>
     <edge source="Hepatitis_C" target="Fibrosis">
       <data key="d2">CAUSES</data>
       <data key="d3">130</data>
@@ -8077,29 +7233,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">326</data>
     </edge>
-    <edge source="Hepatitis_C_virus" target="Chronic_liver_disease_NOS">
-      <data key="d2">CAUSES</data>
-      <data key="d3">399</data>
-    </edge>
-    <edge source="Hepatitis_C_virus" target="Hepatitis_Chronic">
-      <data key="d2">CAUSES</data>
-      <data key="d3">253</data>
-    </edge>
-    <edge source="Hepatitis_C_virus" target="Liver_diseases">
-      <data key="d2">CAUSES</data>
-      <data key="d3">350</data>
-    </edge>
-    <edge source="Hepatitis_C_virus" target="Primary_carcinoma_of_the_liver_cells">
-      <data key="d2">CAUSES</data>
-      <data key="d3">471</data>
-    </edge>
     <edge source="Histamine" target="Edema">
       <data key="d2">CAUSES</data>
       <data key="d3">154</data>
-    </edge>
-    <edge source="Histamine" target="Falls">
-      <data key="d2">CAUSES</data>
-      <data key="d3">239</data>
     </edge>
     <edge source="HIV_Infections" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -8116,26 +7252,6 @@
     <edge source="Hydrogen_Peroxide" target="Toxic_effect">
       <data key="d2">CAUSES</data>
       <data key="d3">195</data>
-    </edge>
-    <edge source="Hydrogen_Peroxide" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1279</data>
-    </edge>
-    <edge source="Hydrogen_Peroxide" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">747</data>
-    </edge>
-    <edge source="Hydrogen_Peroxide" target="cell_injury">
-      <data key="d2">CAUSES</data>
-      <data key="d3">345</data>
-    </edge>
-    <edge source="Hydrogen_Peroxide" target="cytotoxicity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">363</data>
-    </edge>
-    <edge source="Hydrogen_Peroxide" target="DNA_Damage">
-      <data key="d2">CAUSES</data>
-      <data key="d3">478</data>
     </edge>
     <edge source="Hyperparathyroidism" target="Hypercalcemia">
       <data key="d2">CAUSES</data>
@@ -8169,10 +7285,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">122</data>
     </edge>
-    <edge source="Interleukin_1_beta" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">208</data>
-    </edge>
     <edge source="Ionizing_radiation" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">103</data>
@@ -8184,10 +7296,6 @@
     <edge source="Ventricular_Fibrillation" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
       <data key="d3">105</data>
-    </edge>
-    <edge source="Ventricular_Fibrillation" target="Heart_Arrest">
-      <data key="d2">CAUSES</data>
-      <data key="d3">306</data>
     </edge>
     <edge source="Isoflurane" target="Lack_of_sensation">
       <data key="d2">CAUSES</data>
@@ -8232,18 +7340,6 @@
     <edge source="Septicemia" target="Myocardial_dysfunction">
       <data key="d2">CAUSES</data>
       <data key="d3">139</data>
-    </edge>
-    <edge source="Septicemia" target="Multiple_Organ_Failure">
-      <data key="d2">CAUSES</data>
-      <data key="d3">332</data>
-    </edge>
-    <edge source="Septicemia" target="Puncture_procedure">
-      <data key="d2">CAUSES</data>
-      <data key="d3">487</data>
-    </edge>
-    <edge source="Septicemia" target="Respiratory_Distress_Syndrome_Adult">
-      <data key="d2">CAUSES</data>
-      <data key="d3">216</data>
     </edge>
     <edge source="Septic_Shock" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -8301,10 +7397,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">210</data>
     </edge>
-    <edge source="Methylcholanthrene" target="sarcoma">
-      <data key="d2">CAUSES</data>
-      <data key="d3">330</data>
-    </edge>
     <edge source="Microplastics" target="Oxidative_Stress">
       <data key="d2">CAUSES</data>
       <data key="d3">107</data>
@@ -8321,10 +7413,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">187</data>
     </edge>
-    <edge source="Middle_Cerebral_Artery_Occlusion" target="Cerebral_Ischemia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">231</data>
-    </edge>
     <edge source="Migraine_Disorders" target="Disability_NOS">
       <data key="d2">CAUSES</data>
       <data key="d3">111</data>
@@ -8336,10 +7424,6 @@
     <edge source="Monocrotaline" target="Hypertension_Pulmonary">
       <data key="d2">CAUSES</data>
       <data key="d3">510</data>
-    </edge>
-    <edge source="Monocrotaline" target="Pulmonary_arterial_hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">313</data>
     </edge>
     <edge source="Multiple_Organ_Failure" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -8360,14 +7444,6 @@
     <edge source="Mycobacterium_tuberculosis" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
       <data key="d3">131</data>
-    </edge>
-    <edge source="Mycobacterium_tuberculosis" target="Communicable_Diseases">
-      <data key="d2">CAUSES</data>
-      <data key="d3">324</data>
-    </edge>
-    <edge source="Mycobacterium_tuberculosis" target="Tuberculosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1190</data>
     </edge>
     <edge source="Mycoses" target="Cessation_of_life">
       <data key="d2">CAUSES</data>
@@ -8393,10 +7469,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">233</data>
     </edge>
-    <edge source="Ovalbumin" target="Asthma">
-      <data key="d2">CAUSES</data>
-      <data key="d3">524</data>
-    </edge>
     <edge source="Oxidants" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">210</data>
@@ -8417,10 +7489,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">116</data>
     </edge>
-    <edge source="oxidized_low_density_lipoprotein" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">399</data>
-    </edge>
     <edge source="Oxidopamine" target="Degenerative_abnormality">
       <data key="d2">CAUSES</data>
       <data key="d3">140</data>
@@ -8433,17 +7501,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">130</data>
     </edge>
-    <edge source="Oxidopamine" target="Lesion">
-      <data key="d2">CAUSES</data>
-      <data key="d3">360</data>
-    </edge>
     <edge source="Oxygen" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">193</data>
-    </edge>
-    <edge source="Oxygen" target="Retinal_Diseases">
-      <data key="d2">CAUSES</data>
-      <data key="d3">906</data>
     </edge>
     <edge source="Oxytocin" target="Labor_Childbirth">
       <data key="d2">CAUSES</data>
@@ -8480,10 +7540,6 @@
     <edge source="particle" target="Oxidative_Stress">
       <data key="d2">CAUSES</data>
       <data key="d3">106</data>
-    </edge>
-    <edge source="particle" target="Osteolysis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">320</data>
     </edge>
     <edge source="Pesticides" target="Oxidative_Stress">
       <data key="d2">CAUSES</data>
@@ -8549,10 +7605,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">176</data>
     </edge>
-    <edge source="ROS1_wt_Allele_ROS1" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">234</data>
-    </edge>
     <edge source="rotenone" target="Parkinson_Disease">
       <data key="d2">CAUSES</data>
       <data key="d3">174</data>
@@ -8605,10 +7657,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">106</data>
     </edge>
-    <edge source="Glaucoma" target="Blind_Vision">
-      <data key="d2">CAUSES</data>
-      <data key="d3">917</data>
-    </edge>
     <edge source="Subarachnoid_Hemorrhage" target="Vasospasm">
       <data key="d2">CAUSES</data>
       <data key="d3">188</data>
@@ -8645,14 +7693,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">247</data>
     </edge>
-    <edge source="TGFB1_protein_human_TGFB1" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">296</data>
-    </edge>
-    <edge source="TGFB1_protein_human_TGFB1" target="epithelial_to_mesenchymal_transition">
-      <data key="d2">CAUSES</data>
-      <data key="d3">518</data>
-    </edge>
     <edge source="Thioacetamide" target="Fibrosis">
       <data key="d2">CAUSES</data>
       <data key="d3">129</data>
@@ -8660,10 +7700,6 @@
     <edge source="Thioacetamide" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">133</data>
-    </edge>
-    <edge source="Thioacetamide" target="Fibrosis_Liver">
-      <data key="d2">CAUSES</data>
-      <data key="d3">249</data>
     </edge>
     <edge source="Thiopental" target="Lack_of_sensation">
       <data key="d2">CAUSES</data>
@@ -8689,14 +7725,6 @@
       <data key="d2">CAUSES</data>
       <data key="d3">128</data>
     </edge>
-    <edge source="Down_Regulation" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">826</data>
-    </edge>
-    <edge source="Up_Regulation_Physiology" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">335</data>
-    </edge>
     <edge source="Toxin" target="Injury">
       <data key="d2">CAUSES</data>
       <data key="d3">136</data>
@@ -8704,14 +7732,6 @@
     <edge source="Transforming_Growth_Factor_beta" target="Fibrosis">
       <data key="d2">CAUSES</data>
       <data key="d3">205</data>
-    </edge>
-    <edge source="Transforming_Growth_Factor_beta" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">316</data>
-    </edge>
-    <edge source="Transforming_Growth_Factor_beta" target="epithelial_to_mesenchymal_transition">
-      <data key="d2">CAUSES</data>
-      <data key="d3">483</data>
     </edge>
     <edge source="Trisomy" target="Down_Syndrome">
       <data key="d2">CAUSES</data>
@@ -8728,22 +7748,6 @@
     <edge source="Vaccines" target="Thrombosis">
       <data key="d2">CAUSES</data>
       <data key="d3">104</data>
-    </edge>
-    <edge source="Vaccines" target="Antibody_Formation">
-      <data key="d2">CAUSES</data>
-      <data key="d3">459</data>
-    </edge>
-    <edge source="Vaccines" target="Autoimmune_thrombocytopenia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">373</data>
-    </edge>
-    <edge source="Vaccines" target="Immunity">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1448</data>
-    </edge>
-    <edge source="Vaccines" target="Protection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">302</data>
     </edge>
     <edge source="Venoms" target="Edema">
       <data key="d2">CAUSES</data>
@@ -8768,474 +7772,6 @@
     <edge source="Zymosan" target="Inflammation">
       <data key="d2">CAUSES</data>
       <data key="d3">172</data>
-    </edge>
-    <edge source="Acetic_Acid" target="Gastric_ulcer">
-      <data key="d2">CAUSES</data>
-      <data key="d3">280</data>
-    </edge>
-    <edge source="Acinetobacter_baumannii" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">257</data>
-    </edge>
-    <edge source="Adenosine" target="Vasodilation">
-      <data key="d2">CAUSES</data>
-      <data key="d3">204</data>
-    </edge>
-    <edge source="Age_related_macular_degeneration" target="Blind_Vision">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1041</data>
-    </edge>
-    <edge source="Amphetamine" target="Hyperactive_behavior">
-      <data key="d2">CAUSES</data>
-      <data key="d3">236</data>
-    </edge>
-    <edge source="Aneurysm_Ruptured" target="Subarachnoid_Hemorrhage">
-      <data key="d2">CAUSES</data>
-      <data key="d3">327</data>
-    </edge>
-    <edge source="Antibodies" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">277</data>
-    </edge>
-    <edge source="Antibodies_Anti_Idiotypic" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">294</data>
-    </edge>
-    <edge source="Antineoplastic_Agents" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">351</data>
-    </edge>
-    <edge source="apoptogenic_cytochrome_c_release_channel_activity" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">367</data>
-    </edge>
-    <edge source="Autophagy" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">481</data>
-    </edge>
-    <edge source="Autophagy" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">389</data>
-    </edge>
-    <edge source="Cell_Cycle_Arrest" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">717</data>
-    </edge>
-    <edge source="arsenic_trioxide" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">408</data>
-    </edge>
-    <edge source="BAX_gene_BAX" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">588</data>
-    </edge>
-    <edge source="Bicuculline" target="Seizures">
-      <data key="d2">CAUSES</data>
-      <data key="d3">275</data>
-    </edge>
-    <edge source="bortezomib" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">354</data>
-    </edge>
-    <edge source="Caerulein" target="Pancreatitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">822</data>
-    </edge>
-    <edge source="Camptothecin" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">318</data>
-    </edge>
-    <edge source="Candida_albicans" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">204</data>
-    </edge>
-    <edge source="Candida_species" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">206</data>
-    </edge>
-    <edge source="caspase" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">385</data>
-    </edge>
-    <edge source="caspase_3" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">612</data>
-    </edge>
-    <edge source="caspase_activation" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">315</data>
-    </edge>
-    <edge source="Castor_Oil" target="Diarrhea">
-      <data key="d2">CAUSES</data>
-      <data key="d3">335</data>
-    </edge>
-    <edge source="Cataract" target="Blind_Vision">
-      <data key="d2">CAUSES</data>
-      <data key="d3">588</data>
-    </edge>
-    <edge source="Cell_Cycle" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">838</data>
-    </edge>
-    <edge source="Cell_Cycle_Progression" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">277</data>
-    </edge>
-    <edge source="Cell_Growth" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">629</data>
-    </edge>
-    <edge source="Cell_Proliferation" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1957</data>
-    </edge>
-    <edge source="Cell_Survival" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">992</data>
-    </edge>
-    <edge source="Chemotherapeutic_agent" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">231</data>
-    </edge>
-    <edge source="Chlamydia_trachomatis" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">205</data>
-    </edge>
-    <edge source="Collagen" target="Platelet_aggregation">
-      <data key="d2">CAUSES</data>
-      <data key="d3">779</data>
-    </edge>
-    <edge source="Constriction_injury" target="Neuropathic_pain">
-      <data key="d2">CAUSES</data>
-      <data key="d3">316</data>
-    </edge>
-    <edge source="Curcumin" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">543</data>
-    </edge>
-    <edge source="Cycloheximide" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">211</data>
-    </edge>
-    <edge source="CYTOCHROME_C" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">235</data>
-    </edge>
-    <edge source="Diabetic_Retinopathy" target="Blind_Vision">
-      <data key="d2">CAUSES</data>
-      <data key="d3">822</data>
-    </edge>
-    <edge source="DNA_Fragmentation" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">294</data>
-    </edge>
-    <edge source="Enterobacteriaceae" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">396</data>
-    </edge>
-    <edge source="epigallocatechin_gallate" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">217</data>
-    </edge>
-    <edge source="Escherichia_coli" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">440</data>
-    </edge>
-    <edge source="Escherichia_coli" target="Septicemia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">216</data>
-    </edge>
-    <edge source="Etoposide" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">651</data>
-    </edge>
-    <edge source="FAS" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1073</data>
-    </edge>
-    <edge source="fungus" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">569</data>
-    </edge>
-    <edge source="G2_Phase" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">266</data>
-    </edge>
-    <edge source="gemcitabine" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">253</data>
-    </edge>
-    <edge source="Gentamicins" target="NEPHROTOXICITY">
-      <data key="d2">CAUSES</data>
-      <data key="d3">368</data>
-    </edge>
-    <edge source="Gram_negative_bacillus" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">371</data>
-    </edge>
-    <edge source="Gram_Negative_Bacteria" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">615</data>
-    </edge>
-    <edge source="Gram_Positive_Bacteria" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">301</data>
-    </edge>
-    <edge source="HIV" target="Acquired_Immunodeficiency_Syndrome">
-      <data key="d2">CAUSES</data>
-      <data key="d3">408</data>
-    </edge>
-    <edge source="Human_Papillomavirus" target="Malignant_Neoplasms">
-      <data key="d2">CAUSES</data>
-      <data key="d3">336</data>
-    </edge>
-    <edge source="Iron_deficiency" target="Anemia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">508</data>
-    </edge>
-    <edge source="Kainate" target="Seizures">
-      <data key="d2">CAUSES</data>
-      <data key="d3">299</data>
-    </edge>
-    <edge source="Kainic_Acid" target="Seizures">
-      <data key="d2">CAUSES</data>
-      <data key="d3">807</data>
-    </edge>
-    <edge source="Klebsiella_pneumonia_bacterium" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">218</data>
-    </edge>
-    <edge source="Microorganism" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">741</data>
-    </edge>
-    <edge source="Monoclonal_Antibodies" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">206</data>
-    </edge>
-    <edge source="MRSA_Methicillin_resistant_Staphylococcus_aureus_infection" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">712</data>
-    </edge>
-    <edge source="Multidrug_resistant_bacteria" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">295</data>
-    </edge>
-    <edge source="Mycobacterium_bovis" target="Tuberculosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">208</data>
-    </edge>
-    <edge source="Mycoplasma_pneumoniae" target="Pneumonia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">305</data>
-    </edge>
-    <edge source="Neisseria_meningitidis" target="Septicemia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">214</data>
-    </edge>
-    <edge source="Nerve_injury_NOS" target="Neuropathic_pain">
-      <data key="d2">CAUSES</data>
-      <data key="d3">295</data>
-    </edge>
-    <edge source="NF_kappa_B" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">261</data>
-    </edge>
-    <edge source="Oestrogen_deficiency" target="loss_bone">
-      <data key="d2">CAUSES</data>
-      <data key="d3">224</data>
-    </edge>
-    <edge source="Ovariectomy" target="loss_bone">
-      <data key="d2">CAUSES</data>
-      <data key="d3">445</data>
-    </edge>
-    <edge source="Ovariectomy" target="Osteoporosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">488</data>
-    </edge>
-    <edge source="oxaliplatin" target="Neuropathy">
-      <data key="d2">CAUSES</data>
-      <data key="d3">212</data>
-    </edge>
-    <edge source="oxaliplatin" target="Peripheral_Neuropathy">
-      <data key="d2">CAUSES</data>
-      <data key="d3">270</data>
-    </edge>
-    <edge source="Retinal_Diseases" target="Blind_Vision">
-      <data key="d2">CAUSES</data>
-      <data key="d3">244</data>
-    </edge>
-    <edge source="Paclitaxel" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">583</data>
-    </edge>
-    <edge source="Parasites" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">221</data>
-    </edge>
-    <edge source="Parasites" target="Malaria">
-      <data key="d2">CAUSES</data>
-      <data key="d3">386</data>
-    </edge>
-    <edge source="Parathyroid_Adenoma" target="Hyperparathyroidism_Primary">
-      <data key="d2">CAUSES</data>
-      <data key="d3">278</data>
-    </edge>
-    <edge source="pentylenetetrazole" target="Seizures">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1364</data>
-    </edge>
-    <edge source="Phosphorylation" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">356</data>
-    </edge>
-    <edge source="Pilocarpine" target="Epilepsy">
-      <data key="d2">CAUSES</data>
-      <data key="d3">225</data>
-    </edge>
-    <edge source="Pilocarpine" target="Seizures">
-      <data key="d2">CAUSES</data>
-      <data key="d3">461</data>
-    </edge>
-    <edge source="Plasmodium_falciparum" target="Malaria">
-      <data key="d2">CAUSES</data>
-      <data key="d3">605</data>
-    </edge>
-    <edge source="Plasmodium_vivax" target="Malaria">
-      <data key="d2">CAUSES</data>
-      <data key="d3">214</data>
-    </edge>
-    <edge source="Proteasome_inhibitor" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">201</data>
-    </edge>
-    <edge source="Proto_Oncogene_Proteins_c_akt_AKT1" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">348</data>
-    </edge>
-    <edge source="Pseudomonas_aeruginosa" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">863</data>
-    </edge>
-    <edge source="Pseudomonas_aeruginosa" target="Pneumonia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">256</data>
-    </edge>
-    <edge source="Quercetin" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">214</data>
-    </edge>
-    <edge source="Resistant_bacteria" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">410</data>
-    </edge>
-    <edge source="Resistant_organism" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">243</data>
-    </edge>
-    <edge source="Respiratory_syncytial_virus" target="Bronchiolitis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">340</data>
-    </edge>
-    <edge source="Respiratory_syncytial_virus" target="Pneumonia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">202</data>
-    </edge>
-    <edge source="Respiratory_syncytial_virus" target="Respiratory_Tract_Infections">
-      <data key="d2">CAUSES</data>
-      <data key="d3">229</data>
-    </edge>
-    <edge source="resveratrol" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">377</data>
-    </edge>
-    <edge source="ROS1" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">205</data>
-    </edge>
-    <edge source="Signal_Transduction" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">312</data>
-    </edge>
-    <edge source="Signal_Transduction_Pathways" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">339</data>
-    </edge>
-    <edge source="Staphylococcus_aureus" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1134</data>
-    </edge>
-    <edge source="Staphylococcus_coagulase_negative" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">228</data>
-    </edge>
-    <edge source="Staphylococcus_epidermidis" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">224</data>
-    </edge>
-    <edge source="Staurosporine" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">831</data>
-    </edge>
-    <edge source="STN_gene_EEF1A2" target="Myopathy">
-      <data key="d2">CAUSES</data>
-      <data key="d3">223</data>
-    </edge>
-    <edge source="Streptococcus_pneumoniae" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">421</data>
-    </edge>
-    <edge source="Streptococcus_pneumoniae" target="Pneumonia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">854</data>
-    </edge>
-    <edge source="Thrombin" target="Platelet_aggregation">
-      <data key="d2">CAUSES</data>
-      <data key="d3">404</data>
-    </edge>
-    <edge source="TNF_gene_TNF" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">276</data>
-    </edge>
-    <edge source="TNFRSF6_gene_FAS" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">272</data>
-    </edge>
-    <edge source="TP53_gene_TP53" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1587</data>
-    </edge>
-    <edge source="TP53_gene_TP53" target="Cell_Death">
-      <data key="d2">CAUSES</data>
-      <data key="d3">218</data>
-    </edge>
-    <edge source="Tretinoin" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">228</data>
-    </edge>
-    <edge source="Tumor_Necrosis_Factor_alpha_TNF" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">252</data>
-    </edge>
-    <edge source="Tumor_Necrosis_Factor_Ligand_Superfamily_Member_6_FAS" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">631</data>
-    </edge>
-    <edge source="Tumor_Necrosis_Factors" target="Apoptosis">
-      <data key="d2">CAUSES</data>
-      <data key="d3">460</data>
-    </edge>
-    <edge source="Tunicamycin" target="Stress">
-      <data key="d2">CAUSES</data>
-      <data key="d3">335</data>
-    </edge>
-    <edge source="Vaccination" target="Infection">
-      <data key="d2">CAUSES</data>
-      <data key="d3">219</data>
-    </edge>
-    <edge source="WDTC1" target="Platelet_aggregation">
-      <data key="d2">CAUSES</data>
-      <data key="d3">922</data>
     </edge>
   </graph>
 </graphml>
