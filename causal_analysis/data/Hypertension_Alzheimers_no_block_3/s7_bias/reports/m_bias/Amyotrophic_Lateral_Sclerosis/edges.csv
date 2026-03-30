@@ -1,0 +1,10 @@
+from,to
+Degenerative_abnormality,Alzheimers
+Degenerative_abnormality,Amyotrophic_Lateral_Sclerosis
+Degenerative_abnormality,Hypertension
+Amyotrophic_Lateral_Sclerosis,Degenerative_abnormality
+Hypertension,Alzheimers
+Alzheimers,Degenerative_abnormality
+Genes,Alzheimers
+Genes,Amyotrophic_Lateral_Sclerosis
+Genes,Hypertension

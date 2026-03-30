@@ -1,0 +1,9 @@
+from,to
+Erythropoietin_EPO,Anemia
+Erythropoietin_EPO,Hypertension
+Hypertension,Alzheimers
+Hypertension,Inflammation
+Inflammation,Alzheimers
+Inflammation,Anemia
+Inflammation,Hypertension
+Alzheimers,Inflammation

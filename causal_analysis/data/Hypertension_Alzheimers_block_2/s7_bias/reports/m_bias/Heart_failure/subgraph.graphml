@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
+    <node id="Constriction_procedure">
+      <data key="d0">C0009813</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Amyloidosis">
+      <data key="d0">C0002726</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Heart_failure">
+      <data key="d0">C0018801</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
+    <edge source="Constriction_procedure" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">58</data>
+    </edge>
+    <edge source="Constriction_procedure" target="Heart_failure">
+      <data key="d2">CAUSES</data>
+      <data key="d3">110</data>
+    </edge>
+    <edge source="Amyloidosis" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">19</data>
+    </edge>
+    <edge source="Amyloidosis" target="Heart_failure">
+      <data key="d2">CAUSES</data>
+      <data key="d3">106</data>
+    </edge>
+    <edge source="Heart_failure" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">15</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Hypertension" target="Heart_failure">
+      <data key="d2">CAUSES</data>
+      <data key="d3">235</data>
+    </edge>
+  </graph>
+</graphml>

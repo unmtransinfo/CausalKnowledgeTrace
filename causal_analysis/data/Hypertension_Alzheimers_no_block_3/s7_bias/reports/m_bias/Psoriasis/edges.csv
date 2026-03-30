@@ -1,0 +1,7 @@
+from,to
+cytokine,Alzheimers
+cytokine,Psoriasis
+Therapeutic_procedure,Alzheimers
+Therapeutic_procedure,Hypertension
+Therapeutic_procedure,Psoriasis
+Hypertension,Alzheimers

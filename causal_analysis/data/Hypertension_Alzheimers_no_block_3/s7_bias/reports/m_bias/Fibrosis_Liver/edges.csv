@@ -1,0 +1,8 @@
+from,to
+Injection_procedure,Alzheimers
+Injection_procedure,Fibrosis_Liver
+Injection_procedure,Hypertension
+Diet,Alzheimers
+Diet,Fibrosis_Liver
+Diet,Hypertension
+Hypertension,Alzheimers

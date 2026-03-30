@@ -1,0 +1,7 @@
+from,to
+COVID_19,Hypertension
+COVID_19,Myocarditis
+Hypertension,Alzheimers
+Virus,Alzheimers
+Virus,COVID_19
+Virus,Myocarditis

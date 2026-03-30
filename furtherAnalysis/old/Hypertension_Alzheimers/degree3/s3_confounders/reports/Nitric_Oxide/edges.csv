@@ -1,0 +1,4 @@
+"from","to","confounder"
+"Hypertension","Alzheimers","Nitric_Oxide"
+"Nitric_Oxide","Hypertension","Nitric_Oxide"
+"Nitric_Oxide","Alzheimers","Nitric_Oxide"

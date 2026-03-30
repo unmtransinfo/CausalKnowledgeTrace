@@ -1,0 +1,7 @@
+from,to
+Therapeutic_procedure,Alzheimers
+Therapeutic_procedure,Hypertension
+Therapeutic_procedure,Immune_Tolerance
+Hypertension,Alzheimers
+inhibitors,Hypertension
+inhibitors,Immune_Tolerance

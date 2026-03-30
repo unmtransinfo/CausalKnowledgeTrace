@@ -1,0 +1,8 @@
+from,to
+Injection_procedure,Alzheimers
+Injection_procedure,Hypersensitivity
+Injection_procedure,Hypertension
+Injury,Alzheimers
+Injury,Hypersensitivity
+Injury,Hypertension
+Hypertension,Alzheimers

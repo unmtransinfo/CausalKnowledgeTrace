@@ -1,0 +1,10 @@
+from,to
+Ligation,Hypertension
+Ligation,Infarction
+Ligation,Ischemia
+Hypertension,Alzheimers
+Hypertension,Infarction
+Hypertension,Ischemia
+Ischemia,Alzheimers
+Ischemia,Hypertension
+Ischemia,Infarction

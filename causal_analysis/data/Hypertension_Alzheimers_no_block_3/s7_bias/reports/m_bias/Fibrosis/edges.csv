@@ -1,0 +1,10 @@
+from,to
+Diabetes,Alzheimers
+Diabetes,Fibrosis
+Diabetes,Hypertension
+Fibrosis,Hypertension
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Hypertension,Fibrosis
+Aldosterone,Fibrosis
+Aldosterone,Hypertension

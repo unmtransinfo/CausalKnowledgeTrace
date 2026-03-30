@@ -1,0 +1,6 @@
+from,to
+APP_gene,Alzheimers
+APP_gene,cytotoxicity
+Hypertension,Alzheimers
+Cadmium,Hypertension
+Cadmium,cytotoxicity

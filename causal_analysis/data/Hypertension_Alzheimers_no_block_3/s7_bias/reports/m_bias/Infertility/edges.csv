@@ -1,0 +1,7 @@
+from,to
+Therapeutic_procedure,Alzheimers
+Therapeutic_procedure,Hypertension
+Therapeutic_procedure,Infertility
+Hypertension,Alzheimers
+Pharmacotherapy,Hypertension
+Pharmacotherapy,Infertility

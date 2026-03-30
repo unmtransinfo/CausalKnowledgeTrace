@@ -1,0 +1,6 @@
+from,to
+Angiotensin_II,Apoptosis
+Angiotensin_II,Hypertension
+Hypertension,Alzheimers
+APP_gene,Alzheimers
+APP_gene,Apoptosis

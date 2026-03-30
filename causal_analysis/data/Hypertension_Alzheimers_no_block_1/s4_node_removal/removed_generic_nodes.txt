@@ -1,0 +1,8 @@
+Disease
+Functional_disorder
+Complication
+Syndrome
+Symptoms
+Diagnosis
+Obstruction
+Adverse_effects

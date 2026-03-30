@@ -1,0 +1,11 @@
+from,to
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diet,Alzheimers
+Diet,Diabetes
+Diet,Hypertension
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Genes,Alzheimers
+Genes,Diabetes
+Genes,Hypertension

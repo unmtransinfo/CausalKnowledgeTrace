@@ -1,0 +1,10 @@
+from,to
+Therapeutic_procedure,Alzheimers
+Therapeutic_procedure,Hypertension
+Therapeutic_procedure,Ischemia
+Therapeutic_procedure,depolarization
+Hypertension,Alzheimers
+Hypertension,Ischemia
+Ischemia,Alzheimers
+Ischemia,Hypertension
+Ischemia,depolarization

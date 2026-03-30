@@ -1,0 +1,9 @@
+from,to
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Fibrosis
+Angiotensin_II,Hypertension
+Angiotensin_II,Fibrosis
+Hypertension,Alzheimers
+Hypertension,Fibrosis
+Fibrosis,Hypertension

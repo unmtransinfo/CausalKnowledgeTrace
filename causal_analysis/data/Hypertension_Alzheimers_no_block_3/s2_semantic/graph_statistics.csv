@@ -1,0 +1,10 @@
+metric,value
+nodes,1746
+edges,4088
+density,0.001342
+weakly_connected,True
+is_dag,False
+num_sccs_with_cycles,5
+nodes_in_cycles,112
+exposure,Hypertension
+outcome,Alzheimers

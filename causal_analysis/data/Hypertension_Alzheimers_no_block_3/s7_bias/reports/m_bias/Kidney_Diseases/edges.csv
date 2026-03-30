@@ -1,0 +1,10 @@
+from,to
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,Kidney_Diseases
+Cyclosporine,Hypertension
+Cyclosporine,Kidney_Diseases
+Kidney_Diseases,Hypertension
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Hypertension,Kidney_Diseases

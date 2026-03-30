@@ -1,0 +1,11 @@
+from,to
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,Kidney_Failure_Chronic
+Injury,Alzheimers
+Injury,Hypertension
+Injury,Kidney_Failure_Chronic
+Kidney_Failure_Chronic,Hypertension
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Hypertension,Kidney_Failure_Chronic

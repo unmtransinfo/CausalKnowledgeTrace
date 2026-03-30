@@ -1,0 +1,13 @@
+from,to
+Hypertension,Alzheimers
+Hypertension,Inflammation
+Hypertension,Obesity
+Inflammation,Alzheimers
+Inflammation,Chronic_Disease
+Inflammation,Hypertension
+Inflammation,Obesity
+Alzheimers,Inflammation
+Obesity,Alzheimers
+Obesity,Chronic_Disease
+Obesity,Hypertension
+Obesity,Inflammation

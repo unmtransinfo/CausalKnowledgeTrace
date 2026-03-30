@@ -1,0 +1,13 @@
+from,to
+Inflammation,Alzheimers
+Inflammation,Atherosclerosis
+Inflammation,Cardiovascular_Diseases
+Inflammation,Hypertension
+Cardiovascular_Diseases,Hypertension
+Alzheimers,Inflammation
+Atherosclerosis,Cardiovascular_Diseases
+Atherosclerosis,Hypertension
+Hypertension,Alzheimers
+Hypertension,Atherosclerosis
+Hypertension,Cardiovascular_Diseases
+Hypertension,Inflammation

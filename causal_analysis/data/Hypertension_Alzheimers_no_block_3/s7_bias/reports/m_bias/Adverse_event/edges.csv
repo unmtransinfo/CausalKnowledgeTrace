@@ -1,0 +1,7 @@
+from,to
+Hypertension,Alzheimers
+Pharmacotherapy,Adverse_event
+Pharmacotherapy,Hypertension
+Pharmaceutical_Preparations,Adverse_event
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Hypertension

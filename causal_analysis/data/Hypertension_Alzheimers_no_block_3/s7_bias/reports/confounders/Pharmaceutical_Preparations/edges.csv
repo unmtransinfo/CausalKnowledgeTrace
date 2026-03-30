@@ -1,0 +1,13 @@
+from,to
+Injury,Alzheimers
+Injury,Hypertension
+Toxic_effect,Alzheimers
+Toxic_effect,Hypertension
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Hypertension
+Pharmaceutical_Preparations,Injury
+Pharmaceutical_Preparations,Oxidative_Stress
+Pharmaceutical_Preparations,Toxic_effect
+Oxidative_Stress,Alzheimers
+Oxidative_Stress,Hypertension

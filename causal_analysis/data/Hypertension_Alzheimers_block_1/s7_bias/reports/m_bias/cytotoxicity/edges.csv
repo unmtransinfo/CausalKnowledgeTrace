@@ -1,0 +1,7 @@
+from,to
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,cytotoxicity
+APP_gene,Alzheimers
+APP_gene,cytotoxicity
+Hypertension,Alzheimers

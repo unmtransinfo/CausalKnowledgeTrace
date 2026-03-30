@@ -1,0 +1,11 @@
+from,to
+Degenerative_abnormality,Alzheimers
+Degenerative_abnormality,Hypertension
+Degenerative_abnormality,Parkinson_Disease
+Parkinson_Disease,Alzheimers
+Hypertension,Alzheimers
+Alzheimers,Degenerative_abnormality
+Alzheimers,Parkinson_Disease
+Genes,Alzheimers
+Genes,Hypertension
+Genes,Parkinson_Disease

@@ -1,0 +1,7 @@
+from,to
+Adrenal_Cortex_Hormones,Hypertension
+Adrenal_Cortex_Hormones,Osteoporosis
+Therapeutic_procedure,Alzheimers
+Therapeutic_procedure,Hypertension
+Therapeutic_procedure,Osteoporosis
+Hypertension,Alzheimers

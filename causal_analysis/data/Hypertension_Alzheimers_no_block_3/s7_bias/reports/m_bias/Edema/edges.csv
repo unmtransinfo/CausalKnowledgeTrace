@@ -1,0 +1,9 @@
+from,to
+Injection_procedure,Alzheimers
+Injection_procedure,Edema
+Injection_procedure,Hypertension
+Injury,Alzheimers
+Injury,Edema
+Injury,Hypertension
+Hypertension,Alzheimers
+Hypertension,Edema

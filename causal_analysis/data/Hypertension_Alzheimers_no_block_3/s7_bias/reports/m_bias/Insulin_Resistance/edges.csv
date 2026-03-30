@@ -1,0 +1,11 @@
+from,to
+Diabetes_Mellitus_Non_Insulin_Dependent,Alzheimers
+Diabetes_Mellitus_Non_Insulin_Dependent,Insulin_Resistance
+Insulin_Resistance,Alzheimers
+Insulin_Resistance,Diabetes_Mellitus_Non_Insulin_Dependent
+Insulin_Resistance,Hypertension
+Hypertension,Alzheimers
+Hypertension,Diabetes_Mellitus_Non_Insulin_Dependent
+Hypertension,Insulin_Resistance
+Dexamethasone,Hypertension
+Dexamethasone,Insulin_Resistance

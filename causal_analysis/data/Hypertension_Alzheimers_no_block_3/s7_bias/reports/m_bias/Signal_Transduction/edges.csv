@@ -1,0 +1,8 @@
+from,to
+receptor,Alzheimers
+receptor,Hypertension
+receptor,Signal_Transduction
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Signal_Transduction

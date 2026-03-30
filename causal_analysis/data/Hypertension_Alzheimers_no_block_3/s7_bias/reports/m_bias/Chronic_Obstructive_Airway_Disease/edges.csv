@@ -1,0 +1,11 @@
+from,to
+Hypertension,Alzheimers
+Hypertension,Inflammation
+Inflammation,Alzheimers
+Inflammation,Chronic_Obstructive_Airway_Disease
+Inflammation,Hypertension
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Chronic_Obstructive_Airway_Disease
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Inflammation
+Alzheimers,Inflammation

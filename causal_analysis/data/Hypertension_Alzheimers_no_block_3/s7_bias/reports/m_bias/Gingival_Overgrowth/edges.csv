@@ -1,0 +1,7 @@
+from,to
+Cyclosporine,Gingival_Overgrowth
+Cyclosporine,Hypertension
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Gingival_Overgrowth
+Pharmaceutical_Preparations,Hypertension

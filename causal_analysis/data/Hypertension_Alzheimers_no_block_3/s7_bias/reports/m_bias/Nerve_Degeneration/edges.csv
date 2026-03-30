@@ -1,0 +1,7 @@
+from,to
+Ethanol,Hypertension
+Ethanol,Nerve_Degeneration
+Hypertension,Alzheimers
+Nerve_Degeneration,Alzheimers
+APP_gene,Alzheimers
+APP_gene,Nerve_Degeneration

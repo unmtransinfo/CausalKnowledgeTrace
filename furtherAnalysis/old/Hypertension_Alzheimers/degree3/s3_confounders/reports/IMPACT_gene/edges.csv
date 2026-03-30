@@ -1,0 +1,4 @@
+"from","to","confounder"
+"Hypertension","Alzheimers","IMPACT_gene"
+"IMPACT_gene","Hypertension","IMPACT_gene"
+"IMPACT_gene","Alzheimers","IMPACT_gene"

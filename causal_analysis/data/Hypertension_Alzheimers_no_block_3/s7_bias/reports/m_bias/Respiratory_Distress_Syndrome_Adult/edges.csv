@@ -1,0 +1,7 @@
+from,to
+Injury,Alzheimers
+Injury,Hypertension
+Injury,Respiratory_Distress_Syndrome_Adult
+COVID_19,Hypertension
+COVID_19,Respiratory_Distress_Syndrome_Adult
+Hypertension,Alzheimers

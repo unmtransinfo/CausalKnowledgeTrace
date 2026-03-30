@@ -514,25 +514,6 @@ find_dagitty_file <- function(exposure, outcome, degree = 2, root = NULL) {
 #' @param root Project root (default: auto-detect)
 #' @return Full path to JSON file, or NULL if not found
 find_json_file <- function(exposure, outcome, degree = 2, root = NULL) {
-<<<<<<< HEAD
-  input_dir <- get_input_dir(root)
-
-  # Try exact match first
-  exact_file <- file.path(input_dir, sprintf("%s_%s_causal_assertions_%d.json", exposure, outcome, degree))
-  if (file.exists(exact_file)) {
-    return(exact_file)
-  }
-
-  # Try pattern match
-  pattern <- sprintf("%s_%s*%d.json", exposure, outcome, degree)
-  matching <- list.files(input_dir, pattern = glob2rx(pattern), full.names = TRUE)
-
-  if (length(matching) > 0) {
-    if (length(matching) > 1) {
-      cat("Warning: Multiple JSON files found, using:", basename(matching[1]), "\n")
-    }
-    return(matching[1])
-=======
   search_dirs <- unique(c(get_graph_creation_result_dir(root), get_input_dir(root)))
 
   exact_candidates <- c(
@@ -546,7 +527,6 @@ find_json_file <- function(exposure, outcome, degree = 2, root = NULL) {
   exact_match <- select_preferred_file(exact_candidates, degree)
   if (!is.null(exact_match)) {
     return(exact_match)
->>>>>>> feature/django
   }
 
   matching <- character(0)
@@ -735,13 +715,9 @@ validate_inputs <- function(exposure, outcome,
     if (is.null(json_file)) {
       stop(paste0(
         "Could not find JSON file for ", exposure, "_", outcome, "\n",
-<<<<<<< HEAD
-        "Expected location: ", get_input_dir(root), "/", exposure, "_", outcome, "*", degree, ".json\n",
-=======
         "Expected locations:\n",
         "  - ", get_graph_creation_result_dir(root), "/", exposure, "_to_", outcome, "_degree*_causal_assertions.json\n",
         "  - ", get_input_dir(root), "/", exposure, "_", outcome, "*_causal_assertions*.json\n",
->>>>>>> feature/django
         "Please run generate_graph.sh first.\n"
       ))
     }

@@ -1,0 +1,11 @@
+from,to
+Autoimmune_Diseases,Inflammation
+Mutation,Alzheimers
+Mutation,Autoimmune_Diseases
+Mutation,Hypertension
+Hypertension,Alzheimers
+Hypertension,Inflammation
+Inflammation,Alzheimers
+Inflammation,Autoimmune_Diseases
+Inflammation,Hypertension
+Alzheimers,Inflammation

@@ -1,0 +1,9 @@
+from,to
+Atherosclerosis,Cessation_of_life
+Atherosclerosis,Hypertension
+Hypertension,Alzheimers
+Hypertension,Atherosclerosis
+Hypertension,Cessation_of_life
+Alzheimers,Cessation_of_life
+APP_gene,Alzheimers
+APP_gene,Cessation_of_life

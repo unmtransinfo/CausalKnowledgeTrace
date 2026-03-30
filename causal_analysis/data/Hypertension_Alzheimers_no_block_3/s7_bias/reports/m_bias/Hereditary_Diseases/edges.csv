@@ -1,0 +1,7 @@
+from,to
+Hypertension,Alzheimers
+Gene_Mutation,Alzheimers
+Gene_Mutation,Hereditary_Diseases
+Genes,Alzheimers
+Genes,Hereditary_Diseases
+Genes,Hypertension

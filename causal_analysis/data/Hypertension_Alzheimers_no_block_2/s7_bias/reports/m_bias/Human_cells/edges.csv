@@ -1,0 +1,7 @@
+from,to
+TNF_protein_human_TNF,Human_cells
+TNF_protein_human_TNF,Hypertension
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Human_cells
+Lipopolysaccharides,Hypertension
+Hypertension,Alzheimers

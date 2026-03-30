@@ -1,0 +1,75 @@
+=======================================================
+Butterfly Bias Analysis Summary
+=======================================================
+
+Exposure: Hypertension 
+Outcome: Alzheimers 
+Graph Degree: 3 
+Graph is Acyclic: FALSE 
+Timestamp: 2026-02-16 12:26:02 
+
+=== Method ===
+Approach: dagitty structural functions (parents/children)
+These functions work even with cyclic graphs.
+Butterfly = confounder with 2+ other confounders as parents.
+
+=== Graph Statistics ===
+Total nodes: 3793 
+Total edges: 7960 
+Parents of exposure: 217 
+Parents of outcome: 105 
+
+=== Confounder Counts ===
+Pipeline confounders: 19 
+dagitty confounders: 23 
+Overlap: 19 
+In dagitty only: Diabetes, Insulin_Resistance, Obesity, Vascular_Diseases 
+
+=== Butterfly Bias Results ===
+Independent confounders: 14 
+Confounders with 1 parent: 0 
+BUTTERFLY candidates: 9 
+
+Butterfly nodes (DO NOT adjust for these directly):
+  1. Chronic_inflammation <- {Injection_procedure, Lipopolysaccharides, Obesity, Reactive_Oxygen_Species}
+  2. Diabetes <- {Antioxidants, Diet, Injection_procedure, Insulin_Resistance, Mutation, Obesity, Oxidative_Stress, Process, Streptozocin, Toxic_effect, imbalance}
+  3. Inflammatory_Response <- {Diabetes, Diet, Injection_procedure, Lipopolysaccharides, Obesity, Reactive_Oxygen_Species, receptor}
+  4. Insulin_Resistance <- {Diabetes, Diet, Lipopolysaccharides, Obesity, Reactive_Oxygen_Species, Streptozocin, receptor}
+  5. Obesity <- {Chronic_inflammation, Diabetes, Diet, Insulin_Resistance, Intestinal_Microbiome, Mutation, Oxidative_Stress, Process, imbalance, receptor}
+  6. Oxidative_Stress <- {Antioxidants, Diet, IMPACT_gene, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Streptozocin, receptor}
+  7. Toxic_effect <- {Antioxidants, Diet, IMPACT_gene, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Streptozocin}
+  8. Vascular_Diseases <- {Diabetes, Mutation, Process}
+  9. imbalance <- {Diabetes, Lipopolysaccharides, Mutation, Obesity, Reactive_Oxygen_Species}
+
+RECOMMENDATION: Instead of adjusting for butterfly nodes,
+adjust for their confounder parents to avoid opening
+collider paths.
+
+=== All Confounders by Type ===
+
+INDEPENDENT (safe to adjust for):
+  - Antioxidants 
+  - Diet 
+  - IMPACT_gene 
+  - Injection_procedure 
+  - Intestinal_Microbiome 
+  - Lipopolysaccharides 
+  - MicroRNAs 
+  - Mutation 
+  - Nitric_Oxide 
+  - Polymorphism_Genetic 
+  - Process 
+  - Reactive_Oxygen_Species 
+  - receptor 
+  - Streptozocin 
+
+BUTTERFLY (avoid adjusting directly):
+  - Chronic_inflammation <- { Injection_procedure, Lipopolysaccharides, Obesity, Reactive_Oxygen_Species }
+  - Diabetes <- { Antioxidants, Diet, Injection_procedure, Insulin_Resistance, Mutation, Obesity, Oxidative_Stress, Process, Streptozocin, Toxic_effect, imbalance }
+  - Inflammatory_Response <- { Diabetes, Diet, Injection_procedure, Lipopolysaccharides, Obesity, Reactive_Oxygen_Species, receptor }
+  - Insulin_Resistance <- { Diabetes, Diet, Lipopolysaccharides, Obesity, Reactive_Oxygen_Species, Streptozocin, receptor }
+  - Obesity <- { Chronic_inflammation, Diabetes, Diet, Insulin_Resistance, Intestinal_Microbiome, Mutation, Oxidative_Stress, Process, imbalance, receptor }
+  - Oxidative_Stress <- { Antioxidants, Diet, IMPACT_gene, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Streptozocin, receptor }
+  - Toxic_effect <- { Antioxidants, Diet, IMPACT_gene, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Streptozocin }
+  - Vascular_Diseases <- { Diabetes, Mutation, Process }
+  - imbalance <- { Diabetes, Lipopolysaccharides, Mutation, Obesity, Reactive_Oxygen_Species }

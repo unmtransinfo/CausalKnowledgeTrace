@@ -1,0 +1,244 @@
+=======================================================
+Butterfly Bias Analysis Summary
+=======================================================
+
+Exposure: Hypertension
+Outcome: Alzheimers
+Graph is Acyclic: False
+Timestamp: 2026-03-29 16:20:35
+
+=== Method ===
+Approach: direct parents/children (matching R dagitty logic)
+Confounder = common parent of both exposure and outcome,
+             excluding direct children of either.
+Butterfly = confounder with 2+ other confounders as parents.
+M-bias = children(parent_of_X) ∩ children(parent_of_Y),
+         where P1 ≠ P2 and M ≠ X,Y and M is not a confounder.
+
+=== Graph Statistics ===
+Total nodes: 1737
+Total edges: 3438
+Parents of exposure: 224
+Parents of outcome: 114
+
+=== Confounder Counts ===
+Confounders identified: 26
+
+=== Butterfly Bias Results ===
+Independent confounders: 21
+Confounders with 1 parent: 1
+BUTTERFLY candidates: 4
+
+Butterfly nodes (DO NOT adjust for these directly):
+  1. Inflammatory_Response <- {Injection_procedure, Injury, Lipopolysaccharides, Therapeutic_procedure}
+  2. Injury <- {Agent, Diet, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Reactive_Oxygen_Species, Streptozocin, Study_models}
+  3. Oxidative_Stress <- {Antioxidants, Diet, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Proteins, Reactive_Oxygen_Species, Streptozocin, Study_models}
+  4. Toxic_effect <- {Agent, Antioxidants, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Proteins, Reactive_Oxygen_Species}
+
+RECOMMENDATION: Instead of adjusting for butterfly nodes,
+adjust for their confounder parents to avoid opening
+collider paths.
+
+=== All Confounders by Type ===
+
+INDEPENDENT (safe to adjust for):
+  - Agent
+  - Antioxidants
+  - Diet
+  - Genes
+  - IMPACT_gene
+  - Injection_procedure
+  - Intestinal_Microbiome
+  - Lipopolysaccharides
+  - MicroRNAs
+  - Mutation
+  - Nitric_Oxide
+  - Pharmaceutical_Preparations
+  - Polymorphism_Genetic
+  - Process
+  - Proteins
+  - Reactive_Oxygen_Species
+  - Streptozocin
+  - Study_models
+  - Therapeutic_procedure
+  - imbalance
+  - receptor
+
+HAS 1 CONFOUNDER PARENT (monitor but likely safe):
+  - Chronic_inflammation <- Lipopolysaccharides
+
+BUTTERFLY (avoid adjusting directly):
+  - Inflammatory_Response <- {Injection_procedure, Injury, Lipopolysaccharides, Therapeutic_procedure}
+  - Injury <- {Agent, Diet, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Reactive_Oxygen_Species, Streptozocin, Study_models}
+  - Oxidative_Stress <- {Antioxidants, Diet, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Proteins, Reactive_Oxygen_Species, Streptozocin, Study_models}
+  - Toxic_effect <- {Agent, Antioxidants, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Proteins, Reactive_Oxygen_Species}
+
+
+=== M-Bias Analysis (Python-only) ===
+Detection: direct parent/child (top-down)
+M-bias variables found: 161
+
+These nodes are colliders on backdoor paths.
+Do NOT adjust for them -- it would open spurious paths.
+
+  - Absence_of_pain_sensation:  Hypertension ← agonists → Absence_of_pain_sensation ← Pharmaceutical_Preparations → Alzheimers
+  - Acclimatization:  Hypertension ← COVID_19 → Acclimatization ← Hypoxia → Alzheimers
+  - Acidosis:  Hypertension ← Diet → Acidosis ← Ischemia → Alzheimers
+  - Adhesions:  Hypertension ← Lipopolysaccharides → Adhesions ← Therapeutic_procedure → Alzheimers
+  - Adverse_event:  Hypertension ← Pharmacotherapy → Adverse_event ← Pharmaceutical_Preparations → Alzheimers
+  - Agranulocytosis:  Hypertension ← Pharmaceutical_Preparations → Agranulocytosis ← Therapeutic_procedure → Alzheimers
+  - Amyotrophic_Lateral_Sclerosis:  Hypertension ← Degenerative_abnormality → Amyotrophic_Lateral_Sclerosis ← Genes → Alzheimers
+  - Anemia:  Hypertension ← Erythropoietin_EPO → Anemia ← Inflammation → Alzheimers
+  - Apoptosis:  Hypertension ← Angiotensin_II → Apoptosis ← APP_gene → Alzheimers
+  - Arteriosclerosis:  Hypertension ← Diet → Arteriosclerosis ← Inflammation → Alzheimers
+  - Asthma:  Hypertension ← Agent → Asthma ← Inflammation → Alzheimers
+  - Ataxia:  Hypertension ← Ethanol → Ataxia ← Mutation → Alzheimers
+  - Atherosclerosis:  Hypertension ← Angiotensin_II → Atherosclerosis ← Cholesterol → Alzheimers
+  - Atrophic:  Hypertension ← Denervation → Atrophic ← Therapeutic_procedure → Alzheimers
+  - Autoimmune_Diseases:  Hypertension ← Inflammation → Autoimmune_Diseases ← Mutation → Alzheimers
+  - Autophagy:  Hypertension ← Lipopolysaccharides → Autophagy ← Pharmaceutical_Preparations → Alzheimers
+  - Blind_Vision:  Hypertension ← Degenerative_abnormality → Blind_Vision ← Diabetes → Alzheimers
+  - Body_Weight_decreased:  Hypertension ← agonists → Body_Weight_decreased ← Pharmaceutical_Preparations → Alzheimers
+  - Brain_Injuries:  Hypertension ← Ethanol → Brain_Injuries ← Lipopolysaccharides → Alzheimers
+  - Cardiac_Hypertrophy:  Hypertension ← Angiotensin_II → Cardiac_Hypertrophy ← Therapeutic_procedure → Alzheimers
+  - Cardiomyopathies:  Hypertension ← Catecholamines → Cardiomyopathies ← Mutation → Alzheimers
+  - Cardiovascular_Diseases:  Hypertension ← Atherosclerosis → Cardiovascular_Diseases ← Diabetes → Alzheimers
+  - Cataract:  Hypertension ← Mutation → Cataract ← Galactose → Alzheimers
+  - Cell_Death:  Hypertension ← Antioxidants → Cell_Death ← APP_gene → Alzheimers
+  - Cerebral_hemisphere_hemorrhage:  Hypertension ← Injection_procedure → Cerebral_hemisphere_hemorrhage ← Cerebral_Amyloid_Angiopathy → Alzheimers
+  - Cerebrovascular_accident:  Hypertension ← Atherosclerosis → Cerebrovascular_accident ← Ischemia → Alzheimers
+  - Cessation_of_life:  Hypertension ← Atherosclerosis → Cessation_of_life ← APP_gene → Alzheimers
+  - Chronic_Disease:  Hypertension ← Inflammation → Chronic_Disease ← Obesity → Alzheimers
+  - Chronic_Obstructive_Airway_Disease:  Hypertension ← Inflammation → Chronic_Obstructive_Airway_Disease ← Lipopolysaccharides → Alzheimers
+  - Colitis:  Hypertension ← Drinking_Water → Colitis ← Therapeutic_procedure → Alzheimers
+  - Congenital_Abnormality:  Hypertension ← Agent → Congenital_Abnormality ← Genes → Alzheimers
+  - Contraction:  Hypertension ← Agent → Contraction ← Peptides → Alzheimers
+  - Cystic_Fibrosis:  Hypertension ← Genes → Cystic_Fibrosis ← Mutation → Alzheimers
+  - DNA_Damage:  Hypertension ← Cadmium → DNA_Damage ← Free_Radicals → Alzheimers
+  - Deafness:  Hypertension ← Genes → Deafness ← Mutation → Alzheimers
+  - Death_finding:  Hypertension ← Ethanol → Death_finding ← Pharmaceutical_Preparations → Alzheimers
+  - Degenerative_abnormality:  Hypertension ← Injection_procedure → Degenerative_abnormality ← Injury → Alzheimers
+  - Degenerative_polyarthritis:  Hypertension ← Degenerative_abnormality → Degenerative_polyarthritis ← Inflammation → Alzheimers
+  - Depressed_mood:  Hypertension ← Ethanol → Depressed_mood ← Lipopolysaccharides → Alzheimers
+  - Depressive_disorder:  Hypertension ← Corticosterone → Depressive_disorder ← Lipopolysaccharides → Alzheimers
+  - Diabetes:  Hypertension ← Diet → Diabetes ← Genes → Alzheimers
+  - Diabetes_Mellitus:  Hypertension ← Injection_procedure → Diabetes_Mellitus ← Streptozocin → Alzheimers
+  - Diabetes_Mellitus_Non_Insulin_Dependent:  Hypertension ← Diet → Diabetes_Mellitus_Non_Insulin_Dependent ← Genes → Alzheimers
+  - Diabetic_Nephropathy:  Hypertension ← Hyperglycemia → Diabetic_Nephropathy ← Streptozocin → Alzheimers
+  - Disability_NOS:  Hypertension ← Cardiovascular_Diseases → Disability_NOS ← Brain_Injuries → Alzheimers
+  - Dysbiosis:  Hypertension ← Diet_High_Fat → Dysbiosis ← Diet → Alzheimers
+  - Dyslipidemias:  Hypertension ← Diet → Dyslipidemias ← Obesity → Alzheimers
+  - Edema:  Hypertension ← Injection_procedure → Edema ← Injury → Alzheimers
+  - End_stage_renal_failure:  Hypertension ← Diabetes → End_stage_renal_failure ← Diabetes_Mellitus_Non_Insulin_Dependent → Alzheimers
+  - Endothelial_dysfunction:  Hypertension ← Angiotensin_II → Endothelial_dysfunction ← Diabetes → Alzheimers
+  - Epilepsy:  Hypertension ← Cerebrovascular_accident → Epilepsy ← Brain_Injuries → Alzheimers
+  - Extravasation:  Hypertension ← Injection_procedure → Extravasation ← Injury → Alzheimers
+  - Falls:  Hypertension ← Insulin → Falls ← Lipopolysaccharides → Alzheimers
+  - Familial_Mediterranean_Fever:  Hypertension ← Genes → Familial_Mediterranean_Fever ← Mutation → Alzheimers
+  - Fatty_Liver:  Hypertension ← Diet → Fatty_Liver ← Obesity → Alzheimers
+  - Fatty_degeneration:  Hypertension ← Diet_High_Fat → Fatty_degeneration ← Diet → Alzheimers
+  - Ferroptosis:  Hypertension ← sorafenib → Ferroptosis ← Iron → Alzheimers
+  - Fever:  Hypertension ← Lipopolysaccharides → Fever ← Pharmaceutical_Preparations → Alzheimers
+  - Fibrosis:  Hypertension ← Aldosterone → Fibrosis ← Diabetes → Alzheimers
+  - Fibrosis_Liver:  Hypertension ← Diet → Fibrosis_Liver ← Injection_procedure → Alzheimers
+  - Gingival_Overgrowth:  Hypertension ← Cyclosporine → Gingival_Overgrowth ← Pharmaceutical_Preparations → Alzheimers
+  - Growth:  Hypertension ← Angiotensin_II → Growth ← Genes → Alzheimers
+  - Heart_failure:  Hypertension ← Cardiovascular_Diseases → Heart_failure ← Amyloidosis → Alzheimers
+  - Hepatitis:  Hypertension ← Lipopolysaccharides → Hepatitis ← Virus → Alzheimers
+  - Hepatotoxicity:  Hypertension ← Cadmium → Hepatotoxicity ← Lipopolysaccharides → Alzheimers
+  - Hereditary_Diseases:  Hypertension ← Genes → Hereditary_Diseases ← Gene_Mutation → Alzheimers
+  - Hospitalization:  Hypertension ← COVID_19 → Hospitalization ← Diabetes → Alzheimers
+  - Human_cells:  Hypertension ← TNF_protein_human_TNF → Human_cells ← Lipopolysaccharides → Alzheimers
+  - Hypercalcemia:  Hypertension ← Calcium → Hypercalcemia ← Therapeutic_procedure → Alzheimers
+  - Hyperglycemia:  Hypertension ← Diabetes → Hyperglycemia ← Diabetes_Mellitus_Non_Insulin_Dependent → Alzheimers
+  - Hyperinsulinism:  Hypertension ← Diet → Hyperinsulinism ← Insulin_Resistance → Alzheimers
+  - Hyperlipidemia:  Hypertension ← Diet_High_Fat → Hyperlipidemia ← Diet → Alzheimers
+  - Hyperplasia:  Hypertension ← Estrogens → Hyperplasia ← Injury → Alzheimers
+  - Hypersensitivity:  Hypertension ← Injection_procedure → Hypersensitivity ← Injury → Alzheimers
+  - Hypertrophy:  Hypertension ← Angiotensin_II → Hypertrophy ← Therapeutic_procedure → Alzheimers
+  - Hyponatremia:  Hypertension ← Argipressin → Hyponatremia ← Pharmaceutical_Preparations → Alzheimers
+  - Hypotension:  Hypertension ← Lipopolysaccharides → Hypotension ← Pharmaceutical_Preparations → Alzheimers
+  - Hypoxia:  Hypertension ← Ischemia → Hypoxia ← Therapeutic_procedure → Alzheimers
+  - Immune_Tolerance:  Hypertension ← inhibitors → Immune_Tolerance ← Therapeutic_procedure → Alzheimers
+  - Immune_response:  Hypertension ← Genes → Immune_response ← Inflammation → Alzheimers
+  - Immunity:  Hypertension ← Proteins → Immunity ← Virus → Alzheimers
+  - Impaired_cognition:  Hypertension ← Lipopolysaccharides → Impaired_cognition ← APP_gene → Alzheimers
+  - Inactivation:  Hypertension ← Proteins → Inactivation ← Enzymes → Alzheimers
+  - Infarction:  Hypertension ← Ligation → Infarction ← Ischemia → Alzheimers
+  - Infection:  Hypertension ← Agent → Infection ← Herpesvirus_1_Human → Alzheimers
+  - Infertility:  Hypertension ← Pharmacotherapy → Infertility ← Therapeutic_procedure → Alzheimers
+  - Infiltration:  Hypertension ← Lipopolysaccharides → Infiltration ← Therapeutic_procedure → Alzheimers
+  - Inflammation:  Hypertension ← Agent → Inflammation ← Diabetes → Alzheimers
+  - Inflammatory_Bowel_Diseases:  Hypertension ← Inflammation → Inflammatory_Bowel_Diseases ← Intestinal_Microbiome → Alzheimers
+  - Injury_to_liver_NOS:  Hypertension ← Ethanol → Injury_to_liver_NOS ← Lipopolysaccharides → Alzheimers
+  - Insulin_Resistance:  Hypertension ← Dexamethasone → Insulin_Resistance ← Diabetes_Mellitus_Non_Insulin_Dependent → Alzheimers
+  - Intoxication:  Hypertension ← Ethanol → Intoxication ← Pharmaceutical_Preparations → Alzheimers
+  - Ischemia:  Hypertension ← Atherosclerosis → Ischemia ← Injury → Alzheimers
+  - Kidney_Diseases:  Hypertension ← Cyclosporine → Kidney_Diseases ← Diabetes → Alzheimers
+  - Kidney_Failure:  Hypertension ← Diabetes → Kidney_Failure ← Therapeutic_procedure → Alzheimers
+  - Kidney_Failure_Acute:  Hypertension ← COVID_19 → Kidney_Failure_Acute ← Ischemia → Alzheimers
+  - Kidney_Failure_Chronic:  Hypertension ← Diabetes → Kidney_Failure_Chronic ← Injury → Alzheimers
+  - Lesion:  Hypertension ← Cocaine → Lesion ← Lipopolysaccharides → Alzheimers
+  - Liver_Failure_Acute:  Hypertension ← Injury → Liver_Failure_Acute ← Lipopolysaccharides → Alzheimers
+  - Liver_damage:  Hypertension ← Ethanol → Liver_damage ← Lipopolysaccharides → Alzheimers
+  - Liver_diseases:  Hypertension ← Ethanol → Liver_diseases ← Virus → Alzheimers
+  - Malignant_Neoplasms:  Hypertension ← Agent → Malignant_Neoplasms ← Diet → Alzheimers
+  - Memory_impairment:  Hypertension ← Ethanol → Memory_impairment ← APP_gene → Alzheimers
+  - Metabolic_Diseases:  Hypertension ← Diet → Metabolic_Diseases ← Inflammation → Alzheimers
+  - Metabolic_syndrome:  Hypertension ← Diet → Metabolic_syndrome ← Insulin_Resistance → Alzheimers
+  - Mitochondrial_Diseases:  Hypertension ← Mutation → Mitochondrial_Diseases ← DNA_Mitochondrial → Alzheimers
+  - Mouse_Model:  Hypertension ← Diet → Mouse_Model ← Lipopolysaccharides → Alzheimers
+  - Myelosuppression:  Hypertension ← Pharmacotherapy → Myelosuppression ← Therapeutic_procedure → Alzheimers
+  - Myocardial_Infarction:  Hypertension ← Atherosclerosis → Myocardial_Infarction ← Ischemia → Alzheimers
+  - Myocarditis:  Hypertension ← COVID_19 → Myocarditis ← Virus → Alzheimers
+  - NEPHROTOXICITY:  Hypertension ← Cadmium → NEPHROTOXICITY ← Pharmaceutical_Preparations → Alzheimers
+  - Necrosis:  Hypertension ← Ethanol → Necrosis ← Injection_procedure → Alzheimers
+  - Neoplasm:  Hypertension ← Agent → Neoplasm ← Genes → Alzheimers
+  - Nerve_Degeneration:  Hypertension ← Ethanol → Nerve_Degeneration ← APP_gene → Alzheimers
+  - Neurodegenerative_Disorders:  Hypertension ← Degenerative_abnormality → Neurodegenerative_Disorders ← Mutation → Alzheimers
+  - Neuropathy:  Hypertension ← Diabetes → Neuropathy ← Mutation → Alzheimers
+  - Neutropenia:  Hypertension ← Pharmacotherapy → Neutropenia ← Therapeutic_procedure → Alzheimers
+  - Non_alcoholic_fatty_liver:  Hypertension ← Diet → Non_alcoholic_fatty_liver ← Insulin_Resistance → Alzheimers
+  - Nonalcoholic_Steatohepatitis:  Hypertension ← Diet_High_Fat → Nonalcoholic_Steatohepatitis ← Diet → Alzheimers
+  - Obesity:  Hypertension ← Diet → Obesity ← Genes → Alzheimers
+  - Osteoporosis:  Hypertension ← Adrenal_Cortex_Hormones → Osteoporosis ← Therapeutic_procedure → Alzheimers
+  - Pain:  Hypertension ← Injury → Pain ← Pharmaceutical_Preparations → Alzheimers
+  - Pancreatitis:  Hypertension ← Arginine → Pancreatitis ← Diet → Alzheimers
+  - Parkinson_Disease:  Hypertension ← Degenerative_abnormality → Parkinson_Disease ← Genes → Alzheimers
+  - Parkinsonian_Disorders:  Hypertension ← Mutation → Parkinsonian_Disorders ← Neurotoxins → Alzheimers
+  - Peripheral_Neuropathy:  Hypertension ← Mutation → Peripheral_Neuropathy ← Pharmaceutical_Preparations → Alzheimers
+  - Peritonitis:  Hypertension ← Ligation → Peritonitis ← Lipopolysaccharides → Alzheimers
+  - Pneumonia:  Hypertension ← Agent → Pneumonia ← Lipopolysaccharides → Alzheimers
+  - Prion_Diseases:  Hypertension ← Agent → Prion_Diseases ← Prions → Alzheimers
+  - Pseudoaneurysm:  Hypertension ← Wounds_and_Injuries → Pseudoaneurysm ← Injury → Alzheimers
+  - Psoriasis:  Hypertension ← Therapeutic_procedure → Psoriasis ← cytokine → Alzheimers
+  - Pulmonary_Edema:  Hypertension ← Epinephrine → Pulmonary_Edema ← Lipopolysaccharides → Alzheimers
+  - Pyroptosis:  Hypertension ← Lipopolysaccharides → Pyroptosis ← Inflammasomes → Alzheimers
+  - Rare_Diseases:  Hypertension ← Congenital_Abnormality → Rare_Diseases ← Gene_Mutation → Alzheimers
+  - Reperfusion_Injury:  Hypertension ← Tourniquets → Reperfusion_Injury ← Reactive_Oxygen_Species → Alzheimers
+  - Respiratory_Distress_Syndrome_Adult:  Hypertension ← COVID_19 → Respiratory_Distress_Syndrome_Adult ← Injury → Alzheimers
+  - Rheumatoid_Arthritis:  Hypertension ← Inflammation → Rheumatoid_Arthritis ← Process → Alzheimers
+  - Sedation:  Hypertension ← Ethanol → Sedation ← Pharmaceutical_Preparations → Alzheimers
+  - Seizures:  Hypertension ← Cocaine → Seizures ← Mutation → Alzheimers
+  - Septicemia:  Hypertension ← Inflammation → Septicemia ← Inflammatory_Response → Alzheimers
+  - Severe_Acute_Respiratory_Syndrome:  Hypertension ← COVID_19 → Severe_Acute_Respiratory_Syndrome ← Virus → Alzheimers
+  - Shock:  Hypertension ← COVID_19 → Shock ← Lipopolysaccharides → Alzheimers
+  - Signal_Transduction:  Hypertension ← Lipopolysaccharides → Signal_Transduction ← receptor → Alzheimers
+  - Stress:  Hypertension ← Cadmium → Stress ← Genes → Alzheimers
+  - Thrombocytopenia:  Hypertension ← Mutation → Thrombocytopenia ← Pharmaceutical_Preparations → Alzheimers
+  - Thrombosis:  Hypertension ← Injury → Thrombosis ← Therapeutic_procedure → Alzheimers
+  - Tissue_damage:  Hypertension ← Lipopolysaccharides → Tissue_damage ← Free_Radicals → Alzheimers
+  - Toxic_nephropathy:  Hypertension ← Cadmium → Toxic_nephropathy ← Pharmaceutical_Preparations → Alzheimers
+  - Traumatic_Brain_Injury:  Hypertension ← IMPACT_gene → Traumatic_Brain_Injury ← Study_models → Alzheimers
+  - Ulcer:  Hypertension ← Ethanol → Ulcer ← Pharmaceutical_Preparations → Alzheimers
+  - Up_Regulation_Physiology:  Hypertension ← Angiotensin_II → Up_Regulation_Physiology ← cytokine → Alzheimers
+  - Vasodilation:  Hypertension ← Dopamine → Vasodilation ← Nitric_Oxide → Alzheimers
+  - cardiac_arrhythmia:  Hypertension ← Catecholamines → cardiac_arrhythmia ← Ischemia → Alzheimers
+  - cell_injury:  Hypertension ← Ethanol → cell_injury ← Free_Radicals → Alzheimers
+  - cytotoxicity:  Hypertension ← Cadmium → cytotoxicity ← APP_gene → Alzheimers
+  - depolarization:  Hypertension ← Ischemia → depolarization ← Therapeutic_procedure → Alzheimers
+  - hearing_impairment:  Hypertension ← Genes → hearing_impairment ← Mutation → Alzheimers
+  - hypercholesterolemia:  Hypertension ← Diet → hypercholesterolemia ← Cholesterol → Alzheimers
+  - hypoglycemia:  Hypertension ← Ethanol → hypoglycemia ← Pharmaceutical_Preparations → Alzheimers
+  - loss_bone:  Hypertension ← Adrenal_Cortex_Hormones → loss_bone ← Lipopolysaccharides → Alzheimers
+  - nervous_system_disorder:  Hypertension ← Mutation → nervous_system_disorder ← Virus → Alzheimers

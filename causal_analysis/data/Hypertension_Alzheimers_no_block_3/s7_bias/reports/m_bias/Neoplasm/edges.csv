@@ -1,0 +1,9 @@
+from,to
+Neoplasm,Hypertension
+Hypertension,Alzheimers
+Agent,Alzheimers
+Agent,Hypertension
+Agent,Neoplasm
+Genes,Alzheimers
+Genes,Hypertension
+Genes,Neoplasm

@@ -1,0 +1,8 @@
+from,to
+Mutation,Alzheimers
+Mutation,Familial_Mediterranean_Fever
+Mutation,Hypertension
+Hypertension,Alzheimers
+Genes,Alzheimers
+Genes,Familial_Mediterranean_Fever
+Genes,Hypertension

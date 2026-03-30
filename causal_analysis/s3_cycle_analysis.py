@@ -36,18 +36,24 @@ def load_graph(exposure: str, outcome: str) -> nx.DiGraph:
     return nx.read_graphml(str(graphml_path))
 
 
-def count_cycles_with_participation(G: nx.DiGraph, max_sample: int = 50):
+def count_cycles_with_participation(
+    G: nx.DiGraph,
+    max_sample: int = 50,
+    max_enumerate: int = 1_000_000,
+):
     """
     Enumerate simple cycles using SCC-scoped Johnson's algorithm.
     Only searches within strongly connected components (size > 1),
     skipping acyclic parts of the graph entirely.
     Track per-node participation counts and cycle length distribution.
     Sample up to max_sample cycles for detailed reporting.
+    Stops after max_enumerate cycles to avoid runaway computation.
     """
     node_counts: Counter = Counter()
     length_dist: Counter = Counter()
     sampled_cycles: list[list[str]] = []
     total = 0
+    capped = False
 
     sccs = [s for s in nx.strongly_connected_components(G) if len(s) > 1]
     start = time.time()
@@ -63,8 +69,15 @@ def count_cycles_with_participation(G: nx.DiGraph, max_sample: int = 50):
             if total % 100_000 == 0:
                 elapsed = time.time() - start
                 print(f"  Found {total:,} cycles so far ({elapsed:.1f}s)...")
+            if total >= max_enumerate:
+                elapsed = time.time() - start
+                print(f"  Stopped at {total:,} cycles (cap reached, {elapsed:.1f}s)")
+                capped = True
+                break
+        if capped:
+            break
 
-    return total, node_counts, length_dist, sampled_cycles
+    return total, node_counts, length_dist, sampled_cycles, capped
 
 
 def run_stage3(exposure: str, outcome: str) -> dict:
@@ -97,11 +110,17 @@ def run_stage3(exposure: str, outcome: str) -> dict:
         return {"total_cycles": 0}
 
     # --- Enumerate cycles ---
-    print(f"\nEnumerating all simple cycles (sampling up to {max_sample})...")
+    max_enumerate = CYCLE_CONFIG.get("max_cycles_to_enumerate", 1_000_000)
+    print(f"\nEnumerating simple cycles (sampling up to {max_sample}, cap at {max_enumerate:,})...")
     t0 = time.time()
-    total, node_counts, length_dist, sampled = count_cycles_with_participation(G, max_sample)
+    total, node_counts, length_dist, sampled, capped = count_cycles_with_participation(
+        G, max_sample, max_enumerate,
+    )
     elapsed = time.time() - t0
-    print(f"Total cycles found: {total:,}  ({elapsed:.1f}s)")
+    if capped:
+        print(f"Cycles enumerated: {total:,} (CAPPED at limit, {elapsed:.1f}s)")
+    else:
+        print(f"Total cycles found: {total:,}  ({elapsed:.1f}s)")
 
     # --- Save node participation ---
     part_path = output_dir / "node_cycle_participation.csv"

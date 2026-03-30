@@ -1,0 +1,9 @@
+from,to
+Injury,Alzheimers
+Injury,Hypertension
+Injury,Pain
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Hypertension
+Pharmaceutical_Preparations,Injury
+Pharmaceutical_Preparations,Pain

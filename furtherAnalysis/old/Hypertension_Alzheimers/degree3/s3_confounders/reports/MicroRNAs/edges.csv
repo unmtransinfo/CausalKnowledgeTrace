@@ -1,0 +1,4 @@
+"from","to","confounder"
+"Hypertension","Alzheimers","MicroRNAs"
+"MicroRNAs","Hypertension","MicroRNAs"
+"MicroRNAs","Alzheimers","MicroRNAs"

@@ -1,0 +1,7 @@
+from,to
+Hypertension,Alzheimers
+COVID_19,Hypertension
+COVID_19,Respiratory_Distress_Syndrome_Adult
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Respiratory_Distress_Syndrome_Adult

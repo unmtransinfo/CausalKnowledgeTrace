@@ -1,0 +1,8 @@
+from,to
+Hypertension,Alzheimers
+Impaired_cognition,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Impaired_cognition
+APP_gene,Alzheimers
+APP_gene,Impaired_cognition

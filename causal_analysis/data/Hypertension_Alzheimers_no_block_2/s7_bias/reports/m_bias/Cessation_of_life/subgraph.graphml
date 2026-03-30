@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Cessation_of_life">
+      <data key="d0">Cessation_of_life</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011065</data>
+    </node>
+    <node id="APP_gene">
+      <data key="d0">APP_gene</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1364818</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">Alzheimers</data>
+      <data key="d1">outcome</data>
+      <data key="d2">C0750901</data>
+    </node>
+    <node id="Atherosclerosis">
+      <data key="d0">Atherosclerosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0004153</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">Hypertension</data>
+      <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
+    </node>
+    <edge source="APP_gene" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">492</data>
+    </edge>
+    <edge source="APP_gene" target="Cessation_of_life">
+      <data key="d3">CAUSES</data>
+      <data key="d4">123</data>
+    </edge>
+    <edge source="Alzheimers" target="Cessation_of_life">
+      <data key="d3">CAUSES</data>
+      <data key="d4">672</data>
+    </edge>
+    <edge source="Atherosclerosis" target="Cessation_of_life">
+      <data key="d3">CAUSES</data>
+      <data key="d4">470</data>
+    </edge>
+    <edge source="Atherosclerosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Atherosclerosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">44</data>
+    </edge>
+    <edge source="Hypertension" target="Cessation_of_life">
+      <data key="d3">CAUSES</data>
+      <data key="d4">750</data>
+    </edge>
+  </graph>
+</graphml>

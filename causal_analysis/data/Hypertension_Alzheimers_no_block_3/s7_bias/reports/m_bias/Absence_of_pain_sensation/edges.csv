@@ -1,0 +1,7 @@
+from,to
+agonists,Absence_of_pain_sensation
+agonists,Hypertension
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Absence_of_pain_sensation
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Hypertension

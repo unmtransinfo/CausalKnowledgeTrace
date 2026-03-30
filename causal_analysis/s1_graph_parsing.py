@@ -180,4 +180,3 @@ def run_stage1(exposure: str, outcome: str, degree: int = 2) -> nx.DiGraph:
 if __name__ == "__main__":
     args = parse_args("Stage 1: Parse graph input")
     run_stage1(args.exposure, args.outcome, args.degree)
-

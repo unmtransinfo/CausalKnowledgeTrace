@@ -1,0 +1,51 @@
+cycle_id,cycle_length,nodes
+1,4,Atherosclerosis -> Hypertension -> Alzheimers -> Inflammation
+2,5,Atherosclerosis -> Hypertension -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+3,2,Atherosclerosis -> Hypertension
+4,5,Atherosclerosis -> Hypertension -> Diabetes -> Alzheimers -> Inflammation
+5,6,Atherosclerosis -> Hypertension -> Diabetes -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+6,4,Atherosclerosis -> Hypertension -> Diabetes -> Endothelial_dysfunction
+7,5,Atherosclerosis -> Hypertension -> Diabetes -> Hyperglycemia -> Endothelial_dysfunction
+8,5,Atherosclerosis -> Hypertension -> Diabetes -> Hyperglycemia -> Inflammation
+9,6,Atherosclerosis -> Hypertension -> Diabetes -> Hyperglycemia -> Inflammation -> Endothelial_dysfunction
+10,4,Atherosclerosis -> Hypertension -> Diabetes -> Inflammation
+11,5,Atherosclerosis -> Hypertension -> Diabetes -> Inflammation -> Endothelial_dysfunction
+12,5,Atherosclerosis -> Hypertension -> Diabetes_Mellitus_Non_Insulin_Dependent -> Alzheimers -> Inflammation
+13,6,Atherosclerosis -> Hypertension -> Diabetes_Mellitus_Non_Insulin_Dependent -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+14,3,Atherosclerosis -> Hypertension -> Endothelial_dysfunction
+15,5,Atherosclerosis -> Hypertension -> Hypoxia -> Alzheimers -> Inflammation
+16,6,Atherosclerosis -> Hypertension -> Hypoxia -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+17,3,Atherosclerosis -> Hypertension -> Inflammation
+18,4,Atherosclerosis -> Hypertension -> Inflammation -> Endothelial_dysfunction
+19,5,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Alzheimers -> Inflammation
+20,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+21,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Alzheimers -> Inflammation
+22,7,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+23,5,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Endothelial_dysfunction
+24,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Hyperglycemia -> Endothelial_dysfunction
+25,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Hyperglycemia -> Inflammation
+26,7,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Hyperglycemia -> Inflammation -> Endothelial_dysfunction
+27,5,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Inflammation
+28,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes -> Inflammation -> Endothelial_dysfunction
+29,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes_Mellitus_Non_Insulin_Dependent -> Alzheimers -> Inflammation
+30,7,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Diabetes_Mellitus_Non_Insulin_Dependent -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+31,7,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes -> Alzheimers -> Inflammation
+32,8,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+33,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes -> Endothelial_dysfunction
+34,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes -> Inflammation
+35,7,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes -> Inflammation -> Endothelial_dysfunction
+36,5,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Endothelial_dysfunction
+37,5,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Inflammation
+38,6,Atherosclerosis -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Inflammation -> Endothelial_dysfunction
+39,5,Atherosclerosis -> Hypertension -> Ischemia -> Alzheimers -> Inflammation
+40,6,Atherosclerosis -> Hypertension -> Ischemia -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+41,5,Atherosclerosis -> Hypertension -> Obesity -> Alzheimers -> Inflammation
+42,6,Atherosclerosis -> Hypertension -> Obesity -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+43,6,Atherosclerosis -> Hypertension -> Obesity -> Chronic_inflammation -> Alzheimers -> Inflammation
+44,7,Atherosclerosis -> Hypertension -> Obesity -> Chronic_inflammation -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+45,6,Atherosclerosis -> Hypertension -> Obesity -> Diabetes -> Alzheimers -> Inflammation
+46,7,Atherosclerosis -> Hypertension -> Obesity -> Diabetes -> Alzheimers -> Inflammation -> Endothelial_dysfunction
+47,5,Atherosclerosis -> Hypertension -> Obesity -> Diabetes -> Endothelial_dysfunction
+48,6,Atherosclerosis -> Hypertension -> Obesity -> Diabetes -> Hyperglycemia -> Endothelial_dysfunction
+49,6,Atherosclerosis -> Hypertension -> Obesity -> Diabetes -> Hyperglycemia -> Inflammation
+50,7,Atherosclerosis -> Hypertension -> Obesity -> Diabetes -> Hyperglycemia -> Inflammation -> Endothelial_dysfunction

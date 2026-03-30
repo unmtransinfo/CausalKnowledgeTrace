@@ -1,0 +1,9 @@
+from,to
+Peptides,Alzheimers
+Peptides,Contraction
+Hypertension,Alzheimers
+Hypertension,Contraction
+Agent,Alzheimers
+Agent,Contraction
+Agent,Hypertension
+Contraction,Hypertension

@@ -1,0 +1,10 @@
+from,to
+Toxic_effect,Alzheimers
+Toxic_effect,Hypertension
+Agent,Alzheimers
+Agent,Hypertension
+Agent,Injury
+Agent,Toxic_effect
+Injury,Alzheimers
+Injury,Hypertension
+Hypertension,Alzheimers

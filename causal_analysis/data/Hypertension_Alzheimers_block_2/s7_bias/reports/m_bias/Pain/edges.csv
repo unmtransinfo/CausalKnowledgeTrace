@@ -1,0 +1,7 @@
+from,to
+Wounds_and_Injuries,Hypertension
+Wounds_and_Injuries,Pain
+Injury,Alzheimers
+Injury,Hypertension
+Injury,Pain
+Hypertension,Alzheimers

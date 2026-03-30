@@ -1,0 +1,8 @@
+from,to
+Angiotensin_II,Growth
+Angiotensin_II,Hypertension
+Hypertension,Alzheimers
+Hypertension,Growth
+Genes,Alzheimers
+Genes,Growth
+Genes,Hypertension

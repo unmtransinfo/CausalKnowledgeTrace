@@ -1,0 +1,12 @@
+from,to
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,Kidney_Failure
+Therapeutic_procedure,Alzheimers
+Therapeutic_procedure,Diabetes
+Therapeutic_procedure,Hypertension
+Therapeutic_procedure,Kidney_Failure
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Hypertension,Kidney_Failure
+Kidney_Failure,Hypertension

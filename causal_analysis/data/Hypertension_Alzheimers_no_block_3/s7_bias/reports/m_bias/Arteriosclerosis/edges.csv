@@ -1,0 +1,12 @@
+from,to
+Diet,Alzheimers
+Diet,Arteriosclerosis
+Diet,Hypertension
+Diet,Inflammation
+Hypertension,Alzheimers
+Hypertension,Arteriosclerosis
+Hypertension,Inflammation
+Inflammation,Alzheimers
+Inflammation,Arteriosclerosis
+Inflammation,Hypertension
+Alzheimers,Inflammation

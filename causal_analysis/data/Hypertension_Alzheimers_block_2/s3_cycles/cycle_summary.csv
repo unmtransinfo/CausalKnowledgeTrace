@@ -1,0 +1,51 @@
+cycle_id,cycle_length,nodes
+1,2,Fibrosis -> Hypertension
+2,4,Ischemia -> Alzheimers -> Degenerative_abnormality -> Hypertension
+3,4,Ischemia -> Alzheimers -> Inflammation -> Hypertension
+4,5,Ischemia -> Alzheimers -> Inflammation -> Atherosclerosis -> Hypertension
+5,6,Ischemia -> Alzheimers -> Inflammation -> Atherosclerosis -> Cardiovascular_Diseases -> Hypertension
+6,6,Ischemia -> Alzheimers -> Inflammation -> Atherosclerosis -> Cerebrovascular_accident -> Hypertension
+7,7,Ischemia -> Alzheimers -> Inflammation -> Atherosclerosis -> Myocardial_Infarction -> Heart_failure -> Hypertension
+8,5,Ischemia -> Alzheimers -> Inflammation -> Cardiovascular_Diseases -> Hypertension
+9,5,Ischemia -> Alzheimers -> Inflammation -> Endothelial_dysfunction -> Hypertension
+10,6,Ischemia -> Alzheimers -> Inflammation -> Endothelial_dysfunction -> Atherosclerosis -> Hypertension
+11,7,Ischemia -> Alzheimers -> Inflammation -> Endothelial_dysfunction -> Atherosclerosis -> Cardiovascular_Diseases -> Hypertension
+12,7,Ischemia -> Alzheimers -> Inflammation -> Endothelial_dysfunction -> Atherosclerosis -> Cerebrovascular_accident -> Hypertension
+13,8,Ischemia -> Alzheimers -> Inflammation -> Endothelial_dysfunction -> Atherosclerosis -> Myocardial_Infarction -> Heart_failure -> Hypertension
+14,6,Ischemia -> Alzheimers -> Inflammation -> Endothelial_dysfunction -> Cardiovascular_Diseases -> Hypertension
+15,2,Ischemia -> Hypertension
+16,3,Kidney_Diseases -> Hypertension -> Diabetes
+17,4,Kidney_Diseases -> Hypertension -> Insulin_Resistance -> Diabetes
+18,5,Kidney_Diseases -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+19,2,Kidney_Diseases -> Hypertension
+20,4,Kidney_Diseases -> Hypertension -> Obesity -> Diabetes
+21,5,Kidney_Diseases -> Hypertension -> Obesity -> Insulin_Resistance -> Diabetes
+22,6,Kidney_Diseases -> Hypertension -> Obesity -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+23,4,Kidney_Diseases -> Kidney_Failure -> Hypertension -> Diabetes
+24,5,Kidney_Diseases -> Kidney_Failure -> Hypertension -> Insulin_Resistance -> Diabetes
+25,6,Kidney_Diseases -> Kidney_Failure -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+26,3,Kidney_Diseases -> Kidney_Failure -> Hypertension
+27,5,Kidney_Diseases -> Kidney_Failure -> Hypertension -> Obesity -> Diabetes
+28,6,Kidney_Diseases -> Kidney_Failure -> Hypertension -> Obesity -> Insulin_Resistance -> Diabetes
+29,7,Kidney_Diseases -> Kidney_Failure -> Hypertension -> Obesity -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+30,4,Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Diabetes
+31,5,Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Insulin_Resistance -> Diabetes
+32,6,Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+33,3,Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension
+34,5,Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Obesity -> Diabetes
+35,6,Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Obesity -> Insulin_Resistance -> Diabetes
+36,7,Kidney_Diseases -> Kidney_Failure_Chronic -> Hypertension -> Obesity -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+37,2,Cerebral_atrophy -> Alzheimers
+38,3,Kidney_Failure_Chronic -> Hypertension -> Diabetes
+39,3,Kidney_Failure_Chronic -> Hypertension -> Diabetes_Mellitus
+40,3,Kidney_Failure_Chronic -> Hypertension -> Diabetic_Nephropathy
+41,4,Kidney_Failure_Chronic -> Hypertension -> Insulin_Resistance -> Diabetes
+42,5,Kidney_Failure_Chronic -> Hypertension -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+43,2,Kidney_Failure_Chronic -> Hypertension
+44,4,Kidney_Failure_Chronic -> Hypertension -> Obesity -> Diabetes
+45,5,Kidney_Failure_Chronic -> Hypertension -> Obesity -> Insulin_Resistance -> Diabetes
+46,6,Kidney_Failure_Chronic -> Hypertension -> Obesity -> Insulin_Resistance -> Hyperglycemia -> Diabetes
+47,5,Chronic_inflammation -> Alzheimers -> Degenerative_abnormality -> Hypertension -> Obesity
+48,5,Chronic_inflammation -> Alzheimers -> Inflammation -> Hypertension -> Obesity
+49,6,Chronic_inflammation -> Alzheimers -> Inflammation -> Atherosclerosis -> Hypertension -> Obesity
+50,7,Chronic_inflammation -> Alzheimers -> Inflammation -> Atherosclerosis -> Cardiovascular_Diseases -> Hypertension -> Obesity

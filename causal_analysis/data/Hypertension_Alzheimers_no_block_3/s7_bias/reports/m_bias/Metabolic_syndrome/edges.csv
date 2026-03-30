@@ -1,0 +1,11 @@
+from,to
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Insulin_Resistance
+Diet,Metabolic_syndrome
+Metabolic_syndrome,Hypertension
+Insulin_Resistance,Alzheimers
+Insulin_Resistance,Hypertension
+Insulin_Resistance,Metabolic_syndrome
+Hypertension,Alzheimers
+Hypertension,Insulin_Resistance

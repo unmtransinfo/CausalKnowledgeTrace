@@ -1,0 +1,9 @@
+from,to
+Hypertension,Alzheimers
+Study_models,Alzheimers
+Study_models,Hypertension
+Study_models,Neoplasm
+Agent,Alzheimers
+Agent,Hypertension
+Agent,Neoplasm
+Neoplasm,Hypertension

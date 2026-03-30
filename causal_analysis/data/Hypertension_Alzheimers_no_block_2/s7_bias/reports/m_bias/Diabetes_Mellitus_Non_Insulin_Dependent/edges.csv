@@ -1,0 +1,12 @@
+from,to
+Insulin_Resistance,Alzheimers
+Insulin_Resistance,Diabetes_Mellitus_Non_Insulin_Dependent
+Insulin_Resistance,Hypertension
+Diabetes_Mellitus_Non_Insulin_Dependent,Alzheimers
+Diet,Alzheimers
+Diet,Diabetes_Mellitus_Non_Insulin_Dependent
+Diet,Hypertension
+Diet,Insulin_Resistance
+Hypertension,Alzheimers
+Hypertension,Diabetes_Mellitus_Non_Insulin_Dependent
+Hypertension,Insulin_Resistance

@@ -1,357 +1,1148 @@
 """
 s7_bias_analysis.py
-Stage 7: M-Bias and Butterfly Bias Analysis.
+Stage 7: Butterfly Bias and M-Bias Analysis.
 
-Ported from furtherAnalysis/MnButterflyBiasReport.R.
-Uses NetworkX graph-theoretic operations to implement:
-  - Variable role classification (confounders, colliders, mediators, IVs, precision)
-  - Butterfly bias detection (confounders with ≥2 confounder parents)
+Matches R logic from furtherAnalysis/post_ckt/scripts/04_butterfly_bias_analysis.R:
+  - Confounder identification via direct parents/children (NOT transitive ancestors)
+    Formula: intersect(parents(exposure), parents(outcome))
+             - children(exposure) - children(outcome)
+  - Butterfly bias detection (confounders with >=2 confounder parents)
+
+Additionally provides (not in R):
   - M-bias detection (colliders on backdoor paths that should NOT be adjusted)
+    Uses direct parent/child only (top-down approach):
+    M = children(parent_of_X) ∩ children(parent_of_Y) where P1 ≠ P2
 
-Works on DAGs.  For cyclic graphs, results carry a warning.
+Works on both DAGs and cyclic graphs (all checks use direct parent/child).
+
+Input:  data/{Exposure}_{Outcome}/s4_node_removal/reduced_graph.graphml
+        (falls back to s1_graph/graph.graphml if reduced graph not found)
+Output: data/{Exposure}_{Outcome}/s7_bias/
+          - butterfly_analysis_results.csv
+          - butterfly_nodes.csv
+          - independent_confounders.csv
+          - m_bias_results.csv  (if M-bias nodes found)
+          - analysis_summary.txt
 """
 
-import itertools
+import csv
 import logging
+from datetime import datetime
+from pathlib import Path
 from typing import Any
 
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 import networkx as nx
 
-from .s6_causal_inference import find_adjustment_sets, find_instrumental_variables
+from .utils import (
+    get_s1_graph_dir,
+    get_s4_node_removal_dir,
+    get_s7_bias_dir,
+    ensure_dir,
+    print_header,
+    print_complete,
+    parse_args,
+)
 
 logger = logging.getLogger(__name__)
 
 
-# ── Helper: reachability on undirected skeleton ──────────────────────
+# ── Confounder identification (matches R dagitty logic) ──────────────
 
-def _on_undirected_path(G: nx.DiGraph, source: str, target: str,
-                        node: str) -> bool:
-    """Check if *node* lies on some simple path between *source* and *target*
-    on the undirected skeleton of G.
+def identify_confounders(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]:
+    """Identify confounders using direct parents/children.
 
-    Instead of enumerating all paths (exponential), we use a two-BFS trick:
-    remove *node* from the undirected skeleton and check whether *source* and
-    *target* become disconnected.  If they do, *node* is a cut-vertex on every
-    path.  If they don't, we still need to verify *node* is reachable from
-    both endpoints — which means it lies on *some* path.
+    Matches R's dagitty::parents() / dagitty::children() approach:
+      confounders = intersect(parents(exposure), parents(outcome))
+                    - children(exposure) - children(outcome)
 
-    Simplified O(n+e) approach: node is on some undirected path between
-    source and target iff node is in the same connected component as both
-    source and target on the undirected skeleton.
-    """
-    U = G.to_undirected(as_view=True)
-    try:
-        component = nx.node_connected_component(U, source)
-        return target in component and node in component
-    except (nx.NetworkXError, nx.NodeNotFound):
-        return False
-
-
-def _sample_path_through(U: nx.Graph, source: str, target: str,
-                         node: str) -> list[str] | None:
-    """Find ONE sample undirected path from source→node→target (if exists).
-    Uses two shortest-path lookups on the pre-computed undirected skeleton *U*.
-    Returns None if no path found."""
-    try:
-        path_s_v = nx.shortest_path(U, source, node)
-        path_v_t = nx.shortest_path(U, node, target)
-        # Combine avoiding duplicate of node
-        return path_s_v + path_v_t[1:]
-    except (nx.NetworkXError, nx.NodeNotFound, nx.NetworkXNoPath):
-        return None
-
-
-# ── Variable role identification ─────────────────────────────────────
-
-def identify_variable_roles(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]:
-    """Classify every node into causal roles relative to exposure/outcome.
-
-    Returns a dict with keys:
-        exposure, outcome,
-        adjustment_set          – from find_adjustment_sets (backdoor criterion)
-        instrumental_variables  – from find_instrumental_variables
-        confounders, mediators, colliders,
-        precision_variables,
-        raw_mediators, raw_colliders
+    These are direct (1-hop) structural relationships, NOT transitive ancestors.
+    This works even with cyclic graphs.
     """
     if exposure not in G or outcome not in G:
-        return _empty_roles(exposure, outcome)
+        return {
+            "parents_exposure": [],
+            "parents_outcome": [],
+            "children_exposure": [],
+            "children_outcome": [],
+            "confounders": [],
+        }
 
-    exp_out = {exposure, outcome}
-    anc_exp = nx.ancestors(G, exposure)
-    anc_out = nx.ancestors(G, outcome)
-    desc_exp = nx.descendants(G, exposure)
-    desc_out = nx.descendants(G, outcome)
+    parents_exp = set(G.predecessors(exposure))
+    parents_out = set(G.predecessors(outcome))
+    children_exp = set(G.successors(exposure))
+    children_out = set(G.successors(outcome))
 
-    # Raw role sets (before refinement)
-    raw_mediators = (desc_exp & anc_out) - exp_out
-    raw_colliders = (desc_exp & desc_out) - exp_out
-
-    # Instrumental variables (from s6)
-    ivs = set(find_instrumental_variables(G, exposure, outcome))
-
-    # Precision variables: ancestors of outcome but NOT of exposure, not mediators
-    raw_precision = anc_out - anc_exp
-    precision_variables = raw_precision - exp_out - raw_mediators
-
-    # Confounders: common ancestors of both, excluding IVs
-    adjustment_set = set(find_adjustment_sets(G, exposure, outcome))
-    raw_confounders = anc_exp & anc_out
-    confounders = (raw_confounders - ivs) & adjustment_set
-
-    # Refined sets (mutually exclusive)
-    colliders = raw_colliders - raw_mediators - confounders
-    mediators = raw_mediators - raw_colliders - confounders
+    # Confounders = common direct parents minus direct children of either
+    confounders = (parents_exp & parents_out) - children_exp - children_out
 
     return {
-        'exposure': exposure,
-        'outcome': outcome,
-        'adjustment_set': sorted(adjustment_set),
-        'instrumental_variables': sorted(ivs),
-        'precision_variables': sorted(precision_variables),
-        'confounders': sorted(confounders),
-        'mediators': sorted(mediators),
-        'colliders': sorted(colliders),
-        'raw_mediators': sorted(raw_mediators),
-        'raw_colliders': sorted(raw_colliders),
-    }
-
-
-def _empty_roles(exposure: str, outcome: str) -> dict[str, Any]:
-    return {
-        'exposure': exposure, 'outcome': outcome,
-        'adjustment_set': [], 'instrumental_variables': [],
-        'precision_variables': [], 'confounders': [],
-        'mediators': [], 'colliders': [],
-        'raw_mediators': [], 'raw_colliders': [],
+        "parents_exposure": sorted(parents_exp),
+        "parents_outcome": sorted(parents_out),
+        "children_exposure": sorted(children_exp),
+        "children_outcome": sorted(children_out),
+        "confounders": sorted(confounders),
     }
 
 
 # ── Butterfly bias analysis ──────────────────────────────────────────
 
-def analyze_butterfly_bias(G: nx.DiGraph, exposure: str, outcome: str,
-                           roles: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Detect butterfly bias: confounders with ≥2 confounder parents.
+def analyze_butterfly_bias(
+    G: nx.DiGraph,
+    exposure: str,
+    outcome: str,
+    confounders: list[str] | None = None,
+) -> dict[str, Any]:
+    """Detect butterfly bias: a confounder with 2+ OTHER confounders pointing into it.
 
-    Args:
-        roles: Pre-computed variable roles (optional). If None, computed here.
+    Butterfly structure (C2 is the butterfly):
+        Exposure <- C1 -> C2 <- C3 -> Outcome
+                  Exposure <- C2 -> Outcome
+                  C1 -> Outcome
+                  Exposure <- C3
 
-    Returns dict with:
-        roles, butterfly_vars, butterfly_parents,
-        valid_sets, non_butterfly_confounders
+    Key criteria for C2 to be a butterfly:
+      1. C2 is a confounder (parent of both Exposure and Outcome)
+      2. C2 has 2+ parents that are ALSO confounders (C1, C3)
+      3. The parent confounders also point to Exposure/Outcome
+
+    This creates a bias because adjusting for C2 opens collider paths
+    through C1->C2<-C3, creating spurious associations.
     """
-    if roles is None:
-        roles = identify_variable_roles(G, exposure, outcome)
-    confounder_set = set(roles['confounders'])
+    if confounders is None:
+        info = identify_confounders(G, exposure, outcome)
+        confounders = info["confounders"]
 
+    confounder_set = set(confounders)
+
+    # Build per-confounder results
+    results: list[dict] = []
     butterfly_vars: list[str] = []
     butterfly_parents: dict[str, list[str]] = {}
-    non_butterfly_confounders = list(confounder_set)
+    butterfly_structures: dict[str, dict] = {}
 
-    for v in sorted(confounder_set):
-        pars = set(G.predecessors(v)) & confounder_set
-        if len(pars) >= 2:
-            butterfly_vars.append(v)
-            butterfly_parents[v] = sorted(pars)
+    for conf in sorted(confounder_set):
+        # Direct parents of this confounder
+        conf_parents = set(G.predecessors(conf))
+        # Which of those parents are also confounders?
+        confounder_pars = sorted(conf_parents & confounder_set)
+        is_butterfly = len(confounder_pars) >= 2
 
-    # Remove butterfly nodes and their parents from "non-butterfly" set
-    if butterfly_vars:
-        exclude = set(butterfly_vars)
-        for pars in butterfly_parents.values():
-            exclude.update(pars)
-        non_butterfly_confounders = sorted(confounder_set - exclude)
+        results.append(
+            {
+                "confounder": conf,
+                "n_confounder_parents": len(confounder_pars),
+                "confounder_parents": ", ".join(confounder_pars),
+                "is_butterfly": is_butterfly,
+            }
+        )
 
-    # Build valid adjustment sets that avoid butterfly bias
-    valid_sets = _build_butterfly_valid_sets(
-        butterfly_vars, butterfly_parents, non_butterfly_confounders, confounder_set,
-    )
+        if is_butterfly:
+            butterfly_vars.append(conf)
+            butterfly_parents[conf] = confounder_pars
+
+            # For each butterfly, record its full structure for visualization
+            # Include: the butterfly, its confounder-parents, exposure, outcome
+            # and any edges between these nodes
+            structure_nodes = {conf, exposure, outcome} | set(confounder_pars)
+            butterfly_structures[conf] = {
+                "center": conf,
+                "confounder_parents": confounder_pars,
+                "structure_nodes": sorted(structure_nodes),
+            }
+
+    independent = [r for r in results if r["n_confounder_parents"] == 0]
+    has_one_parent = [r for r in results if r["n_confounder_parents"] == 1]
 
     return {
-        'roles': roles,
-        'butterfly_vars': butterfly_vars,
-        'butterfly_parents': butterfly_parents,
-        'valid_sets': valid_sets,
-        'non_butterfly_confounders': non_butterfly_confounders,
+        "all_results": results,
+        "butterfly_vars": butterfly_vars,
+        "butterfly_parents": butterfly_parents,
+        "butterfly_structures": butterfly_structures,
+        "independent_confounders": [r["confounder"] for r in independent],
+        "has_one_parent": [r["confounder"] for r in has_one_parent],
+        "n_total": len(results),
+        "n_independent": len(independent),
+        "n_one_parent": len(has_one_parent),
+        "n_butterfly": len(butterfly_vars),
     }
 
 
-def _build_butterfly_valid_sets(
-    butterfly_vars: list[str],
-    butterfly_parents: dict[str, list[str]],
-    non_butterfly_confounders: list[str],
-    all_confounders: set[str],
-) -> list[list[str]]:
-    """Generate all valid adjustment sets that avoid butterfly bias.
-
-    For each butterfly node B with parents P1,P2,...,Pn the valid options are:
-      • {P1, P2, ..., Pn}   (adjust for all parents, skip B)
-      • {B, P_subset}       for each strict subset of parents
-    The Cartesian product of per-butterfly options is combined with the
-    non-butterfly confounders to form the final sets.
-    """
-    if not butterfly_vars:
-        if all_confounders:
-            return [sorted(all_confounders)]
-        return [[]]
-
-    per_butterfly_options: list[list[list[str]]] = []
-    for bfly in butterfly_vars:
-        pars = butterfly_parents[bfly]
-        options: list[list[str]] = [sorted(pars)]  # option 1: all parents
-        if len(pars) >= 2:
-            for k in range(1, len(pars)):
-                for subset in itertools.combinations(pars, k):
-                    options.append(sorted([bfly] + list(subset)))
-        per_butterfly_options.append(options)
-
-    # Cartesian product across all butterfly nodes
-    seen: set[tuple[str, ...]] = set()
-    valid_sets: list[list[str]] = []
-    for combo in itertools.product(*per_butterfly_options):
-        adj = set(non_butterfly_confounders)
-        for option_nodes in combo:
-            adj.update(option_nodes)
-        key = tuple(sorted(adj))
-        if key not in seen:
-            seen.add(key)
-            valid_sets.append(list(key))
-
-    return valid_sets
+# ── M-bias analysis (top-down, direct parent/child only) ─────────────
 
 
-# ── M-bias analysis ──────────────────────────────────────────────────
+def analyze_m_bias(
+    G: nx.DiGraph,
+    exposure: str,
+    outcome: str,
+    confounders: list[str] | None = None,
+) -> dict[str, Any]:
+    """Detect M-bias using direct parent/child relationships only.
 
-def analyze_m_bias(G: nx.DiGraph, exposure: str, outcome: str,
-                   roles: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Detect M-bias: colliders on backdoor paths that should NOT be adjusted.
+    M-bias structure (M is the collider):
+          X ← P1 → M ← P2 → Y
 
-    An M-bias variable is a node that:
-      1. Has ≥2 parents (collider structure)
-      2. Is NOT in the adjustment set
-      3. Lies on at least one undirected path between exposure and outcome
+    Algorithm (top-down):
+      1. parents_X = direct parents of Exposure - {Outcome}
+      2. parents_Y = direct parents of Outcome - {Exposure}
+      3. For each P1 in parents_X, P2 in parents_Y where P1 ≠ P2:
+         4. M = children(P1) ∩ children(P2) - {X, Y} - confounders
+         5. Each such M is an M-bias collider
 
-    Uses O(n+e) reachability checks instead of exponential path enumeration.
+    All relationships are direct (1-hop), no transitive ancestry needed.
+    Works identically on DAGs and cyclic graphs.
 
-    Args:
-        roles: Pre-computed variable roles (optional). If None, adjustment set
-               is computed independently.
-
-    Returns dict with:
-        exposure, outcome, adjustment_set,
-        mbias_vars, mbias_details
+    This is a Python-only addition (not in R pipeline).
     """
     if exposure not in G or outcome not in G:
         return {
-            'exposure': exposure, 'outcome': outcome,
-            'adjustment_set': [],
-            'mbias_vars': [], 'mbias_details': {},
+            "exposure": exposure,
+            "outcome": outcome,
+            "mbias_vars": [],
+            "mbias_details": {},
+            "mbias_structures": {},
         }
 
-    # Reuse adjustment set from pre-computed roles if available
-    if roles is not None:
-        adjustment_set = set(roles['adjustment_set'])
-    else:
-        adjustment_set = set(find_adjustment_sets(G, exposure, outcome))
+    confounder_set = set(confounders) if confounders else set()
 
-    all_nodes = set(G.nodes()) - {exposure, outcome}
+    # Step 1: Direct parents of exposure and outcome (excluding each other)
+    parents_X = set(G.predecessors(exposure)) - {outcome}
+    parents_Y = set(G.predecessors(outcome)) - {exposure}
 
-    # Pre-compute undirected skeleton and connected component — O(n+e) once
-    U = G.to_undirected(as_view=True)
-    try:
-        component = nx.node_connected_component(U, exposure)
-    except (nx.NetworkXError, nx.NodeNotFound):
-        component = set()
-    outcome_reachable = outcome in component
+    # Step 2: For each (P1, P2) pair, find common children = M-bias colliders
+    # Use dict keyed by M to deduplicate (keep first pair found)
+    mbias_found: dict[str, tuple[str, str]] = {}  # M -> (p1, p2)
 
-    # On cyclic graphs nearly every node qualifies; cap to keep it fast
-    MAX_MBIAS_REPORTED = 20
-    MAX_SAMPLE_PATHS = 10  # only compute sample paths for top N
+    for p1 in sorted(parents_X):
+        children_p1 = set(G.successors(p1))
+        for p2 in sorted(parents_Y):
+            if p1 == p2:
+                continue  # need distinct parents
 
-    mbias_vars: list[str] = []
+            children_p2 = set(G.successors(p2))
+
+            # Common children = potential M-bias colliders
+            common = children_p1 & children_p2
+            common -= {exposure, outcome}   # M can't be X or Y
+            common -= confounder_set        # M can't be a confounder
+
+            for m in sorted(common):
+                if m not in mbias_found:
+                    mbias_found[m] = (p1, p2)
+
+    # Step 3: Build results
+    mbias_vars: list[str] = sorted(mbias_found.keys())
     mbias_details: dict[str, dict] = {}
+    mbias_structures: dict[str, dict] = {}
 
-    for v in sorted(all_nodes):
-        if len(mbias_vars) >= MAX_MBIAS_REPORTED:
-            break
-        parents_v = list(G.predecessors(v))
-        if len(parents_v) < 2:
-            continue
-        if v in adjustment_set:
-            continue
+    for m in mbias_vars:
+        p1, p2 = mbias_found[m]
+        parents_m = sorted(G.predecessors(m))
 
-        # Check reachability: v is on some undirected path between
-        # exposure and outcome iff all three are in the same component
-        if outcome_reachable and v in component:
-            mbias_vars.append(v)
-            # Only compute sample paths for the first few (expensive on big graphs)
-            if len(mbias_vars) <= MAX_SAMPLE_PATHS:
-                sample = _sample_path_through(U, exposure, outcome, v)
-                sample_path = [str(n) for n in sample] if sample else []
-            else:
-                sample_path = []
-            mbias_details[v] = {
-                'parents': sorted(parents_v),
-                'sample_path': sample_path,
-            }
+        mbias_details[m] = {
+            "parents": parents_m,
+            "p1_exposure_side": p1,
+            "p2_outcome_side": p2,
+            "n_parents": len(parents_m),
+        }
+
+        mbias_structures[m] = {
+            "collider": m,
+            "p1": p1,
+            "p2": p2,
+            "structure_nodes": sorted({m, p1, p2, exposure, outcome}),
+        }
 
     return {
-        'exposure': exposure,
-        'outcome': outcome,
-        'adjustment_set': sorted(adjustment_set),
-        'mbias_vars': mbias_vars,
-        'mbias_details': mbias_details,
-        'capped': len(mbias_vars) >= MAX_MBIAS_REPORTED,
+        "exposure": exposure,
+        "outcome": outcome,
+        "mbias_vars": mbias_vars,
+        "mbias_details": mbias_details,
+        "mbias_structures": mbias_structures,
     }
 
 
-# ── Combined analysis entry point ────────────────────────────────────
+# ── Color scheme (matches R 04b_confounder_subgraphs.R) ───────────────
 
-def analyze_bias(G: nx.DiGraph, exposure: str, outcome: str) -> dict[str, Any]:
-    """Run both M-bias and butterfly bias analysis.  Main entry point."""
-    is_dag = nx.is_directed_acyclic_graph(G)
-    warnings: list[str] = []
+# Node fill colors by type
+_NODE_COLORS = {
+    "exposure":          "#E74C3C",   # Red
+    "outcome":           "#3498DB",   # Blue
+    "butterfly":         "#F39C12",   # Orange
+    "confounder_self":   "#2ECC71",   # Green (this confounder, non-butterfly)
+    "confounder_parent": "#27AE60",   # Darker green (confounder parent of butterfly)
+    "confounder":        "#82E0AA",   # Light green (other confounder)
+    "mbias":             "#9B59B6",   # Purple (M-bias collider)
+    "mbias_parent":      "#AF7AC5",   # Light purple (parent of M-bias collider)
+    "other":             "#D5D8DC",   # Gray
+}
 
-    if exposure not in G:
-        warnings.append(f'Exposure "{exposure}" not in graph')
-    if outcome not in G:
-        warnings.append(f'Outcome "{outcome}" not in graph')
+# Node border colors by type
+_BORDER_COLORS = {
+    "exposure":          "#C0392B",
+    "outcome":           "#2980B9",
+    "butterfly":         "#E67E22",
+    "confounder_self":   "#1E8449",
+    "confounder_parent": "#1E8449",
+    "confounder":        "#27AE60",
+    "mbias":             "#7D3C98",
+    "mbias_parent":      "#884EA0",
+    "other":             "#95A5A6",
+}
 
-    if warnings:
-        return {
-            'success': False,
-            'warnings': warnings,
-            'is_dag': is_dag,
-            'roles': _empty_roles(exposure, outcome),
-            'butterfly': {'butterfly_vars': [], 'butterfly_parents': {},
-                          'valid_sets': [], 'non_butterfly_confounders': []},
-            'mbias': {'mbias_vars': [], 'mbias_details': {}},
-        }
 
-    if not is_dag:
-        warnings.append(
-            'Graph is NOT a DAG. Bias analysis results may be unreliable. '
-            'Consider running node removal first to break cycles.'
+# ── Subgraph extraction & plotting ────────────────────────────────────
+
+def _extract_butterfly_subgraph(
+    G: nx.DiGraph,
+    butterfly_node: str,
+    exposure: str,
+    outcome: str,
+    butterfly_structure: dict,
+    confounder_set: set[str],
+) -> nx.DiGraph:
+    """Extract subgraph showing the butterfly bias structure.
+
+    Butterfly structure (butterfly_node = C2):
+        Exposure <- C1 -> C2 <- C3 -> Outcome
+                  Exposure <- C2 -> Outcome
+
+    Keep:
+      - The butterfly node (center)
+      - Its confounder-parents (C1, C3)
+      - Exposure and Outcome
+      - Edges showing the collider pattern and backdoor paths
+    """
+    keep = {butterfly_node, exposure, outcome}
+
+    # Add the confounder-parents of the butterfly
+    confounder_parents = set(butterfly_structure.get("confounder_parents", []))
+    keep.update(confounder_parents)
+
+    # Add any other confounders in the immediate neighborhood for context
+    # (to show they also point to exposure/outcome)
+    all_parents = set(G.predecessors(butterfly_node))
+    all_children = set(G.successors(butterfly_node))
+    keep.update((all_parents | all_children) & confounder_set)
+
+    # Only keep nodes that exist
+    keep = {n for n in keep if n in G}
+    return G.subgraph(keep).copy()
+
+
+def _extract_confounder_subgraph(
+    G: nx.DiGraph,
+    node: str,
+    exposure: str,
+    outcome: str,
+    confounder_set: set[str],
+) -> nx.DiGraph:
+    """Extract subgraph for a general confounder (not butterfly).
+
+    Keep:
+      - The confounder
+      - Exposure and Outcome
+      - Other confounders in its immediate neighborhood
+    """
+    keep = {node, exposure, outcome}
+
+    parents = set(G.predecessors(node))
+    children = set(G.successors(node))
+
+    # Only keep confounder neighbors
+    keep.update(parents & confounder_set)
+    keep.update(children & confounder_set)
+
+    keep = {n for n in keep if n in G}
+    return G.subgraph(keep).copy()
+
+
+def _classify_node(
+    node: str,
+    highlight: str,
+    exposure: str,
+    outcome: str,
+    is_butterfly: bool,
+    confounder_set: set[str],
+    confounder_parents_of_highlight: set[str],
+) -> str:
+    """Classify a node into a type for coloring (matches R logic)."""
+    if node == exposure:
+        return "exposure"
+    if node == outcome:
+        return "outcome"
+    if node == highlight:
+        return "butterfly" if is_butterfly else "confounder_self"
+    if node in confounder_set:
+        # If the highlight is a butterfly, and this node is a parent
+        # of the highlight AND a confounder → confounder_parent
+        if is_butterfly and node in confounder_parents_of_highlight:
+            return "confounder_parent"
+        return "confounder"
+    return "other"
+
+
+def _plot_subgraph(
+    sub: nx.DiGraph,
+    highlight_node: str,
+    exposure: str,
+    outcome: str,
+    title: str,
+    filepath: Path,
+    confounder_set: set[str] | None = None,
+    is_butterfly: bool = False,
+    confounder_parents_of_highlight: set[str] | None = None,
+) -> None:
+    """Save a subgraph plot with color-coded nodes.
+
+    Color scheme matches R's 04b_confounder_subgraphs.R:
+        Red (#E74C3C)          = Exposure
+        Blue (#3498DB)         = Outcome
+        Orange (#F39C12)       = Butterfly confounder (highlight, if butterfly)
+        Green (#2ECC71)        = This confounder (highlight, if independent)
+        Darker green (#27AE60) = Confounder parent of butterfly
+        Light green (#82E0AA)  = Other confounder
+        Gray (#D5D8DC)         = Other node
+    Edge coloring (semantic, matching R):
+        Green  = confounder → exposure/outcome (backdoor path)
+        Orange = confounder-parent → butterfly
+        Red    = edges touching exposure
+        Blue   = edges touching outcome
+        Gray   = other edges
+    """
+    if confounder_set is None:
+        confounder_set = set()
+    if confounder_parents_of_highlight is None:
+        confounder_parents_of_highlight = set()
+
+    nodes = list(sub.nodes())
+
+    # --- Classify each node ---
+    node_types = {
+        n: _classify_node(
+            n, highlight_node, exposure, outcome,
+            is_butterfly, confounder_set, confounder_parents_of_highlight,
+        )
+        for n in nodes
+    }
+
+    fill_colors = [_NODE_COLORS[node_types[n]] for n in nodes]
+    border_colors = [_BORDER_COLORS[node_types[n]] for n in nodes]
+
+    # --- Node sizes (highlight and exposure/outcome larger) ---
+    size_map = []
+    for n in nodes:
+        if n == highlight_node:
+            size_map.append(1400)
+        elif n in (exposure, outcome):
+            size_map.append(1100)
+        else:
+            size_map.append(800)
+
+    # --- Edge colors (semantic, matching R) ---
+    edge_colors = []
+    edge_widths = []
+    for u, v in sub.edges():
+        ec = "#BDC3C7"   # default gray
+        ew = 1.5
+
+        # Confounder → exposure/outcome (backdoor) = green
+        if u == highlight_node and v in (exposure, outcome):
+            ec, ew = "#2ECC71", 3.0
+        # Parent-confounder → butterfly = orange
+        elif is_butterfly and v == highlight_node and u in confounder_set:
+            ec, ew = "#F39C12", 2.5
+        # Edges touching exposure = red
+        elif u == exposure or v == exposure:
+            ec, ew = "#E74C3C", 2.0
+        # Edges touching outcome = blue
+        elif u == outcome or v == outcome:
+            ec, ew = "#3498DB", 2.0
+
+        # Re-apply confounder→exposure/outcome on top (match R precedence)
+        if u == highlight_node and v == exposure:
+            ec, ew = "#2ECC71", 3.0
+        if u == highlight_node and v == outcome:
+            ec, ew = "#2ECC71", 3.0
+
+        edge_colors.append(ec)
+        edge_widths.append(ew)
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    pos = nx.spring_layout(sub, seed=42, k=2.5)
+
+    # Draw edges
+    if sub.number_of_edges() > 0:
+        nx.draw_networkx_edges(
+            sub, pos, ax=ax,
+            edge_color=edge_colors, width=edge_widths,
+            arrows=True, arrowsize=15,
+            connectionstyle="arc3,rad=0.08",
         )
 
-    # Compute roles ONCE and share across both analyses
-    roles = identify_variable_roles(G, exposure, outcome)
+    nx.draw_networkx_nodes(
+        sub, pos, ax=ax,
+        node_color=fill_colors, node_size=size_map,
+        edgecolors=border_colors, linewidths=2.0,
+    )
 
-    butterfly = analyze_butterfly_bias(G, exposure, outcome, roles=roles)
-    mbias = analyze_m_bias(G, exposure, outcome, roles=roles)
+    # Replace underscores with newlines in labels for readability (matches R)
+    labels = {n: n.replace("_", "\n") for n in nodes}
+    nx.draw_networkx_labels(sub, pos, labels=labels, ax=ax,
+                            font_size=7, font_weight="bold")
+
+    ax.set_title(title, fontsize=13, fontweight="bold")
+
+    # --- Build legend (matching R) ---
+    legend_items = [
+        ("Exposure", _NODE_COLORS["exposure"]),
+        ("Outcome", _NODE_COLORS["outcome"]),
+    ]
+    if is_butterfly:
+        legend_items.append(("This confounder (BUTTERFLY)", _NODE_COLORS["butterfly"]))
+        if confounder_parents_of_highlight & set(nodes):
+            legend_items.append(("Confounder parent", _NODE_COLORS["confounder_parent"]))
+    else:
+        legend_items.append(("This confounder (INDEPENDENT)", _NODE_COLORS["confounder_self"]))
+
+    # Only show "Other confounder" if there are other confounders in the subgraph
+    other_conf = confounder_set - {highlight_node}
+    if other_conf & set(nodes):
+        legend_items.append(("Other confounder", _NODE_COLORS["confounder"]))
+    if any(t == "other" for t in node_types.values()):
+        legend_items.append(("Other node", _NODE_COLORS["other"]))
+
+    legend_handles = [
+        plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=c,
+                   markeredgecolor="black", markersize=10, label=l)
+        for l, c in legend_items
+    ]
+    ax.legend(handles=legend_handles, loc="lower right", fontsize=9,
+              framealpha=0.9, edgecolor="gray", title="Node Types")
+
+    fig.tight_layout()
+    fig.savefig(filepath, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _save_node_reports(
+    G: nx.DiGraph,
+    nodes: list[str],
+    exposure: str,
+    outcome: str,
+    reports_dir: Path,
+    node_type: str,
+    confounder_set: set[str] | None = None,
+    butterfly_structures: dict | None = None,
+) -> None:
+    """Generate per-node subgraph reports for confounders (plot + edge CSV + graphml).
+
+    Args:
+        butterfly_structures: dict mapping node → structure dict with:
+                              {"center": node, "confounder_parents": [...], "structure_nodes": [...]}
+                              From ``analyze_butterfly_bias()['butterfly_structures']``.
+    """
+    if confounder_set is None:
+        confounder_set = set()
+    if butterfly_structures is None:
+        butterfly_structures = {}
+
+    ensure_dir(reports_dir)
+    for node in nodes:
+        safe_name = node.replace(" ", "_").replace("/", "_")
+        is_butterfly = node in butterfly_structures
+
+        node_dir = reports_dir / safe_name
+        ensure_dir(node_dir)
+
+        # Extract appropriate subgraph based on node type
+        if is_butterfly:
+            sub = _extract_butterfly_subgraph(
+                G, node, exposure, outcome,
+                butterfly_structures[node], confounder_set,
+            )
+            conf_parents = set(butterfly_structures[node].get("confounder_parents", []))
+        else:
+            sub = _extract_confounder_subgraph(
+                G, node, exposure, outcome, confounder_set,
+            )
+            conf_parents = set()
+
+        # Save edge list
+        edges = list(sub.edges())
+        with open(node_dir / "edges.csv", "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["from", "to"])
+            for u, v in edges:
+                w.writerow([u, v])
+
+        # Save subgraph as graphml
+        nx.write_graphml(sub, str(node_dir / "subgraph.graphml"))
+
+        # Title with marker (matches R: "NodeName [BUTTERFLY]" or "[INDEPENDENT]")
+        marker = "BUTTERFLY" if is_butterfly else "INDEPENDENT"
+        parents_count = len(list(G.predecessors(node)))
+        children_count = len(list(G.successors(node)))
+        plot_title = (
+            f"{node} [{marker}]\n"
+            f"Parents: {parents_count} | Children: {children_count}"
+            + (f" | Confounder parents: {len(conf_parents)}" if is_butterfly else "")
+        )
+
+        # Filename with marker prefix (matches R)
+        prefix = "BUTTERFLY_" if is_butterfly else "INDEPENDENT_"
+        plot_file = node_dir / f"{prefix}{safe_name}.png"
+
+        # Save plot
+        _plot_subgraph(
+            sub, node, exposure, outcome,
+            title=plot_title,
+            filepath=plot_file,
+            confounder_set=confounder_set,
+            is_butterfly=is_butterfly,
+            confounder_parents_of_highlight=conf_parents,
+        )
+
+
+# ── M-bias specific plotting (Python-only) ────────────────────────────
+
+def _extract_mbias_subgraph(
+    G: nx.DiGraph,
+    m_node: str,
+    exposure: str,
+    outcome: str,
+    mbias_structure: dict,
+) -> nx.DiGraph:
+    """Extract subgraph showing the 5-node M-bias collider structure.
+
+    M-bias structure (m_node = M):
+          P1 → M ← P2
+           ↓       ↓
+      Exposure   Outcome
+
+    Only keeps the 5 core nodes: M, P1, P2, Exposure, Outcome.
+    """
+    # 5-node structure only
+    p1 = mbias_structure.get("p1", "")
+    p2 = mbias_structure.get("p2", "")
+    keep = {m_node, p1, p2, exposure, outcome} & set(G.nodes())
+
+    return G.subgraph(keep).copy()
+
+
+def _plot_mbias_subgraph(
+    sub: nx.DiGraph,
+    mbias_node: str,
+    exposure: str,
+    outcome: str,
+    title: str,
+    filepath: Path,
+    confounder_set: set[str] | None = None,
+    mbias_parents: set[str] | None = None,
+) -> None:
+    """Plot an M-bias collider subgraph with distinct purple coloring.
+
+    Color scheme:
+        Purple (#9B59B6)       = M-bias collider (DO NOT condition on)
+        Light purple (#AF7AC5) = Parents of the collider
+        Red (#E74C3C)          = Exposure
+        Blue (#3498DB)         = Outcome
+        Light green (#82E0AA)  = Confounders in the subgraph
+        Gray (#D5D8DC)         = Other nodes
+    Edge coloring:
+        Purple = edges INTO the collider (converging arrows)
+        Red    = edges touching exposure
+        Blue   = edges touching outcome
+        Gray   = other edges
+    """
+    if confounder_set is None:
+        confounder_set = set()
+    if mbias_parents is None:
+        mbias_parents = set()
+
+    nodes = list(sub.nodes())
+
+    # --- Classify each node ---
+    fill_colors = []
+    border_colors = []
+    for n in nodes:
+        if n == exposure:
+            ntype = "exposure"
+        elif n == outcome:
+            ntype = "outcome"
+        elif n == mbias_node:
+            ntype = "mbias"
+        elif n in mbias_parents:
+            ntype = "mbias_parent"
+        elif n in confounder_set:
+            ntype = "confounder"
+        else:
+            ntype = "other"
+        fill_colors.append(_NODE_COLORS[ntype])
+        border_colors.append(_BORDER_COLORS[ntype])
+
+    # --- Node sizes ---
+    size_map = []
+    for n in nodes:
+        if n == mbias_node:
+            size_map.append(1400)
+        elif n in (exposure, outcome):
+            size_map.append(1100)
+        elif n in mbias_parents:
+            size_map.append(1000)
+        else:
+            size_map.append(800)
+
+    # --- Edge colors (emphasize collider structure) ---
+    edge_colors = []
+    edge_widths = []
+    for u, v in sub.edges():
+        ec = "#BDC3C7"   # default gray
+        ew = 1.5
+
+        # Edges INTO the collider = purple (the defining structure)
+        if v == mbias_node:
+            ec, ew = "#9B59B6", 3.0
+        # Edges OUT of the collider
+        elif u == mbias_node:
+            ec, ew = "#9B59B6", 2.0
+        # Edges touching exposure = red
+        elif u == exposure or v == exposure:
+            ec, ew = "#E74C3C", 2.0
+        # Edges touching outcome = blue
+        elif u == outcome or v == outcome:
+            ec, ew = "#3498DB", 2.0
+
+        edge_colors.append(ec)
+        edge_widths.append(ew)
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    pos = nx.spring_layout(sub, seed=42, k=2.5)
+
+    # Draw edges
+    if sub.number_of_edges() > 0:
+        nx.draw_networkx_edges(
+            sub, pos, ax=ax,
+            edge_color=edge_colors, width=edge_widths,
+            arrows=True, arrowsize=15,
+            connectionstyle="arc3,rad=0.08",
+        )
+
+    nx.draw_networkx_nodes(
+        sub, pos, ax=ax,
+        node_color=fill_colors, node_size=size_map,
+        edgecolors=border_colors, linewidths=2.0,
+    )
+
+    labels = {n: n.replace("_", "\n") for n in nodes}
+    nx.draw_networkx_labels(sub, pos, labels=labels, ax=ax,
+                            font_size=7, font_weight="bold")
+
+    ax.set_title(title, fontsize=13, fontweight="bold")
+
+    # --- Legend ---
+    legend_items = [
+        ("M-bias collider (DO NOT adjust)", _NODE_COLORS["mbias"]),
+        ("Parent of collider", _NODE_COLORS["mbias_parent"]),
+        ("Exposure", _NODE_COLORS["exposure"]),
+        ("Outcome", _NODE_COLORS["outcome"]),
+    ]
+    if confounder_set & set(nodes):
+        legend_items.append(("Confounder", _NODE_COLORS["confounder"]))
+    if any(n not in (mbias_node, exposure, outcome)
+           and n not in mbias_parents and n not in confounder_set
+           for n in nodes):
+        legend_items.append(("Other node", _NODE_COLORS["other"]))
+
+    legend_handles = [
+        plt.Line2D([0], [0], marker="o", color="w", markerfacecolor=c,
+                   markeredgecolor="black", markersize=10, label=l)
+        for l, c in legend_items
+    ]
+    ax.legend(handles=legend_handles, loc="lower right", fontsize=9,
+              framealpha=0.9, edgecolor="gray", title="Node Types")
+
+    fig.tight_layout()
+    fig.savefig(filepath, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+
+
+def _save_mbias_reports(
+    G: nx.DiGraph,
+    mbias_result: dict,
+    exposure: str,
+    outcome: str,
+    reports_dir: Path,
+    confounder_set: set[str] | None = None,
+) -> None:
+    """Generate per-node reports for M-bias colliders with distinct visuals."""
+    if confounder_set is None:
+        confounder_set = set()
+
+    mbias_structures = mbias_result.get("mbias_structures", {})
+
+    ensure_dir(reports_dir)
+    for node in mbias_result["mbias_vars"]:
+        safe_name = node.replace(" ", "_").replace("/", "_")
+        detail = mbias_result["mbias_details"].get(node, {})
+        structure = mbias_structures.get(node, {})
+        parents = set(detail.get("parents", []))
+
+        node_dir = reports_dir / safe_name
+        ensure_dir(node_dir)
+
+        sub = _extract_mbias_subgraph(G, node, exposure, outcome, structure)
+
+        # Save edge list
+        with open(node_dir / "edges.csv", "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["from", "to"])
+            for u, v in sub.edges():
+                w.writerow([u, v])
+
+        # Save subgraph as graphml
+        nx.write_graphml(sub, str(node_dir / "subgraph.graphml"))
+
+        # Title showing the 5-node M-structure
+        p1 = detail.get("p1_exposure_side", "?")
+        p2 = detail.get("p2_outcome_side", "?")
+        plot_title = (
+            f"{node} [M-BIAS COLLIDER]\n"
+            f"{exposure} ← {p1} → {node} ← {p2} → {outcome}\n"
+            f"WARNING: DO NOT condition on this node"
+        )
+
+        plot_file = node_dir / f"MBIAS_{safe_name}.png"
+
+        # Only pass the 2 M-structure parents for coloring
+        mbias_parents_set = {p1, p2}
+
+        _plot_mbias_subgraph(
+            sub, node, exposure, outcome,
+            title=plot_title,
+            filepath=plot_file,
+            confounder_set=confounder_set,
+            mbias_parents=mbias_parents_set,
+        )
+
+
+# ── File I/O (matches R output format) ───────────────────────────────
+
+_CSV_FIELDS = ["confounder", "n_confounder_parents", "confounder_parents", "is_butterfly"]
+
+
+def save_results(
+    output_dir: Path,
+    exposure: str,
+    outcome: str,
+    graph: nx.DiGraph,
+    confounder_info: dict,
+    butterfly: dict,
+    mbias: dict,
+    is_acyclic: bool,
+) -> None:
+    """Save all analysis results matching R's output format."""
+    ensure_dir(output_dir)
+
+    # 1. butterfly_analysis_results.csv -- all confounders with parent counts
+    with open(output_dir / "butterfly_analysis_results.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=_CSV_FIELDS)
+        w.writeheader()
+        w.writerows(butterfly["all_results"])
+
+    # 2. butterfly_nodes.csv -- butterfly nodes only
+    with open(output_dir / "butterfly_nodes.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=_CSV_FIELDS)
+        w.writeheader()
+        for r in butterfly["all_results"]:
+            if r["is_butterfly"]:
+                w.writerow(r)
+
+    # 3. independent_confounders.csv
+    with open(output_dir / "independent_confounders.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=_CSV_FIELDS)
+        w.writeheader()
+        for r in butterfly["all_results"]:
+            if r["n_confounder_parents"] == 0:
+                w.writerow(r)
+
+    # 4. m_bias_results.csv (Python-only)
+    if mbias["mbias_vars"]:
+        with open(output_dir / "m_bias_results.csv", "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow(["node", "num_parents", "p1_exposure_side", "p2_outcome_side"])
+            for v in mbias["mbias_vars"]:
+                detail = mbias["mbias_details"].get(v, {})
+                p1 = detail.get("p1_exposure_side", "")
+                p2 = detail.get("p2_outcome_side", "")
+                w.writerow([v, detail.get("n_parents", 0), p1, p2])
+
+    # 5. Confounder subgraph reports (plots + edges)
+    confounder_set = {r["confounder"] for r in butterfly["all_results"]}
+    butterfly_structures = butterfly.get("butterfly_structures", {})
+
+    if butterfly["all_results"]:
+        confounders_list = [r["confounder"] for r in butterfly["all_results"]]
+        _save_node_reports(
+            graph, confounders_list, exposure, outcome,
+            output_dir / "reports" / "confounders", "Confounder",
+            confounder_set=confounder_set,
+            butterfly_structures=butterfly_structures,
+        )
+
+    # 6. Butterfly subgraph reports
+    if butterfly["butterfly_vars"]:
+        _save_node_reports(
+            graph, butterfly["butterfly_vars"], exposure, outcome,
+            output_dir / "reports" / "butterfly", "Butterfly",
+            confounder_set=confounder_set,
+            butterfly_structures=butterfly_structures,
+        )
+
+    # 7. M-bias subgraph reports (dedicated M-bias visuals)
+    if mbias["mbias_vars"]:
+        _save_mbias_reports(
+            graph, mbias, exposure, outcome,
+            output_dir / "reports" / "m_bias",
+            confounder_set=confounder_set,
+        )
+
+    # 8. analysis_summary.txt -- matches R format
+    _write_summary(
+        output_dir / "analysis_summary.txt",
+        exposure, outcome, graph, confounder_info, butterfly, mbias, is_acyclic,
+    )
+
+
+def _write_summary(
+    path: Path,
+    exposure: str,
+    outcome: str,
+    graph: nx.DiGraph,
+    confounder_info: dict,
+    butterfly: dict,
+    mbias: dict,
+    is_acyclic: bool,
+) -> None:
+    with open(path, "w") as f:
+        f.write("=======================================================\n")
+        f.write("Butterfly Bias Analysis Summary\n")
+        f.write("=======================================================\n\n")
+        f.write(f"Exposure: {exposure}\n")
+        f.write(f"Outcome: {outcome}\n")
+        f.write(f"Graph is Acyclic: {is_acyclic}\n")
+        f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+
+        f.write("=== Method ===\n")
+        f.write("Approach: direct parents/children (matching R dagitty logic)\n")
+        f.write("Confounder = common parent of both exposure and outcome,\n")
+        f.write("             excluding direct children of either.\n")
+        f.write("Butterfly = confounder with 2+ other confounders as parents.\n")
+        f.write("M-bias = children(parent_of_X) ∩ children(parent_of_Y),\n")
+        f.write("         where P1 ≠ P2 and M ≠ X,Y and M is not a confounder.\n\n")
+
+        f.write("=== Graph Statistics ===\n")
+        f.write(f"Total nodes: {graph.number_of_nodes()}\n")
+        f.write(f"Total edges: {graph.number_of_edges()}\n")
+        f.write(f"Parents of exposure: {len(confounder_info['parents_exposure'])}\n")
+        f.write(f"Parents of outcome: {len(confounder_info['parents_outcome'])}\n\n")
+
+        f.write("=== Confounder Counts ===\n")
+        f.write(f"Confounders identified: {butterfly['n_total']}\n\n")
+
+        f.write("=== Butterfly Bias Results ===\n")
+        f.write(f"Independent confounders: {butterfly['n_independent']}\n")
+        f.write(f"Confounders with 1 parent: {butterfly['n_one_parent']}\n")
+        f.write(f"BUTTERFLY candidates: {butterfly['n_butterfly']}\n\n")
+
+        if butterfly["butterfly_vars"]:
+            f.write("Butterfly nodes (DO NOT adjust for these directly):\n")
+            for i, bfly in enumerate(butterfly["butterfly_vars"], 1):
+                parents = butterfly["butterfly_parents"][bfly]
+                f.write(f"  {i}. {bfly} <- {{{', '.join(parents)}}}\n")
+            f.write("\nRECOMMENDATION: Instead of adjusting for butterfly nodes,\n")
+            f.write("adjust for their confounder parents to avoid opening\n")
+            f.write("collider paths.\n")
+        else:
+            f.write("No butterfly bias detected.\n")
+            f.write("All confounders are independent and safe to adjust for.\n")
+
+        f.write("\n=== All Confounders by Type ===\n")
+        if butterfly["independent_confounders"]:
+            f.write("\nINDEPENDENT (safe to adjust for):\n")
+            for c in sorted(butterfly["independent_confounders"]):
+                f.write(f"  - {c}\n")
+
+        one_parent_rows = [r for r in butterfly["all_results"] if r["n_confounder_parents"] == 1]
+        if one_parent_rows:
+            f.write("\nHAS 1 CONFOUNDER PARENT (monitor but likely safe):\n")
+            for r in one_parent_rows:
+                f.write(f"  - {r['confounder']} <- {r['confounder_parents']}\n")
+
+        if butterfly["butterfly_vars"]:
+            f.write("\nBUTTERFLY (avoid adjusting directly):\n")
+            for r in butterfly["all_results"]:
+                if r["is_butterfly"]:
+                    f.write(f"  - {r['confounder']} <- {{{r['confounder_parents']}}}\n")
+
+        # M-bias section (Python-only addition)
+        if mbias["mbias_vars"]:
+            f.write("\n\n=== M-Bias Analysis (Python-only) ===\n")
+            f.write("Detection: direct parent/child (top-down)\n")
+            f.write(f"M-bias variables found: {len(mbias['mbias_vars'])}\n")
+            f.write("\nThese nodes are colliders on backdoor paths.\n")
+            f.write("Do NOT adjust for them -- it would open spurious paths.\n\n")
+            for v in mbias["mbias_vars"]:
+                detail = mbias["mbias_details"].get(v, {})
+                p1 = detail.get("p1_exposure_side", "?")
+                p2 = detail.get("p2_outcome_side", "?")
+                f.write(f"  - {v}:  {exposure} ← {p1} → {v} ← {p2} → {outcome}\n")
+
+
+# ── Graph loading ────────────────────────────────────────────────────
+
+def load_graph(exposure: str, outcome: str) -> nx.DiGraph:
+    """Load the best available graph (reduced > original)."""
+    reduced_path = get_s4_node_removal_dir(exposure, outcome) / "reduced_graph.graphml"
+    if reduced_path.exists():
+        print(f"Loading reduced graph from: {reduced_path}")
+        return nx.read_graphml(str(reduced_path))
+
+    original_path = get_s1_graph_dir(exposure, outcome) / "graph.graphml"
+    if original_path.exists():
+        print("Note: Using original graph (no reduced graph found)")
+        print(f"Loading from: {original_path}")
+        return nx.read_graphml(str(original_path))
+
+    raise FileNotFoundError(
+        f"No graph found. Looked for:\n"
+        f"  {reduced_path}\n"
+        f"  {original_path}\n"
+        f"Please run earlier pipeline stages first."
+    )
+
+
+# ── Main entry point ─────────────────────────────────────────────────
+
+def run_stage7(exposure: str, outcome: str) -> dict:
+    """Execute Stage 7: Butterfly bias and M-bias analysis."""
+    print_header("Bias Analysis -- Butterfly & M-Bias (Stage 7)", exposure, outcome)
+
+    G = load_graph(exposure, outcome)
+    output_dir = get_s7_bias_dir(exposure, outcome)
+    ensure_dir(output_dir)
+
+    is_acyclic = nx.is_directed_acyclic_graph(G)
+    print(f"Graph: {G.number_of_nodes()} nodes, {G.number_of_edges()} edges")
+    print(f"Is acyclic (DAG): {is_acyclic}")
+    if not is_acyclic:
+        print("WARNING: Graph has cycles. Results use direct parent/child logic")
+        print("         which works with cycles (same as R dagitty approach).\n")
+
+    if exposure not in G:
+        raise ValueError(f"Exposure '{exposure}' not found in graph")
+    if outcome not in G:
+        raise ValueError(f"Outcome '{outcome}' not found in graph")
+
+    # --- Step 1: Identify confounders (R dagitty approach) ---
+    print("\n=== 1. CONFOUNDER IDENTIFICATION ===")
+    print("Using direct parents/children (matching R dagitty logic)")
+
+    confounder_info = identify_confounders(G, exposure, outcome)
+    confounders = confounder_info["confounders"]
+
+    print(f"Parents of exposure: {len(confounder_info['parents_exposure'])}")
+    print(f"Parents of outcome: {len(confounder_info['parents_outcome'])}")
+    print(f"Children of exposure: {len(confounder_info['children_exposure'])}")
+    print(f"Children of outcome: {len(confounder_info['children_outcome'])}")
+    print(f"Confounders identified: {len(confounders)}")
+
+    # --- Step 2: Butterfly bias detection ---
+    # (Only runs if confounders exist)
+    if confounders:
+        print("\n=== 2. BUTTERFLY BIAS DETECTION ===")
+        print("Checking each confounder's parents among other confounders...\n")
+
+        butterfly = analyze_butterfly_bias(G, exposure, outcome, confounders)
+
+        for r in butterfly["all_results"]:
+            if r["n_confounder_parents"] == 0:
+                print(f"  {r['confounder']}: character(0)")
+            else:
+                marker = " *** BUTTERFLY ***" if r["is_butterfly"] else ""
+                print(f"  {r['confounder']}: [{r['confounder_parents']}]{marker}")
+
+        print(f"\nTotal confounders: {butterfly['n_total']}")
+        print(f"Independent (no confounder parents): {butterfly['n_independent']}")
+        print(f"Has 1 confounder parent: {butterfly['n_one_parent']}")
+        print(f"BUTTERFLY candidates (2+ confounder parents): {butterfly['n_butterfly']}")
+
+        if butterfly["butterfly_vars"]:
+            print("\nButterfly nodes:")
+            for i, bfly in enumerate(butterfly["butterfly_vars"], 1):
+                parents = butterfly["butterfly_parents"][bfly]
+                print(f"  {i}. {bfly} <- {{{', '.join(parents)}}} ({len(parents)} parents)")
+    else:
+        print("\n=== 2. BUTTERFLY BIAS DETECTION ===")
+        print("No confounders found - skipping butterfly analysis.")
+        butterfly = {
+            "all_results": [],
+            "butterfly_vars": [],
+            "butterfly_parents": {},
+            "butterfly_structures": {},
+            "independent_confounders": [],
+            "has_one_parent": [],
+            "n_total": 0,
+            "n_independent": 0,
+            "n_one_parent": 0,
+            "n_butterfly": 0,
+        }
+
+    # --- Step 3: M-bias analysis (Python-only addition) ---
+    print("\n=== 3. M-BIAS ANALYSIS (additional) ===")
+    print("Using direct parent/child approach (top-down)")
+    mbias = analyze_m_bias(G, exposure, outcome, confounders)
+
+    if mbias["mbias_vars"]:
+        print(f"M-bias variables found: {len(mbias['mbias_vars'])}")
+        for v in mbias["mbias_vars"]:
+            detail = mbias["mbias_details"].get(v, {})
+            p1 = detail.get("p1_exposure_side", "?")
+            p2 = detail.get("p2_outcome_side", "?")
+            print(f"  - {v}:  {exposure} ← {p1} → {v} ← {p2} → {outcome}")
+    else:
+        print("No M-bias variables found.")
+
+    # --- Step 4: Save results ---
+    print("\n=== 4. SAVING RESULTS ===")
+    save_results(output_dir, exposure, outcome, G, confounder_info,
+                 butterfly, mbias, is_acyclic)
+
+    print("Saved butterfly_analysis_results.csv")
+    print("Saved butterfly_nodes.csv")
+    print("Saved independent_confounders.csv")
+    if mbias["mbias_vars"]:
+        print("Saved m_bias_results.csv")
+    print("Saved analysis_summary.txt")
+    n_reports = butterfly["n_total"] + butterfly["n_butterfly"] + len(mbias["mbias_vars"])
+    if n_reports > 0:
+        print(f"Saved {n_reports} subgraph reports (plots + edges) in reports/")
+    print(f"All outputs in: {output_dir}")
+
+    print_complete("Bias Analysis (Stage 7)")
 
     return {
-        'success': True,
-        'is_dag': is_dag,
-        'warnings': warnings,
-        'roles': butterfly['roles'],
-        'butterfly': {
-            'butterfly_vars': butterfly['butterfly_vars'],
-            'butterfly_parents': butterfly['butterfly_parents'],
-            'valid_sets': butterfly['valid_sets'],
-            'non_butterfly_confounders': butterfly['non_butterfly_confounders'],
-        },
-        'mbias': {
-            'mbias_vars': mbias['mbias_vars'],
-            'mbias_details': mbias['mbias_details'],
-        },
+        "n_confounders": butterfly["n_total"],
+        "n_butterfly": butterfly["n_butterfly"],
+        "n_independent": butterfly["n_independent"],
+        "n_mbias": len(mbias["mbias_vars"]),
+        "butterfly_vars": butterfly["butterfly_vars"],
+        "is_dag": is_acyclic,
     }
+
+
+if __name__ == "__main__":
+    args = parse_args("Stage 7: Butterfly bias and M-bias analysis")
+    run_stage7(args.exposure, args.outcome)

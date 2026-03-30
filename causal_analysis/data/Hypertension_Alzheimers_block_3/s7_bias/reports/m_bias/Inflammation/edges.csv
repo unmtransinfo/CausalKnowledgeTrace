@@ -1,0 +1,13 @@
+from,to
+Inflammation,Alzheimers
+Inflammation,Hypertension
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Hypertension,Inflammation
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,Inflammation
+Alzheimers,Inflammation
+Agent,Alzheimers
+Agent,Hypertension
+Agent,Inflammation

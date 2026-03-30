@@ -1,0 +1,7 @@
+from,to
+Ethanol,Death_finding
+Ethanol,Hypertension
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Death_finding
+Pharmaceutical_Preparations,Hypertension

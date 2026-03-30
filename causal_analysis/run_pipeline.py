@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 run_pipeline.py
-Orchestrate the full Post-CKT Analysis Pipeline (Stages 1-6).
+Orchestrate the full Post-CKT Analysis Pipeline (Stages 1-7).
 
 Usage:
     python -m causal_analysis.run_pipeline Hypertension Alzheimers
@@ -15,6 +15,7 @@ Stages:
     4. Node Removal         — generic-node pruning and impact measurement
     5. Post-Removal         — residual cycle analysis after pruning
     6. Causal Inference     — adjustment sets & instrumental variables (DAG only)
+    7. Bias Analysis        — butterfly bias & M-bias detection
 """
 
 import argparse
@@ -29,6 +30,7 @@ from .s3_cycle_analysis import run_stage3
 from .s4_node_removal import run_stage4
 from .s5_post_removal import run_stage5
 from .s6_causal_inference import run_stage6
+from .s7_bias_analysis import run_stage7
 
 
 def main():
@@ -107,6 +109,16 @@ def main():
         print("STAGE 6: SKIPPED (--skip-causal)")
         print("=" * 60)
 
+    # Stage 7 — Bias Analysis (butterfly + M-bias)
+    s7 = None
+    print("\n" + "=" * 60)
+    print("STAGE 7: Bias Analysis (Butterfly & M-Bias)")
+    print("=" * 60)
+    try:
+        s7 = run_stage7(exposure, outcome)
+    except Exception as e:
+        print(f"Stage 7 failed: {e}")
+
     # --- Final summary ---
     elapsed = time.time() - t_start
     print("\n")
@@ -125,6 +137,10 @@ def main():
     if s6:
         print(f"Adjustment set:    {len(s6['adjustment_set'])} nodes")
         print(f"Instruments:       {len(s6['instruments'])} candidates")
+    if s7:
+        print(f"Confounders:       {s7.get('n_confounders', 0)}")
+        print(f"Butterfly nodes:   {s7.get('n_butterfly', 0)}")
+        print(f"M-bias nodes:      {s7.get('n_mbias', 0)}")
     print("=" * 60)
 
 

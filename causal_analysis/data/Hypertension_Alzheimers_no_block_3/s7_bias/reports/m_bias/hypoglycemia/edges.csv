@@ -1,0 +1,7 @@
+from,to
+Ethanol,Hypertension
+Ethanol,hypoglycemia
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Hypertension
+Pharmaceutical_Preparations,hypoglycemia

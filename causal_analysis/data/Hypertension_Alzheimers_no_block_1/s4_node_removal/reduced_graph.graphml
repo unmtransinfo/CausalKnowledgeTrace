@@ -1,0 +1,3654 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="20_hydroxy_5_8_11_14_eicosatetraenoic_acid">
+      <data key="d0">20_hydroxy_5_8_11_14_eicosatetraenoic_acid</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0046616</data>
+    </node>
+    <node id="APP_gene">
+      <data key="d0">APP_gene</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1364818</data>
+    </node>
+    <node id="APP_protein_human">
+      <data key="d0">APP_protein_human</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0611285</data>
+    </node>
+    <node id="ATM_gene_ATM">
+      <data key="d0">ATM_gene_ATM</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0919524</data>
+    </node>
+    <node id="Abdominal_compartment_syndrome">
+      <data key="d0">Abdominal_compartment_syndrome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1142110</data>
+    </node>
+    <node id="Abnormal_renal_function">
+      <data key="d0">Abnormal_renal_function</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0151746</data>
+    </node>
+    <node id="Acetate">
+      <data key="d0">Acetate</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0000975</data>
+    </node>
+    <node id="Acetylcholinesterase">
+      <data key="d0">Acetylcholinesterase</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001044</data>
+    </node>
+    <node id="Administration_Oral">
+      <data key="d0">Administration_Oral</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001563</data>
+    </node>
+    <node id="Adrenal_Cortex_Hormones">
+      <data key="d0">Adrenal_Cortex_Hormones</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001617</data>
+    </node>
+    <node id="Adrenal_Gland_Neoplasms">
+      <data key="d0">Adrenal_Gland_Neoplasms</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001624</data>
+    </node>
+    <node id="Adrenergic_Receptor">
+      <data key="d0">Adrenergic_Receptor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0034783</data>
+    </node>
+    <node id="Agent">
+      <data key="d0">Agent</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0450442</data>
+    </node>
+    <node id="Aging">
+      <data key="d0">Aging</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001811</data>
+    </node>
+    <node id="Aldosterone">
+      <data key="d0">Aldosterone</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0002006</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">Alzheimers</data>
+      <data key="d1">outcome</data>
+      <data key="d2">C0750901</data>
+    </node>
+    <node id="Amyloid">
+      <data key="d0">Amyloid</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0002716</data>
+    </node>
+    <node id="Amyloid_Fibrils">
+      <data key="d0">Amyloid_Fibrils</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1449651</data>
+    </node>
+    <node id="Amyloid_beta">
+      <data key="d0">Amyloid_beta</data>
+      <data key="d1">regular</data>
+      <data key="d2">C3484390</data>
+    </node>
+    <node id="Amyloid_beta_Peptides">
+      <data key="d0">Amyloid_beta_Peptides</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0078939</data>
+    </node>
+    <node id="Amyloid_beta_Protein_Precursor">
+      <data key="d0">Amyloid_beta_Protein_Precursor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085151</data>
+    </node>
+    <node id="Amyloid_deposition">
+      <data key="d0">Amyloid_deposition</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011560</data>
+    </node>
+    <node id="Amyloidosis">
+      <data key="d0">Amyloidosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0002726</data>
+    </node>
+    <node id="Androgens">
+      <data key="d0">Androgens</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0002844</data>
+    </node>
+    <node id="Angiogenesis_Inhibitors">
+      <data key="d0">Angiogenesis_Inhibitors</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0596087</data>
+    </node>
+    <node id="Angiotensins">
+      <data key="d0">Angiotensins</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003018</data>
+    </node>
+    <node id="Antihypertensive_Agents">
+      <data key="d0">Antihypertensive_Agents</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003364</data>
+    </node>
+    <node id="Antioxidants">
+      <data key="d0">Antioxidants</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003402</data>
+    </node>
+    <node id="Aortic_coarctation">
+      <data key="d0">Aortic_coarctation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003492</data>
+    </node>
+    <node id="Apolipoprotein_E4">
+      <data key="d0">Apolipoprotein_E4</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0052201</data>
+    </node>
+    <node id="Apolipoprotein_E_APOE">
+      <data key="d0">Apolipoprotein_E_APOE</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003595</data>
+    </node>
+    <node id="Arginine">
+      <data key="d0">Arginine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003765</data>
+    </node>
+    <node id="Argipressin">
+      <data key="d0">Argipressin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003779</data>
+    </node>
+    <node id="Arteriosclerosis">
+      <data key="d0">Arteriosclerosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003850</data>
+    </node>
+    <node id="Atherosclerosis">
+      <data key="d0">Atherosclerosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0004153</data>
+    </node>
+    <node id="Atherosclerotic_renal_artery_stenosis">
+      <data key="d0">Atherosclerotic_renal_artery_stenosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0340557</data>
+    </node>
+    <node id="Atrial_Fibrillation">
+      <data key="d0">Atrial_Fibrillation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0004238</data>
+    </node>
+    <node id="Atrophic">
+      <data key="d0">Atrophic</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0333641</data>
+    </node>
+    <node id="Autonomic_Dysreflexia">
+      <data key="d0">Autonomic_Dysreflexia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0238015</data>
+    </node>
+    <node id="Banding_procedure">
+      <data key="d0">Banding_procedure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0185014</data>
+    </node>
+    <node id="Bilateral_renal_artery_stenosis">
+      <data key="d0">Bilateral_renal_artery_stenosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0856760</data>
+    </node>
+    <node id="Blood_Pressure">
+      <data key="d0">Blood_Pressure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0005823</data>
+    </node>
+    <node id="Blood_Pressure_Monitoring_Ambulatory">
+      <data key="d0">Blood_Pressure_Monitoring_Ambulatory</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0242876</data>
+    </node>
+    <node id="Brain_Edema">
+      <data key="d0">Brain_Edema</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1527311</data>
+    </node>
+    <node id="Brain_Injuries">
+      <data key="d0">Brain_Injuries</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0270611</data>
+    </node>
+    <node id="Brain_hemorrhage">
+      <data key="d0">Brain_hemorrhage</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0553692</data>
+    </node>
+    <node id="COVID_19">
+      <data key="d0">COVID_19</data>
+      <data key="d1">regular</data>
+      <data key="d2">C5203670</data>
+    </node>
+    <node id="Cadmium">
+      <data key="d0">Cadmium</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0006632</data>
+    </node>
+    <node id="Calcineurin_inhibitor">
+      <data key="d0">Calcineurin_inhibitor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1562036</data>
+    </node>
+    <node id="Calcium">
+      <data key="d0">Calcium</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0006675</data>
+    </node>
+    <node id="Candidate_Disease_Gene">
+      <data key="d0">Candidate_Disease_Gene</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1332838</data>
+    </node>
+    <node id="Cardiac_Hypertrophy">
+      <data key="d0">Cardiac_Hypertrophy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1383860</data>
+    </node>
+    <node id="Cardiac_complication">
+      <data key="d0">Cardiac_complication</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0161816</data>
+    </node>
+    <node id="Cardiomyopathies">
+      <data key="d0">Cardiomyopathies</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0878544</data>
+    </node>
+    <node id="Cardiovascular_Diseases">
+      <data key="d0">Cardiovascular_Diseases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0007222</data>
+    </node>
+    <node id="Cardiovascular_morbidity">
+      <data key="d0">Cardiovascular_morbidity</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1301700</data>
+    </node>
+    <node id="Catecholamines">
+      <data key="d0">Catecholamines</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0007412</data>
+    </node>
+    <node id="Cerebral_Amyloid_Angiopathy">
+      <data key="d0">Cerebral_Amyloid_Angiopathy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085220</data>
+    </node>
+    <node id="Cerebral_Edema">
+      <data key="d0">Cerebral_Edema</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0006114</data>
+    </node>
+    <node id="Cerebral_Hemorrhage">
+      <data key="d0">Cerebral_Hemorrhage</data>
+      <data key="d1">regular</data>
+      <data key="d2">C2937358</data>
+    </node>
+    <node id="Cerebral_atrophy">
+      <data key="d0">Cerebral_atrophy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0235946</data>
+    </node>
+    <node id="Cerebral_hemisphere_hemorrhage">
+      <data key="d0">Cerebral_hemisphere_hemorrhage</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0007784</data>
+    </node>
+    <node id="Cerebrospinal_Fluid">
+      <data key="d0">Cerebrospinal_Fluid</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0007806</data>
+    </node>
+    <node id="Cerebrovascular_Disorders">
+      <data key="d0">Cerebrovascular_Disorders</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0007820</data>
+    </node>
+    <node id="Cerebrovascular_accident">
+      <data key="d0">Cerebrovascular_accident</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0038454</data>
+    </node>
+    <node id="Cessation_of_life">
+      <data key="d0">Cessation_of_life</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011065</data>
+    </node>
+    <node id="Cholesterol">
+      <data key="d0">Cholesterol</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0008377</data>
+    </node>
+    <node id="Chronic_Kidney_Diseases">
+      <data key="d0">Chronic_Kidney_Diseases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1561643</data>
+    </node>
+    <node id="Chronic_heart_failure">
+      <data key="d0">Chronic_heart_failure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0264716</data>
+    </node>
+    <node id="Chronic_inflammation">
+      <data key="d0">Chronic_inflammation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021376</data>
+    </node>
+    <node id="Chymosin_REN">
+      <data key="d0">Chymosin_REN</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0035100</data>
+    </node>
+    <node id="Clip">
+      <data key="d0">Clip</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0175722</data>
+    </node>
+    <node id="Clipping">
+      <data key="d0">Clipping</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1283066</data>
+    </node>
+    <node id="Closure_by_clamp">
+      <data key="d0">Closure_by_clamp</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0521213</data>
+    </node>
+    <node id="Cocaine">
+      <data key="d0">Cocaine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0009170</data>
+    </node>
+    <node id="Compression_procedure">
+      <data key="d0">Compression_procedure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0565514</data>
+    </node>
+    <node id="Congenital_Abnormality">
+      <data key="d0">Congenital_Abnormality</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0000768</data>
+    </node>
+    <node id="Congestive_heart_failure">
+      <data key="d0">Congestive_heart_failure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0018802</data>
+    </node>
+    <node id="Conn_Syndrome">
+      <data key="d0">Conn_Syndrome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1384514</data>
+    </node>
+    <node id="Constriction_procedure">
+      <data key="d0">Constriction_procedure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0009813</data>
+    </node>
+    <node id="Contraceptives_Oral">
+      <data key="d0">Contraceptives_Oral</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0009905</data>
+    </node>
+    <node id="Contraction">
+      <data key="d0">Contraction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1140999</data>
+    </node>
+    <node id="Copper">
+      <data key="d0">Copper</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0009968</data>
+    </node>
+    <node id="Coronary_Arteriosclerosis">
+      <data key="d0">Coronary_Arteriosclerosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0010054</data>
+    </node>
+    <node id="Coronary_heart_disease">
+      <data key="d0">Coronary_heart_disease</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0010068</data>
+    </node>
+    <node id="Corticosterone">
+      <data key="d0">Corticosterone</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0010124</data>
+    </node>
+    <node id="Corticotropin">
+      <data key="d0">Corticotropin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001655</data>
+    </node>
+    <node id="Cushing_Syndrome">
+      <data key="d0">Cushing_Syndrome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0010481</data>
+    </node>
+    <node id="Cyclosporine">
+      <data key="d0">Cyclosporine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0010592</data>
+    </node>
+    <node id="DNA_Mitochondrial">
+      <data key="d0">DNA_Mitochondrial</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0012929</data>
+    </node>
+    <node id="DOCA">
+      <data key="d0">DOCA</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011123</data>
+    </node>
+    <node id="Degenerative_abnormality">
+      <data key="d0">Degenerative_abnormality</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011164</data>
+    </node>
+    <node id="Dementia">
+      <data key="d0">Dementia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0497327</data>
+    </node>
+    <node id="Dementia_Vascular">
+      <data key="d0">Dementia_Vascular</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011269</data>
+    </node>
+    <node id="Denervation">
+      <data key="d0">Denervation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011307</data>
+    </node>
+    <node id="Deoxycorticosterone">
+      <data key="d0">Deoxycorticosterone</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011710</data>
+    </node>
+    <node id="Deterioration">
+      <data key="d0">Deterioration</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0868945</data>
+    </node>
+    <node id="Dexamethasone">
+      <data key="d0">Dexamethasone</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011777</data>
+    </node>
+    <node id="Diabetes">
+      <data key="d0">Diabetes</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011847</data>
+    </node>
+    <node id="Diabetes_Mellitus">
+      <data key="d0">Diabetes_Mellitus</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011849</data>
+    </node>
+    <node id="Diabetes_Mellitus_Non_Insulin_Dependent">
+      <data key="d0">Diabetes_Mellitus_Non_Insulin_Dependent</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011860</data>
+    </node>
+    <node id="Diabetic_Nephropathy">
+      <data key="d0">Diabetic_Nephropathy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011881</data>
+    </node>
+    <node id="Diastolic_dysfunction">
+      <data key="d0">Diastolic_dysfunction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0520863</data>
+    </node>
+    <node id="Diet">
+      <data key="d0">Diet</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0012155</data>
+    </node>
+    <node id="Diet_High_Fat">
+      <data key="d0">Diet_High_Fat</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0521974</data>
+    </node>
+    <node id="Diet_Protein_Restricted">
+      <data key="d0">Diet_Protein_Restricted</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0242972</data>
+    </node>
+    <node id="Disability_NOS">
+      <data key="d0">Disability_NOS</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0231170</data>
+    </node>
+    <node id="Dissection_of_aorta">
+      <data key="d0">Dissection_of_aorta</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0340643</data>
+    </node>
+    <node id="Dopamine">
+      <data key="d0">Dopamine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0013030</data>
+    </node>
+    <node id="Dopamine_Receptor">
+      <data key="d0">Dopamine_Receptor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0034798</data>
+    </node>
+    <node id="Down_Syndrome">
+      <data key="d0">Down_Syndrome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0013080</data>
+    </node>
+    <node id="Drinking_Water">
+      <data key="d0">Drinking_Water</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0599638</data>
+    </node>
+    <node id="ERCC8_CSH1_HSPA9">
+      <data key="d0">ERCC8_CSH1_HSPA9</data>
+      <data key="d1">regular</data>
+      <data key="d2">1161</data>
+    </node>
+    <node id="Edema">
+      <data key="d0">Edema</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0013604</data>
+    </node>
+    <node id="Embolism">
+      <data key="d0">Embolism</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0013922</data>
+    </node>
+    <node id="Emotional_Stress">
+      <data key="d0">Emotional_Stress</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0086209</data>
+    </node>
+    <node id="Encephalopathies">
+      <data key="d0">Encephalopathies</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085584</data>
+    </node>
+    <node id="End_stage_renal_failure">
+      <data key="d0">End_stage_renal_failure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1261469</data>
+    </node>
+    <node id="Endocrine_System_Diseases">
+      <data key="d0">Endocrine_System_Diseases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0014130</data>
+    </node>
+    <node id="Endopeptidases">
+      <data key="d0">Endopeptidases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0030946</data>
+    </node>
+    <node id="Endothelial_dysfunction">
+      <data key="d0">Endothelial_dysfunction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0856169</data>
+    </node>
+    <node id="Endothelin">
+      <data key="d0">Endothelin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0079284</data>
+    </node>
+    <node id="Endothelin_1">
+      <data key="d0">Endothelin_1</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0079281</data>
+    </node>
+    <node id="Enzymes">
+      <data key="d0">Enzymes</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0014442</data>
+    </node>
+    <node id="Epinephrine">
+      <data key="d0">Epinephrine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0014563</data>
+    </node>
+    <node id="Erectile_dysfunction">
+      <data key="d0">Erectile_dysfunction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0242350</data>
+    </node>
+    <node id="Erythropoietin">
+      <data key="d0">Erythropoietin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0014822</data>
+    </node>
+    <node id="Essential_Hypertension">
+      <data key="d0">Essential_Hypertension</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085580</data>
+    </node>
+    <node id="Estrogens">
+      <data key="d0">Estrogens</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0014939</data>
+    </node>
+    <node id="Ethanol">
+      <data key="d0">Ethanol</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001962</data>
+    </node>
+    <node id="Evaluation">
+      <data key="d0">Evaluation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0220825</data>
+    </node>
+    <node id="Evaluation_procedure">
+      <data key="d0">Evaluation_procedure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1261322</data>
+    </node>
+    <node id="Excision">
+      <data key="d0">Excision</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0728940</data>
+    </node>
+    <node id="Extravasation">
+      <data key="d0">Extravasation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0015376</data>
+    </node>
+    <node id="FRAGMENTS">
+      <data key="d0">FRAGMENTS</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0486805</data>
+    </node>
+    <node id="Fetal_Growth_Retardation">
+      <data key="d0">Fetal_Growth_Retardation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0015934</data>
+    </node>
+    <node id="Fibromuscular_Dysplasia">
+      <data key="d0">Fibromuscular_Dysplasia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0016052</data>
+    </node>
+    <node id="Fibrosis">
+      <data key="d0">Fibrosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0016059</data>
+    </node>
+    <node id="Fluid_overload">
+      <data key="d0">Fluid_overload</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0546817</data>
+    </node>
+    <node id="Free_Radicals">
+      <data key="d0">Free_Radicals</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0016693</data>
+    </node>
+    <node id="Gene_Mutation">
+      <data key="d0">Gene_Mutation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0596611</data>
+    </node>
+    <node id="Genes">
+      <data key="d0">Genes</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0017337</data>
+    </node>
+    <node id="Glomerulosclerosis">
+      <data key="d0">Glomerulosclerosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0178664</data>
+    </node>
+    <node id="Glucocorticoid_remediable_aldosteronism">
+      <data key="d0">Glucocorticoid_remediable_aldosteronism</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1260386</data>
+    </node>
+    <node id="Glucocorticoids">
+      <data key="d0">Glucocorticoids</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0017710</data>
+    </node>
+    <node id="Glycogen_Synthase_Kinase_3">
+      <data key="d0">Glycogen_Synthase_Kinase_3</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0244989</data>
+    </node>
+    <node id="Glycosylation_End_Products_Advanced">
+      <data key="d0">Glycosylation_End_Products_Advanced</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0162574</data>
+    </node>
+    <node id="Glycyrrhizic_Acid">
+      <data key="d0">Glycyrrhizic_Acid</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0061751</data>
+    </node>
+    <node id="Growth">
+      <data key="d0">Growth</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0018270</data>
+    </node>
+    <node id="Headache">
+      <data key="d0">Headache</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0018681</data>
+    </node>
+    <node id="Heart_Diseases">
+      <data key="d0">Heart_Diseases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0018799</data>
+    </node>
+    <node id="Heart_failure">
+      <data key="d0">Heart_failure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0018801</data>
+    </node>
+    <node id="Herpesvirus_1_Human">
+      <data key="d0">Herpesvirus_1_Human</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0206679</data>
+    </node>
+    <node id="Hormones">
+      <data key="d0">Hormones</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0019932</data>
+    </node>
+    <node id="Hospital_admission">
+      <data key="d0">Hospital_admission</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0184666</data>
+    </node>
+    <node id="Hospitalization">
+      <data key="d0">Hospitalization</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0019993</data>
+    </node>
+    <node id="Hydrocortisone">
+      <data key="d0">Hydrocortisone</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020268</data>
+    </node>
+    <node id="Hydronephrosis">
+      <data key="d0">Hydronephrosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020295</data>
+    </node>
+    <node id="Hyperaldosteronism">
+      <data key="d0">Hyperaldosteronism</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020428</data>
+    </node>
+    <node id="Hypercalcemia">
+      <data key="d0">Hypercalcemia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020437</data>
+    </node>
+    <node id="Hyperglycemia">
+      <data key="d0">Hyperglycemia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020456</data>
+    </node>
+    <node id="Hyperinsulinism">
+      <data key="d0">Hyperinsulinism</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020459</data>
+    </node>
+    <node id="Hypernatremia">
+      <data key="d0">Hypernatremia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020488</data>
+    </node>
+    <node id="Hyperplasia">
+      <data key="d0">Hyperplasia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020507</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">Hypertension</data>
+      <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
+    </node>
+    <node id="Hypertension_Pulmonary">
+      <data key="d0">Hypertension_Pulmonary</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020542</data>
+    </node>
+    <node id="Hypertension_Renovascular">
+      <data key="d0">Hypertension_Renovascular</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020545</data>
+    </node>
+    <node id="Hypertensive_heart_disease_NOS">
+      <data key="d0">Hypertensive_heart_disease_NOS</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0152105</data>
+    </node>
+    <node id="Hypertrophic_Cardiomyopathy">
+      <data key="d0">Hypertrophic_Cardiomyopathy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0007194</data>
+    </node>
+    <node id="Hypertrophy">
+      <data key="d0">Hypertrophy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020564</data>
+    </node>
+    <node id="Hypertrophy_Left_Ventricular">
+      <data key="d0">Hypertrophy_Left_Ventricular</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0149721</data>
+    </node>
+    <node id="Hyperuricemia">
+      <data key="d0">Hyperuricemia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0740394</data>
+    </node>
+    <node id="Hypoplasia">
+      <data key="d0">Hypoplasia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0243069</data>
+    </node>
+    <node id="Hypoxia">
+      <data key="d0">Hypoxia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0242184</data>
+    </node>
+    <node id="IMPACT_gene">
+      <data key="d0">IMPACT_gene</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1825598</data>
+    </node>
+    <node id="Immobilization">
+      <data key="d0">Immobilization</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0020944</data>
+    </node>
+    <node id="Immunosuppressive_Agents">
+      <data key="d0">Immunosuppressive_Agents</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021081</data>
+    </node>
+    <node id="Impaired_cognition">
+      <data key="d0">Impaired_cognition</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0338656</data>
+    </node>
+    <node id="Infarction">
+      <data key="d0">Infarction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021308</data>
+    </node>
+    <node id="Inflammasomes">
+      <data key="d0">Inflammasomes</data>
+      <data key="d1">regular</data>
+      <data key="d2">C2936529</data>
+    </node>
+    <node id="Inflammation">
+      <data key="d0">Inflammation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021368</data>
+    </node>
+    <node id="Inflammatory_Response">
+      <data key="d0">Inflammatory_Response</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1155266</data>
+    </node>
+    <node id="Infusion_procedures">
+      <data key="d0">Infusion_procedures</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0574032</data>
+    </node>
+    <node id="Injection">
+      <data key="d0">Injection</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1272883</data>
+    </node>
+    <node id="Injection_procedure">
+      <data key="d0">Injection_procedure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1533685</data>
+    </node>
+    <node id="Injury">
+      <data key="d0">Injury</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0175677</data>
+    </node>
+    <node id="Insulin">
+      <data key="d0">Insulin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021641</data>
+    </node>
+    <node id="Insulin_Resistance">
+      <data key="d0">Insulin_Resistance</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021655</data>
+    </node>
+    <node id="Intestinal_Microbiome">
+      <data key="d0">Intestinal_Microbiome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C2985398</data>
+    </node>
+    <node id="Intracranial_Hemorrhages">
+      <data key="d0">Intracranial_Hemorrhages</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0151699</data>
+    </node>
+    <node id="Intubation_Intratracheal">
+      <data key="d0">Intubation_Intratracheal</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021932</data>
+    </node>
+    <node id="Ions">
+      <data key="d0">Ions</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022023</data>
+    </node>
+    <node id="Iron">
+      <data key="d0">Iron</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0302583</data>
+    </node>
+    <node id="Ischemia">
+      <data key="d0">Ischemia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022116</data>
+    </node>
+    <node id="Ischemic_stroke">
+      <data key="d0">Ischemic_stroke</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0948008</data>
+    </node>
+    <node id="Juxtaglomerular_tumor">
+      <data key="d0">Juxtaglomerular_tumor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0334331</data>
+    </node>
+    <node id="Kidney_Diseases">
+      <data key="d0">Kidney_Diseases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022658</data>
+    </node>
+    <node id="Kidney_Failure">
+      <data key="d0">Kidney_Failure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0035078</data>
+    </node>
+    <node id="Kidney_Failure_Acute">
+      <data key="d0">Kidney_Failure_Acute</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022660</data>
+    </node>
+    <node id="Kidney_Failure_Chronic">
+      <data key="d0">Kidney_Failure_Chronic</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022661</data>
+    </node>
+    <node id="Kidney_Transplantation">
+      <data key="d0">Kidney_Transplantation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022671</data>
+    </node>
+    <node id="Labor_Childbirth">
+      <data key="d0">Labor_Childbirth</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022864</data>
+    </node>
+    <node id="Lack_of_sensation">
+      <data key="d0">Lack_of_sensation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0278134</data>
+    </node>
+    <node id="Leptin">
+      <data key="d0">Leptin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0299583</data>
+    </node>
+    <node id="Lewy_Body_Disease">
+      <data key="d0">Lewy_Body_Disease</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0752347</data>
+    </node>
+    <node id="Licorice">
+      <data key="d0">Licorice</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0086555</data>
+    </node>
+    <node id="Ligation">
+      <data key="d0">Ligation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0023690</data>
+    </node>
+    <node id="Lipids">
+      <data key="d0">Lipids</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0023779</data>
+    </node>
+    <node id="Lipopolysaccharides">
+      <data key="d0">Lipopolysaccharides</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0023810</data>
+    </node>
+    <node id="Liquid_substance">
+      <data key="d0">Liquid_substance</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0302908</data>
+    </node>
+    <node id="MAPT">
+      <data key="d0">MAPT</data>
+      <data key="d1">regular</data>
+      <data key="d2">4137</data>
+    </node>
+    <node id="MAPT_protein_human_MAPT">
+      <data key="d0">MAPT_protein_human_MAPT</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1454489</data>
+    </node>
+    <node id="Magnesium">
+      <data key="d0">Magnesium</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0024467</data>
+    </node>
+    <node id="Malnutrition">
+      <data key="d0">Malnutrition</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0162429</data>
+    </node>
+    <node id="Memory_Loss">
+      <data key="d0">Memory_Loss</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0751295</data>
+    </node>
+    <node id="Memory_impairment">
+      <data key="d0">Memory_impairment</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0233794</data>
+    </node>
+    <node id="Mental_deterioration">
+      <data key="d0">Mental_deterioration</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0234985</data>
+    </node>
+    <node id="Metabolic_syndrome">
+      <data key="d0">Metabolic_syndrome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0948265</data>
+    </node>
+    <node id="Metals">
+      <data key="d0">Metals</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0025552</data>
+    </node>
+    <node id="MicroRNAs">
+      <data key="d0">MicroRNAs</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1101610</data>
+    </node>
+    <node id="Mineralocorticoid_Receptor">
+      <data key="d0">Mineralocorticoid_Receptor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0066563</data>
+    </node>
+    <node id="Mineralocorticoids">
+      <data key="d0">Mineralocorticoids</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0026160</data>
+    </node>
+    <node id="Molecule">
+      <data key="d0">Molecule</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0567416</data>
+    </node>
+    <node id="Mutation">
+      <data key="d0">Mutation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0026882</data>
+    </node>
+    <node id="Myocardial_Infarction">
+      <data key="d0">Myocardial_Infarction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0027051</data>
+    </node>
+    <node id="Myocardial_Ischemia">
+      <data key="d0">Myocardial_Ischemia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0151744</data>
+    </node>
+    <node id="Myocardial_dysfunction">
+      <data key="d0">Myocardial_dysfunction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0340515</data>
+    </node>
+    <node id="Myocardial_fibrosis">
+      <data key="d0">Myocardial_fibrosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0151654</data>
+    </node>
+    <node id="NG_Nitroarginine_Methyl_Ester">
+      <data key="d0">NG_Nitroarginine_Methyl_Ester</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0083536</data>
+    </node>
+    <node id="NOS3_protein_human_NOS3">
+      <data key="d0">NOS3_protein_human_NOS3</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0669365</data>
+    </node>
+    <node id="Na_K_Exchanging_ATPase">
+      <data key="d0">Na_K_Exchanging_ATPase</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001479</data>
+    </node>
+    <node id="Neoplasm">
+      <data key="d0">Neoplasm</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0027651</data>
+    </node>
+    <node id="Neoplasm_Metastasis">
+      <data key="d0">Neoplasm_Metastasis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0027627</data>
+    </node>
+    <node id="Nephrectomy">
+      <data key="d0">Nephrectomy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0027695</data>
+    </node>
+    <node id="Nephrosclerosis">
+      <data key="d0">Nephrosclerosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0027719</data>
+    </node>
+    <node id="Nerve_Degeneration">
+      <data key="d0">Nerve_Degeneration</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0027746</data>
+    </node>
+    <node id="Neurodegenerative_Disorders">
+      <data key="d0">Neurodegenerative_Disorders</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0524851</data>
+    </node>
+    <node id="Neurofibrillary_Tangles">
+      <data key="d0">Neurofibrillary_Tangles</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085400</data>
+    </node>
+    <node id="Neurotoxins">
+      <data key="d0">Neurotoxins</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0027934</data>
+    </node>
+    <node id="Nicotine">
+      <data key="d0">Nicotine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0028040</data>
+    </node>
+    <node id="Nicotinic_Receptors">
+      <data key="d0">Nicotinic_Receptors</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0034830</data>
+    </node>
+    <node id="Nitric_Oxide">
+      <data key="d0">Nitric_Oxide</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0028128</data>
+    </node>
+    <node id="Nitric_Oxide_Synthase">
+      <data key="d0">Nitric_Oxide_Synthase</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0132555</data>
+    </node>
+    <node id="Nitroarginine">
+      <data key="d0">Nitroarginine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0068821</data>
+    </node>
+    <node id="Noise">
+      <data key="d0">Noise</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0028263</data>
+    </node>
+    <node id="Norepinephrine">
+      <data key="d0">Norepinephrine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0028351</data>
+    </node>
+    <node id="Obesity">
+      <data key="d0">Obesity</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0028754</data>
+    </node>
+    <node id="Okadaic_Acid">
+      <data key="d0">Okadaic_Acid</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0069389</data>
+    </node>
+    <node id="Operative_Surgical_Procedures">
+      <data key="d0">Operative_Surgical_Procedures</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0543467</data>
+    </node>
+    <node id="Ouabain">
+      <data key="d0">Ouabain</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0029904</data>
+    </node>
+    <node id="Overweight">
+      <data key="d0">Overweight</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0497406</data>
+    </node>
+    <node id="Oxidation">
+      <data key="d0">Oxidation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0030011</data>
+    </node>
+    <node id="Oxidative_Stress">
+      <data key="d0">Oxidative_Stress</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0242606</data>
+    </node>
+    <node id="PS2_protein_alzheimer_associated_PSEN2">
+      <data key="d0">PS2_protein_alzheimer_associated_PSEN2</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0528480</data>
+    </node>
+    <node id="PSEN1">
+      <data key="d0">PSEN1</data>
+      <data key="d1">regular</data>
+      <data key="d2">5663</data>
+    </node>
+    <node id="Paraganglioma">
+      <data key="d0">Paraganglioma</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0030421</data>
+    </node>
+    <node id="Parkinson_Disease">
+      <data key="d0">Parkinson_Disease</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0030567</data>
+    </node>
+    <node id="Pathogenesis">
+      <data key="d0">Pathogenesis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0699748</data>
+    </node>
+    <node id="Pathologic_Processes">
+      <data key="d0">Pathologic_Processes</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0030660</data>
+    </node>
+    <node id="Pathological_Dilatation">
+      <data key="d0">Pathological_Dilatation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0012359</data>
+    </node>
+    <node id="Peptides">
+      <data key="d0">Peptides</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0030956</data>
+    </node>
+    <node id="Peptidyl_Dipeptidase_A">
+      <data key="d0">Peptidyl_Dipeptidase_A</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0022709</data>
+    </node>
+    <node id="Perinephritis">
+      <data key="d0">Perinephritis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0031065</data>
+    </node>
+    <node id="Pharmaceutical_Preparations">
+      <data key="d0">Pharmaceutical_Preparations</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0013227</data>
+    </node>
+    <node id="Pharmacotherapy">
+      <data key="d0">Pharmacotherapy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0013216</data>
+    </node>
+    <node id="Phenylephrine">
+      <data key="d0">Phenylephrine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0031469</data>
+    </node>
+    <node id="Pheochromocytoma">
+      <data key="d0">Pheochromocytoma</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0031511</data>
+    </node>
+    <node id="Plasma">
+      <data key="d0">Plasma</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0032105</data>
+    </node>
+    <node id="Players">
+      <data key="d0">Players</data>
+      <data key="d1">regular</data>
+      <data key="d2">C5142959</data>
+    </node>
+    <node id="Polymorphism_Genetic">
+      <data key="d0">Polymorphism_Genetic</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0032529</data>
+    </node>
+    <node id="Posterior_reversible_encephalopathy_syndrome">
+      <data key="d0">Posterior_reversible_encephalopathy_syndrome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C3160858</data>
+    </node>
+    <node id="Potassium">
+      <data key="d0">Potassium</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0032821</data>
+    </node>
+    <node id="Pre_Eclampsia">
+      <data key="d0">Pre_Eclampsia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0032914</data>
+    </node>
+    <node id="Pregnancy">
+      <data key="d0">Pregnancy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0032961</data>
+    </node>
+    <node id="Premature_Birth">
+      <data key="d0">Premature_Birth</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0151526</data>
+    </node>
+    <node id="Pressors">
+      <data key="d0">Pressors</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0237795</data>
+    </node>
+    <node id="Prions">
+      <data key="d0">Prions</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0033164</data>
+    </node>
+    <node id="Process">
+      <data key="d0">Process</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1522240</data>
+    </node>
+    <node id="Prostaglandins">
+      <data key="d0">Prostaglandins</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0033554</data>
+    </node>
+    <node id="Proteins">
+      <data key="d0">Proteins</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0033684</data>
+    </node>
+    <node id="Proteinuria">
+      <data key="d0">Proteinuria</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0033687</data>
+    </node>
+    <node id="Pulmonary_Edema">
+      <data key="d0">Pulmonary_Edema</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0034063</data>
+    </node>
+    <node id="Purpura_Thrombotic_Thrombocytopenic">
+      <data key="d0">Purpura_Thrombotic_Thrombocytopenic</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0034155</data>
+    </node>
+    <node id="Rare_Diseases">
+      <data key="d0">Rare_Diseases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0678236</data>
+    </node>
+    <node id="Reactive_Oxygen_Species">
+      <data key="d0">Reactive_Oxygen_Species</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0162772</data>
+    </node>
+    <node id="Recombinant_Erythropoietin">
+      <data key="d0">Recombinant_Erythropoietin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0376541</data>
+    </node>
+    <node id="Renal_Artery_Stenosis">
+      <data key="d0">Renal_Artery_Stenosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0035067</data>
+    </node>
+    <node id="Renal_Insufficiency">
+      <data key="d0">Renal_Insufficiency</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1565489</data>
+    </node>
+    <node id="Renal_artery_occlusion">
+      <data key="d0">Renal_artery_occlusion</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0553718</data>
+    </node>
+    <node id="Renal_infarction">
+      <data key="d0">Renal_infarction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0035085</data>
+    </node>
+    <node id="Renal_ischaemia">
+      <data key="d0">Renal_ischaemia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0920646</data>
+    </node>
+    <node id="Renal_vascular_disorders_NOS">
+      <data key="d0">Renal_vascular_disorders_NOS</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0268790</data>
+    </node>
+    <node id="Renin">
+      <data key="d0">Renin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0035094</data>
+    </node>
+    <node id="SUCLA2_gene_SUCLA2">
+      <data key="d0">SUCLA2_gene_SUCLA2</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1420510</data>
+    </node>
+    <node id="Saline">
+      <data key="d0">Saline</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0036082</data>
+    </node>
+    <node id="Salts">
+      <data key="d0">Salts</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0036140</data>
+    </node>
+    <node id="Senile_Plaques">
+      <data key="d0">Senile_Plaques</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0333463</data>
+    </node>
+    <node id="Senile_dementia">
+      <data key="d0">Senile_dementia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011268</data>
+    </node>
+    <node id="Sensory_denervation_disorder">
+      <data key="d0">Sensory_denervation_disorder</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0234213</data>
+    </node>
+    <node id="Serotonin">
+      <data key="d0">Serotonin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0036751</data>
+    </node>
+    <node id="Single_Nucleotide_Polymorphism">
+      <data key="d0">Single_Nucleotide_Polymorphism</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0752046</data>
+    </node>
+    <node id="Sleep_Apnea_Obstructive">
+      <data key="d0">Sleep_Apnea_Obstructive</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0520679</data>
+    </node>
+    <node id="Sleep_Apnea_Syndromes">
+      <data key="d0">Sleep_Apnea_Syndromes</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0037315</data>
+    </node>
+    <node id="Sodium">
+      <data key="d0">Sodium</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0037473</data>
+    </node>
+    <node id="Sodium_Chloride">
+      <data key="d0">Sodium_Chloride</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0037494</data>
+    </node>
+    <node id="Sodium_Chloride_Dietary">
+      <data key="d0">Sodium_Chloride_Dietary</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0206136</data>
+    </node>
+    <node id="Spastic_syndrome">
+      <data key="d0">Spastic_syndrome</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0270814</data>
+    </node>
+    <node id="Stenosis">
+      <data key="d0">Stenosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1261287</data>
+    </node>
+    <node id="Stenosis_unspecified">
+      <data key="d0">Stenosis_unspecified</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0947637</data>
+    </node>
+    <node id="Steroids">
+      <data key="d0">Steroids</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0038317</data>
+    </node>
+    <node id="Stiffness">
+      <data key="d0">Stiffness</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0427008</data>
+    </node>
+    <node id="Stimulus">
+      <data key="d0">Stimulus</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0234402</data>
+    </node>
+    <node id="Streptozocin">
+      <data key="d0">Streptozocin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0038432</data>
+    </node>
+    <node id="Study_models">
+      <data key="d0">Study_models</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0026336</data>
+    </node>
+    <node id="Substance">
+      <data key="d0">Substance</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0439861</data>
+    </node>
+    <node id="Sugars">
+      <data key="d0">Sugars</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0242209</data>
+    </node>
+    <node id="Superoxides">
+      <data key="d0">Superoxides</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0038836</data>
+    </node>
+    <node id="TNF_protein_human_TNF">
+      <data key="d0">TNF_protein_human_TNF</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1448177</data>
+    </node>
+    <node id="Tacrolimus">
+      <data key="d0">Tacrolimus</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085149</data>
+    </node>
+    <node id="Takayasu_s_Arteritis">
+      <data key="d0">Takayasu_s_Arteritis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0039263</data>
+    </node>
+    <node id="Testosterone">
+      <data key="d0">Testosterone</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0039601</data>
+    </node>
+    <node id="Therapeutic_procedure">
+      <data key="d0">Therapeutic_procedure</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0087111</data>
+    </node>
+    <node id="Thrombosis">
+      <data key="d0">Thrombosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0040053</data>
+    </node>
+    <node id="Tourniquets">
+      <data key="d0">Tourniquets</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0040519</data>
+    </node>
+    <node id="Toxic_effect">
+      <data key="d0">Toxic_effect</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0600688</data>
+    </node>
+    <node id="Transplantation">
+      <data key="d0">Transplantation</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0040732</data>
+    </node>
+    <node id="Traumatic_Brain_Injury">
+      <data key="d0">Traumatic_Brain_Injury</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0876926</data>
+    </node>
+    <node id="Unilateral_nephrectomy">
+      <data key="d0">Unilateral_nephrectomy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0194083</data>
+    </node>
+    <node id="Unilateral_renal_artery_stenosis">
+      <data key="d0">Unilateral_renal_artery_stenosis</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0856759</data>
+    </node>
+    <node id="Uric_Acid">
+      <data key="d0">Uric_Acid</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0041980</data>
+    </node>
+    <node id="Vascular_Diseases">
+      <data key="d0">Vascular_Diseases</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0042373</data>
+    </node>
+    <node id="Vasoconstrictor_Agents">
+      <data key="d0">Vasoconstrictor_Agents</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0042397</data>
+    </node>
+    <node id="Vasodilation_disorder">
+      <data key="d0">Vasodilation_disorder</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0595862</data>
+    </node>
+    <node id="Vasospasm">
+      <data key="d0">Vasospasm</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085616</data>
+    </node>
+    <node id="Ventricular_Dysfunction_Left">
+      <data key="d0">Ventricular_Dysfunction_Left</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0242698</data>
+    </node>
+    <node id="Ventricular_hypertrophy">
+      <data key="d0">Ventricular_hypertrophy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0340279</data>
+    </node>
+    <node id="Virus">
+      <data key="d0">Virus</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0042776</data>
+    </node>
+    <node id="Vitamin_D_Deficiency">
+      <data key="d0">Vitamin_D_Deficiency</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0042870</data>
+    </node>
+    <node id="Water">
+      <data key="d0">Water</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0043047</data>
+    </node>
+    <node id="Wounds_and_Injuries">
+      <data key="d0">Wounds_and_Injuries</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0043251</data>
+    </node>
+    <node id="Zinc">
+      <data key="d0">Zinc</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0043481</data>
+    </node>
+    <node id="adenoma">
+      <data key="d0">adenoma</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0001430</data>
+    </node>
+    <node id="agonists">
+      <data key="d0">agonists</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0243192</data>
+    </node>
+    <node id="alanosine">
+      <data key="d0">alanosine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0051066</data>
+    </node>
+    <node id="aluminum">
+      <data key="d0">aluminum</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0002367</data>
+    </node>
+    <node id="aluminum_chloride">
+      <data key="d0">aluminum_chloride</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0102840</data>
+    </node>
+    <node id="angiotensin_II">
+      <data key="d0">angiotensin_II</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003009</data>
+    </node>
+    <node id="aorta_constriction">
+      <data key="d0">aorta_constriction</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0597891</data>
+    </node>
+    <node id="arginine_methyl_ester">
+      <data key="d0">arginine_methyl_ester</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0052335</data>
+    </node>
+    <node id="beta_site_APP_cleaving_enzyme_1_BACE1">
+      <data key="d0">beta_site_APP_cleaving_enzyme_1_BACE1</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0965087</data>
+    </node>
+    <node id="bevacizumab">
+      <data key="d0">bevacizumab</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0796392</data>
+    </node>
+    <node id="cardiac_arrhythmia">
+      <data key="d0">cardiac_arrhythmia</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0003811</data>
+    </node>
+    <node id="cytokine">
+      <data key="d0">cytokine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0079189</data>
+    </node>
+    <node id="desoxycorticosterone_acetate">
+      <data key="d0">desoxycorticosterone_acetate</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0813203</data>
+    </node>
+    <node id="end_organ_damage">
+      <data key="d0">end_organ_damage</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0743496</data>
+    </node>
+    <node id="fructose">
+      <data key="d0">fructose</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0016745</data>
+    </node>
+    <node id="galactose">
+      <data key="d0">galactose</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0016945</data>
+    </node>
+    <node id="gamma_secretase">
+      <data key="d0">gamma_secretase</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0379528</data>
+    </node>
+    <node id="gene_therapy">
+      <data key="d0">gene_therapy</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0017296</data>
+    </node>
+    <node id="homocysteine">
+      <data key="d0">homocysteine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0019878</data>
+    </node>
+    <node id="hydrochloride">
+      <data key="d0">hydrochloride</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1512523</data>
+    </node>
+    <node id="imbalance">
+      <data key="d0">imbalance</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1397014</data>
+    </node>
+    <node id="inhibitors">
+      <data key="d0">inhibitors</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0243077</data>
+    </node>
+    <node id="neuron_loss">
+      <data key="d0">neuron_loss</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0598940</data>
+    </node>
+    <node id="neuronal">
+      <data key="d0">neuronal</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0521390</data>
+    </node>
+    <node id="presenilin">
+      <data key="d0">presenilin</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0872078</data>
+    </node>
+    <node id="presenilin_1">
+      <data key="d0">presenilin_1</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0299212</data>
+    </node>
+    <node id="receptor">
+      <data key="d0">receptor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0597357</data>
+    </node>
+    <node id="scopolamine">
+      <data key="d0">scopolamine</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0036442</data>
+    </node>
+    <node id="sorafenib">
+      <data key="d0">sorafenib</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1516119</data>
+    </node>
+    <node id="tau_Proteins">
+      <data key="d0">tau_Proteins</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0085401</data>
+    </node>
+    <node id="vascular_factor">
+      <data key="d0">vascular_factor</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0078057</data>
+    </node>
+    <edge source="20_hydroxy_5_8_11_14_eicosatetraenoic_acid" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="APP_gene" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">252</data>
+    </edge>
+    <edge source="APP_protein_human" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">299</data>
+    </edge>
+    <edge source="ATM_gene_ATM" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Abnormal_renal_function" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Acetate" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">90</data>
+    </edge>
+    <edge source="Acetylcholinesterase" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Administration_Oral" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Adrenal_Cortex_Hormones" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Adrenal_Gland_Neoplasms" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Adrenergic_Receptor" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Agent" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Agent" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">31</data>
+    </edge>
+    <edge source="Aldosterone" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">84</data>
+    </edge>
+    <edge source="Alzheimers" target="Aging">
+      <data key="d3">CAUSES</data>
+      <data key="d4">25</data>
+    </edge>
+    <edge source="Alzheimers" target="Amyloid_deposition">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Alzheimers" target="Atrophic">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Alzheimers" target="Cerebral_atrophy">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Alzheimers" target="Cessation_of_life">
+      <data key="d3">CAUSES</data>
+      <data key="d4">336</data>
+    </edge>
+    <edge source="Alzheimers" target="Degenerative_abnormality">
+      <data key="d3">CAUSES</data>
+      <data key="d4">31</data>
+    </edge>
+    <edge source="Alzheimers" target="Dementia_Vascular">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Alzheimers" target="Disability_NOS">
+      <data key="d3">CAUSES</data>
+      <data key="d4">43</data>
+    </edge>
+    <edge source="Alzheimers" target="Evaluation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Alzheimers" target="Evaluation_procedure">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Alzheimers" target="Inflammation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">22</data>
+    </edge>
+    <edge source="Alzheimers" target="Lewy_Body_Disease">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Alzheimers" target="Memory_Loss">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Alzheimers" target="Neurodegenerative_Disorders">
+      <data key="d3">CAUSES</data>
+      <data key="d4">29</data>
+    </edge>
+    <edge source="Alzheimers" target="Neurofibrillary_Tangles">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Alzheimers" target="Parkinson_Disease">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Alzheimers" target="Senile_Plaques">
+      <data key="d3">CAUSES</data>
+      <data key="d4">25</data>
+    </edge>
+    <edge source="Alzheimers" target="Senile_dementia">
+      <data key="d3">CAUSES</data>
+      <data key="d4">38</data>
+    </edge>
+    <edge source="Amyloid" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">270</data>
+    </edge>
+    <edge source="Amyloid_Fibrils" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">31</data>
+    </edge>
+    <edge source="Amyloid_beta" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">30</data>
+    </edge>
+    <edge source="Amyloid_beta_Peptides" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">359</data>
+    </edge>
+    <edge source="Amyloid_beta_Protein_Precursor" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">288</data>
+    </edge>
+    <edge source="Amyloid_deposition" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">46</data>
+    </edge>
+    <edge source="Amyloidosis" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Androgens" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Angiogenesis_Inhibitors" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Angiotensins" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">32</data>
+    </edge>
+    <edge source="Antihypertensive_Agents" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Antioxidants" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">23</data>
+    </edge>
+    <edge source="Antioxidants" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Aortic_coarctation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">62</data>
+    </edge>
+    <edge source="Apolipoprotein_E4" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">36</data>
+    </edge>
+    <edge source="Apolipoprotein_E_APOE" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">68</data>
+    </edge>
+    <edge source="Arginine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Argipressin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">45</data>
+    </edge>
+    <edge source="Atherosclerosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Atherosclerotic_renal_artery_stenosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Atrophic" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Autonomic_Dysreflexia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Banding_procedure" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Bilateral_renal_artery_stenosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Blood_Pressure_Monitoring_Ambulatory" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Brain_Injuries" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="COVID_19" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Cadmium" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">47</data>
+    </edge>
+    <edge source="Calcineurin_inhibitor" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Calcium" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Candidate_Disease_Gene" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Cardiovascular_Diseases" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">29</data>
+    </edge>
+    <edge source="Catecholamines" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">38</data>
+    </edge>
+    <edge source="Cerebral_Amyloid_Angiopathy" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Cerebral_atrophy" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Cerebrospinal_Fluid" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Cerebrovascular_accident" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">22</data>
+    </edge>
+    <edge source="Cholesterol" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">42</data>
+    </edge>
+    <edge source="Chronic_Kidney_Diseases" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Chronic_inflammation" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Chronic_inflammation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Chymosin_REN" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Clip" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Clipping" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Closure_by_clamp" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Cocaine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Compression_procedure" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">36</data>
+    </edge>
+    <edge source="Congenital_Abnormality" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Conn_Syndrome" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">188</data>
+    </edge>
+    <edge source="Constriction_procedure" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">58</data>
+    </edge>
+    <edge source="Contraceptives_Oral" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">35</data>
+    </edge>
+    <edge source="Contraction" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Copper" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Corticosterone" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Corticotropin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">99</data>
+    </edge>
+    <edge source="Cushing_Syndrome" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Cyclosporine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">161</data>
+    </edge>
+    <edge source="DNA_Mitochondrial" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="DOCA" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Degenerative_abnormality" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">49</data>
+    </edge>
+    <edge source="Degenerative_abnormality" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Dementia" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">61</data>
+    </edge>
+    <edge source="Denervation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">22</data>
+    </edge>
+    <edge source="Deoxycorticosterone" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">49</data>
+    </edge>
+    <edge source="Deterioration" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Dexamethasone" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">65</data>
+    </edge>
+    <edge source="Diabetes" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">22</data>
+    </edge>
+    <edge source="Diabetes" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">43</data>
+    </edge>
+    <edge source="Diabetes_Mellitus" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Diabetes_Mellitus_Non_Insulin_Dependent" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Diabetic_Nephropathy" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Diet" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Diet" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">263</data>
+    </edge>
+    <edge source="Diet_High_Fat" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">32</data>
+    </edge>
+    <edge source="Diet_Protein_Restricted" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Dopamine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Dopamine_Receptor" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Down_Syndrome" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Drinking_Water" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="ERCC8_CSH1_HSPA9" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">24</data>
+    </edge>
+    <edge source="Embolism" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Emotional_Stress" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Endocrine_System_Diseases" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Endopeptidases" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Endothelial_dysfunction" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">59</data>
+    </edge>
+    <edge source="Endothelin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">32</data>
+    </edge>
+    <edge source="Endothelin_1" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">39</data>
+    </edge>
+    <edge source="Enzymes" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Epinephrine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">60</data>
+    </edge>
+    <edge source="Erythropoietin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">59</data>
+    </edge>
+    <edge source="Essential_Hypertension" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Estrogens" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">23</data>
+    </edge>
+    <edge source="Ethanol" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">78</data>
+    </edge>
+    <edge source="Excision" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="FRAGMENTS" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">29</data>
+    </edge>
+    <edge source="Fetal_Growth_Retardation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Fibromuscular_Dysplasia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">40</data>
+    </edge>
+    <edge source="Fibrosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Fluid_overload" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Free_Radicals" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Gene_Mutation" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">31</data>
+    </edge>
+    <edge source="Genes" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">105</data>
+    </edge>
+    <edge source="Genes" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">62</data>
+    </edge>
+    <edge source="Glucocorticoid_remediable_aldosteronism" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Glucocorticoids" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">108</data>
+    </edge>
+    <edge source="Glycogen_Synthase_Kinase_3" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Glycosylation_End_Products_Advanced" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Glycyrrhizic_Acid" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Heart_failure" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Herpesvirus_1_Human" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Hormones" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hydrocortisone" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">40</data>
+    </edge>
+    <edge source="Hydronephrosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">22</data>
+    </edge>
+    <edge source="Hyperaldosteronism" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">29</data>
+    </edge>
+    <edge source="Hypercalcemia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hyperglycemia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Hyperinsulinism" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">55</data>
+    </edge>
+    <edge source="Hypernatremia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">35</data>
+    </edge>
+    <edge source="Hyperplasia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Hypertension" target="Abdominal_compartment_syndrome">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Hypertension" target="Abnormal_renal_function">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Arteriosclerosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">25</data>
+    </edge>
+    <edge source="Hypertension" target="Atherosclerosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">44</data>
+    </edge>
+    <edge source="Hypertension" target="Atrial_Fibrillation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Hypertension" target="Blood_Pressure">
+      <data key="d3">CAUSES</data>
+      <data key="d4">42</data>
+    </edge>
+    <edge source="Hypertension" target="Brain_Edema">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Brain_hemorrhage">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Hypertension" target="Cardiac_Hypertrophy">
+      <data key="d3">CAUSES</data>
+      <data key="d4">134</data>
+    </edge>
+    <edge source="Hypertension" target="Cardiac_complication">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Hypertension" target="Cardiomyopathies">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Hypertension" target="Cardiovascular_Diseases">
+      <data key="d3">CAUSES</data>
+      <data key="d4">243</data>
+    </edge>
+    <edge source="Hypertension" target="Cardiovascular_morbidity">
+      <data key="d3">CAUSES</data>
+      <data key="d4">81</data>
+    </edge>
+    <edge source="Hypertension" target="Cerebral_Edema">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="Cerebral_Hemorrhage">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Hypertension" target="Cerebral_hemisphere_hemorrhage">
+      <data key="d3">CAUSES</data>
+      <data key="d4">57</data>
+    </edge>
+    <edge source="Hypertension" target="Cerebrovascular_Disorders">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Hypertension" target="Cerebrovascular_accident">
+      <data key="d3">CAUSES</data>
+      <data key="d4">138</data>
+    </edge>
+    <edge source="Hypertension" target="Cessation_of_life">
+      <data key="d3">CAUSES</data>
+      <data key="d4">375</data>
+    </edge>
+    <edge source="Hypertension" target="Chronic_Kidney_Diseases">
+      <data key="d3">CAUSES</data>
+      <data key="d4">36</data>
+    </edge>
+    <edge source="Hypertension" target="Chronic_heart_failure">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Congestive_heart_failure">
+      <data key="d3">CAUSES</data>
+      <data key="d4">43</data>
+    </edge>
+    <edge source="Hypertension" target="Contraction">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Hypertension" target="Coronary_Arteriosclerosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">25</data>
+    </edge>
+    <edge source="Hypertension" target="Coronary_heart_disease">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Hypertension" target="Dementia_Vascular">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Hypertension" target="Diabetes">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Hypertension" target="Diabetes_Mellitus">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Diabetes_Mellitus_Non_Insulin_Dependent">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="Diabetic_Nephropathy">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Diastolic_dysfunction">
+      <data key="d3">CAUSES</data>
+      <data key="d4">23</data>
+    </edge>
+    <edge source="Hypertension" target="Disability_NOS">
+      <data key="d3">CAUSES</data>
+      <data key="d4">24</data>
+    </edge>
+    <edge source="Hypertension" target="Dissection_of_aorta">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Hypertension" target="Edema">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Hypertension" target="Encephalopathies">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Hypertension" target="End_stage_renal_failure">
+      <data key="d3">CAUSES</data>
+      <data key="d4">162</data>
+    </edge>
+    <edge source="Hypertension" target="Endothelial_dysfunction">
+      <data key="d3">CAUSES</data>
+      <data key="d4">73</data>
+    </edge>
+    <edge source="Hypertension" target="Erectile_dysfunction">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Hypertension" target="Essential_Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Hypertension" target="Extravasation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Hypertension" target="Fetal_Growth_Retardation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Hypertension" target="Fibrosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">56</data>
+    </edge>
+    <edge source="Hypertension" target="Glomerulosclerosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Hypertension" target="Growth">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="Headache">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Hypertension" target="Heart_Diseases">
+      <data key="d3">CAUSES</data>
+      <data key="d4">47</data>
+    </edge>
+    <edge source="Hypertension" target="Heart_failure">
+      <data key="d3">CAUSES</data>
+      <data key="d4">235</data>
+    </edge>
+    <edge source="Hypertension" target="Hospital_admission">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Hypertension" target="Hospitalization">
+      <data key="d3">CAUSES</data>
+      <data key="d4">24</data>
+    </edge>
+    <edge source="Hypertension" target="Hypertension_Pulmonary">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Hypertension" target="Hypertensive_heart_disease_NOS">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="Hypertrophic_Cardiomyopathy">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Hypertension" target="Hypertrophy">
+      <data key="d3">CAUSES</data>
+      <data key="d4">131</data>
+    </edge>
+    <edge source="Hypertension" target="Hypertrophy_Left_Ventricular">
+      <data key="d3">CAUSES</data>
+      <data key="d4">285</data>
+    </edge>
+    <edge source="Hypertension" target="Hypoxia">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Hypertension" target="Infarction">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Inflammation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">27</data>
+    </edge>
+    <edge source="Hypertension" target="Insulin_Resistance">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Hypertension" target="Intracranial_Hemorrhages">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Ischemia">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Hypertension" target="Ischemic_stroke">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Hypertension" target="Kidney_Diseases">
+      <data key="d3">CAUSES</data>
+      <data key="d4">65</data>
+    </edge>
+    <edge source="Hypertension" target="Kidney_Failure">
+      <data key="d3">CAUSES</data>
+      <data key="d4">71</data>
+    </edge>
+    <edge source="Hypertension" target="Kidney_Failure_Acute">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="Kidney_Failure_Chronic">
+      <data key="d3">CAUSES</data>
+      <data key="d4">127</data>
+    </edge>
+    <edge source="Hypertension" target="Labor_Childbirth">
+      <data key="d3">CAUSES</data>
+      <data key="d4">42</data>
+    </edge>
+    <edge source="Hypertension" target="Lack_of_sensation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Hypertension" target="Myocardial_Infarction">
+      <data key="d3">CAUSES</data>
+      <data key="d4">38</data>
+    </edge>
+    <edge source="Hypertension" target="Myocardial_Ischemia">
+      <data key="d3">CAUSES</data>
+      <data key="d4">23</data>
+    </edge>
+    <edge source="Hypertension" target="Myocardial_dysfunction">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Hypertension" target="Myocardial_fibrosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Hypertension" target="Nephrosclerosis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Hypertension" target="Obesity">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Hypertension" target="Pathogenesis">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Pathological_Dilatation">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Posterior_reversible_encephalopathy_syndrome">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Hypertension" target="Pre_Eclampsia">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Hypertension" target="Pregnancy">
+      <data key="d3">CAUSES</data>
+      <data key="d4">32</data>
+    </edge>
+    <edge source="Hypertension" target="Premature_Birth">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Hypertension" target="Proteinuria">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Hypertension" target="Pulmonary_Edema">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="Purpura_Thrombotic_Thrombocytopenic">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Hypertension" target="Renal_Insufficiency">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Hypertension" target="Spastic_syndrome">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="Stiffness">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Vascular_Diseases">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Hypertension" target="Ventricular_Dysfunction_Left">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Hypertension" target="Ventricular_hypertrophy">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="cardiac_arrhythmia">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypertension" target="end_organ_damage">
+      <data key="d3">CAUSES</data>
+      <data key="d4">52</data>
+    </edge>
+    <edge source="Hypertension_Renovascular" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Hypertrophy" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Hyperuricemia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">32</data>
+    </edge>
+    <edge source="Hypoplasia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Hypoxia" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Hypoxia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">148</data>
+    </edge>
+    <edge source="IMPACT_gene" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="IMPACT_gene" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Immobilization" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Immunosuppressive_Agents" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Impaired_cognition" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Inflammasomes" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Inflammation" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">105</data>
+    </edge>
+    <edge source="Inflammation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">62</data>
+    </edge>
+    <edge source="Inflammatory_Response" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="Inflammatory_Response" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Infusion_procedures" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">39</data>
+    </edge>
+    <edge source="Injection" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">25</data>
+    </edge>
+    <edge source="Injection_procedure" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">44</data>
+    </edge>
+    <edge source="Injection_procedure" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">33</data>
+    </edge>
+    <edge source="Injury" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Injury" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">35</data>
+    </edge>
+    <edge source="Insulin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">24</data>
+    </edge>
+    <edge source="Insulin_Resistance" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">35</data>
+    </edge>
+    <edge source="Insulin_Resistance" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">88</data>
+    </edge>
+    <edge source="Intestinal_Microbiome" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">29</data>
+    </edge>
+    <edge source="Intestinal_Microbiome" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Intubation_Intratracheal" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Ions" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">30</data>
+    </edge>
+    <edge source="Iron" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Ischemia" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Ischemia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">58</data>
+    </edge>
+    <edge source="Juxtaglomerular_tumor" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">31</data>
+    </edge>
+    <edge source="Kidney_Diseases" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">124</data>
+    </edge>
+    <edge source="Kidney_Failure" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Kidney_Failure_Chronic" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">51</data>
+    </edge>
+    <edge source="Kidney_Transplantation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Leptin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">24</data>
+    </edge>
+    <edge source="Licorice" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">34</data>
+    </edge>
+    <edge source="Ligation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">45</data>
+    </edge>
+    <edge source="Lipids" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Lipopolysaccharides" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Lipopolysaccharides" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Liquid_substance" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="MAPT" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">60</data>
+    </edge>
+    <edge source="MAPT_protein_human_MAPT" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">45</data>
+    </edge>
+    <edge source="Magnesium" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Malnutrition" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Memory_impairment" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Mental_deterioration" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Metabolic_syndrome" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Metals" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="MicroRNAs" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">39</data>
+    </edge>
+    <edge source="MicroRNAs" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Mineralocorticoid_Receptor" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Mineralocorticoids" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">36</data>
+    </edge>
+    <edge source="Molecule" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Mutation" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">342</data>
+    </edge>
+    <edge source="Mutation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">82</data>
+    </edge>
+    <edge source="NG_Nitroarginine_Methyl_Ester" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">152</data>
+    </edge>
+    <edge source="NOS3_protein_human_NOS3" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">26</data>
+    </edge>
+    <edge source="Na_K_Exchanging_ATPase" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Neoplasm" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">60</data>
+    </edge>
+    <edge source="Neoplasm_Metastasis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">24</data>
+    </edge>
+    <edge source="Nephrectomy" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">30</data>
+    </edge>
+    <edge source="Nerve_Degeneration" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">83</data>
+    </edge>
+    <edge source="Neurodegenerative_Disorders" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">35</data>
+    </edge>
+    <edge source="Neurofibrillary_Tangles" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Neurotoxins" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Nicotine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Nicotinic_Receptors" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Nitric_Oxide" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Nitric_Oxide" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">93</data>
+    </edge>
+    <edge source="Nitric_Oxide_Synthase" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">32</data>
+    </edge>
+    <edge source="Nitroarginine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Noise" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">22</data>
+    </edge>
+    <edge source="Norepinephrine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">101</data>
+    </edge>
+    <edge source="Obesity" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Obesity" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">289</data>
+    </edge>
+    <edge source="Okadaic_Acid" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Operative_Surgical_Procedures" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">41</data>
+    </edge>
+    <edge source="Ouabain" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">60</data>
+    </edge>
+    <edge source="Overweight" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Oxidation" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Oxidative_Stress" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">232</data>
+    </edge>
+    <edge source="Oxidative_Stress" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">96</data>
+    </edge>
+    <edge source="PS2_protein_alzheimer_associated_PSEN2" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="PSEN1" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Paraganglioma" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Parkinson_Disease" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Pathogenesis" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">27</data>
+    </edge>
+    <edge source="Pathogenesis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Pathologic_Processes" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">29</data>
+    </edge>
+    <edge source="Peptides" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">121</data>
+    </edge>
+    <edge source="Peptidyl_Dipeptidase_A" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Perinephritis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Pharmaceutical_Preparations" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">29</data>
+    </edge>
+    <edge source="Pharmaceutical_Preparations" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">75</data>
+    </edge>
+    <edge source="Pharmacotherapy" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Phenylephrine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">101</data>
+    </edge>
+    <edge source="Pheochromocytoma" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">169</data>
+    </edge>
+    <edge source="Plasma" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Players" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Polymorphism_Genetic" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Polymorphism_Genetic" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Potassium" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Pre_Eclampsia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">41</data>
+    </edge>
+    <edge source="Pressors" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Prions" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Process" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">255</data>
+    </edge>
+    <edge source="Process" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">38</data>
+    </edge>
+    <edge source="Prostaglandins" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Proteins" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">74</data>
+    </edge>
+    <edge source="Proteins" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Rare_Diseases" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Reactive_Oxygen_Species" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Reactive_Oxygen_Species" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">38</data>
+    </edge>
+    <edge source="Recombinant_Erythropoietin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">26</data>
+    </edge>
+    <edge source="Renal_Artery_Stenosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">247</data>
+    </edge>
+    <edge source="Renal_Insufficiency" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Renal_artery_occlusion" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Renal_infarction" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Renal_ischaemia" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">44</data>
+    </edge>
+    <edge source="Renal_vascular_disorders_NOS" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">58</data>
+    </edge>
+    <edge source="Renin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">46</data>
+    </edge>
+    <edge source="SUCLA2_gene_SUCLA2" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">66</data>
+    </edge>
+    <edge source="Saline" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Salts" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">123</data>
+    </edge>
+    <edge source="Sensory_denervation_disorder" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="Serotonin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Single_Nucleotide_Polymorphism" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Sleep_Apnea_Obstructive" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">115</data>
+    </edge>
+    <edge source="Sleep_Apnea_Syndromes" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">21</data>
+    </edge>
+    <edge source="Sodium" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">75</data>
+    </edge>
+    <edge source="Sodium_Chloride" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">535</data>
+    </edge>
+    <edge source="Sodium_Chloride_Dietary" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">53</data>
+    </edge>
+    <edge source="Stenosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">57</data>
+    </edge>
+    <edge source="Stenosis_unspecified" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Steroids" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">47</data>
+    </edge>
+    <edge source="Stiffness" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Stimulus" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Streptozocin" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">161</data>
+    </edge>
+    <edge source="Streptozocin" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Study_models" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">69</data>
+    </edge>
+    <edge source="Study_models" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">69</data>
+    </edge>
+    <edge source="Substance" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Sugars" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Superoxides" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="TNF_protein_human_TNF" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Tacrolimus" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="Takayasu_s_Arteritis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">23</data>
+    </edge>
+    <edge source="Testosterone" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Therapeutic_procedure" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">37</data>
+    </edge>
+    <edge source="Therapeutic_procedure" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">256</data>
+    </edge>
+    <edge source="Thrombosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Tourniquets" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Toxic_effect" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">49</data>
+    </edge>
+    <edge source="Toxic_effect" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Transplantation" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Traumatic_Brain_Injury" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">30</data>
+    </edge>
+    <edge source="Unilateral_nephrectomy" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="Unilateral_renal_artery_stenosis" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Uric_Acid" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Vascular_Diseases" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Vascular_Diseases" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="Vasoconstrictor_Agents" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="Vasodilation_disorder" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Vasospasm" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">33</data>
+    </edge>
+    <edge source="Virus" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
+    </edge>
+    <edge source="Vitamin_D_Deficiency" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+    <edge source="Water" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="Wounds_and_Injuries" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Zinc" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="adenoma" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">16</data>
+    </edge>
+    <edge source="agonists" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="alanosine" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">89</data>
+    </edge>
+    <edge source="aluminum" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">103</data>
+    </edge>
+    <edge source="aluminum_chloride" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">77</data>
+    </edge>
+    <edge source="angiotensin_II" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">875</data>
+    </edge>
+    <edge source="aorta_constriction" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+    <edge source="arginine_methyl_ester" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">208</data>
+    </edge>
+    <edge source="beta_site_APP_cleaving_enzyme_1_BACE1" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">15</data>
+    </edge>
+    <edge source="bevacizumab" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">47</data>
+    </edge>
+    <edge source="cytokine" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">23</data>
+    </edge>
+    <edge source="desoxycorticosterone_acetate" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">93</data>
+    </edge>
+    <edge source="fructose" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">128</data>
+    </edge>
+    <edge source="galactose" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">26</data>
+    </edge>
+    <edge source="gamma_secretase" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">40</data>
+    </edge>
+    <edge source="gene_therapy" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">30</data>
+    </edge>
+    <edge source="homocysteine" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">14</data>
+    </edge>
+    <edge source="hydrochloride" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="imbalance" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">38</data>
+    </edge>
+    <edge source="imbalance" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">28</data>
+    </edge>
+    <edge source="inhibitors" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">45</data>
+    </edge>
+    <edge source="neuron_loss" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">17</data>
+    </edge>
+    <edge source="neuronal" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">10</data>
+    </edge>
+    <edge source="presenilin" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">58</data>
+    </edge>
+    <edge source="presenilin_1" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">66</data>
+    </edge>
+    <edge source="receptor" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">26</data>
+    </edge>
+    <edge source="receptor" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">27</data>
+    </edge>
+    <edge source="scopolamine" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">49</data>
+    </edge>
+    <edge source="sorafenib" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="tau_Proteins" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">48</data>
+    </edge>
+    <edge source="vascular_factor" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
+    </edge>
+  </graph>
+</graphml>

@@ -1,0 +1,8 @@
+from,to
+Mutation,Alzheimers
+Mutation,Hypertension
+Mutation,hearing_impairment
+Hypertension,Alzheimers
+Genes,Alzheimers
+Genes,Hypertension
+Genes,hearing_impairment

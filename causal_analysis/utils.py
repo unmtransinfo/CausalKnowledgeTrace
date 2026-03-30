@@ -77,6 +77,10 @@ def get_s5_post_removal_dir(exposure: str, outcome: str) -> Path:
     return get_stage_dir(exposure, outcome, STAGES["S5_POST_REMOVAL"])
 
 
+def get_s7_bias_dir(exposure: str, outcome: str) -> Path:
+    return get_stage_dir(exposure, outcome, STAGES["S7_BIAS"])
+
+
 # ============================================
 # DIRECTORY UTILITIES
 # ============================================

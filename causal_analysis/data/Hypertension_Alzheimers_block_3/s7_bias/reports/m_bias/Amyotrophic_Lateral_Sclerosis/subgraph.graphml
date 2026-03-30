@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
+    <node id="Amyotrophic_Lateral_Sclerosis">
+      <data key="d0">C0002736</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Mutation">
+      <data key="d0">C0026882</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
+    <node id="gene_therapy">
+      <data key="d0">C0017296</data>
+      <data key="d1">regular</data>
+    </node>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Mutation" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">188</data>
+    </edge>
+    <edge source="Mutation" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">82</data>
+    </edge>
+    <edge source="Mutation" target="Amyotrophic_Lateral_Sclerosis">
+      <data key="d2">CAUSES</data>
+      <data key="d3">467</data>
+    </edge>
+    <edge source="gene_therapy" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">30</data>
+    </edge>
+    <edge source="gene_therapy" target="Amyotrophic_Lateral_Sclerosis">
+      <data key="d2">CAUSES</data>
+      <data key="d3">131</data>
+    </edge>
+  </graph>
+</graphml>

@@ -1,0 +1,4 @@
+"from","to","confounder"
+"Hypertension","Alzheimers","Intestinal_Microbiome"
+"Intestinal_Microbiome","Hypertension","Intestinal_Microbiome"
+"Intestinal_Microbiome","Alzheimers","Intestinal_Microbiome"

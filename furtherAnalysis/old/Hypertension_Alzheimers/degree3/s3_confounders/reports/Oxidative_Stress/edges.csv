@@ -1,0 +1,4 @@
+"from","to","confounder"
+"Oxidative_Stress","Hypertension","Oxidative_Stress"
+"Oxidative_Stress","Alzheimers","Oxidative_Stress"
+"Hypertension","Alzheimers","Oxidative_Stress"

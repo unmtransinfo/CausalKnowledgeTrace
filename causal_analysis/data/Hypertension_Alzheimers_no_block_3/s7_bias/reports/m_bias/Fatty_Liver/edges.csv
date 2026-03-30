@@ -1,0 +1,10 @@
+from,to
+Diet,Alzheimers
+Diet,Fatty_Liver
+Diet,Hypertension
+Diet,Obesity
+Hypertension,Alzheimers
+Hypertension,Obesity
+Obesity,Alzheimers
+Obesity,Fatty_Liver
+Obesity,Hypertension

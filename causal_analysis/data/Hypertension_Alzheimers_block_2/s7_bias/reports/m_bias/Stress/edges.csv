@@ -1,0 +1,7 @@
+from,to
+Ethanol,Hypertension
+Ethanol,Stress
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Stress
+Hypertension,Alzheimers

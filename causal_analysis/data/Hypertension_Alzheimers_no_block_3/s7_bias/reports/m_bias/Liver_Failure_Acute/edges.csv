@@ -1,0 +1,9 @@
+from,to
+Injury,Alzheimers
+Injury,Hypertension
+Injury,Liver_Failure_Acute
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Injury
+Lipopolysaccharides,Liver_Failure_Acute

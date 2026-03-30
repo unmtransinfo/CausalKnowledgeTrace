@@ -1,0 +1,7 @@
+from,to
+COVID_19,Hypertension
+COVID_19,Shock
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Shock

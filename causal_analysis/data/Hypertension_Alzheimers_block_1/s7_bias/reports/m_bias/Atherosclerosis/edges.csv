@@ -1,0 +1,9 @@
+from,to
+Atherosclerosis,Hypertension
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Atherosclerosis
+Hypertension,Alzheimers
+Hypertension,Atherosclerosis
+Cholesterol,Alzheimers
+Cholesterol,Atherosclerosis

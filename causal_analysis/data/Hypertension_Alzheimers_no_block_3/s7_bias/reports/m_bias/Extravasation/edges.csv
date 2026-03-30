@@ -1,0 +1,9 @@
+from,to
+Injection_procedure,Alzheimers
+Injection_procedure,Extravasation
+Injection_procedure,Hypertension
+Injury,Alzheimers
+Injury,Extravasation
+Injury,Hypertension
+Hypertension,Alzheimers
+Hypertension,Extravasation

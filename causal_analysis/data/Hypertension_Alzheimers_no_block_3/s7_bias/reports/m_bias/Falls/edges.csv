@@ -1,0 +1,7 @@
+from,to
+Insulin,Falls
+Insulin,Hypertension
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Falls
+Lipopolysaccharides,Hypertension

@@ -1,0 +1,17 @@
+from,to
+Injection_procedure,Alzheimers
+Injection_procedure,Hypertension
+Injection_procedure,Inflammatory_Response
+Injury,Alzheimers
+Injury,Hypertension
+Injury,Inflammatory_Response
+Therapeutic_procedure,Alzheimers
+Therapeutic_procedure,Hypertension
+Therapeutic_procedure,Inflammatory_Response
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Inflammatory_Response
+Lipopolysaccharides,Injury
+Inflammatory_Response,Alzheimers
+Inflammatory_Response,Hypertension

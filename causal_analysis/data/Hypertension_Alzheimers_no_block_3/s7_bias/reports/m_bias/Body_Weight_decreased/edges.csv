@@ -1,0 +1,7 @@
+from,to
+agonists,Body_Weight_decreased
+agonists,Hypertension
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Body_Weight_decreased
+Pharmaceutical_Preparations,Hypertension

@@ -7,7 +7,6 @@
 #   ./run_pipeline.sh <exposure> <outcome> <degree>
 #   ./run_pipeline.sh Hypertension Alzheimers 2
 #
-<<<<<<< HEAD
 # This script runs all analysis scripts in sequence for a specific degree graph.
 #
 # NEW PIPELINE (Refactored Feb 2026):
@@ -17,16 +16,6 @@
 # 4. Confounder Analysis (07)
 # 5. Evidence Extraction (08)
 # 6. Advanced Confounder & Bias Analysis (09, 10, 10b)
-=======
-# This script runs all analysis scripts in sequence:
-#   01_parse_dagitty.R (loads graph_creation/result JSON graph by default)
-#   02_basic_analysis.R
-#   04a_cycle_detection.R
-#   03a_semantic_type_analysis.R (requires DB credentials)
-#   03b_semantic_distribution.R
-#   04b_extract_analyze_cycle.R
-#   04c_visualize_cycles.R
->>>>>>> feature/django
 
 set -e  # Exit on any error
 
@@ -118,22 +107,11 @@ echo ""
 
 START_TIME=$(date +%s)
 
-<<<<<<< HEAD
-cd "$SCRIPT_DIR"
-
-# --- STAGE 1: GRAPH PREPARATION & PRUNING ---
-
-# Step 1: Parse DAGitty
-print_step "Step 1/11: Parsing DAGitty file (01)"
-if Rscript 01_parse_dagitty.R "$EXPOSURE" "$OUTCOME" "$DEGREE"; then
-    print_success "DAGitty parsing complete"
-=======
 # Step 1: Parse graph JSON
 print_step "Step 1/7: Loading graph JSON"
 cd "$SCRIPT_DIR"
 if Rscript 01_parse_dagitty.R "$EXPOSURE" "$OUTCOME"; then
     print_success "Graph parsing complete"
->>>>>>> feature/django
 else
     print_error "Graph parsing failed"
     exit 1
@@ -262,22 +240,10 @@ echo "Outcome:  $OUTCOME"
 echo "Degree:   $DEGREE"
 echo "Time:     ${ELAPSED} seconds"
 echo ""
-<<<<<<< HEAD
-echo "Output directory:"
-echo "  data/${EXPOSURE}_${OUTCOME}/degree${DEGREE}/"
-echo ""
-echo "Key outputs:"
-echo "  - Pruned graph:    s1_graph/pruned_graph.rds"
-echo "  - Semantic Stats:  s2_semantic/semantic_type_distribution.csv"
-echo "  - Confounders:     s3_confounders/valid_confounders.csv"
-echo "  - Evidence:        s3b_evidence/all_evidence.csv"
-echo "  - Butterfly Bias:  s4_butterfly_bias/analysis_summary.txt"
-=======
 echo "Output directories:"
 echo "  - Stage 1 graph:    ../data/${EXPOSURE}_${OUTCOME}/s1_graph/"
 echo "  - Stage 2 analysis: ../data/${EXPOSURE}_${OUTCOME}/s2_semantic/"
 echo "  - Stage 3 cycles:   ../data/${EXPOSURE}_${OUTCOME}/s3_cycles/"
 echo "  - Stage 4 pruning:  ../data/${EXPOSURE}_${OUTCOME}/s4_node_removal/"
 echo "  - Stage 5 post:     ../data/${EXPOSURE}_${OUTCOME}/s5_post_removal/"
->>>>>>> feature/django
 echo ""

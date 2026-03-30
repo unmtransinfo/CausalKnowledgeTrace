@@ -1,0 +1,8 @@
+from,to
+Ethanol,Brain_Injuries
+Ethanol,Hypertension
+Brain_Injuries,Alzheimers
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Brain_Injuries
+Lipopolysaccharides,Hypertension

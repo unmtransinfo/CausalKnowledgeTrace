@@ -1,0 +1,10 @@
+from,to
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Insulin_Resistance
+Diet,Non_alcoholic_fatty_liver
+Insulin_Resistance,Alzheimers
+Insulin_Resistance,Hypertension
+Insulin_Resistance,Non_alcoholic_fatty_liver
+Hypertension,Alzheimers
+Hypertension,Insulin_Resistance

@@ -1,0 +1,5 @@
+confounder,n_confounder_parents,confounder_parents,is_butterfly
+Inflammatory_Response,2,"Injury, Lipopolysaccharides",True
+Injury,6,"Agent, Diet, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Study_models",True
+Oxidative_Stress,4,"Antioxidants, Diet, Lipopolysaccharides, Reactive_Oxygen_Species",True
+Toxic_effect,3,"Agent, Lipopolysaccharides, Reactive_Oxygen_Species",True

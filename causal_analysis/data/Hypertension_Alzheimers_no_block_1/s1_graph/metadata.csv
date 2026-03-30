@@ -1,0 +1,7 @@
+key,value
+exposure,Hypertension
+outcome,Alzheimers
+input_file,/home/mpradhan/Research_Project/CausalKnowledgeTrace/graph_creation/result/Hypertension_to_Alzheimers_degree1.json
+input_format,cytoscape_json
+n_nodes,380
+n_edges,469

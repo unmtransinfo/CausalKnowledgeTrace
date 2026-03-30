@@ -1,0 +1,63 @@
+=======================================================
+Butterfly Bias Analysis Summary
+=======================================================
+
+Exposure: Hypertension
+Outcome: Alzheimers
+Graph is Acyclic: False
+Timestamp: 2026-03-29 16:33:51
+
+=== Method ===
+Approach: direct parents/children (matching R dagitty logic)
+Confounder = common parent of both exposure and outcome,
+             excluding direct children of either.
+Butterfly = confounder with 2+ other confounders as parents.
+M-bias = children(parent_of_X) ∩ children(parent_of_Y),
+         where P1 ≠ P2 and M ≠ X,Y and M is not a confounder.
+
+=== Graph Statistics ===
+Total nodes: 372
+Total edges: 446
+Parents of exposure: 224
+Parents of outcome: 114
+
+=== Confounder Counts ===
+Confounders identified: 26
+
+=== Butterfly Bias Results ===
+Independent confounders: 26
+Confounders with 1 parent: 0
+BUTTERFLY candidates: 0
+
+No butterfly bias detected.
+All confounders are independent and safe to adjust for.
+
+=== All Confounders by Type ===
+
+INDEPENDENT (safe to adjust for):
+  - Agent
+  - Antioxidants
+  - Chronic_inflammation
+  - Diet
+  - Genes
+  - IMPACT_gene
+  - Inflammatory_Response
+  - Injection_procedure
+  - Injury
+  - Intestinal_Microbiome
+  - Lipopolysaccharides
+  - MicroRNAs
+  - Mutation
+  - Nitric_Oxide
+  - Oxidative_Stress
+  - Pharmaceutical_Preparations
+  - Polymorphism_Genetic
+  - Process
+  - Proteins
+  - Reactive_Oxygen_Species
+  - Streptozocin
+  - Study_models
+  - Therapeutic_procedure
+  - Toxic_effect
+  - imbalance
+  - receptor

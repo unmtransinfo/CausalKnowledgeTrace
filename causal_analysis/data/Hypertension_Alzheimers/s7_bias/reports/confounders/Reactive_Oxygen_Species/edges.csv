@@ -1,0 +1,13 @@
+from,to
+Reactive_Oxygen_Species,Alzheimers
+Reactive_Oxygen_Species,Hypertension
+Reactive_Oxygen_Species,Injury
+Reactive_Oxygen_Species,Oxidative_Stress
+Reactive_Oxygen_Species,Toxic_effect
+Injury,Alzheimers
+Injury,Hypertension
+Toxic_effect,Alzheimers
+Toxic_effect,Hypertension
+Hypertension,Alzheimers
+Oxidative_Stress,Alzheimers
+Oxidative_Stress,Hypertension

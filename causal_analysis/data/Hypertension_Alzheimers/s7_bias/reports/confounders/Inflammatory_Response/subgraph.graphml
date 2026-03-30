@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Lipopolysaccharides">
+      <data key="d0">C0023810</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Injury">
+      <data key="d0">C0175677</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Inflammatory_Response">
+      <data key="d0">C1155266</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
+    <edge source="Lipopolysaccharides" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">20</data>
+    </edge>
+    <edge source="Lipopolysaccharides" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">12</data>
+    </edge>
+    <edge source="Lipopolysaccharides" target="Inflammatory_Response">
+      <data key="d2">CAUSES</data>
+      <data key="d3">2090</data>
+    </edge>
+    <edge source="Lipopolysaccharides" target="Injury">
+      <data key="d2">CAUSES</data>
+      <data key="d3">1616</data>
+    </edge>
+    <edge source="Injury" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">19</data>
+    </edge>
+    <edge source="Injury" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">35</data>
+    </edge>
+    <edge source="Injury" target="Inflammatory_Response">
+      <data key="d2">CAUSES</data>
+      <data key="d3">164</data>
+    </edge>
+    <edge source="Inflammatory_Response" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">28</data>
+    </edge>
+    <edge source="Inflammatory_Response" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+  </graph>
+</graphml>

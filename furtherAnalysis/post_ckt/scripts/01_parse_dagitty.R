@@ -36,21 +36,6 @@ outcome_name <- args$outcome
 degree <- args$degree
 
 # ---- Set paths using utility functions ----
-<<<<<<< HEAD
-input_dir <- get_input_dir()
-output_dir <- get_s1_graph_dir(exposure_name, outcome_name, degree)
-
-# ---- Find input file ----
-input_file <- find_dagitty_file(exposure_name, outcome_name, degree)
-
-if (is.null(input_file)) {
-  stop("Could not find DAGitty R file for ", exposure_name, "_", outcome_name, "_degree_", degree, " in ", input_dir)
-}
-
-print_header(paste0("DAGitty Parser (Stage 1) - Degree ", degree), exposure_name, outcome_name)
-cat("Input file:", input_file, "\n")
-cat("Output directory:", output_dir, "\n\n")
-=======
 output_dir <- get_s1_graph_dir(exposure_name, outcome_name)
 
 `%||%` <- function(x, y) {
@@ -116,7 +101,6 @@ parse_graph_json_file <- function(file_path) {
     input_format = "json_graph"
   )
 }
->>>>>>> feature/django
 
 parse_dagitty_file <- function(file_path) {
   cat("Reading legacy DAGitty file...\n")

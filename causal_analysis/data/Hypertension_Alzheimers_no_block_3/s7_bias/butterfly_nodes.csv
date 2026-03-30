@@ -1,0 +1,5 @@
+confounder,n_confounder_parents,confounder_parents,is_butterfly
+Inflammatory_Response,4,"Injection_procedure, Injury, Lipopolysaccharides, Therapeutic_procedure",True
+Injury,8,"Agent, Diet, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Reactive_Oxygen_Species, Streptozocin, Study_models",True
+Oxidative_Stress,9,"Antioxidants, Diet, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Proteins, Reactive_Oxygen_Species, Streptozocin, Study_models",True
+Toxic_effect,7,"Agent, Antioxidants, Lipopolysaccharides, Nitric_Oxide, Pharmaceutical_Preparations, Proteins, Reactive_Oxygen_Species",True

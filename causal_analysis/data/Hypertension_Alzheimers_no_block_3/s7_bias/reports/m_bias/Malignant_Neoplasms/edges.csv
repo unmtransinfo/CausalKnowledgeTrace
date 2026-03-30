@@ -1,0 +1,8 @@
+from,to
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Malignant_Neoplasms
+Hypertension,Alzheimers
+Agent,Alzheimers
+Agent,Hypertension
+Agent,Malignant_Neoplasms

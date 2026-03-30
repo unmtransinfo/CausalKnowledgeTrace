@@ -1,0 +1,8 @@
+"from","to","confounder"
+"Degenerative_abnormality","Hypertension","Insulin_Resistance"
+"Degenerative_abnormality","Alzheimers","Insulin_Resistance"
+"Hypertension","Alzheimers","Insulin_Resistance"
+"Hypertension","Insulin_Resistance","Insulin_Resistance"
+"Alzheimers","Degenerative_abnormality","Insulin_Resistance"
+"Insulin_Resistance","Hypertension","Insulin_Resistance"
+"Insulin_Resistance","Alzheimers","Insulin_Resistance"

@@ -1,0 +1,38 @@
+=======================================================
+Confounder Relationship Analysis Summary
+=======================================================
+
+Exposure: Hypertension 
+Outcome: Alzheimers 
+Graph Degree: 3 
+Relationship Degree: 2 
+Timestamp: 2026-02-16 12:25:34 
+
+=== Data ===
+Total nodes in graph: 3793 
+Total edges in graph: 7960 
+Total confounders: 19 
+
+=== 2nd Degree Relationships ===
+Total relationships: 26 
+Confounders with parents: 5 
+Confounders as parents: 10 
+
+Top parent-child relationships:
+   Lipopolysaccharides -> 5 children: Oxidative_Stress, Toxic_effect, Inflammatory_Response, Chronic_inflammation, imbalance 
+   Reactive_Oxygen_Species -> 5 children: Oxidative_Stress, Toxic_effect, Inflammatory_Response, Chronic_inflammation, imbalance 
+   Diet -> 3 children: Oxidative_Stress, Toxic_effect, Inflammatory_Response 
+   Antioxidants -> 2 children: Oxidative_Stress, Toxic_effect 
+   IMPACT_gene -> 2 children: Oxidative_Stress, Toxic_effect 
+   Injection_procedure -> 2 children: Inflammatory_Response, Chronic_inflammation 
+   Nitric_Oxide -> 2 children: Oxidative_Stress, Toxic_effect 
+   Streptozocin -> 2 children: Oxidative_Stress, Toxic_effect 
+   receptor -> 2 children: Oxidative_Stress, Inflammatory_Response 
+   Mutation -> 1 children: imbalance 
+
+Butterfly candidates:
+   Oxidative_Stress <- 8 parents: Antioxidants, Diet, IMPACT_gene, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Streptozocin, receptor 
+   Toxic_effect <- 7 parents: Antioxidants, Diet, IMPACT_gene, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Streptozocin 
+   Inflammatory_Response <- 5 parents: Diet, Injection_procedure, Lipopolysaccharides, Reactive_Oxygen_Species, receptor 
+   Chronic_inflammation <- 3 parents: Injection_procedure, Lipopolysaccharides, Reactive_Oxygen_Species 
+   imbalance <- 3 parents: Mutation, Lipopolysaccharides, Reactive_Oxygen_Species 

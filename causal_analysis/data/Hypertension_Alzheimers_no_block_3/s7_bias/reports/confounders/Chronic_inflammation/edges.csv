@@ -1,0 +1,7 @@
+from,to
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Chronic_inflammation
+Lipopolysaccharides,Hypertension
+Hypertension,Alzheimers
+Chronic_inflammation,Alzheimers
+Chronic_inflammation,Hypertension

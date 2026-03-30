@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Atherosclerosis">
+      <data key="d0">C0004153</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
+    <node id="Cardiovascular_Diseases">
+      <data key="d0">C0007222</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Inflammation">
+      <data key="d0">C0021368</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
+    <edge source="Atherosclerosis" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">18</data>
+    </edge>
+    <edge source="Atherosclerosis" target="Cardiovascular_Diseases">
+      <data key="d2">CAUSES</data>
+      <data key="d3">283</data>
+    </edge>
+    <edge source="Alzheimers" target="Inflammation">
+      <data key="d2">CAUSES</data>
+      <data key="d3">22</data>
+    </edge>
+    <edge source="Cardiovascular_Diseases" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">29</data>
+    </edge>
+    <edge source="Inflammation" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">105</data>
+    </edge>
+    <edge source="Inflammation" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">62</data>
+    </edge>
+    <edge source="Inflammation" target="Atherosclerosis">
+      <data key="d2">CAUSES</data>
+      <data key="d3">221</data>
+    </edge>
+    <edge source="Inflammation" target="Cardiovascular_Diseases">
+      <data key="d2">CAUSES</data>
+      <data key="d3">133</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Hypertension" target="Atherosclerosis">
+      <data key="d2">CAUSES</data>
+      <data key="d3">44</data>
+    </edge>
+    <edge source="Hypertension" target="Cardiovascular_Diseases">
+      <data key="d2">CAUSES</data>
+      <data key="d3">243</data>
+    </edge>
+    <edge source="Hypertension" target="Inflammation">
+      <data key="d2">CAUSES</data>
+      <data key="d3">27</data>
+    </edge>
+  </graph>
+</graphml>

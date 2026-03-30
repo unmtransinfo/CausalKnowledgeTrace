@@ -1,0 +1,4 @@
+"from","to","confounder"
+"Hypertension","Alzheimers","receptor"
+"receptor","Hypertension","receptor"
+"receptor","Alzheimers","receptor"

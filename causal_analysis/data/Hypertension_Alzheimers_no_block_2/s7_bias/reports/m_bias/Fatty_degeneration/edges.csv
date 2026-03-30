@@ -1,0 +1,7 @@
+from,to
+Diet,Alzheimers
+Diet,Fatty_degeneration
+Diet,Hypertension
+Ethanol,Fatty_degeneration
+Ethanol,Hypertension
+Hypertension,Alzheimers

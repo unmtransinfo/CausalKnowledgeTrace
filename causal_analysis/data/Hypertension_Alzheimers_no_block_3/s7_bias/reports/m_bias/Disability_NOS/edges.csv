@@ -1,0 +1,9 @@
+from,to
+Cardiovascular_Diseases,Disability_NOS
+Cardiovascular_Diseases,Hypertension
+Brain_Injuries,Alzheimers
+Brain_Injuries,Disability_NOS
+Hypertension,Alzheimers
+Hypertension,Cardiovascular_Diseases
+Hypertension,Disability_NOS
+Alzheimers,Disability_NOS

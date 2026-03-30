@@ -1,0 +1,14 @@
+from,to
+Inflammation,Alzheimers
+Inflammation,Hypertension
+Inflammation,Endothelial_dysfunction
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Hypertension,Endothelial_dysfunction
+Hypertension,Inflammation
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,Endothelial_dysfunction
+Diabetes,Inflammation
+Endothelial_dysfunction,Hypertension
+Alzheimers,Inflammation

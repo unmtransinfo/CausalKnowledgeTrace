@@ -1,0 +1,7 @@
+from,to
+Congenital_Abnormality,Hypertension
+Congenital_Abnormality,Rare_Diseases
+Rare_Diseases,Hypertension
+Hypertension,Alzheimers
+Gene_Mutation,Alzheimers
+Gene_Mutation,Rare_Diseases

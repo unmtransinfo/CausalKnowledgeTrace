@@ -1,0 +1,7 @@
+from,to
+Diet,Alzheimers
+Diet,Hyperlipidemia
+Diet,Hypertension
+Hypertension,Alzheimers
+Diet_High_Fat,Hyperlipidemia
+Diet_High_Fat,Hypertension

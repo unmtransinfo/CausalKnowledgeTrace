@@ -1,0 +1,7 @@
+from,to
+Tourniquets,Hypertension
+Tourniquets,Reperfusion_Injury
+Hypertension,Alzheimers
+Reactive_Oxygen_Species,Alzheimers
+Reactive_Oxygen_Species,Hypertension
+Reactive_Oxygen_Species,Reperfusion_Injury

@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Lipopolysaccharides">
+      <data key="d0">Lipopolysaccharides</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0023810</data>
+    </node>
+    <node id="cytotoxicity">
+      <data key="d0">cytotoxicity</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0596402</data>
+    </node>
+    <node id="APP_gene">
+      <data key="d0">APP_gene</data>
+      <data key="d1">regular</data>
+      <data key="d2">C1364818</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">Alzheimers</data>
+      <data key="d1">outcome</data>
+      <data key="d2">C0750901</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">Hypertension</data>
+      <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
+    </node>
+    <edge source="Lipopolysaccharides" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Lipopolysaccharides" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">12</data>
+    </edge>
+    <edge source="Lipopolysaccharides" target="cytotoxicity">
+      <data key="d3">CAUSES</data>
+      <data key="d4">168</data>
+    </edge>
+    <edge source="APP_gene" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">492</data>
+    </edge>
+    <edge source="APP_gene" target="cytotoxicity">
+      <data key="d3">CAUSES</data>
+      <data key="d4">118</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+  </graph>
+</graphml>

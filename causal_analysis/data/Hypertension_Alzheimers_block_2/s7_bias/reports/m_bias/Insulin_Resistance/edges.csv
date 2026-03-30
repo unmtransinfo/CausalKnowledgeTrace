@@ -1,0 +1,10 @@
+from,to
+Dexamethasone,Hypertension
+Dexamethasone,Insulin_Resistance
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Insulin_Resistance
+Insulin_Resistance,Alzheimers
+Insulin_Resistance,Hypertension
+Hypertension,Alzheimers
+Hypertension,Insulin_Resistance

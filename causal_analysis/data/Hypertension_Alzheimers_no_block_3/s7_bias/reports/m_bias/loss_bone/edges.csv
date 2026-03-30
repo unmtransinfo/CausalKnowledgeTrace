@@ -1,0 +1,7 @@
+from,to
+Adrenal_Cortex_Hormones,Hypertension
+Adrenal_Cortex_Hormones,loss_bone
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,loss_bone

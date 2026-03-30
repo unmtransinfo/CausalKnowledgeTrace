@@ -1,0 +1,10 @@
+from,to
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,Neuropathy
+Mutation,Alzheimers
+Mutation,Diabetes
+Mutation,Hypertension
+Mutation,Neuropathy
+Hypertension,Alzheimers
+Hypertension,Diabetes

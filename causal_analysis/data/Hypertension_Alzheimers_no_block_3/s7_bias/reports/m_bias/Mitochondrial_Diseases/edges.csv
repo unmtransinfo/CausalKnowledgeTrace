@@ -1,0 +1,7 @@
+from,to
+Mutation,Alzheimers
+Mutation,Hypertension
+Mutation,Mitochondrial_Diseases
+Hypertension,Alzheimers
+DNA_Mitochondrial,Alzheimers
+DNA_Mitochondrial,Mitochondrial_Diseases

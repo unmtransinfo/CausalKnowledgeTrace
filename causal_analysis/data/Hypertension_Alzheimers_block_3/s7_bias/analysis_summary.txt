@@ -1,0 +1,129 @@
+=======================================================
+Butterfly Bias Analysis Summary
+=======================================================
+
+Exposure: Hypertension
+Outcome: Alzheimers
+Graph is Acyclic: False
+Timestamp: 2026-03-29 17:02:03
+
+=== Method ===
+Approach: direct parents/children (matching R dagitty logic)
+Confounder = common parent of both exposure and outcome,
+             excluding direct children of either.
+Butterfly = confounder with 2+ other confounders as parents.
+M-bias = children(parent_of_X) ∩ children(parent_of_Y),
+         where P1 ≠ P2 and M ≠ X,Y and M is not a confounder.
+
+=== Graph Statistics ===
+Total nodes: 865
+Total edges: 1426
+Parents of exposure: 216
+Parents of outcome: 105
+
+=== Confounder Counts ===
+Confounders identified: 21
+
+=== Butterfly Bias Results ===
+Independent confounders: 17
+Confounders with 1 parent: 0
+BUTTERFLY candidates: 4
+
+Butterfly nodes (DO NOT adjust for these directly):
+  1. Inflammatory_Response <- {Injury, Lipopolysaccharides}
+  2. Injury <- {Agent, Diet, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Study_models}
+  3. Oxidative_Stress <- {Antioxidants, Diet, Lipopolysaccharides, Reactive_Oxygen_Species}
+  4. Toxic_effect <- {Agent, Lipopolysaccharides, Reactive_Oxygen_Species}
+
+RECOMMENDATION: Instead of adjusting for butterfly nodes,
+adjust for their confounder parents to avoid opening
+collider paths.
+
+=== All Confounders by Type ===
+
+INDEPENDENT (safe to adjust for):
+  - Agent
+  - Antioxidants
+  - Chronic_inflammation
+  - Diet
+  - IMPACT_gene
+  - Injection_procedure
+  - Intestinal_Microbiome
+  - Lipopolysaccharides
+  - MicroRNAs
+  - Mutation
+  - Nitric_Oxide
+  - Polymorphism_Genetic
+  - Reactive_Oxygen_Species
+  - Streptozocin
+  - Study_models
+  - imbalance
+  - receptor
+
+BUTTERFLY (avoid adjusting directly):
+  - Inflammatory_Response <- {Injury, Lipopolysaccharides}
+  - Injury <- {Agent, Diet, Lipopolysaccharides, Nitric_Oxide, Reactive_Oxygen_Species, Study_models}
+  - Oxidative_Stress <- {Antioxidants, Diet, Lipopolysaccharides, Reactive_Oxygen_Species}
+  - Toxic_effect <- {Agent, Lipopolysaccharides, Reactive_Oxygen_Species}
+
+
+=== M-Bias Analysis (Python-only) ===
+Detection: direct parent/child (top-down)
+M-bias variables found: 53
+
+These nodes are colliders on backdoor paths.
+Do NOT adjust for them -- it would open spurious paths.
+
+  - Amyotrophic_Lateral_Sclerosis:  Hypertension ← Mutation → Amyotrophic_Lateral_Sclerosis ← gene_therapy → Alzheimers
+  - Apoptosis:  Hypertension ← Angiotensin_II → Apoptosis ← APP_gene → Alzheimers
+  - Atherosclerosis:  Hypertension ← Diet → Atherosclerosis ← Cholesterol → Alzheimers
+  - Blind_Vision:  Hypertension ← Degenerative_abnormality → Blind_Vision ← Diabetes → Alzheimers
+  - Cardiomyopathies:  Hypertension ← Catecholamines → Cardiomyopathies ← Mutation → Alzheimers
+  - Cardiovascular_Diseases:  Hypertension ← Atherosclerosis → Cardiovascular_Diseases ← Inflammation → Alzheimers
+  - Cell_Death:  Hypertension ← Ethanol → Cell_Death ← APP_gene → Alzheimers
+  - Cessation_of_life:  Hypertension ← Atherosclerosis → Cessation_of_life ← APP_gene → Alzheimers
+  - DNA_Damage:  Hypertension ← Reactive_Oxygen_Species → DNA_Damage ← Free_Radicals → Alzheimers
+  - Diabetes:  Hypertension ← Diet → Diabetes ← Injection_procedure → Alzheimers
+  - Diabetes_Mellitus_Non_Insulin_Dependent:  Hypertension ← Diet → Diabetes_Mellitus_Non_Insulin_Dependent ← Insulin_Resistance → Alzheimers
+  - Disability_NOS:  Hypertension ← Cerebrovascular_accident → Disability_NOS ← Injury → Alzheimers
+  - Edema:  Hypertension ← Serotonin → Edema ← Injection_procedure → Alzheimers
+  - End_stage_renal_failure:  Hypertension ← Diabetes_Mellitus → End_stage_renal_failure ← Diabetes → Alzheimers
+  - Endothelial_dysfunction:  Hypertension ← Diabetes → Endothelial_dysfunction ← Inflammation → Alzheimers
+  - Fatty_Liver:  Hypertension ← Diet → Fatty_Liver ← Obesity → Alzheimers
+  - Fatty_degeneration:  Hypertension ← Ethanol → Fatty_degeneration ← Diet → Alzheimers
+  - Fibrosis:  Hypertension ← Angiotensin_II → Fibrosis ← Diet → Alzheimers
+  - Heart_failure:  Hypertension ← Constriction_procedure → Heart_failure ← Amyloidosis → Alzheimers
+  - Human_cells:  Hypertension ← TNF_protein_human_TNF → Human_cells ← Lipopolysaccharides → Alzheimers
+  - Hyperglycemia:  Hypertension ← Diabetes → Hyperglycemia ← Diet → Alzheimers
+  - Hyperlipidemia:  Hypertension ← Diet_High_Fat → Hyperlipidemia ← Diet → Alzheimers
+  - Impaired_cognition:  Hypertension ← Lipopolysaccharides → Impaired_cognition ← Scopolamine → Alzheimers
+  - Infection:  Hypertension ← Agent → Infection ← Virus → Alzheimers
+  - Inflammation:  Hypertension ← Agent → Inflammation ← Diabetes → Alzheimers
+  - Insulin_Resistance:  Hypertension ← Dexamethasone → Insulin_Resistance ← Diet → Alzheimers
+  - Kidney_Failure_Acute:  Hypertension ← Ischemia → Kidney_Failure_Acute ← Lipopolysaccharides → Alzheimers
+  - Kidney_Failure_Chronic:  Hypertension ← Diabetes_Mellitus → Kidney_Failure_Chronic ← Diabetes → Alzheimers
+  - Lesion:  Hypertension ← Ethanol → Lesion ← Reactive_Oxygen_Species → Alzheimers
+  - Liver_damage:  Hypertension ← Ethanol → Liver_damage ← Lipopolysaccharides → Alzheimers
+  - Malignant_Neoplasms:  Hypertension ← MicroRNAs → Malignant_Neoplasms ← Virus → Alzheimers
+  - Memory_impairment:  Hypertension ← Lipopolysaccharides → Memory_impairment ← Scopolamine → Alzheimers
+  - Metabolic_Diseases:  Hypertension ← Diet → Metabolic_Diseases ← Mutation → Alzheimers
+  - Metabolic_syndrome:  Hypertension ← Diet → Metabolic_syndrome ← Obesity → Alzheimers
+  - Mouse_Model:  Hypertension ← Diet → Mouse_Model ← Lipopolysaccharides → Alzheimers
+  - Neoplasm:  Hypertension ← Agent → Neoplasm ← Study_models → Alzheimers
+  - Nerve_Degeneration:  Hypertension ← Ethanol → Nerve_Degeneration ← MAPT → Alzheimers
+  - Neurodegenerative_Disorders:  Hypertension ← Mutation → Neurodegenerative_Disorders ← Oxidative_Stress → Alzheimers
+  - Non_alcoholic_Fatty_Liver_Disease:  Hypertension ← Diet_High_Fat → Non_alcoholic_Fatty_Liver_Disease ← Diet → Alzheimers
+  - Nonalcoholic_Steatohepatitis:  Hypertension ← Diet_High_Fat → Nonalcoholic_Steatohepatitis ← Diet → Alzheimers
+  - Obesity:  Hypertension ← Diet → Obesity ← Mutation → Alzheimers
+  - Osteoporosis:  Hypertension ← Adrenal_Cortex_Hormones → Osteoporosis ← imbalance → Alzheimers
+  - Pain:  Hypertension ← Wounds_and_Injuries → Pain ← Injury → Alzheimers
+  - Pancreatitis:  Hypertension ← Arginine → Pancreatitis ← Injection_procedure → Alzheimers
+  - Parkinson_Disease:  Hypertension ← Degenerative_abnormality → Parkinson_Disease ← Mutation → Alzheimers
+  - Pneumonia:  Hypertension ← COVID_19 → Pneumonia ← Lipopolysaccharides → Alzheimers
+  - Pyroptosis:  Hypertension ← Lipopolysaccharides → Pyroptosis ← Inflammasomes → Alzheimers
+  - Respiratory_Distress_Syndrome_Adult:  Hypertension ← COVID_19 → Respiratory_Distress_Syndrome_Adult ← Lipopolysaccharides → Alzheimers
+  - Septicemia:  Hypertension ← Ligation → Septicemia ← Lipopolysaccharides → Alzheimers
+  - Stress:  Hypertension ← Ethanol → Stress ← Lipopolysaccharides → Alzheimers
+  - cardiac_arrhythmia:  Hypertension ← Epinephrine → cardiac_arrhythmia ← Ischemia → Alzheimers
+  - cell_injury:  Hypertension ← Ethanol → cell_injury ← Free_Radicals → Alzheimers
+  - cytotoxicity:  Hypertension ← Lipopolysaccharides → cytotoxicity ← APP_gene → Alzheimers

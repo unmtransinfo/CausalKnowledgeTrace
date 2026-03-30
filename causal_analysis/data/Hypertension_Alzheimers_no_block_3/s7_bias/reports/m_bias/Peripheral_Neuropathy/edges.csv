@@ -1,0 +1,8 @@
+from,to
+Mutation,Alzheimers
+Mutation,Hypertension
+Mutation,Peripheral_Neuropathy
+Hypertension,Alzheimers
+Pharmaceutical_Preparations,Alzheimers
+Pharmaceutical_Preparations,Hypertension
+Pharmaceutical_Preparations,Peripheral_Neuropathy
