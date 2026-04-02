@@ -37,6 +37,7 @@ degree <- args$degree
 
 # ---- Set paths using utility functions ----
 <<<<<<< HEAD
+<<<<<<< HEAD
 input_dir <- get_input_dir()
 output_dir <- get_s1_graph_dir(exposure_name, outcome_name, degree)
 
@@ -51,6 +52,8 @@ print_header(paste0("DAGitty Parser (Stage 1) - Degree ", degree), exposure_name
 cat("Input file:", input_file, "\n")
 cat("Output directory:", output_dir, "\n\n")
 =======
+=======
+>>>>>>> m_bias_analysis
 output_dir <- get_s1_graph_dir(exposure_name, outcome_name)
 
 `%||%` <- function(x, y) {
@@ -116,7 +119,10 @@ parse_graph_json_file <- function(file_path) {
     input_format = "json_graph"
   )
 }
+<<<<<<< HEAD
 >>>>>>> feature/django
+=======
+>>>>>>> m_bias_analysis
 
 parse_dagitty_file <- function(file_path) {
   cat("Reading legacy DAGitty file...\n")

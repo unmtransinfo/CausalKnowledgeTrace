@@ -8,6 +8,9 @@
 #   ./run_pipeline.sh Hypertension Alzheimers 2
 #
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> m_bias_analysis
 # This script runs all analysis scripts in sequence for a specific degree graph.
 #
 # NEW PIPELINE (Refactored Feb 2026):
@@ -17,6 +20,7 @@
 # 4. Confounder Analysis (07)
 # 5. Evidence Extraction (08)
 # 6. Advanced Confounder & Bias Analysis (09, 10, 10b)
+<<<<<<< HEAD
 =======
 # This script runs all analysis scripts in sequence:
 #   01_parse_dagitty.R (loads graph_creation/result JSON graph by default)
@@ -27,6 +31,8 @@
 #   04b_extract_analyze_cycle.R
 #   04c_visualize_cycles.R
 >>>>>>> feature/django
+=======
+>>>>>>> m_bias_analysis
 
 set -e  # Exit on any error
 
@@ -119,6 +125,7 @@ echo ""
 START_TIME=$(date +%s)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 cd "$SCRIPT_DIR"
 
 # --- STAGE 1: GRAPH PREPARATION & PRUNING ---
@@ -128,12 +135,17 @@ print_step "Step 1/11: Parsing DAGitty file (01)"
 if Rscript 01_parse_dagitty.R "$EXPOSURE" "$OUTCOME" "$DEGREE"; then
     print_success "DAGitty parsing complete"
 =======
+=======
+>>>>>>> m_bias_analysis
 # Step 1: Parse graph JSON
 print_step "Step 1/7: Loading graph JSON"
 cd "$SCRIPT_DIR"
 if Rscript 01_parse_dagitty.R "$EXPOSURE" "$OUTCOME"; then
     print_success "Graph parsing complete"
+<<<<<<< HEAD
 >>>>>>> feature/django
+=======
+>>>>>>> m_bias_analysis
 else
     print_error "Graph parsing failed"
     exit 1
@@ -263,6 +275,7 @@ echo "Degree:   $DEGREE"
 echo "Time:     ${ELAPSED} seconds"
 echo ""
 <<<<<<< HEAD
+<<<<<<< HEAD
 echo "Output directory:"
 echo "  data/${EXPOSURE}_${OUTCOME}/degree${DEGREE}/"
 echo ""
@@ -273,11 +286,16 @@ echo "  - Confounders:     s3_confounders/valid_confounders.csv"
 echo "  - Evidence:        s3b_evidence/all_evidence.csv"
 echo "  - Butterfly Bias:  s4_butterfly_bias/analysis_summary.txt"
 =======
+=======
+>>>>>>> m_bias_analysis
 echo "Output directories:"
 echo "  - Stage 1 graph:    ../data/${EXPOSURE}_${OUTCOME}/s1_graph/"
 echo "  - Stage 2 analysis: ../data/${EXPOSURE}_${OUTCOME}/s2_semantic/"
 echo "  - Stage 3 cycles:   ../data/${EXPOSURE}_${OUTCOME}/s3_cycles/"
 echo "  - Stage 4 pruning:  ../data/${EXPOSURE}_${OUTCOME}/s4_node_removal/"
 echo "  - Stage 5 post:     ../data/${EXPOSURE}_${OUTCOME}/s5_post_removal/"
+<<<<<<< HEAD
 >>>>>>> feature/django
+=======
+>>>>>>> m_bias_analysis
 echo ""

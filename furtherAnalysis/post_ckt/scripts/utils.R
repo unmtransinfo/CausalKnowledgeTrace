@@ -515,6 +515,7 @@ find_dagitty_file <- function(exposure, outcome, degree = 2, root = NULL) {
 #' @return Full path to JSON file, or NULL if not found
 find_json_file <- function(exposure, outcome, degree = 2, root = NULL) {
 <<<<<<< HEAD
+<<<<<<< HEAD
   input_dir <- get_input_dir(root)
 
   # Try exact match first
@@ -533,6 +534,8 @@ find_json_file <- function(exposure, outcome, degree = 2, root = NULL) {
     }
     return(matching[1])
 =======
+=======
+>>>>>>> m_bias_analysis
   search_dirs <- unique(c(get_graph_creation_result_dir(root), get_input_dir(root)))
 
   exact_candidates <- c(
@@ -546,7 +549,10 @@ find_json_file <- function(exposure, outcome, degree = 2, root = NULL) {
   exact_match <- select_preferred_file(exact_candidates, degree)
   if (!is.null(exact_match)) {
     return(exact_match)
+<<<<<<< HEAD
 >>>>>>> feature/django
+=======
+>>>>>>> m_bias_analysis
   }
 
   matching <- character(0)
@@ -736,12 +742,18 @@ validate_inputs <- function(exposure, outcome,
       stop(paste0(
         "Could not find JSON file for ", exposure, "_", outcome, "\n",
 <<<<<<< HEAD
+<<<<<<< HEAD
         "Expected location: ", get_input_dir(root), "/", exposure, "_", outcome, "*", degree, ".json\n",
 =======
         "Expected locations:\n",
         "  - ", get_graph_creation_result_dir(root), "/", exposure, "_to_", outcome, "_degree*_causal_assertions.json\n",
         "  - ", get_input_dir(root), "/", exposure, "_", outcome, "*_causal_assertions*.json\n",
 >>>>>>> feature/django
+=======
+        "Expected locations:\n",
+        "  - ", get_graph_creation_result_dir(root), "/", exposure, "_to_", outcome, "_degree*_causal_assertions.json\n",
+        "  - ", get_input_dir(root), "/", exposure, "_", outcome, "*_causal_assertions*.json\n",
+>>>>>>> m_bias_analysis
         "Please run generate_graph.sh first.\n"
       ))
     }

@@ -20,10 +20,19 @@ django_ckt/reduced_graphs/
 
 semmed_database.tar.gz
 causalehr.dump
-furtherAnalysis/post_ckt/input
-furtherAnalysis/post_ckt/data
-extra/
 
+# Data/result output directories - generated, not source
+causal_analysis/data/
+graph_creation/result/
+graph_creation/result.zip
+
+# furtherAnalysis: ignore data subdirectories, keep scripts
+furtherAnalysis/old/Hypertension_Alzheimers/
+furtherAnalysis/old/Depression_Alzheimers/
+furtherAnalysis/post_ckt/input/
+furtherAnalysis/post_ckt/data/
+
+extra/
 dump/
 filtering/
 causalehr_backup/
