@@ -1,0 +1,31 @@
+# Depression -> Alzheimer's Disease (Degree 2)
+# This config explores indirect pathways between depression and Alzheimer's
+
+exposure_cuis:
+  - C1269683
+  - C0024517
+  - C0743073
+
+outcome_cuis:
+  - C1853360
+  - C1970144
+  - C2677888
+  - C3554452
+  - C1853555
+  - C1846735
+  - C0750901
+  - C1843013
+  - C0494463
+  - C4055475
+  - C0002395
+
+exposure_name: Depression
+outcome_name: Alzheimers
+
+min_pmids: 50
+degree: 1
+
+predication_types:
+  - CAUSES
+
+blocklist_cuis: []
