@@ -26,6 +26,7 @@ extra/
 causal_analysis/data/
 graph_creation/result/no_block_graph
 graph_creation/result/skimmed_graph
+graph_creation/result/all_predicate_graph
 
 dump/
 filtering/
@@ -39,3 +40,5 @@ jbi_paper/overleaf_temp/main.bbl
 jbi_paper/overleaf_temp/main.blg
 jbi_paper/overleaf_temp/main.log
 jbi_paper/overleaf_temp/main.spl
+
+check_node_exists.py
