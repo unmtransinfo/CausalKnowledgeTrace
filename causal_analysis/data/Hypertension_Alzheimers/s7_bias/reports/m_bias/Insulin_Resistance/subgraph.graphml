@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Lipids">
+      <data key="d0">Lipids</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0023779</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">Alzheimers</data>
+      <data key="d1">outcome</data>
+      <data key="d2">C0750901</data>
+    </node>
+    <node id="Insulin_Resistance">
+      <data key="d0">Insulin_Resistance</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0021655</data>
+    </node>
+    <node id="Dexamethasone">
+      <data key="d0">Dexamethasone</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0011777</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">Hypertension</data>
+      <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
+    </node>
+    <edge source="Lipids" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">20</data>
+    </edge>
+    <edge source="Lipids" target="Insulin_Resistance">
+      <data key="d3">CAUSES</data>
+      <data key="d4">263</data>
+    </edge>
+    <edge source="Insulin_Resistance" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">35</data>
+    </edge>
+    <edge source="Insulin_Resistance" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">88</data>
+    </edge>
+    <edge source="Dexamethasone" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">65</data>
+    </edge>
+    <edge source="Dexamethasone" target="Insulin_Resistance">
+      <data key="d3">CAUSES</data>
+      <data key="d4">112</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Hypertension" target="Insulin_Resistance">
+      <data key="d3">CAUSES</data>
+      <data key="d4">19</data>
+    </edge>
+  </graph>
+</graphml>

@@ -1,0 +1,11 @@
+from,to
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Diabetes
+Injection_procedure,Alzheimers
+Injection_procedure,Hypertension
+Injection_procedure,Diabetes
+Diabetes,Alzheimers
+Diabetes,Hypertension

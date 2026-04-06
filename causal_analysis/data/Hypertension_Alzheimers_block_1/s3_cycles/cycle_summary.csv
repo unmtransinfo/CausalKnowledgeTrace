@@ -1,0 +1,51 @@
+cycle_id,cycle_length,nodes
+1,2,Chronic_Kidney_Diseases -> Hypertension
+2,4,Diabetes -> Alzheimers -> Degenerative_abnormality -> Hypertension
+3,4,Diabetes -> Alzheimers -> Inflammation -> Hypertension
+4,2,Diabetes -> Hypertension
+5,4,Obesity -> Alzheimers -> Degenerative_abnormality -> Hypertension
+6,4,Obesity -> Alzheimers -> Inflammation -> Hypertension
+7,2,Obesity -> Hypertension
+8,2,Fibrosis -> Hypertension
+9,2,Abnormal_renal_function -> Hypertension
+10,4,Inflammation -> Alzheimers -> Degenerative_abnormality -> Hypertension
+11,2,Inflammation -> Alzheimers
+12,3,Inflammation -> Hypertension -> Alzheimers
+13,4,Inflammation -> Hypertension -> Diabetes_Mellitus_Non_Insulin_Dependent -> Alzheimers
+14,4,Inflammation -> Hypertension -> Hypoxia -> Alzheimers
+15,2,Inflammation -> Hypertension
+16,4,Inflammation -> Hypertension -> Insulin_Resistance -> Alzheimers
+17,4,Inflammation -> Hypertension -> Ischemia -> Alzheimers
+18,4,Inflammation -> Hypertension -> Pathogenesis -> Alzheimers
+19,4,Inflammation -> Hypertension -> Vascular_Diseases -> Alzheimers
+20,2,Pre_Eclampsia -> Hypertension
+21,2,Essential_Hypertension -> Hypertension
+22,2,Neurofibrillary_Tangles -> Alzheimers
+23,2,Renal_Insufficiency -> Hypertension
+24,3,Hypertension -> Alzheimers -> Degenerative_abnormality
+25,2,Hypertension -> Atherosclerosis
+26,2,Hypertension -> Cardiovascular_Diseases
+27,2,Hypertension -> Cerebrovascular_accident
+28,2,Hypertension -> Diabetes_Mellitus
+29,4,Hypertension -> Diabetes_Mellitus_Non_Insulin_Dependent -> Alzheimers -> Degenerative_abnormality
+30,2,Hypertension -> Diabetic_Nephropathy
+31,2,Hypertension -> Endothelial_dysfunction
+32,2,Hypertension -> Fetal_Growth_Retardation
+33,2,Hypertension -> Heart_failure
+34,2,Hypertension -> Hypertrophy
+35,4,Hypertension -> Hypoxia -> Alzheimers -> Degenerative_abnormality
+36,2,Hypertension -> Hypoxia
+37,4,Hypertension -> Insulin_Resistance -> Alzheimers -> Degenerative_abnormality
+38,2,Hypertension -> Insulin_Resistance
+39,4,Hypertension -> Ischemia -> Alzheimers -> Degenerative_abnormality
+40,2,Hypertension -> Ischemia
+41,2,Hypertension -> Kidney_Diseases
+42,2,Hypertension -> Kidney_Failure
+43,2,Hypertension -> Kidney_Failure_Chronic
+44,4,Hypertension -> Pathogenesis -> Alzheimers -> Degenerative_abnormality
+45,2,Hypertension -> Pathogenesis
+46,2,Hypertension -> Stiffness
+47,4,Hypertension -> Vascular_Diseases -> Alzheimers -> Degenerative_abnormality
+48,2,Hypertension -> Vascular_Diseases
+49,2,Alzheimers -> Amyloid_deposition
+50,2,Alzheimers -> Atrophic

@@ -1,0 +1,6 @@
+from,to
+Aspirin,Hypertension
+Aspirin,Malignant_Neoplasms
+Vaccines,Alzheimers
+Vaccines,Malignant_Neoplasms
+Hypertension,Alzheimers

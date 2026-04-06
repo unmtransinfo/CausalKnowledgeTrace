@@ -1,0 +1,8 @@
+from,to
+Cardiovascular_Diseases,Hypertension
+Hydroxymethylglutaryl_CoA_Reductase_Inhibitors,Alzheimers
+Hydroxymethylglutaryl_CoA_Reductase_Inhibitors,Cardiovascular_Diseases
+Aspirin,Cardiovascular_Diseases
+Aspirin,Hypertension
+Hypertension,Cardiovascular_Diseases
+Hypertension,Alzheimers

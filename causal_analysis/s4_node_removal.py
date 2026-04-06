@@ -18,7 +18,7 @@ from pathlib import Path
 
 import networkx as nx
 
-from .config import GENERIC_NODES
+from .config import GENERIC_NODES, CYCLE_CONFIG
 from .utils import (
     get_s1_graph_dir,
     get_s4_node_removal_dir,
@@ -36,14 +36,26 @@ def load_graph(exposure: str, outcome: str) -> nx.DiGraph:
     return nx.read_graphml(str(graphml_path))
 
 
-def count_cycles(G: nx.DiGraph) -> int:
-    """Count total simple cycles via SCC-scoped enumeration."""
+def count_cycles(G: nx.DiGraph) -> tuple[int, bool]:
+    """Count total simple cycles via SCC-scoped enumeration.
+
+    Stops at max_cycles_to_enumerate (from config) to avoid runaway computation.
+    Returns (count, capped) where capped=True if the limit was hit.
+    """
+    max_enumerate = CYCLE_CONFIG.get("max_cycles_to_enumerate", 1_000_000)
     total = 0
+    capped = False
     for scc in nx.strongly_connected_components(G):
         if len(scc) > 1:
             sub = G.subgraph(scc)
-            total += sum(1 for _ in nx.simple_cycles(sub))
-    return total
+            for _ in nx.simple_cycles(sub):
+                total += 1
+                if total >= max_enumerate:
+                    capped = True
+                    break
+        if capped:
+            break
+    return total, capped
 
 
 def get_scc_stats(G: nx.DiGraph) -> dict:
@@ -70,8 +82,9 @@ def run_stage4(exposure: str, outcome: str) -> dict:
 
     print("\nCounting baseline cycles...")
     t0 = time.time()
-    baseline_cycles = count_cycles(G)
-    print(f"Baseline cycles: {baseline_cycles:,}  ({time.time()-t0:.1f}s)")
+    baseline_cycles, baseline_capped = count_cycles(G)
+    cap_note = " (CAPPED)" if baseline_capped else ""
+    print(f"Baseline cycles: {baseline_cycles:,}{cap_note}  ({time.time()-t0:.1f}s)")
 
     # --- Individual removal ---
     existing = [n for n in GENERIC_NODES if n in G]
@@ -84,11 +97,12 @@ def run_stage4(exposure: str, outcome: str) -> dict:
     for node in existing:
         H = G.copy()
         H.remove_node(node)
-        cycles_after = count_cycles(H)
+        cycles_after, after_capped = count_cycles(H)
         removed = baseline_cycles - cycles_after
         pct = (removed / baseline_cycles * 100) if baseline_cycles else 0
         scc_s = get_scc_stats(H)
-        print(f"  Remove '{node}': {cycles_after:,} cycles (-{removed:,}, -{pct:.1f}%)")
+        cap_note = " (capped)" if after_capped else ""
+        print(f"  Remove '{node}': {cycles_after:,}{cap_note} cycles (-{removed:,}, -{pct:.1f}%)")
         individual_rows.append({
             "node": node, "original_cycles": baseline_cycles,
             "remaining_cycles": cycles_after, "cycles_removed": removed,
@@ -107,11 +121,12 @@ def run_stage4(exposure: str, outcome: str) -> dict:
     print(f"Reduced graph: {reduced.number_of_nodes()} nodes, {reduced.number_of_edges()} edges")
     combined_stats = get_scc_stats(reduced)
     t0 = time.time()
-    combined_cycles = count_cycles(reduced)
+    combined_cycles, combined_capped = count_cycles(reduced)
     combined_removed = baseline_cycles - combined_cycles
     combined_pct = (combined_removed / baseline_cycles * 100) if baseline_cycles else 0
     is_dag = nx.is_directed_acyclic_graph(reduced)
-    print(f"Cycles after combined removal: {combined_cycles:,} (-{combined_pct:.1f}%)")
+    cap_note = " (CAPPED)" if combined_capped else ""
+    print(f"Cycles after combined removal: {combined_cycles:,}{cap_note} (-{combined_pct:.1f}%)")
     print(f"Is DAG: {is_dag}")
 
     # --- Save results ---

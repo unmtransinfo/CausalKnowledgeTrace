@@ -1,0 +1,17 @@
+from,to
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Inflammatory_Response
+Lipopolysaccharides,Injury
+Lipopolysaccharides,Oxidative_Stress
+Lipopolysaccharides,Toxic_effect
+Hypertension,Alzheimers
+Oxidative_Stress,Alzheimers
+Oxidative_Stress,Hypertension
+Injury,Alzheimers
+Injury,Hypertension
+Injury,Inflammatory_Response
+Toxic_effect,Alzheimers
+Toxic_effect,Hypertension
+Inflammatory_Response,Alzheimers
+Inflammatory_Response,Hypertension

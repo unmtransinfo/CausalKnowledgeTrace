@@ -20,9 +20,12 @@ django_ckt/reduced_graphs/
 
 semmed_database.tar.gz
 causalehr.dump
-furtherAnalysis/post_ckt/input
-furtherAnalysis/post_ckt/data
+furtherAnalysis/
 extra/
+
+causal_analysis/data/
+graph_creation/result/no_block_graph
+graph_creation/result/skimmed_graph
 
 dump/
 filtering/

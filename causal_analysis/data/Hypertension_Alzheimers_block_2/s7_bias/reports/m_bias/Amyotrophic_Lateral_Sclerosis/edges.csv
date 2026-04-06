@@ -1,0 +1,7 @@
+from,to
+gene_therapy,Alzheimers
+gene_therapy,Amyotrophic_Lateral_Sclerosis
+Hypertension,Alzheimers
+Mutation,Alzheimers
+Mutation,Hypertension
+Mutation,Amyotrophic_Lateral_Sclerosis

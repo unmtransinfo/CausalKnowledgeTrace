@@ -1,0 +1,11 @@
+from,to
+Diabetes_Mellitus,Hypertension
+Diabetes_Mellitus,Kidney_Failure_Chronic
+Kidney_Failure_Chronic,Hypertension
+Hypertension,Alzheimers
+Hypertension,Diabetes
+Hypertension,Diabetes_Mellitus
+Hypertension,Kidney_Failure_Chronic
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,Kidney_Failure_Chronic

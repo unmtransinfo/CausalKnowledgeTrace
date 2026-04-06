@@ -1,0 +1,7 @@
+from,to
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Septicemia
+Hypertension,Alzheimers
+Ligation,Hypertension
+Ligation,Septicemia

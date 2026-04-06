@@ -1,0 +1,13 @@
+from,to
+Hypertension,Alzheimers
+Reactive_Oxygen_Species,Alzheimers
+Reactive_Oxygen_Species,Hypertension
+Reactive_Oxygen_Species,Toxic_effect
+Agent,Alzheimers
+Agent,Hypertension
+Agent,Toxic_effect
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Toxic_effect
+Toxic_effect,Alzheimers
+Toxic_effect,Hypertension

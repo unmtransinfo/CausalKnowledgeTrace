@@ -1,0 +1,9 @@
+from,to
+Hypertension,Alzheimers
+Hypertension,cardiac_arrhythmia
+Hypertension,Ischemia
+Ischemia,Alzheimers
+Ischemia,Hypertension
+Ischemia,cardiac_arrhythmia
+Epinephrine,Hypertension
+Epinephrine,cardiac_arrhythmia

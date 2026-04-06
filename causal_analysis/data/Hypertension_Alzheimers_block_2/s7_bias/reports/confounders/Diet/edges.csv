@@ -1,0 +1,10 @@
+from,to
+Injury,Alzheimers
+Injury,Hypertension
+Hypertension,Alzheimers
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Injury
+Diet,Oxidative_Stress
+Oxidative_Stress,Alzheimers
+Oxidative_Stress,Hypertension

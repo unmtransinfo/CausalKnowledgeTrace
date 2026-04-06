@@ -1,0 +1,8 @@
+from,to
+Hypertension,Alzheimers
+Lipopolysaccharides,Alzheimers
+Lipopolysaccharides,Hypertension
+Lipopolysaccharides,Impaired_cognition
+Impaired_cognition,Alzheimers
+Scopolamine,Alzheimers
+Scopolamine,Impaired_cognition

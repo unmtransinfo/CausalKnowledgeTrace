@@ -1,0 +1,8 @@
+from,to
+Constriction_procedure,Heart_failure
+Constriction_procedure,Hypertension
+Heart_failure,Hypertension
+Amyloidosis,Alzheimers
+Amyloidosis,Heart_failure
+Hypertension,Alzheimers
+Hypertension,Heart_failure

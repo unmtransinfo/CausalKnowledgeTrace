@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d1" for="node" attr.name="node_type" attr.type="string" />
+  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <graph edgedefault="directed">
+    <node id="Cholesterol">
+      <data key="d0">C0008377</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
+    <node id="Atherosclerosis">
+      <data key="d0">C0004153</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
+    <node id="Diet">
+      <data key="d0">C0012155</data>
+      <data key="d1">regular</data>
+    </node>
+    <edge source="Cholesterol" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">42</data>
+    </edge>
+    <edge source="Cholesterol" target="Atherosclerosis">
+      <data key="d2">CAUSES</data>
+      <data key="d3">205</data>
+    </edge>
+    <edge source="Atherosclerosis" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">18</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Hypertension" target="Atherosclerosis">
+      <data key="d2">CAUSES</data>
+      <data key="d3">44</data>
+    </edge>
+    <edge source="Diet" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">18</data>
+    </edge>
+    <edge source="Diet" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">263</data>
+    </edge>
+    <edge source="Diet" target="Atherosclerosis">
+      <data key="d2">CAUSES</data>
+      <data key="d3">512</data>
+    </edge>
+  </graph>
+</graphml>

@@ -1,0 +1,8 @@
+from,to
+Hypertension,Alzheimers
+Hypertension,Cardiomyopathies
+Catecholamines,Hypertension
+Catecholamines,Cardiomyopathies
+Mutation,Alzheimers
+Mutation,Hypertension
+Mutation,Cardiomyopathies

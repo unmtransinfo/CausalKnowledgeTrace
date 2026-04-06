@@ -1,0 +1,10 @@
+from,to
+Inflammation,Alzheimers
+Inflammation,Hypertension
+Anti_Inflammatory_Agents_Non_Steroidal,Alzheimers
+Anti_Inflammatory_Agents_Non_Steroidal,Inflammation
+Adrenal_Cortex_Hormones,Hypertension
+Adrenal_Cortex_Hormones,Inflammation
+Alzheimers,Inflammation
+Hypertension,Alzheimers
+Hypertension,Inflammation

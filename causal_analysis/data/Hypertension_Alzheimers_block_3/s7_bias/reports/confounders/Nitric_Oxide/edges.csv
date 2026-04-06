@@ -1,0 +1,7 @@
+from,to
+Hypertension,Alzheimers
+Nitric_Oxide,Alzheimers
+Nitric_Oxide,Hypertension
+Nitric_Oxide,Injury
+Injury,Alzheimers
+Injury,Hypertension

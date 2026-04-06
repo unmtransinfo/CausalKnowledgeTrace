@@ -20,6 +20,7 @@ CYCLE_CONFIG = {
     "max_cycles_to_save": 50,
     "max_path_length": 10,
     "sample_cycles_to_find": 5,
+    "max_cycles_to_enumerate": 1_000_000,
 }
 
 # ============================================
@@ -80,5 +81,7 @@ STAGES = {
     "S3_CYCLES": "s3_cycles",
     "S4_NODE_REMOVAL": "s4_node_removal",
     "S5_POST_REMOVAL": "s5_post_removal",
+    "S7_BIAS": "s7_bias",
+    "S8_OTHER_BIAS": "s8_other_bias",
 }
 

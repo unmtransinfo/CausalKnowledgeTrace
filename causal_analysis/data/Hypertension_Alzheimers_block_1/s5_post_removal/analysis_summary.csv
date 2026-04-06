@@ -1,0 +1,10 @@
+metric,value
+original_nodes,361
+original_edges,429
+reduced_nodes,360
+reduced_edges,428
+nodes_removed,1
+total_cycles,54
+nodes_in_cycles,37
+sccs_with_cycles,1
+is_dag,NO
