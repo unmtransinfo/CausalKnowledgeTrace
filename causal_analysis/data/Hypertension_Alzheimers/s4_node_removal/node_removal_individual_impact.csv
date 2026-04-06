@@ -1,2 +1,0 @@
-node,original_cycles,remaining_cycles,cycles_removed,percent_reduction,remaining_sccs,largest_scc_after
-Obstruction,1000000,1000000,0,0.0,2,170

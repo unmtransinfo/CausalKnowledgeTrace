@@ -1,7 +1,0 @@
-from,to
-MicroRNAs,Alzheimers
-MicroRNAs,Hypertension
-MicroRNAs,Malignant_Neoplasms
-Hypertension,Alzheimers
-Virus,Alzheimers
-Virus,Malignant_Neoplasms

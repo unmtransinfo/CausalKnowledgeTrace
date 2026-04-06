@@ -1,9 +1,0 @@
-from,to
-Lipids,Alzheimers
-Lipids,Insulin_Resistance
-Insulin_Resistance,Alzheimers
-Insulin_Resistance,Hypertension
-Dexamethasone,Hypertension
-Dexamethasone,Insulin_Resistance
-Hypertension,Alzheimers
-Hypertension,Insulin_Resistance

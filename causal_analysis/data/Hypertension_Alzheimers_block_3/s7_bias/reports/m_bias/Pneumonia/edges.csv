@@ -1,7 +1,0 @@
-from,to
-Lipopolysaccharides,Alzheimers
-Lipopolysaccharides,Hypertension
-Lipopolysaccharides,Pneumonia
-Hypertension,Alzheimers
-COVID_19,Hypertension
-COVID_19,Pneumonia

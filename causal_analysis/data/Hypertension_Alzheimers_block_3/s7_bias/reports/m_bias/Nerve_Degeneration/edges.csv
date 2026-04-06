@@ -1,7 +1,0 @@
-from,to
-Nerve_Degeneration,Alzheimers
-Ethanol,Hypertension
-Ethanol,Nerve_Degeneration
-Hypertension,Alzheimers
-MAPT,Alzheimers
-MAPT,Nerve_Degeneration

@@ -1,7 +1,0 @@
-from,to
-Ethanol,Hypertension
-Ethanol,Lesion
-Hypertension,Alzheimers
-Reactive_Oxygen_Species,Alzheimers
-Reactive_Oxygen_Species,Hypertension
-Reactive_Oxygen_Species,Lesion
