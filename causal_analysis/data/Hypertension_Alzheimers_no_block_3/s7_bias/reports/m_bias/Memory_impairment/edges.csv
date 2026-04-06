@@ -1,7 +1,0 @@
-from,to
-Memory_impairment,Alzheimers
-Ethanol,Hypertension
-Ethanol,Memory_impairment
-Hypertension,Alzheimers
-APP_gene,Alzheimers
-APP_gene,Memory_impairment

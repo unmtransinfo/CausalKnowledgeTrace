@@ -13,41 +13,13 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Injury">
-      <data key="d0">C0175677</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Oxidative_Stress">
-      <data key="d0">C0242606</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Reactive_Oxygen_Species">
       <data key="d0">C0162772</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Toxic_effect">
-      <data key="d0">C0600688</data>
       <data key="d1">regular</data>
     </node>
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
-    </edge>
-    <edge source="Injury" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">19</data>
-    </edge>
-    <edge source="Injury" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">35</data>
-    </edge>
-    <edge source="Oxidative_Stress" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">232</data>
-    </edge>
-    <edge source="Oxidative_Stress" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">96</data>
     </edge>
     <edge source="Reactive_Oxygen_Species" target="Alzheimers">
       <data key="d2">CAUSES</data>
@@ -56,26 +28,6 @@
     <edge source="Reactive_Oxygen_Species" target="Hypertension">
       <data key="d2">CAUSES</data>
       <data key="d3">38</data>
-    </edge>
-    <edge source="Reactive_Oxygen_Species" target="Injury">
-      <data key="d2">CAUSES</data>
-      <data key="d3">312</data>
-    </edge>
-    <edge source="Reactive_Oxygen_Species" target="Oxidative_Stress">
-      <data key="d2">CAUSES</data>
-      <data key="d3">1491</data>
-    </edge>
-    <edge source="Reactive_Oxygen_Species" target="Toxic_effect">
-      <data key="d2">CAUSES</data>
-      <data key="d3">144</data>
-    </edge>
-    <edge source="Toxic_effect" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">49</data>
-    </edge>
-    <edge source="Toxic_effect" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">14</data>
     </edge>
   </graph>
 </graphml>

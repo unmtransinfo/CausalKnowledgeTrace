@@ -5,9 +5,9 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Cardiomyopathies">
-      <data key="d0">C0878544</data>
-      <data key="d1">regular</data>
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
     </node>
     <node id="Hypertension">
       <data key="d0">C0020538</data>
@@ -17,13 +17,13 @@
       <data key="d0">C0007412</data>
       <data key="d1">regular</data>
     </node>
+    <node id="Cardiomyopathies">
+      <data key="d0">C0878544</data>
+      <data key="d1">regular</data>
+    </node>
     <node id="Mutation">
       <data key="d0">C0026882</data>
       <data key="d1">regular</data>
-    </node>
-    <node id="Alzheimers">
-      <data key="d0">C0002395</data>
-      <data key="d1">outcome</data>
     </node>
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>

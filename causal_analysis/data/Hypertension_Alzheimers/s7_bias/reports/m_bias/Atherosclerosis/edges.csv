@@ -1,9 +1,9 @@
 from,to
 Cholesterol,Alzheimers
 Cholesterol,Atherosclerosis
-Diet,Alzheimers
-Diet,Hypertension
-Diet,Atherosclerosis
-Atherosclerosis,Hypertension
-Hypertension,Alzheimers
+Endothelial_dysfunction,Atherosclerosis
+Endothelial_dysfunction,Hypertension
 Hypertension,Atherosclerosis
+Hypertension,Alzheimers
+Hypertension,Endothelial_dysfunction
+Atherosclerosis,Hypertension

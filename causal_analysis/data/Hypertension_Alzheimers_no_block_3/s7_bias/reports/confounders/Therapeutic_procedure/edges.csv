@@ -1,7 +1,0 @@
-from,to
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypertension
-Therapeutic_procedure,Inflammatory_Response
-Hypertension,Alzheimers
-Inflammatory_Response,Alzheimers
-Inflammatory_Response,Hypertension

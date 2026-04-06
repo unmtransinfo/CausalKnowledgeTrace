@@ -1,8 +1,0 @@
-from,to
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypertension
-Therapeutic_procedure,Infiltration
-Hypertension,Alzheimers
-Lipopolysaccharides,Alzheimers
-Lipopolysaccharides,Hypertension
-Lipopolysaccharides,Infiltration

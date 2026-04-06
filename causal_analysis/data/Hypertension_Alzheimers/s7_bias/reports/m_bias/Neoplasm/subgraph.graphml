@@ -1,61 +1,59 @@
 <?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
-  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
-  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
   <graph edgedefault="directed">
     <node id="Neoplasm">
-      <data key="d0">C0027651</data>
+      <data key="d0">Neoplasm</data>
       <data key="d1">regular</data>
-    </node>
-    <node id="Study_models">
-      <data key="d0">C0026336</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Agent">
-      <data key="d0">C0450442</data>
-      <data key="d1">regular</data>
+      <data key="d2">C0027651</data>
     </node>
     <node id="Alzheimers">
-      <data key="d0">C0002395</data>
+      <data key="d0">Alzheimers</data>
       <data key="d1">outcome</data>
+      <data key="d2">C0750901</data>
+    </node>
+    <node id="Androgens">
+      <data key="d0">Androgens</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0002844</data>
+    </node>
+    <node id="Virus">
+      <data key="d0">Virus</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0042776</data>
     </node>
     <node id="Hypertension">
-      <data key="d0">C0020538</data>
+      <data key="d0">Hypertension</data>
       <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
     </node>
     <edge source="Neoplasm" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">60</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">60</data>
     </edge>
-    <edge source="Study_models" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">69</data>
+    <edge source="Androgens" target="Neoplasm">
+      <data key="d3">AUGMENTS</data>
+      <data key="d4">166</data>
     </edge>
-    <edge source="Study_models" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">69</data>
+    <edge source="Androgens" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">13</data>
     </edge>
-    <edge source="Study_models" target="Neoplasm">
-      <data key="d2">CAUSES</data>
-      <data key="d3">121</data>
+    <edge source="Virus" target="Alzheimers">
+      <data key="d3">CAUSES</data>
+      <data key="d4">18</data>
     </edge>
-    <edge source="Agent" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">21</data>
-    </edge>
-    <edge source="Agent" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">31</data>
-    </edge>
-    <edge source="Agent" target="Neoplasm">
-      <data key="d2">CAUSES</data>
-      <data key="d3">109</data>
+    <edge source="Virus" target="Neoplasm">
+      <data key="d3">CAUSES</data>
+      <data key="d4">214</data>
     </edge>
     <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
     </edge>
   </graph>
 </graphml>

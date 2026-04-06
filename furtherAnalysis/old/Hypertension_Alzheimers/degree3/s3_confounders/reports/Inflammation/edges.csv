@@ -1,6 +1,0 @@
-"from","to","confounder"
-"Inflammation","Hypertension","Inflammation"
-"Inflammation","Alzheimers","Inflammation"
-"Hypertension","Inflammation","Inflammation"
-"Hypertension","Alzheimers","Inflammation"
-"Alzheimers","Inflammation","Inflammation"

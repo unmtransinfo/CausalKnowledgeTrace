@@ -1,7 +1,0 @@
-from,to
-Brain_Injuries,Alzheimers
-Brain_Injuries,Epilepsy
-Hypertension,Alzheimers
-Hypertension,Cerebrovascular_accident
-Cerebrovascular_accident,Epilepsy
-Cerebrovascular_accident,Hypertension

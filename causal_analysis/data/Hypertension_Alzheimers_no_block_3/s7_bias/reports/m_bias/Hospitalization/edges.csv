@@ -1,9 +1,0 @@
-from,to
-Diabetes,Alzheimers
-Diabetes,Hospitalization
-Diabetes,Hypertension
-COVID_19,Hospitalization
-COVID_19,Hypertension
-Hypertension,Alzheimers
-Hypertension,Diabetes
-Hypertension,Hospitalization

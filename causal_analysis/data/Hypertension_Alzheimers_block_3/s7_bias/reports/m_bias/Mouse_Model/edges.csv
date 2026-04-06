@@ -1,8 +1,8 @@
 from,to
-Diet,Alzheimers
-Diet,Hypertension
-Diet,Mouse_Model
-Hypertension,Alzheimers
 Lipopolysaccharides,Alzheimers
 Lipopolysaccharides,Hypertension
 Lipopolysaccharides,Mouse_Model
+Hypertension,Alzheimers
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Mouse_Model

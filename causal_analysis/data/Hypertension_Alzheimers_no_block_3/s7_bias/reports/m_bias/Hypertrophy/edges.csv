@@ -1,9 +1,0 @@
-from,to
-Angiotensin_II,Hypertension
-Angiotensin_II,Hypertrophy
-Hypertrophy,Hypertension
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypertension
-Therapeutic_procedure,Hypertrophy
-Hypertension,Alzheimers
-Hypertension,Hypertrophy

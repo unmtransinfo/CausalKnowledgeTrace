@@ -1,7 +1,6 @@
 from,to
-Lipopolysaccharides,Alzheimers
-Lipopolysaccharides,Hypertension
-Lipopolysaccharides,cytotoxicity
+Hypertension,Alzheimers
+TNF_protein_human_TNF,Hypertension
+TNF_protein_human_TNF,cytotoxicity
 APP_gene,Alzheimers
 APP_gene,cytotoxicity
-Hypertension,Alzheimers

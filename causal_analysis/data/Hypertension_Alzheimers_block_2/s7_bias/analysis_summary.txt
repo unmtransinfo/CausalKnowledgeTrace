@@ -5,7 +5,7 @@ Butterfly Bias Analysis Summary
 Exposure: Hypertension
 Outcome: Alzheimers
 Graph is Acyclic: False
-Timestamp: 2026-03-29 17:01:41
+Timestamp: 2026-04-03 09:18:09
 
 === Method ===
 Approach: direct parents/children (matching R dagitty logic)

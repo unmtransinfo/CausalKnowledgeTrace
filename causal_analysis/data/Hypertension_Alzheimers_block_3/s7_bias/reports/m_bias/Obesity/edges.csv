@@ -1,11 +1,11 @@
 from,to
-Diet,Alzheimers
-Diet,Hypertension
-Diet,Obesity
 Hypertension,Alzheimers
 Hypertension,Obesity
+Obesity,Alzheimers
+Obesity,Hypertension
 Mutation,Alzheimers
 Mutation,Hypertension
 Mutation,Obesity
-Obesity,Alzheimers
-Obesity,Hypertension
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Obesity

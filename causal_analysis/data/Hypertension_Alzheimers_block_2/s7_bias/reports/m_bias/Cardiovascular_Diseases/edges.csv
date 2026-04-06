@@ -1,8 +1,4 @@
 from,to
-Alzheimers,Inflammation
-Cardiovascular_Diseases,Hypertension
-Atherosclerosis,Hypertension
-Atherosclerosis,Cardiovascular_Diseases
 Inflammation,Alzheimers
 Inflammation,Hypertension
 Inflammation,Atherosclerosis
@@ -11,3 +7,7 @@ Hypertension,Alzheimers
 Hypertension,Atherosclerosis
 Hypertension,Cardiovascular_Diseases
 Hypertension,Inflammation
+Atherosclerosis,Hypertension
+Atherosclerosis,Cardiovascular_Diseases
+Cardiovascular_Diseases,Hypertension
+Alzheimers,Inflammation

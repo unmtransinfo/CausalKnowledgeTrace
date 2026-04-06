@@ -1,9 +1,0 @@
-from,to
-Diet,Acidosis
-Diet,Alzheimers
-Diet,Hypertension
-Hypertension,Alzheimers
-Hypertension,Ischemia
-Ischemia,Acidosis
-Ischemia,Alzheimers
-Ischemia,Hypertension

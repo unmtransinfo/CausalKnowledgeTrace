@@ -1,9 +1,0 @@
-from,to
-Heart_failure,Hypertension
-Cardiovascular_Diseases,Heart_failure
-Cardiovascular_Diseases,Hypertension
-Amyloidosis,Alzheimers
-Amyloidosis,Heart_failure
-Hypertension,Alzheimers
-Hypertension,Cardiovascular_Diseases
-Hypertension,Heart_failure

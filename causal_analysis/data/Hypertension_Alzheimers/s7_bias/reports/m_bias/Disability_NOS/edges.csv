@@ -1,10 +1,9 @@
 from,to
-Injury,Alzheimers
-Injury,Hypertension
-Injury,Disability_NOS
-Alzheimers,Disability_NOS
-Hypertension,Alzheimers
-Hypertension,Cerebrovascular_accident
-Hypertension,Disability_NOS
 Cerebrovascular_accident,Hypertension
 Cerebrovascular_accident,Disability_NOS
+Alzheimers,Disability_NOS
+Traumatic_Brain_Injury,Alzheimers
+Traumatic_Brain_Injury,Disability_NOS
+Hypertension,Cerebrovascular_accident
+Hypertension,Alzheimers
+Hypertension,Disability_NOS

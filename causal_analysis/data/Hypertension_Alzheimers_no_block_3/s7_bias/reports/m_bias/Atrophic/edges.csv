@@ -1,9 +1,0 @@
-from,to
-Denervation,Atrophic
-Denervation,Hypertension
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Atrophic
-Therapeutic_procedure,Hypertension
-Hypertension,Alzheimers
-Alzheimers,Atrophic
-Atrophic,Alzheimers

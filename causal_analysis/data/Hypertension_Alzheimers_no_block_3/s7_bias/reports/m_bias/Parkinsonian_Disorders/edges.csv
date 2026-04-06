@@ -1,7 +1,0 @@
-from,to
-Mutation,Alzheimers
-Mutation,Hypertension
-Mutation,Parkinsonian_Disorders
-Hypertension,Alzheimers
-Neurotoxins,Alzheimers
-Neurotoxins,Parkinsonian_Disorders

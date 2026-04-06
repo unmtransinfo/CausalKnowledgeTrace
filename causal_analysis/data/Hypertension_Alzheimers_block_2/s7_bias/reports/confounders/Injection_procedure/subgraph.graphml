@@ -5,6 +5,10 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
+    <node id="Injection_procedure">
+      <data key="d0">C1533685</data>
+      <data key="d1">regular</data>
+    </node>
     <node id="Alzheimers">
       <data key="d0">C0002395</data>
       <data key="d1">outcome</data>
@@ -13,14 +17,6 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Injection_procedure">
-      <data key="d0">C1533685</data>
-      <data key="d1">regular</data>
-    </node>
-    <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
-    </edge>
     <edge source="Injection_procedure" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">44</data>
@@ -28,6 +24,10 @@
     <edge source="Injection_procedure" target="Hypertension">
       <data key="d2">CAUSES</data>
       <data key="d3">33</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
     </edge>
   </graph>
 </graphml>

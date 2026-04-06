@@ -1,7 +1,0 @@
-=== GRAPH STATISTICS ===
-Nodes: 3793 
-Edges: 7964 
-Density: 0.0005537071 
-
-Exposure: Hypertension 
-Outcome: Alzheimers 

@@ -1,11 +1,11 @@
 from,to
 Hypertension,Alzheimers
-Toxic_effect,Alzheimers
-Toxic_effect,Hypertension
 Oxidative_Stress,Alzheimers
 Oxidative_Stress,Hypertension
 Injury,Alzheimers
 Injury,Hypertension
+Toxic_effect,Alzheimers
+Toxic_effect,Hypertension
 Reactive_Oxygen_Species,Alzheimers
 Reactive_Oxygen_Species,Hypertension
 Reactive_Oxygen_Species,Injury

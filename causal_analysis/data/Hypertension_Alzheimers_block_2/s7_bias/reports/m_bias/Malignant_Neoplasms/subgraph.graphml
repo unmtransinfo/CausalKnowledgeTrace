@@ -5,6 +5,14 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
+    <node id="MicroRNAs">
+      <data key="d0">C1101610</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
     <node id="Virus">
       <data key="d0">C0042776</data>
       <data key="d1">regular</data>
@@ -17,22 +25,6 @@
       <data key="d0">C0006826</data>
       <data key="d1">regular</data>
     </node>
-    <node id="MicroRNAs">
-      <data key="d0">C1101610</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Hypertension">
-      <data key="d0">C0020538</data>
-      <data key="d1">exposure</data>
-    </node>
-    <edge source="Virus" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">18</data>
-    </edge>
-    <edge source="Virus" target="Malignant_Neoplasms">
-      <data key="d2">CAUSES</data>
-      <data key="d3">241</data>
-    </edge>
     <edge source="MicroRNAs" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">39</data>
@@ -48,6 +40,14 @@
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
+    </edge>
+    <edge source="Virus" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">18</data>
+    </edge>
+    <edge source="Virus" target="Malignant_Neoplasms">
+      <data key="d2">CAUSES</data>
+      <data key="d3">241</data>
     </edge>
   </graph>
 </graphml>

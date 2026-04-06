@@ -9,4 +9,5 @@
 #   s5_post_removal - Post-removal cycle analysis
 #   s6_causal_inference - Adjustment sets & instrumental variables (DAG required)
 #   s7_bias_analysis    - Butterfly bias & M-bias detection
+#   s8_other_bias       - Confounding, mediation, collider detection
 

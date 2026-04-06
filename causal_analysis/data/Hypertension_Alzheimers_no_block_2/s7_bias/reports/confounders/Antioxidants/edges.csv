@@ -1,7 +1,0 @@
-from,to
-Antioxidants,Alzheimers
-Antioxidants,Hypertension
-Antioxidants,Oxidative_Stress
-Oxidative_Stress,Alzheimers
-Oxidative_Stress,Hypertension
-Hypertension,Alzheimers

@@ -1,7 +1,0 @@
-from,to
-Hypertension,Alzheimers
-Injection_procedure,Alzheimers
-Injection_procedure,Hypertension
-Injection_procedure,Inflammatory_Response
-Inflammatory_Response,Alzheimers
-Inflammatory_Response,Hypertension

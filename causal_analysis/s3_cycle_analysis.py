@@ -60,6 +60,13 @@ def count_cycles_with_participation(
     for scc in sccs:
         sub = G.subgraph(scc)
         for cycle in nx.simple_cycles(sub):
+            # Check limit BEFORE processing to avoid overcounting
+            if total >= max_enumerate:
+                elapsed = time.time() - start
+                print(f"  Stopped at {total:,} cycles (cap reached, {elapsed:.1f}s)")
+                capped = True
+                break
+
             total += 1
             length_dist[len(cycle)] += 1
             for node in cycle:
@@ -69,11 +76,7 @@ def count_cycles_with_participation(
             if total % 100_000 == 0:
                 elapsed = time.time() - start
                 print(f"  Found {total:,} cycles so far ({elapsed:.1f}s)...")
-            if total >= max_enumerate:
-                elapsed = time.time() - start
-                print(f"  Stopped at {total:,} cycles (cap reached, {elapsed:.1f}s)")
-                capped = True
-                break
+
         if capped:
             break
 

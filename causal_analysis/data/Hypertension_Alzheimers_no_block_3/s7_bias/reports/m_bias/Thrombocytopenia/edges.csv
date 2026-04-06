@@ -1,8 +1,0 @@
-from,to
-Mutation,Alzheimers
-Mutation,Hypertension
-Mutation,Thrombocytopenia
-Hypertension,Alzheimers
-Pharmaceutical_Preparations,Alzheimers
-Pharmaceutical_Preparations,Hypertension
-Pharmaceutical_Preparations,Thrombocytopenia

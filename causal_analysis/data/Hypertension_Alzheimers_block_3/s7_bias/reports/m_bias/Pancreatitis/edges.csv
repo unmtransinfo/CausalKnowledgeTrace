@@ -1,7 +1,7 @@
 from,to
 Hypertension,Alzheimers
+Arginine,Hypertension
+Arginine,Pancreatitis
 Injection_procedure,Alzheimers
 Injection_procedure,Hypertension
 Injection_procedure,Pancreatitis
-Arginine,Hypertension
-Arginine,Pancreatitis

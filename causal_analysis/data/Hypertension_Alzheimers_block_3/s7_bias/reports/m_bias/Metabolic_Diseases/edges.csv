@@ -1,8 +1,8 @@
 from,to
-Diet,Alzheimers
-Diet,Hypertension
-Diet,Metabolic_Diseases
 Hypertension,Alzheimers
 Mutation,Alzheimers
 Mutation,Hypertension
 Mutation,Metabolic_Diseases
+Diet,Alzheimers
+Diet,Hypertension
+Diet,Metabolic_Diseases

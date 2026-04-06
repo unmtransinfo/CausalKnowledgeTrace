@@ -1,8 +1,0 @@
-from,to
-Injection_procedure,Alzheimers
-Injection_procedure,Cerebral_hemisphere_hemorrhage
-Injection_procedure,Hypertension
-Hypertension,Alzheimers
-Hypertension,Cerebral_hemisphere_hemorrhage
-Cerebral_Amyloid_Angiopathy,Alzheimers
-Cerebral_Amyloid_Angiopathy,Cerebral_hemisphere_hemorrhage

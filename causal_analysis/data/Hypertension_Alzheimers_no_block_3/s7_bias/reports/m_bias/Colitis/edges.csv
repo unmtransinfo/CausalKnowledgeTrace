@@ -1,7 +1,0 @@
-from,to
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Colitis
-Therapeutic_procedure,Hypertension
-Hypertension,Alzheimers
-Drinking_Water,Colitis
-Drinking_Water,Hypertension

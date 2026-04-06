@@ -1,7 +1,13 @@
 from,to
-Hypertension,Alzheimers
 Antioxidants,Alzheimers
 Antioxidants,Hypertension
 Antioxidants,Oxidative_Stress
+Antioxidants,Injury
+Antioxidants,Toxic_effect
+Toxic_effect,Alzheimers
+Toxic_effect,Hypertension
+Hypertension,Alzheimers
 Oxidative_Stress,Alzheimers
 Oxidative_Stress,Hypertension
+Injury,Alzheimers
+Injury,Hypertension

@@ -1,8 +1,0 @@
-from,to
-Therapeutic_procedure,Agranulocytosis
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypertension
-Hypertension,Alzheimers
-Pharmaceutical_Preparations,Agranulocytosis
-Pharmaceutical_Preparations,Alzheimers
-Pharmaceutical_Preparations,Hypertension

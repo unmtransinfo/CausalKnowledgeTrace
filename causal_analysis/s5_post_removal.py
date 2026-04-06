@@ -20,7 +20,7 @@ from pathlib import Path
 
 import networkx as nx
 
-from .config import NODE_REMOVAL_CONFIG
+from .config import CYCLE_CONFIG, NODE_REMOVAL_CONFIG
 from .utils import (
     get_s1_graph_dir,
     get_s4_node_removal_dir,
@@ -78,18 +78,30 @@ def run_stage5(exposure: str, outcome: str) -> dict:
     node_counts: Counter = Counter()
     length_dist: Counter = Counter()
     total_cycles = 0
+    max_enumerate = CYCLE_CONFIG.get("max_cycles_to_enumerate", 1_000_000)
+    capped = False
 
     if sccs:
-        print("\nEnumerating cycles in the reduced graph...")
+        print(f"\nEnumerating cycles in the reduced graph (cap at {max_enumerate:,})...")
         t0 = time.time()
         for cycle in nx.simple_cycles(reduced):
+            # Check limit BEFORE processing to avoid overcounting
+            if total_cycles >= max_enumerate:
+                print(f"  Stopped at {total_cycles:,} cycles (cap reached, {time.time()-t0:.1f}s)")
+                capped = True
+                break
+
             total_cycles += 1
             length_dist[len(cycle)] += 1
             for node in cycle:
                 node_counts[node] += 1
             if total_cycles % 100_000 == 0:
                 print(f"  {total_cycles:,} cycles found ({time.time()-t0:.1f}s)...")
-        print(f"Total cycles: {total_cycles:,} ({time.time()-t0:.1f}s)")
+
+        if capped:
+            print(f"Total cycles: {total_cycles:,} (CAPPED at limit, {time.time()-t0:.1f}s)")
+        else:
+            print(f"Total cycles: {total_cycles:,} ({time.time()-t0:.1f}s)")
 
     # --- Save node participation ---
     all_part_path = output_dir / "all_node_cycle_participation.csv"

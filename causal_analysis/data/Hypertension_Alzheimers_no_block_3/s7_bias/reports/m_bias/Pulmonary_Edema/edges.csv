@@ -1,8 +1,0 @@
-from,to
-Epinephrine,Hypertension
-Epinephrine,Pulmonary_Edema
-Hypertension,Alzheimers
-Hypertension,Pulmonary_Edema
-Lipopolysaccharides,Alzheimers
-Lipopolysaccharides,Hypertension
-Lipopolysaccharides,Pulmonary_Edema

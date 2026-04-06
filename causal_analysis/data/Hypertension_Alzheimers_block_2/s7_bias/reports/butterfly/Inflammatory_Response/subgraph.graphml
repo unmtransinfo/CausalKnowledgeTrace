@@ -5,18 +5,6 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Inflammatory_Response">
-      <data key="d0">C1155266</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Alzheimers">
-      <data key="d0">C0002395</data>
-      <data key="d1">outcome</data>
-    </node>
-    <node id="Lipopolysaccharides">
-      <data key="d0">C0023810</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Injury">
       <data key="d0">C0175677</data>
       <data key="d1">regular</data>
@@ -25,11 +13,31 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <edge source="Inflammatory_Response" target="Alzheimers">
+    <node id="Lipopolysaccharides">
+      <data key="d0">C0023810</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Inflammatory_Response">
+      <data key="d0">C1155266</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
+    <edge source="Injury" target="Alzheimers">
       <data key="d2">CAUSES</data>
-      <data key="d3">28</data>
+      <data key="d3">19</data>
     </edge>
-    <edge source="Inflammatory_Response" target="Hypertension">
+    <edge source="Injury" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">35</data>
+    </edge>
+    <edge source="Injury" target="Inflammatory_Response">
+      <data key="d2">CAUSES</data>
+      <data key="d3">164</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
     </edge>
@@ -49,19 +57,11 @@
       <data key="d2">CAUSES</data>
       <data key="d3">1616</data>
     </edge>
-    <edge source="Injury" target="Alzheimers">
+    <edge source="Inflammatory_Response" target="Alzheimers">
       <data key="d2">CAUSES</data>
-      <data key="d3">19</data>
+      <data key="d3">28</data>
     </edge>
-    <edge source="Injury" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">35</data>
-    </edge>
-    <edge source="Injury" target="Inflammatory_Response">
-      <data key="d2">CAUSES</data>
-      <data key="d3">164</data>
-    </edge>
-    <edge source="Hypertension" target="Alzheimers">
+    <edge source="Inflammatory_Response" target="Hypertension">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
     </edge>

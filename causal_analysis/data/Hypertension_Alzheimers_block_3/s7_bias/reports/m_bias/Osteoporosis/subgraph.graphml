@@ -5,6 +5,14 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
+    <node id="Osteoporosis">
+      <data key="d0">C0029456</data>
+      <data key="d1">regular</data>
+    </node>
     <node id="Hypertension">
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
@@ -15,14 +23,6 @@
     </node>
     <node id="Adrenal_Cortex_Hormones">
       <data key="d0">C0001617</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Alzheimers">
-      <data key="d0">C0002395</data>
-      <data key="d1">outcome</data>
-    </node>
-    <node id="Osteoporosis">
-      <data key="d0">C0029456</data>
       <data key="d1">regular</data>
     </node>
     <edge source="Hypertension" target="Alzheimers">

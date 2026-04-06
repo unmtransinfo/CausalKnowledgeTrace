@@ -1,8 +1,0 @@
-from,to
-Mutation,Alzheimers
-Mutation,Cystic_Fibrosis
-Mutation,Hypertension
-Hypertension,Alzheimers
-Genes,Alzheimers
-Genes,Cystic_Fibrosis
-Genes,Hypertension

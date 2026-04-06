@@ -1,8 +1,0 @@
-from,to
-COVID_19,Hypertension
-COVID_19,Severe_Acute_Respiratory_Syndrome
-Severe_Acute_Respiratory_Syndrome,COVID_19
-Hypertension,Alzheimers
-Virus,Alzheimers
-Virus,COVID_19
-Virus,Severe_Acute_Respiratory_Syndrome

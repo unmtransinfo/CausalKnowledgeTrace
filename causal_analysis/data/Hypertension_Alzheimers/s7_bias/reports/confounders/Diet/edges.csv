@@ -3,8 +3,8 @@ Diet,Alzheimers
 Diet,Hypertension
 Diet,Injury
 Diet,Oxidative_Stress
-Injury,Alzheimers
-Injury,Hypertension
+Hypertension,Alzheimers
 Oxidative_Stress,Alzheimers
 Oxidative_Stress,Hypertension
-Hypertension,Alzheimers
+Injury,Alzheimers
+Injury,Hypertension

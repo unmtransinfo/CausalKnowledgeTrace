@@ -1,6 +1,0 @@
-from,to
-APP_gene,Alzheimers
-APP_gene,Cell_Death
-Ethanol,Cell_Death
-Ethanol,Hypertension
-Hypertension,Alzheimers

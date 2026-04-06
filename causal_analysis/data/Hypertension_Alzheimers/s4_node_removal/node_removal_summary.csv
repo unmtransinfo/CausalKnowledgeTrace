@@ -1,3 +1,3 @@
 analysis_type,nodes_removed,total_nodes,total_edges,num_cycles,num_sccs,largest_scc,is_dag
-Baseline,0,727,1215,602,2,50,False
-Combined Removal,1,726,1199,602,2,50,False
+Baseline,0,1357,2587,1000000,2,172,False
+Combined Removal,1,1356,2571,1000000,2,170,False

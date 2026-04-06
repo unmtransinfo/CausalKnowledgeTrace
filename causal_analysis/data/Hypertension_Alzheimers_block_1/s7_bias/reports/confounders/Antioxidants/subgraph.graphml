@@ -5,14 +5,6 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Hypertension">
-      <data key="d0">C0020538</data>
-      <data key="d1">exposure</data>
-    </node>
-    <node id="Oxidative_Stress">
-      <data key="d0">C0242606</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Alzheimers">
       <data key="d0">C0002395</data>
       <data key="d1">outcome</data>
@@ -21,18 +13,10 @@
       <data key="d0">C0003402</data>
       <data key="d1">regular</data>
     </node>
-    <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
-    </edge>
-    <edge source="Oxidative_Stress" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">232</data>
-    </edge>
-    <edge source="Oxidative_Stress" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">96</data>
-    </edge>
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
     <edge source="Antioxidants" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">23</data>
@@ -41,9 +25,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">20</data>
     </edge>
-    <edge source="Antioxidants" target="Oxidative_Stress">
+    <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
-      <data key="d3">364</data>
+      <data key="d3">11</data>
     </edge>
   </graph>
 </graphml>

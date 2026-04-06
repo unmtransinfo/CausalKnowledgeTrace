@@ -1,8 +1,0 @@
-from,to
-Hypercalcemia,Hypertension
-Calcium,Hypercalcemia
-Calcium,Hypertension
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypercalcemia
-Therapeutic_procedure,Hypertension
-Hypertension,Alzheimers

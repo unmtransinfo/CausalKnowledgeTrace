@@ -1,10 +1,4 @@
 from,to
+Hypertension,Alzheimers
 Diet,Alzheimers
 Diet,Hypertension
-Diet,Injury
-Diet,Oxidative_Stress
-Hypertension,Alzheimers
-Injury,Alzheimers
-Injury,Hypertension
-Oxidative_Stress,Alzheimers
-Oxidative_Stress,Hypertension

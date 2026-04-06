@@ -17,10 +17,6 @@
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
     </node>
-    <node id="Injury">
-      <data key="d0">C0175677</data>
-      <data key="d1">regular</data>
-    </node>
     <edge source="Study_models" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">69</data>
@@ -29,21 +25,9 @@
       <data key="d2">CAUSES</data>
       <data key="d3">69</data>
     </edge>
-    <edge source="Study_models" target="Injury">
-      <data key="d2">CAUSES</data>
-      <data key="d3">281</data>
-    </edge>
     <edge source="Hypertension" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">11</data>
-    </edge>
-    <edge source="Injury" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">19</data>
-    </edge>
-    <edge source="Injury" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">35</data>
     </edge>
   </graph>
 </graphml>

@@ -1,7 +1,0 @@
-from,to
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypertension
-Therapeutic_procedure,Myelosuppression
-Hypertension,Alzheimers
-Pharmacotherapy,Hypertension
-Pharmacotherapy,Myelosuppression

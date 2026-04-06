@@ -1,10 +1,10 @@
 from,to
-Hypertension,Alzheimers
-Hypertension,Ischemia
-Hypertension,Kidney_Failure_Acute
-Ischemia,Alzheimers
-Ischemia,Hypertension
-Ischemia,Kidney_Failure_Acute
 Lipopolysaccharides,Alzheimers
 Lipopolysaccharides,Hypertension
 Lipopolysaccharides,Kidney_Failure_Acute
+Ischemia,Alzheimers
+Ischemia,Hypertension
+Ischemia,Kidney_Failure_Acute
+Hypertension,Alzheimers
+Hypertension,Ischemia
+Hypertension,Kidney_Failure_Acute

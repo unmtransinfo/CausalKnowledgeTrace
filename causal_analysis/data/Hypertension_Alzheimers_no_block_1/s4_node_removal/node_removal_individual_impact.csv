@@ -1,9 +1,0 @@
-node,original_cycles,remaining_cycles,cycles_removed,percent_reduction,remaining_sccs,largest_scc_after
-Disease,125,105,20,16.0,1,43
-Functional_disorder,125,105,20,16.0,1,43
-Symptoms,125,105,20,16.0,1,43
-Syndrome,125,110,15,12.0,1,43
-Adverse_effects,125,118,7,5.6,1,43
-Complication,125,124,1,0.8,1,43
-Diagnosis,125,125,0,0.0,1,44
-Obstruction,125,125,0,0.0,1,44

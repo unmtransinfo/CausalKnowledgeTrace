@@ -1,9 +1,0 @@
-from,to
-IMPACT_gene,Alzheimers
-IMPACT_gene,Hypertension
-IMPACT_gene,Traumatic_Brain_Injury
-Study_models,Alzheimers
-Study_models,Hypertension
-Study_models,Traumatic_Brain_Injury
-Traumatic_Brain_Injury,Alzheimers
-Hypertension,Alzheimers

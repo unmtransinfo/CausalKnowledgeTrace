@@ -1,9 +1,7 @@
 from,to
 Neoplasm,Hypertension
-Study_models,Alzheimers
-Study_models,Hypertension
-Study_models,Neoplasm
-Agent,Alzheimers
-Agent,Hypertension
-Agent,Neoplasm
+Androgens,Neoplasm
+Androgens,Hypertension
+Virus,Alzheimers
+Virus,Neoplasm
 Hypertension,Alzheimers

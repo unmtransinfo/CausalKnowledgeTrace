@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 run_pipeline.py
-Orchestrate the full Post-CKT Analysis Pipeline (Stages 1-7).
+Orchestrate the full Post-CKT Analysis Pipeline (Stages 1-8).
 
 Usage:
     python -m causal_analysis.run_pipeline Hypertension Alzheimers
@@ -16,6 +16,7 @@ Stages:
     5. Post-Removal         — residual cycle analysis after pruning
     6. Causal Inference     — adjustment sets & instrumental variables (DAG only)
     7. Bias Analysis        — butterfly bias & M-bias detection
+    8. Other Bias Analysis  — confounding, mediation, collider detection
 """
 
 import argparse
@@ -31,6 +32,7 @@ from .s4_node_removal import run_stage4
 from .s5_post_removal import run_stage5
 from .s6_causal_inference import run_stage6
 from .s7_bias_analysis import run_stage7
+from .s8_other_bias import run_stage8
 
 
 def main():
@@ -119,6 +121,16 @@ def main():
     except Exception as e:
         print(f"Stage 7 failed: {e}")
 
+    # Stage 8 — Other Bias Analysis (confounding, mediation, collider)
+    s8 = None
+    print("\n" + "=" * 60)
+    print("STAGE 8: Other Bias Analysis (Confounding, Mediation, Collider)")
+    print("=" * 60)
+    try:
+        s8 = run_stage8(exposure, outcome)
+    except Exception as e:
+        print(f"Stage 8 failed: {e}")
+
     # --- Final summary ---
     elapsed = time.time() - t_start
     print("\n")
@@ -141,6 +153,10 @@ def main():
         print(f"Confounders:       {s7.get('n_confounders', 0)}")
         print(f"Butterfly nodes:   {s7.get('n_butterfly', 0)}")
         print(f"M-bias nodes:      {s7.get('n_mbias', 0)}")
+    if s8:
+        print(f"Confounding nodes: {s8.get('n_confounding', 0)}")
+        print(f"Mediation nodes:   {s8.get('n_mediation', 0)}")
+        print(f"Collider nodes:    {s8.get('n_collider', 0)}")
     print("=" * 60)
 
 

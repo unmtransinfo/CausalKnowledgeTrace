@@ -1,53 +1,55 @@
 <?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
-  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
-  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
   <graph edgedefault="directed">
     <node id="Pain">
-      <data key="d0">C0030193</data>
+      <data key="d0">Pain</data>
       <data key="d1">regular</data>
+      <data key="d2">C0030193</data>
     </node>
-    <node id="Injury">
-      <data key="d0">C0175677</data>
+    <node id="Anti_Inflammatory_Agents_Non_Steroidal">
+      <data key="d0">Anti_Inflammatory_Agents_Non_Steroidal</data>
       <data key="d1">regular</data>
+      <data key="d2">C0003211</data>
     </node>
     <node id="Alzheimers">
-      <data key="d0">C0002395</data>
+      <data key="d0">Alzheimers</data>
       <data key="d1">outcome</data>
-    </node>
-    <node id="Wounds_and_Injuries">
-      <data key="d0">C0043251</data>
-      <data key="d1">regular</data>
+      <data key="d2">C0750901</data>
     </node>
     <node id="Hypertension">
-      <data key="d0">C0020538</data>
+      <data key="d0">Hypertension</data>
       <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
     </node>
-    <edge source="Injury" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">19</data>
+    <node id="Operative_Surgical_Procedures">
+      <data key="d0">Operative_Surgical_Procedures</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0543467</data>
+    </node>
+    <edge source="Anti_Inflammatory_Agents_Non_Steroidal" target="Alzheimers">
+      <data key="d3">PREVENTS</data>
+      <data key="d4">204</data>
     </edge>
-    <edge source="Injury" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">35</data>
-    </edge>
-    <edge source="Injury" target="Pain">
-      <data key="d2">CAUSES</data>
-      <data key="d3">400</data>
-    </edge>
-    <edge source="Wounds_and_Injuries" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">12</data>
-    </edge>
-    <edge source="Wounds_and_Injuries" target="Pain">
-      <data key="d2">CAUSES</data>
-      <data key="d3">163</data>
+    <edge source="Anti_Inflammatory_Agents_Non_Steroidal" target="Pain">
+      <data key="d3">PREVENTS</data>
+      <data key="d4">198</data>
     </edge>
     <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
+    </edge>
+    <edge source="Operative_Surgical_Procedures" target="Hypertension">
+      <data key="d3">CAUSES</data>
+      <data key="d4">41</data>
+    </edge>
+    <edge source="Operative_Surgical_Procedures" target="Pain">
+      <data key="d3">PREVENTS</data>
+      <data key="d4">530</data>
     </edge>
   </graph>
 </graphml>

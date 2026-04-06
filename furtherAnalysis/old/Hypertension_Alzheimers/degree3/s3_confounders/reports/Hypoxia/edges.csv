@@ -1,8 +1,0 @@
-"from","to","confounder"
-"Degenerative_abnormality","Hypertension","Hypoxia"
-"Degenerative_abnormality","Alzheimers","Hypoxia"
-"Hypertension","Alzheimers","Hypoxia"
-"Hypertension","Hypoxia","Hypoxia"
-"Alzheimers","Degenerative_abnormality","Hypoxia"
-"Hypoxia","Hypertension","Hypoxia"
-"Hypoxia","Alzheimers","Hypoxia"

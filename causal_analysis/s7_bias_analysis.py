@@ -212,14 +212,27 @@ def analyze_m_bias(
     parents_Y = set(G.predecessors(outcome)) - {exposure}
 
     # Step 2: For each (P1, P2) pair, find common children = M-bias colliders
-    # Use dict keyed by M to deduplicate (keep first pair found)
-    mbias_found: dict[str, tuple[str, str]] = {}  # M -> (p1, p2)
+    # Store ALL valid (M, P1, P2) structures (same M can have multiple P1, P2 pairs)
+    # STRICT M-bias: P1 exclusive to X side, P2 exclusive to Y side
+    mbias_found: list[tuple[str, str, str]] = []  # List of (m, p1, p2) tuples
 
     for p1 in sorted(parents_X):
+        # STRICT: P1 must be parent of X and M, but NOT parent of Y
+        if p1 in parents_Y:
+            continue
+
         children_p1 = set(G.successors(p1))
         for p2 in sorted(parents_Y):
+            # STRICT: P2 must be parent of Y and M, but NOT parent of X
+            if p2 in parents_X:
+                continue
+
             if p1 == p2:
                 continue  # need distinct parents
+
+            # STRICT: P1 and P2 must be independent (no edge between them)
+            if G.has_edge(p1, p2) or G.has_edge(p2, p1):
+                continue
 
             children_p2 = set(G.successors(p2))
 
@@ -229,31 +242,33 @@ def analyze_m_bias(
             common -= confounder_set        # M can't be a confounder
 
             for m in sorted(common):
-                if m not in mbias_found:
-                    mbias_found[m] = (p1, p2)
+                # Store ALL (M, P1, P2) combinations
+                mbias_found.append((m, p1, p2))
 
     # Step 3: Build results
-    mbias_vars: list[str] = sorted(mbias_found.keys())
-    mbias_details: dict[str, dict] = {}
-    mbias_structures: dict[str, dict] = {}
+    # mbias_details: m -> list of {p1, p2} pairs
+    # mbias_structures: list of all individual structures
+    mbias_details: dict[str, list[dict]] = {}
+    mbias_structures: list[dict] = []
 
-    for m in mbias_vars:
-        p1, p2 = mbias_found[m]
-        parents_m = sorted(G.predecessors(m))
+    for m, p1, p2 in mbias_found:
+        if m not in mbias_details:
+            mbias_details[m] = []
 
-        mbias_details[m] = {
-            "parents": parents_m,
+        mbias_details[m].append({
             "p1_exposure_side": p1,
             "p2_outcome_side": p2,
-            "n_parents": len(parents_m),
-        }
+        })
 
-        mbias_structures[m] = {
+        mbias_structures.append({
             "collider": m,
             "p1": p1,
             "p2": p2,
             "structure_nodes": sorted({m, p1, p2, exposure, outcome}),
-        }
+        })
+
+    # mbias_vars: list of unique collider nodes
+    mbias_vars = sorted(mbias_details.keys())
 
     return {
         "exposure": exposure,
@@ -471,7 +486,39 @@ def _plot_subgraph(
         edge_widths.append(ew)
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    pos = nx.spring_layout(sub, seed=42, k=2.5)
+
+    # Custom layout for butterfly bias - hierarchical structure
+    if is_butterfly:
+        pos = {}
+        # Exposure and outcome at left/right
+        pos[exposure] = (-3, 0)
+        pos[outcome] = (3, 0)
+
+        # Butterfly confounder at center
+        pos[highlight_node] = (0, 0)
+
+        # Confounder parents above
+        parents_list = list(confounder_parents_of_highlight & set(nodes))
+        for i, p in enumerate(parents_list):
+            angle = (i - len(parents_list)/2) * 0.6
+            pos[p] = (angle, 2)
+
+        # Other confounders spread around
+        other_confounders = [n for n in nodes if n in confounder_set
+                            and n != highlight_node
+                            and n not in confounder_parents_of_highlight
+                            and n not in (exposure, outcome)]
+        for i, c in enumerate(other_confounders):
+            angle = (i - len(other_confounders)/2) * 0.8
+            pos[c] = (angle, -1.5)
+
+        # Other nodes fill remaining positions
+        other_nodes = [n for n in nodes if n not in pos]
+        for i, n in enumerate(other_nodes):
+            angle = (i - len(other_nodes)/2) * 0.5
+            pos[n] = (angle + 4, -0.5)
+    else:
+        pos = nx.spring_layout(sub, seed=42, k=2.5)
 
     # Draw edges
     if sub.number_of_edges() > 0:
@@ -491,7 +538,7 @@ def _plot_subgraph(
     # Replace underscores with newlines in labels for readability (matches R)
     labels = {n: n.replace("_", "\n") for n in nodes}
     nx.draw_networkx_labels(sub, pos, labels=labels, ax=ax,
-                            font_size=7, font_weight="bold")
+                            font_size=8.5, font_weight="bold")
 
     ax.set_title(title, fontsize=13, fontweight="bold")
 
@@ -519,10 +566,11 @@ def _plot_subgraph(
                    markeredgecolor="black", markersize=10, label=l)
         for l, c in legend_items
     ]
-    ax.legend(handles=legend_handles, loc="lower right", fontsize=9,
+    ax.legend(handles=legend_handles, loc="upper left", fontsize=9,
               framealpha=0.9, edgecolor="gray", title="Node Types")
 
-    fig.tight_layout()
+    # Adjust layout to prevent outcome node from being blocked by legend
+    fig.subplots_adjust(left=0.1, right=0.95, top=0.92, bottom=0.08)
     fig.savefig(filepath, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
@@ -581,19 +629,16 @@ def _save_node_reports(
         # Save subgraph as graphml
         nx.write_graphml(sub, str(node_dir / "subgraph.graphml"))
 
-        # Title with marker (matches R: "NodeName [BUTTERFLY]" or "[INDEPENDENT]")
-        marker = "BUTTERFLY" if is_butterfly else "INDEPENDENT"
-        parents_count = len(list(G.predecessors(node)))
-        children_count = len(list(G.successors(node)))
-        plot_title = (
-            f"{node} [{marker}]\n"
-            f"Parents: {parents_count} | Children: {children_count}"
-            + (f" | Confounder parents: {len(conf_parents)}" if is_butterfly else "")
-        )
+        # Simple title: just node name and bias type
+        if is_butterfly:
+            plot_title = f"{node} - Butterfly Bias"
+            prefix = "BUTTERFLY_"
+        else:
+            plot_title = f"{node} - Independent Confounder"
+            prefix = "INDEPENDENT_"
 
-        # Filename with marker prefix (matches R)
-        prefix = "BUTTERFLY_" if is_butterfly else "INDEPENDENT_"
-        plot_file = node_dir / f"{prefix}{safe_name}.png"
+        # Save as PDF
+        plot_file = node_dir / f"{prefix}{safe_name}.pdf"
 
         # Save plot
         _plot_subgraph(
@@ -719,7 +764,56 @@ def _plot_mbias_subgraph(
         edge_widths.append(ew)
 
     fig, ax = plt.subplots(figsize=(10, 8))
-    pos = nx.spring_layout(sub, seed=42, k=2.5)
+
+    # Custom M-shaped layout for M-bias: X←P1→M←P2→Y
+    # P1 and P2 at top, X and Y at bottom corners, M at bottom center
+    pos = {}
+    if mbias_node in nodes and exposure in nodes and outcome in nodes:
+        # Get P1 and P2 from mbias_parents
+        parents_list = list(mbias_parents & set(nodes))
+
+        # Exposure at bottom-left, Outcome at bottom-right (moved UP to 1.5)
+        pos[exposure] = (-4, 1)
+        pos[outcome] = (4, 1)
+
+        # M-bias collider at bottom-center (moved UP to 1.5)
+        pos[mbias_node] = (0, 1.5)
+
+        # Identify which parent connects to exposure vs outcome
+        # P1 (exposure-side parent) should be on LEFT, P2 (outcome-side parent) on RIGHT
+        if len(parents_list) >= 2:
+            p1_exposure_side = None
+            p2_outcome_side = None
+
+            for p in parents_list:
+                # Check if this parent connects to exposure
+                if sub.has_edge(p, exposure):
+                    p1_exposure_side = p
+                # Check if this parent connects to outcome
+                elif sub.has_edge(p, outcome):
+                    p2_outcome_side = p
+
+            # Position P1 on left, P2 on right
+            if p1_exposure_side:
+                pos[p1_exposure_side] = (-3.5, 2.5)
+            if p2_outcome_side:
+                pos[p2_outcome_side] = (3.5, 2.5)
+
+            # If any parent wasn't positioned, place them
+            for p in parents_list:
+                if p not in pos:
+                    pos[p] = (0, 2.5)
+
+        elif len(parents_list) == 1:
+            pos[parents_list[0]] = (0, 2.5)
+
+        # Other nodes spread around
+        other_nodes = [n for n in nodes if n not in pos]
+        for i, n in enumerate(other_nodes):
+            angle = (i - len(other_nodes)/2) * 1.2
+            pos[n] = (angle, 0.5)
+    else:
+        pos = nx.spring_layout(sub, seed=42, k=2.5)
 
     # Draw edges
     if sub.number_of_edges() > 0:
@@ -738,7 +832,7 @@ def _plot_mbias_subgraph(
 
     labels = {n: n.replace("_", "\n") for n in nodes}
     nx.draw_networkx_labels(sub, pos, labels=labels, ax=ax,
-                            font_size=7, font_weight="bold")
+                            font_size=8.5, font_weight="bold")
 
     ax.set_title(title, fontsize=13, fontweight="bold")
 
@@ -761,6 +855,7 @@ def _plot_mbias_subgraph(
                    markeredgecolor="black", markersize=10, label=l)
         for l, c in legend_items
     ]
+    # Place legend in lower right corner (inside the plot)
     ax.legend(handles=legend_handles, loc="lower right", fontsize=9,
               framealpha=0.9, edgecolor="gray", title="Node Types")
 
@@ -777,23 +872,35 @@ def _save_mbias_reports(
     reports_dir: Path,
     confounder_set: set[str] | None = None,
 ) -> None:
-    """Generate per-node reports for M-bias colliders with distinct visuals."""
+    """Generate per-structure reports for M-bias with numbered subdirectories for duplicates."""
     if confounder_set is None:
         confounder_set = set()
 
-    mbias_structures = mbias_result.get("mbias_structures", {})
+    mbias_structures = mbias_result.get("mbias_structures", [])
 
     ensure_dir(reports_dir)
-    for node in mbias_result["mbias_vars"]:
-        safe_name = node.replace(" ", "_").replace("/", "_")
-        detail = mbias_result["mbias_details"].get(node, {})
-        structure = mbias_structures.get(node, {})
-        parents = set(detail.get("parents", []))
+
+    # Track count for each collider to create numbered subdirectories
+    structure_counts: dict[str, int] = {}
+
+    for structure in mbias_structures:
+        m = structure.get("collider", "")
+        p1 = structure.get("p1", "")
+        p2 = structure.get("p2", "")
+
+        # Increment count for this collider
+        structure_counts[m] = structure_counts.get(m, 0) + 1
+        struct_num = structure_counts[m]
+
+        # Create safe name with number suffix for duplicates
+        safe_name = m.replace(" ", "_").replace("/", "_")
+        if struct_num > 1:
+            safe_name = f"{safe_name}__{struct_num}"
 
         node_dir = reports_dir / safe_name
         ensure_dir(node_dir)
 
-        sub = _extract_mbias_subgraph(G, node, exposure, outcome, structure)
+        sub = _extract_mbias_subgraph(G, m, exposure, outcome, structure)
 
         # Save edge list
         with open(node_dir / "edges.csv", "w", newline="") as f:
@@ -805,21 +912,19 @@ def _save_mbias_reports(
         # Save subgraph as graphml
         nx.write_graphml(sub, str(node_dir / "subgraph.graphml"))
 
-        # Title showing the 5-node M-structure
-        p1 = detail.get("p1_exposure_side", "?")
-        p2 = detail.get("p2_outcome_side", "?")
-        plot_title = (
-            f"{node} [M-BIAS COLLIDER]\n"
-            f"{exposure} ← {p1} → {node} ← {p2} → {outcome}"
-        )
+        # Simple title: collider name and bias type
+        plot_title = f"{m} - M-Bias"
+        if struct_num > 1:
+            plot_title = f"{m} (#{struct_num}) - M-Bias"
 
-        plot_file = node_dir / f"MBIAS_{safe_name}.png"
+        # Save as PDF
+        plot_file = node_dir / f"MBIAS_{safe_name}.pdf"
 
         # Only pass the 2 M-structure parents for coloring
         mbias_parents_set = {p1, p2}
 
         _plot_mbias_subgraph(
-            sub, node, exposure, outcome,
+            sub, m, exposure, outcome,
             title=plot_title,
             filepath=plot_file,
             confounder_set=confounder_set,
@@ -867,16 +972,16 @@ def save_results(
             if r["n_confounder_parents"] == 0:
                 w.writerow(r)
 
-    # 4. m_bias_results.csv (Python-only)
-    if mbias["mbias_vars"]:
+    # 4. m_bias_results.csv (Python-only) - one row per structure
+    if mbias["mbias_structures"]:
         with open(output_dir / "m_bias_results.csv", "w", newline="") as f:
             w = csv.writer(f)
-            w.writerow(["node", "num_parents", "p1_exposure_side", "p2_outcome_side"])
-            for v in mbias["mbias_vars"]:
-                detail = mbias["mbias_details"].get(v, {})
-                p1 = detail.get("p1_exposure_side", "")
-                p2 = detail.get("p2_outcome_side", "")
-                w.writerow([v, detail.get("n_parents", 0), p1, p2])
+            w.writerow(["collider", "p1_exposure_side", "p2_outcome_side"])
+            for structure in mbias["mbias_structures"]:
+                collider = structure.get("collider", "")
+                p1 = structure.get("p1", "")
+                p2 = structure.get("p2", "")
+                w.writerow([collider, p1, p2])
 
     # 5. Confounder subgraph reports (plots + edges)
     confounder_set = {r["confounder"] for r in butterfly["all_results"]}
@@ -990,13 +1095,14 @@ def _write_summary(
         if mbias["mbias_vars"]:
             f.write("\n\n=== M-Bias Analysis (Python-only) ===\n")
             f.write("Detection: direct parent/child (top-down)\n")
-            f.write(f"M-bias variables found: {len(mbias['mbias_vars'])}\n")
+            f.write(f"M-bias colliders found: {len(mbias['mbias_vars'])}\n")
+            f.write(f"M-bias structures found: {len(mbias['mbias_structures'])}\n")
             f.write("\nThese nodes are colliders on backdoor paths.\n")
             f.write("Do NOT adjust for them -- it would open spurious paths.\n\n")
-            for v in mbias["mbias_vars"]:
-                detail = mbias["mbias_details"].get(v, {})
-                p1 = detail.get("p1_exposure_side", "?")
-                p2 = detail.get("p2_outcome_side", "?")
+            for structure in mbias["mbias_structures"]:
+                v = structure.get("collider", "?")
+                p1 = structure.get("p1", "?")
+                p2 = structure.get("p2", "?")
                 f.write(f"  - {v}:  {exposure} ← {p1} → {v} ← {p2} → {outcome}\n")
 
 
@@ -1105,11 +1211,12 @@ def run_stage7(exposure: str, outcome: str) -> dict:
     mbias = analyze_m_bias(G, exposure, outcome, confounders)
 
     if mbias["mbias_vars"]:
-        print(f"M-bias variables found: {len(mbias['mbias_vars'])}")
-        for v in mbias["mbias_vars"]:
-            detail = mbias["mbias_details"].get(v, {})
-            p1 = detail.get("p1_exposure_side", "?")
-            p2 = detail.get("p2_outcome_side", "?")
+        print(f"M-bias colliders found: {len(mbias['mbias_vars'])}")
+        print(f"M-bias structures found: {len(mbias['mbias_structures'])}")
+        for structure in mbias["mbias_structures"]:
+            v = structure.get("collider", "?")
+            p1 = structure.get("p1", "?")
+            p2 = structure.get("p2", "?")
             print(f"  - {v}:  {exposure} ← {p1} → {v} ← {p2} → {outcome}")
     else:
         print("No M-bias variables found.")
@@ -1125,7 +1232,7 @@ def run_stage7(exposure: str, outcome: str) -> dict:
     if mbias["mbias_vars"]:
         print("Saved m_bias_results.csv")
     print("Saved analysis_summary.txt")
-    n_reports = butterfly["n_total"] + butterfly["n_butterfly"] + len(mbias["mbias_vars"])
+    n_reports = butterfly["n_total"] + butterfly["n_butterfly"] + len(mbias["mbias_structures"])
     if n_reports > 0:
         print(f"Saved {n_reports} subgraph reports (plots + edges) in reports/")
     print(f"All outputs in: {output_dir}")

@@ -84,5 +84,6 @@ STAGES = {
     "S4_NODE_REMOVAL": "s4_node_removal",
     "S5_POST_REMOVAL": "s5_post_removal",
     "S7_BIAS": "s7_bias",
+    "S8_OTHER_BIAS": "s8_other_bias",
 }
 

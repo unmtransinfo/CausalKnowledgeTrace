@@ -1,8 +1,0 @@
-from,to
-Therapeutic_procedure,Adhesions
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypertension
-Hypertension,Alzheimers
-Lipopolysaccharides,Adhesions
-Lipopolysaccharides,Alzheimers
-Lipopolysaccharides,Hypertension

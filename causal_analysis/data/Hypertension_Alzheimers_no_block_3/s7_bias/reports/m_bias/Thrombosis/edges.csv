@@ -1,9 +1,0 @@
-from,to
-Injury,Alzheimers
-Injury,Hypertension
-Injury,Thrombosis
-Therapeutic_procedure,Alzheimers
-Therapeutic_procedure,Hypertension
-Therapeutic_procedure,Thrombosis
-Hypertension,Alzheimers
-Thrombosis,Hypertension

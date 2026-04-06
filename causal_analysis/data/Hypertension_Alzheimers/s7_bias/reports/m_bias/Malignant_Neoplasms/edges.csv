@@ -1,7 +1,6 @@
 from,to
-MicroRNAs,Alzheimers
-MicroRNAs,Hypertension
-MicroRNAs,Malignant_Neoplasms
-Virus,Alzheimers
-Virus,Malignant_Neoplasms
+Aspirin,Hypertension
+Aspirin,Malignant_Neoplasms
+Vaccines,Alzheimers
+Vaccines,Malignant_Neoplasms
 Hypertension,Alzheimers

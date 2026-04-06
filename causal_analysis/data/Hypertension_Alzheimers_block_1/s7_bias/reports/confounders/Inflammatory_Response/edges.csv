@@ -1,11 +1,4 @@
 from,to
-Lipopolysaccharides,Alzheimers
-Lipopolysaccharides,Hypertension
-Lipopolysaccharides,Inflammatory_Response
-Lipopolysaccharides,Injury
+Hypertension,Alzheimers
 Inflammatory_Response,Alzheimers
 Inflammatory_Response,Hypertension
-Hypertension,Alzheimers
-Injury,Alzheimers
-Injury,Hypertension
-Injury,Inflammatory_Response

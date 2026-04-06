@@ -23,13 +23,7 @@ causalehr.dump
 furtherAnalysis/
 extra/
 
-causal_analysis/data/Hypertension_Alzheimers
-causal_analysis/data/Hypertension_Alzheimers_block_1
-causal_analysis/data/Hypertension_Alzheimers_block_2
-causal_analysis/data/Hypertension_Alzheimers_block_3
-causal_analysis/data/Hypertension_Alzheimers_no_block_1
-causal_analysis/data/Hypertension_Alzheimers_no_block_2
-causal_analysis/data/Hypertension_Alzheimers_no_block_3
+causal_analysis/data/
 graph_creation/result/no_block_graph
 graph_creation/result/skimmed_graph
 

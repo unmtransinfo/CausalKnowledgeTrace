@@ -1,7 +1,7 @@
 from,to
+Hypertension,Alzheimers
 Injury,Alzheimers
 Injury,Hypertension
 Study_models,Alzheimers
 Study_models,Hypertension
 Study_models,Injury
-Hypertension,Alzheimers

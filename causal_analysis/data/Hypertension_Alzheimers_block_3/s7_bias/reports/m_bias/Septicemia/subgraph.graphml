@@ -5,18 +5,6 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Septicemia">
-      <data key="d0">C0036690</data>
-      <data key="d1">regular</data>
-    </node>
-    <node id="Hypertension">
-      <data key="d0">C0020538</data>
-      <data key="d1">exposure</data>
-    </node>
-    <node id="Ligation">
-      <data key="d0">C0023690</data>
-      <data key="d1">regular</data>
-    </node>
     <node id="Alzheimers">
       <data key="d0">C0002395</data>
       <data key="d1">outcome</data>
@@ -25,18 +13,18 @@
       <data key="d0">C0023810</data>
       <data key="d1">regular</data>
     </node>
-    <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
-    </edge>
-    <edge source="Ligation" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">45</data>
-    </edge>
-    <edge source="Ligation" target="Septicemia">
-      <data key="d2">CAUSES</data>
-      <data key="d3">409</data>
-    </edge>
+    <node id="Hypertension">
+      <data key="d0">C0020538</data>
+      <data key="d1">exposure</data>
+    </node>
+    <node id="Septicemia">
+      <data key="d0">C0036690</data>
+      <data key="d1">regular</data>
+    </node>
+    <node id="Ligation">
+      <data key="d0">C0023690</data>
+      <data key="d1">regular</data>
+    </node>
     <edge source="Lipopolysaccharides" target="Alzheimers">
       <data key="d2">CAUSES</data>
       <data key="d3">20</data>
@@ -48,6 +36,18 @@
     <edge source="Lipopolysaccharides" target="Septicemia">
       <data key="d2">CAUSES</data>
       <data key="d3">782</data>
+    </edge>
+    <edge source="Hypertension" target="Alzheimers">
+      <data key="d2">CAUSES</data>
+      <data key="d3">11</data>
+    </edge>
+    <edge source="Ligation" target="Hypertension">
+      <data key="d2">CAUSES</data>
+      <data key="d3">45</data>
+    </edge>
+    <edge source="Ligation" target="Septicemia">
+      <data key="d2">CAUSES</data>
+      <data key="d3">409</data>
     </edge>
   </graph>
 </graphml>

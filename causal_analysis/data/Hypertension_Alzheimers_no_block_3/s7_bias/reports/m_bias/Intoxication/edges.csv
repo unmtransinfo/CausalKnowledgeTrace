@@ -1,7 +1,0 @@
-from,to
-Ethanol,Hypertension
-Ethanol,Intoxication
-Hypertension,Alzheimers
-Pharmaceutical_Preparations,Alzheimers
-Pharmaceutical_Preparations,Hypertension
-Pharmaceutical_Preparations,Intoxication

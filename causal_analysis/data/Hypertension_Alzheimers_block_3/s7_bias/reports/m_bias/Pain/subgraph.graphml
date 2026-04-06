@@ -5,21 +5,21 @@
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
   <key id="d0" for="node" attr.name="cui" attr.type="string" />
   <graph edgedefault="directed">
+    <node id="Alzheimers">
+      <data key="d0">C0002395</data>
+      <data key="d1">outcome</data>
+    </node>
     <node id="Hypertension">
       <data key="d0">C0020538</data>
       <data key="d1">exposure</data>
-    </node>
-    <node id="Pain">
-      <data key="d0">C0030193</data>
-      <data key="d1">regular</data>
     </node>
     <node id="Injury">
       <data key="d0">C0175677</data>
       <data key="d1">regular</data>
     </node>
-    <node id="Alzheimers">
-      <data key="d0">C0002395</data>
-      <data key="d1">outcome</data>
+    <node id="Pain">
+      <data key="d0">C0030193</data>
+      <data key="d1">regular</data>
     </node>
     <node id="Wounds_and_Injuries">
       <data key="d0">C0043251</data>

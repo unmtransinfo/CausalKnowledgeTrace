@@ -1,7 +1,0 @@
-from,to
-imbalance,Alzheimers
-imbalance,Hypertension
-imbalance,Osteoporosis
-Hypertension,Alzheimers
-Adrenal_Cortex_Hormones,Hypertension
-Adrenal_Cortex_Hormones,Osteoporosis

@@ -1,7 +1,0 @@
-from,to
-Proteins,Alzheimers
-Proteins,Hypertension
-Proteins,Immunity
-Hypertension,Alzheimers
-Virus,Alzheimers
-Virus,Immunity

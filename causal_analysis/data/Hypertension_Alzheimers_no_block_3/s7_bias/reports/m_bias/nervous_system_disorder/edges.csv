@@ -1,7 +1,0 @@
-from,to
-Mutation,Alzheimers
-Mutation,Hypertension
-Mutation,nervous_system_disorder
-Hypertension,Alzheimers
-Virus,Alzheimers
-Virus,nervous_system_disorder

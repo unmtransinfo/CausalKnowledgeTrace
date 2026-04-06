@@ -1,10 +1,10 @@
 from,to
-Diabetes,Alzheimers
-Diabetes,Hypertension
-Diabetes,End_stage_renal_failure
-Diabetes_Mellitus,Hypertension
-Diabetes_Mellitus,End_stage_renal_failure
 Hypertension,Alzheimers
 Hypertension,Diabetes
 Hypertension,Diabetes_Mellitus
 Hypertension,End_stage_renal_failure
+Diabetes_Mellitus,Hypertension
+Diabetes_Mellitus,End_stage_renal_failure
+Diabetes,Alzheimers
+Diabetes,Hypertension
+Diabetes,End_stage_renal_failure

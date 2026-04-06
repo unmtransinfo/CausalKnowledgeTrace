@@ -1,33 +1,37 @@
 <?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
-  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
-  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Alzheimers">
-      <data key="d0">C0002395</data>
-      <data key="d1">outcome</data>
-    </node>
     <node id="Hypertension">
-      <data key="d0">C0020538</data>
+      <data key="d0">Hypertension</data>
       <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
     </node>
     <node id="Mutation">
-      <data key="d0">C0026882</data>
+      <data key="d0">Mutation</data>
       <data key="d1">regular</data>
+      <data key="d2">C0026882</data>
+    </node>
+    <node id="Alzheimers">
+      <data key="d0">Alzheimers</data>
+      <data key="d1">outcome</data>
+      <data key="d2">C0750901</data>
     </node>
     <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
     </edge>
     <edge source="Mutation" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">188</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">684</data>
     </edge>
     <edge source="Mutation" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">82</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">82</data>
     </edge>
   </graph>
 </graphml>

@@ -1,53 +1,55 @@
 <?xml version='1.0' encoding='utf-8'?>
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
-  <key id="d3" for="edge" attr.name="ev_count" attr.type="long" />
-  <key id="d2" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d4" for="edge" attr.name="ev_count" attr.type="long" />
+  <key id="d3" for="edge" attr.name="predicate" attr.type="string" />
+  <key id="d2" for="node" attr.name="cui" attr.type="string" />
   <key id="d1" for="node" attr.name="node_type" attr.type="string" />
-  <key id="d0" for="node" attr.name="cui" attr.type="string" />
+  <key id="d0" for="node" attr.name="label" attr.type="string" />
   <graph edgedefault="directed">
-    <node id="Reactive_Oxygen_Species">
-      <data key="d0">C0162772</data>
+    <node id="Anti_Inflammatory_Agents_Non_Steroidal">
+      <data key="d0">Anti_Inflammatory_Agents_Non_Steroidal</data>
       <data key="d1">regular</data>
+      <data key="d2">C0003211</data>
     </node>
     <node id="Ethanol">
-      <data key="d0">C0001962</data>
+      <data key="d0">Ethanol</data>
       <data key="d1">regular</data>
-    </node>
-    <node id="Lesion">
-      <data key="d0">C0221198</data>
-      <data key="d1">regular</data>
+      <data key="d2">C0001962</data>
     </node>
     <node id="Alzheimers">
-      <data key="d0">C0002395</data>
+      <data key="d0">Alzheimers</data>
       <data key="d1">outcome</data>
+      <data key="d2">C0750901</data>
+    </node>
+    <node id="Lesion">
+      <data key="d0">Lesion</data>
+      <data key="d1">regular</data>
+      <data key="d2">C0221198</data>
     </node>
     <node id="Hypertension">
-      <data key="d0">C0020538</data>
+      <data key="d0">Hypertension</data>
       <data key="d1">exposure</data>
+      <data key="d2">C0020538</data>
     </node>
-    <edge source="Reactive_Oxygen_Species" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">20</data>
+    <edge source="Anti_Inflammatory_Agents_Non_Steroidal" target="Lesion">
+      <data key="d3">CAUSES</data>
+      <data key="d4">154</data>
     </edge>
-    <edge source="Reactive_Oxygen_Species" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">38</data>
-    </edge>
-    <edge source="Reactive_Oxygen_Species" target="Lesion">
-      <data key="d2">CAUSES</data>
-      <data key="d3">114</data>
+    <edge source="Anti_Inflammatory_Agents_Non_Steroidal" target="Alzheimers">
+      <data key="d3">PREVENTS</data>
+      <data key="d4">204</data>
     </edge>
     <edge source="Ethanol" target="Hypertension">
-      <data key="d2">CAUSES</data>
-      <data key="d3">78</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">78</data>
     </edge>
     <edge source="Ethanol" target="Lesion">
-      <data key="d2">CAUSES</data>
-      <data key="d3">276</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">552</data>
     </edge>
     <edge source="Hypertension" target="Alzheimers">
-      <data key="d2">CAUSES</data>
-      <data key="d3">11</data>
+      <data key="d3">CAUSES</data>
+      <data key="d4">11</data>
     </edge>
   </graph>
 </graphml>

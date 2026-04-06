@@ -1,7 +1,0 @@
-from,to
-Diet,Alzheimers
-Diet,Hypertension
-Diet,hypercholesterolemia
-Hypertension,Alzheimers
-Cholesterol,Alzheimers
-Cholesterol,hypercholesterolemia

@@ -1,9 +1,0 @@
-from,to
-Congenital_Abnormality,Hypertension
-Hypertension,Alzheimers
-Agent,Alzheimers
-Agent,Congenital_Abnormality
-Agent,Hypertension
-Genes,Alzheimers
-Genes,Congenital_Abnormality
-Genes,Hypertension

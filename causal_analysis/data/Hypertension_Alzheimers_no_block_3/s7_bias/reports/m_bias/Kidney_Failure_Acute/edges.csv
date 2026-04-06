@@ -1,9 +1,0 @@
-from,to
-COVID_19,Hypertension
-COVID_19,Kidney_Failure_Acute
-Hypertension,Alzheimers
-Hypertension,Ischemia
-Hypertension,Kidney_Failure_Acute
-Ischemia,Alzheimers
-Ischemia,Hypertension
-Ischemia,Kidney_Failure_Acute

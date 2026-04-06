@@ -1,7 +1,0 @@
-from,to
-Ethanol,Hypertension
-Ethanol,Liver_damage
-Hypertension,Alzheimers
-Lipopolysaccharides,Alzheimers
-Lipopolysaccharides,Hypertension
-Lipopolysaccharides,Liver_damage

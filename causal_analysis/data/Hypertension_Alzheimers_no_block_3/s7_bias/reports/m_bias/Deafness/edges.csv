@@ -1,8 +1,0 @@
-from,to
-Mutation,Alzheimers
-Mutation,Deafness
-Mutation,Hypertension
-Hypertension,Alzheimers
-Genes,Alzheimers
-Genes,Deafness
-Genes,Hypertension

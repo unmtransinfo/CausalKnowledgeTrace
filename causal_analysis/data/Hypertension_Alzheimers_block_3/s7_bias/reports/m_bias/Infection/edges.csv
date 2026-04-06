@@ -1,7 +1,7 @@
 from,to
-Hypertension,Alzheimers
-Virus,Alzheimers
-Virus,Infection
 Agent,Alzheimers
 Agent,Hypertension
 Agent,Infection
+Hypertension,Alzheimers
+Virus,Alzheimers
+Virus,Infection

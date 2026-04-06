@@ -81,6 +81,10 @@ def get_s7_bias_dir(exposure: str, outcome: str) -> Path:
     return get_stage_dir(exposure, outcome, STAGES["S7_BIAS"])
 
 
+def get_s8_other_bias_dir(exposure: str, outcome: str) -> Path:
+    return get_stage_dir(exposure, outcome, STAGES["S8_OTHER_BIAS"])
+
+
 # ============================================
 # DIRECTORY UTILITIES
 # ============================================
