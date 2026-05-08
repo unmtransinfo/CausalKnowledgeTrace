@@ -39,7 +39,7 @@ CKT is built as a modern Django web application with the following components:
 
 *In development*
 
-The furtherAnalysis module performs systematic causal variable classification to support rigorous epidemiological analysis. Tools in this module:
+The [causal_analysis/](causal_analysis/) module performs systematic causal variable classification to support rigorous epidemiological analysis. Tools in this module:
 
 - Classify variables as confounders, mediators, or colliders relative to the exposure-outcome relationship
 - Apply graph traversal algorithms to retain variables within the causal vicinity while removing extraneous nodes

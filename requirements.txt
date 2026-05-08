@@ -1,0 +1,33 @@
+# Top-level dependencies for CausalKnowledgeTrace.
+# Component-specific requirements still live in:
+#   - django_ckt/requirements.txt  (Django web app, used by Docker)
+#   - doc/requirements.txt         (graph creation / R-integration extras)
+
+# Database
+psycopg2-binary
+
+# Config / IO
+PyYAML
+python-dotenv
+python-dateutil
+requests
+pandas
+
+# Graph + numerics
+networkx
+numpy
+scipy
+matplotlib
+
+# Web (Django stack)
+redis>=5.0.0
+django-redis>=5.4.0
+gunicorn>=21.2.0
+whitenoise>=6.6.0
+
+# Tests
+pytest
+pytest-django
+
+# R integration
+rpy2
