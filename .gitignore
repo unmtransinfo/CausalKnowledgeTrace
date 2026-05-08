@@ -37,3 +37,7 @@ create_db/
 jbi_paper/
 
 check_node_exists.py
+
+# Ad-hoc SPO export scripts and their generated outputs
+export_relations*.py
+relations_export*.xlsx
