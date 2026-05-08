@@ -6,11 +6,11 @@ CausalKnowledgeTrace (CKT) helps researchers build causal knowledge graphs from 
 
 Users specify an exposure and outcome of interest. They can constrain the search by publication year, causal predicate type, and minimum number of supporting articles per relationship. CKT constructs initial partially directed acyclic graphs (PDAGs) representing causal structures between biomedical concepts. Users then edit these graphs interactively to remove unnecessary nodes and edges. CKT can export graphs and evidence from the literature for downstream analysis.
 
-### 🔗 Quick Links
+### Quick Links
 
-- **🧪 Test/Development Site**: [http://10.234.117.212:3837/](http://10.234.117.212:3837/) *(Requires UNM HSC network connection or VPN)*
-- **🌐 Production Site**: [https://habanero.health.unm.edu/CKT/](https://habanero.health.unm.edu/CKT/)
-- **📖 User Manual**: [CKT Usage Guide](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
+- **Test/Development Site**: [http://10.234.117.212:3837/](http://10.234.117.212:3837/) *(Requires UNM HSC network connection or VPN)*
+- **Production Site**: [https://habanero.health.unm.edu/CKT/](https://habanero.health.unm.edu/CKT/)
+- **User Manual**: [CKT Usage Guide](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
 
 ## Data Source
 
@@ -28,23 +28,20 @@ CKT is built as a modern Django web application with the following components:
 ## Workflow
 
 1. **Query Configuration**: Users specify an exposure and outcome of interest using UMLS (Unified Medical Language System) identifiers or free text search. Configurable parameters include publication year range, causal predicate types (CAUSES, INHIBITS, STIMULATES, PREVENTS, DISRUPTS), minimum article support thresholds, and degrees of separation (currently limited to 3 degrees between exposure and outcome).
-
 2. **Graph Construction**: CKT builds initial partially directed acyclic graphs (PDAGs) representing potential causal pathways connecting the exposure to the outcome. Edge directions are inferred from temporal precedence, biological plausibility, and semantic predicate types extracted from the literature.
-
 3. **Interactive Refinement**: Users iteratively remove spurious associations, biologically implausible relationships, or irrelevant variables through the web interface. This step incorporates domain expertise to improve graph quality.
-
 4. **Export and Documentation**: Refined graphs and supporting evidence (PubMed IDs, semantic predicates, citation counts) are exported for downstream causal analysis and documentation.
 
 ## Advanced Causal Analysis Module
 
 *In development*
 
-The [causal_analysis/](causal_analysis/) module performs systematic causal variable classification to support rigorous epidemiological analysis. Tools in this module:
+The [causal_analysis/](causal_analysis/) module performs systematic causal variable classification. Tools in this module:
 
 - Classify variables as confounders, mediators, or colliders relative to the exposure-outcome relationship
 - Apply graph traversal algorithms to retain variables within the causal vicinity while removing extraneous nodes
 - Compute minimal sufficient adjustment sets satisfying the back-door criterion for unbiased causal effect estimation
-- Identify adjustment strategies that block confounding paths while avoiding collider bias, M-bias, and butterfly bias
+- Identify adjustment strategies that block confounding paths while avoiding M-bias, and butterfly bias
 - Providing suggestions, given user input of measured variables, of best-match, minimally sufficient adjustment sets that may include proxy confounders
 
 ## Current Limitations and Development Roadmap
@@ -52,7 +49,6 @@ The [causal_analysis/](causal_analysis/) module performs systematic causal varia
 The advanced analysis tools currently function on small example graphs but encounter computational challenges on literature-derived graphs due to:
 
 1. **Cyclic relationships**: Extracted literature relationships may contain feedback loops that violate the acyclic assumption required for standard causal inference algorithms. Biological systems often exhibit genuine bidirectional causation (e.g., inflammation causes oxidative stress, which further exacerbates inflammation).
-
 2. **Markov equivalence classes**: Many edge orientations in literature-derived graphs are ambiguous, resulting in equivalence classes of graphs that encode identical conditional independence relationships but different causal interpretations. The number of possible orientations grows exponentially (2^k for k ambiguous edges), making computation intractable for large graphs.
 
 Planned solutions include:
@@ -72,39 +68,6 @@ This framework supports rigorous causal inference from observational biomedical 
 - Hypothesis generation for experimental validation of putative causal relationships
 - Literature-based justification for variable selection in statistical models
 
-## 📋 What This Project Does
-
-- **🌐 Interactive Visualization**: Web-based DAG exploration with zoom, pan, and node interaction
-- **🔍 Graphical Causal Modeling**: Automated assembly of causal relationships from biomedical literature given Concept Unique Identifiers in the Unified Medical Language System, or [UMLS](https://www.nlm.nih.gov/research/umls/index.html), for the Exposure and Outcome of interest
-- **📊 Evidence Analysis**: PMID-based evidence tracking and strength assessment
-- **⚡ Performance Optimized**: Binary formats, caching, and vectorized operations for large graphs
-- **🎯 Configurable Analysis**: Enter multiple CUIs for the exposure and/or outcome; Examine 1st, 2nd, or 3rd degree relationships
-- **📁 Multiple Formats**: JSON assertions, optimized binary formats
-
-## Key Features
-
-### 🌐 Django Web Application
-
-- **Interactive Network Visualization**: Explore DAGs with zoom, pan, and node selection capabilities
-- **Dynamic Node Information**: Click on nodes to see detailed information and evidence
-- **Physics Controls**: Adjust network layout parameters in real-time
-- **Statistics Dashboard**: View network statistics and node distributions
-- **Color-coded Categories**: Three-category system (Exposure/Outcome/Other) with optimized performance
-- **Flexible Data Loading**: Load DAG structures from generated files or upload custom graph files
-- **Graph Configuration Interface**: Configure parameters for knowledge graph generation
-- **Enhanced CUI Search**: Searchable interface for medical concept selection with semantic type information
-- **Efficient Loading**: Fast loading for large graphs
-
-### 🐍 Graph Creation Engine
-
-- **Automated Knowledge Graph Generation**: Create causal graphs from SemMedDB biomedical literature
-- **Multiple CUI Support**: Handle multiple Concept Unique Identifiers for exposures and outcomes
-- **K-hop Analysis**: Configurable relationship depth (1-3 hops) for comprehensive graph traversal
-- **Markov Blanket Analysis**: Advanced causal inference with Markov blanket computation
-- **Blacklist Filtering**: Filter out generic or unwanted concepts during graph creation
-- **Multiple Output Formats**: Generate JSON assertion files and optimized binary formats
-- **Performance Monitoring**: Detailed timing analysis and execution metrics
-
 ## Prerequisites
 
 ### UMLS Metathesaurus License (Required)
@@ -115,6 +78,7 @@ CausalKnowledgeTrace uses SemMedDB, a database derived from the UMLS Metathesaur
 CausalKnowledgeTrace extracts causal relationships from SemMedDB, which is derived from the UMLS (Unified Medical Language System) Metathesaurus maintained by the National Library of Medicine. The NLM requires users to obtain a free license to access UMLS-derived resources.
 
 **How to obtain your license:**
+
 1. Visit the [UMLS Metathesaurus License Agreement](https://www.nlm.nih.gov/research/umls/knowledge_sources/metathesaurus/release/license_agreement.html)
 2. Create an account or sign in with existing credentials
 3. Complete the license application (takes ~5 minutes)
@@ -217,16 +181,17 @@ nano .env.dev  # or use your preferred editor
 
 ---
 
-### 🐳 Docker Installation
+### Docker Installation
 
 **Time:** ~20 minutes (including database restoration)
 **Prerequisites:** Docker and Docker Compose only
 
 CausalKnowledgeTrace is deployed exclusively through Docker, which provides a containerized environment with all dependencies pre-configured. This ensures consistent setup across different systems.
 
-**📖 [Complete Docker Installation Guide →](doc/DOCKER_INSTALLATION.md)**
+**[Complete Docker Installation Guide →](doc/DOCKER_INSTALLATION.md)**
 
 ---
+
 ## Usage
 
 For detailed usage instructions, see: [CKT Usage Instructions](https://docs.google.com/document/d/1SOr5PCclzzkw6_R13Swf0NEyNDwJL9FUW2pQY6wafSs/edit?usp=sharing)
@@ -247,6 +212,4 @@ If you encounter issues not covered in the installation guides:
    - Docker and Docker Compose versions
    - Error messages (copy the full text)
    - Steps you've already tried
-3. **Email support:** Contact Scott Malec (SMalec@salud.unm.edu) or Rajesh Upadhayaya (RAJESHUPADHAYAYA@salud.unm.edu) to schedule a walk-through session
-
-
+3. **Email support:** Contact Scott Malec (SMalec@salud.unm.edu) or Rajesh Upadhayaya (RAJESHUPADHAYAYA@salud.unm.edu)
